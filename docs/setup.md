@@ -2,11 +2,15 @@
 
 ## Installation
 
-To install Deltakit, begin by downloading and unzipping
-{download}`the wheels <_static/_wheels/deltakit_wheels.zip>`.
+To install the latest version of Deltakit, run:
 
-In a terminal with your favorite distribution of Python/pip on the path, navigate
-to the unzipped wheels folder and execute the following commands.
+```
+pip install deltakit
+```
+
+### Installation in a virtual environment or Colab
+
+In a terminal with your favorite distribution of Python/pip on the path, .
 
 ::::{tab-set}
 :::{tab-item} macOS / Linux
@@ -17,8 +21,8 @@ to the unzipped wheels folder and execute the following commands.
 python3 -m venv venv
 source venv/bin/activate
 
-# and then install all the libraries:
-python -m pip install --find-links=. deltakit
+# and then install Deltakit:
+pip install deltakit
 ```
 :::
 :::{tab-item} Windows
@@ -29,8 +33,8 @@ python -m pip install --find-links=. deltakit
 python -m venv venv
 venv\Scripts\activate
 
-# and then install all the libraries:
-pip install --find-links=. deltakit
+# and then install deltakit:
+pip install deltakit
 ```
 
 Note: Deltakit depends on `stim` and other libraries that may need to be compiled from source
@@ -44,8 +48,8 @@ with the "Desktop development for C++" workload.
 # remove conflicting dependency:
 !pip uninstall datasets -y
 # upload you .whl files to the /content folder
-# at Google Colab, and then install all the libraries:
-!pip install --find-links=. deltakit
+# at Google Colab, and then install deltakit:
+!pip install deltakit
 ```
 :::
 ::::
