@@ -36,9 +36,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/riverlane/deltakit"
-"Bug Tracker" = "https://github.com/riverlane/deltakit/issues"
-Changelog = "https://github.com/riverlane/deltakit/releases"
+Homepage = "https://github.com/Deltakit/deltakit"
+"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
+Changelog = "https://github.com/Deltakit/deltakit/releases"
 
 [project.optional-dependencies]
 # any changes here should be duplicated to dev dependency list

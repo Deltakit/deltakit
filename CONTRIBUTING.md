@@ -17,9 +17,9 @@ writing code!) from anyone.
 We define a "bug" as a discrepancy between documented and actual behavior or
 an *inaccurate* error message. (If it's not a "bug", see {ref}`contributing-enhancement-requests`.)
 First, check to see if the bug has already been reported on the
-[issue tracker](https://github.com/riverlane/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
+[issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
 If so, leave a comment; if not, create a
-[new bug report](https://github.com/riverlane/deltakit/issues/new?template=bug.md).
+[new bug report](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
 
 (contributing-enhancement-requests)=
 
@@ -29,26 +29,26 @@ For instance, if the documentation needs improvement, if you disagree with
 documented behavior, or if you are asking for a new feature, we'd appreciate
 your thoughts.
 First, check to see if a similar request already has an
-[open issue](https://github.com/riverlane/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
+[open issue](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
 If so, leave a comment; if not, create a
-[new request](https://github.com/riverlane/deltakit/issues/new?template=request.md).
+[new request](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
 
 #### Issue Participation
 Posting an issue is the much-appreciated first step, but there's lots more to do.
 Can you try reproducing a bug or finding out more about why it occurs? Can you
 help us reach consensus on the appropriate action to take to fix a bug or respond
-to a request? We welcome constructive participation in [issues](https://github.com/riverlane/deltakit/issues/)
+to a request? We welcome constructive participation in [issues](https://github.com/Deltakit/deltakit/issues/)
 that look interesting to you.
 
 ### Pull Requests
 
 #### Bug Fixes
-Known bugs can be found on the [issue tracker](https://github.com/riverlane/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
+Known bugs can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
 After reading the bug report carefully and reaching consensus on the appropriate fix,
 feel free to open a PR with the agreed-upon fix.
 
 #### Enhancements
-Existing enhancement request can be found on the [issue tracker](https://github.com/riverlane/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
+Existing enhancement request can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
 After reading the request carefully and reaching consensus on the appropriate action,
 feel free to open a PR with a fix.
 Note that many enhancements don't require writing any code - documentation improvements
@@ -56,13 +56,13 @@ are also appreciated!
 
 #### PR Review
 All PRs need review before they can be merged. Please share your expertise in
-[PRs](https://github.com/riverlane/deltakit/pulls)
+[PRs](https://github.com/Deltakit/deltakit/pulls)
 that are up your alley.
 
 ### Other
 #### Ask / Answer Questions
 Have a question about usage? Knowledgeable about our software and want to share your expertise?
-Please ask and answer usage questions on our [Q&A Discussion](https://github.com/riverlane/deltakit/discussions/categories/q-a).
+Please ask and answer usage questions on our [Q&A Discussion](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
 
 #### Social Media / Graphic Design / Fundraising
 We don't currently have recommendations about these types of contributions, but
@@ -104,7 +104,7 @@ pixi run docs
 ```
 
 `pixi` will automatically update or install the dependencies (`pixi install`) and perform the
-task as defined in [`pixi.toml`](https://github.com/riverlane/deltakit/blob/main/pixi.toml). Tasks include:
+task as defined in [`pixi.toml`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml). Tasks include:
 
 - `lint <package>`: run `ruff check` on a package
 - `mypy <package>`: run `mypy` on a package
@@ -134,7 +134,7 @@ When contributing, always follow our [code of conduct](CODE_OF_CONDUCT.md).
 
 ### Order of Operations
 Contributors without commit privileges are asked to submit or comment on an
-[issue](https://github.com/riverlane/deltakit/issues) before submitting
+[issue](https://github.com/Deltakit/deltakit/issues) before submitting
 a pull request.
 
 ### Issue / PR Titles / Commit Messages
@@ -169,7 +169,7 @@ feature, and contributors are encouraged to make use of the
 features; these comments will automatically be resolved when the suggestions are committed.
 
 ### License / Use of Artificial Intelligence
-Our project uses the [Apache 2.0 license](https://github.com/riverlane/deltakit/blob/main/LICENSE). Please ensure that your contributions
+Our project uses the [Apache 2.0 license](https://github.com/Deltakit/deltakit/blob/main/LICENSE). Please ensure that your contributions
 are consistent with that license. If you're unsure, please ask in an issue before posting
 content that may not be compatible with our project.
 Note that large language models (LLMs) may be trained on and can potentially reproduce
@@ -188,12 +188,12 @@ two years.
 
 ### Decision Making / Governance
 Decisions are made by consensus of participants in a GitHub issue or PR. In case of disagreement,
-[code owners](https://github.com/riverlane/deltakit/blob/main/CODEOWNERS) have final authority.
+[code owners](https://github.com/Deltakit/deltakit/blob/main/CODEOWNERS) have final authority.
 
 ### Code Formatting / Linting / Typing
 All packages except `deltakit-decode` use `ruff format`, all packages use `ruff check` to
 enforce linting rules, and all packages use `mypy` to enforce typing rules.
-See [`pyproject.toml`](https://github.com/riverlane/deltakit/blob/main/pyproject.toml) for specific rules.
+See [`pyproject.toml`](https://github.com/Deltakit/deltakit/blob/main/pyproject.toml) for specific rules.
 
 ### Release
 For more information about release processes, see the [Deltakit release procedure](release.md).

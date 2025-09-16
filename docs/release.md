@@ -1,6 +1,6 @@
 # Deltakit Release Procedure
 
-The release procedure is currently in discussion in [gh-55](https://github.com/riverlane/deltakit/issues/55);
+The release procedure is currently in discussion in [gh-55](https://github.com/Deltakit/deltakit/issues/55);
 here is a working summary.
 
 There are three kinds of releases:
@@ -38,7 +38,7 @@ To perform a release:
    release note PR merges), creates a tag (e.g. `git tag v0.4.0`), and pushes the tag to GitHub (`git push origin v0.4.0`).
 5. Finally, the release manager triggers the stable release workflow on the tagged commit
    ("Build, test, and publish stable wheels" on GitHub Actions,
-   [`stable_release.yml`](https://github.com/riverlane/deltakit/blob/main/.github/workflows/stable_release.yml)).
+   [`stable_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/stable_release.yml)).
    This builds and publishes the artifacts to PyPI and GitHub, and it renders and uploads the documentation to
    GitHub pages.
 
@@ -62,7 +62,7 @@ documentation associated with the `main` branch will be available there.)
 
 These releases are performed automatically, and there is no way to trigger one besides adding commits to `main`.
 The workflow associated with nightly releases is "Build, test, and publish nightly wheels",
-[`nightly_release.yml`](https://github.com/riverlane/deltakit/blob/main/.github/workflows/nightly_release.yml)).
+[`nightly_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/nightly_release.yml)).
 
 The latest "nightly" version of `deltakit` can be installed by using `pip` with the `--pre` option, specifying
 the desired version number; e.g., `pip install deltakit --pre 0.4.0.dev20250904222833`.
@@ -84,7 +84,7 @@ serves to document the relevant changes.)
 
 To perform an alpha release, the release manager triggers the alpha release workflow on the desired commit
 ("Build, test, and publish alpha wheels" on GitHub Actions,
- [`alpha_release.yml`](https://github.com/riverlane/deltakit/blob/main/.github/workflows/alpha_release.yml)).
+ [`alpha_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/alpha_release.yml)).
 This builds and publishes the artifacts to PyPI, and it associates a tag with the commit on GitHub.
 
 The latest alpha version of `deltakit` can be installed by using `pip` with the `--pre` option, specifying

@@ -2,7 +2,7 @@
 
 Deltakit takes security seriously. If you discover a potential vulnerability, please
 report it privately using the
-[Report a Vulnerability](https://github.com/riverlane/deltakit/security) feature on
+[Report a Vulnerability](https://github.com/Deltakit/deltakit/security) feature on
 our repository. To minimize risk while we investigate the issue, please do *not*
 discuss the concern in a GitHub issue, pull request, or other public forum.
 
