@@ -9,6 +9,16 @@ on:
         required: false
         default: false
         type: boolean
+      run_tests:
+        description: 'Run tests'
+        required: false
+        default: false
+        type: boolean
+      publish_to_pypi:
+        description: 'Publish to PyPI'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-wheel:
