@@ -1,5 +1,5 @@
 ---
-name: Build, test, and publish stable wheels / docs during private beta
+name: Build, test, and publish stable wheels on PyPI
 
 on:
   workflow_dispatch:
