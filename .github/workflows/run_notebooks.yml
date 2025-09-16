@@ -11,9 +11,6 @@ on:
         options:
           - prod
           - staging
-  push:
-    branches:
-      - main
 
 jobs:
   run-notebooks:
