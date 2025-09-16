@@ -275,7 +275,7 @@ class NoiseLayer(Generic[T]):
             "Hash is expected to be implemented in constant time but there is not easy "
             "way of achieving that complexity with the current NoiseLayer internals. "
             "If you get this error, please open an issue on "
-            "https://github.com/riverlane/deltakit/issues/new/choose."
+            "https://github.com/Deltakit/deltakit/issues/new/choose."
         )
 
     def __repr__(self) -> str:

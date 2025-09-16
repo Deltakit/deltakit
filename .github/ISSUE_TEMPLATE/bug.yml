@@ -13,10 +13,10 @@ body:
         Thanks for helping improve the project! Please fill out the form below.
 
         > 💡 **Note:** A bug is a disagreement between actual and documented behavior, or an inaccurate error message.
-        > Please file a [request](https://github.com/riverlane/deltakit/issues/new?template=request.md) if the
+        > Please file a [request](https://github.com/Deltakit/deltakit/issues/new?template=request.md) if the
         > documentation does not define the expected behavior, if you disagree with the documented behavior, or if you
         > are asking for a new feature or performance improvement.
-        > Please use the [test failure form](https://github.com/riverlane/deltakit/issues/new?template=test_failure.yml)
+        > Please use the [test failure form](https://github.com/Deltakit/deltakit/issues/new?template=test_failure.yml)
         > if you're a contributor seeing a test failure in main, either locally or on CI.
 
   - type: textarea

@@ -33,8 +33,8 @@
 [license-badge]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
 [license-link]: https://www.apache.org/licenses/LICENSE-2.0
 
-[codecov-badge]: https://codecov.io/gh/riverlane/deltakit/branch/main/graph/badge.svg
-[codecov-link]: https://codecov.io/gh/riverlane/deltakit
+[codecov-badge]: https://codecov.io/gh/Deltakit/deltakit/branch/main/graph/badge.svg
+[codecov-link]: https://codecov.io/gh/Deltakit/deltakit
 
 [semver-badge]: https://img.shields.io/badge/semver-2.0.0-blue
 [semver-link]: https://semver.org/spec/v2.0.0.html
@@ -42,11 +42,11 @@
 [spec0-badge]: https://img.shields.io/badge/SPEC-0-forestgreen
 [spec0-link]: https://scientific-python.org/specs/spec-0000/
 
-[issues-badge]: https://img.shields.io/github/issues/riverlane/deltakit?logo=github
-[issues-link]: https://github.com/riverlane/deltakit/issues
+[issues-badge]: https://img.shields.io/github/issues/Deltakit/deltakit?logo=github
+[issues-link]: https://github.com/Deltakit/deltakit/issues
 
 [discussions-badge]: https://img.shields.io/badge/discussions-join-blue?logo=github
-[discussions-link]: https://github.com/riverlane/deltakit/discussions
+[discussions-link]: https://github.com/Deltakit/deltakit/discussions
 
 Deltakit allows you to create and run quantum error correction (QEC) experiments with features
 including circuit generation, simulation, decoding and results analysis.
@@ -140,8 +140,8 @@ Learn more by reading the [Deltakit docs](https://deltakit.readthedocs.io/en/lat
 
 ## Support
 
-- Found a bug? Need a feature? File an [issue](https://github.com/riverlane/deltakit/issues).
-- Usage questions? Visit our [Q&A forum](https://github.com/riverlane/deltakit/discussions/categories/q-a).
+- Found a bug? Need a feature? File an [issue](https://github.com/Deltakit/deltakit/issues).
+- Usage questions? Visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
 - Have a security concern? See our [security policy](SECURITY.md).
 
 ## Development

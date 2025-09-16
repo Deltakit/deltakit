@@ -507,7 +507,7 @@ class AdditiveSequentialMatchingNoise(
     def __hash__(self) -> int:
         raise NotImplementedError(
             "Implementation voluntarily not provided. If you think you need it, please "
-            "open an issue at https://github.com/riverlane/deltakit/issues/new/choose"
+            "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
 
 class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
@@ -558,7 +558,7 @@ class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
     def __hash__(self) -> int:
         raise NotImplementedError(
             "Implementation voluntarily not provided. If you think you need it, please "
-            "open an issue at https://github.com/riverlane/deltakit/issues/new/choose"
+            "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
 
     def __repr__(self) -> str:
@@ -681,7 +681,7 @@ class ExhaustiveWeightedMatchingNoise(SequentialNoise[HyperMultiGraph,
     def __hash__(self) -> int:
         raise NotImplementedError(
             "Implementation voluntarily not provided. If you think you need it, please "
-            "open an issue at https://github.com/riverlane/deltakit/issues/new/choose"
+            "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
 
     def field_values(self) -> Dict[str, Any]:
