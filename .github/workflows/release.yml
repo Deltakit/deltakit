@@ -136,6 +136,7 @@ jobs:
     needs: [build-wheel, test-wheel, test-sdist]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
         project: [deltakit, deltakit-circuit, deltakit-core, deltakit-decode, deltakit-explorer]
     environment:
