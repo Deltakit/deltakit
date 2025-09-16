@@ -140,8 +140,8 @@ jobs:
       matrix:
         project: [deltakit, deltakit-circuit, deltakit-core, deltakit-decode, deltakit-explorer]
     environment:
-      name: pypi-test
-      url: https://test.pypi.org/p/${{ matrix.project }}
+      name: pypi
+      url: https://pypi.org/p/${{ matrix.project }}
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
@@ -152,8 +152,6 @@ jobs:
         path: dist/
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
 
   github-release:
     if: ${{ inputs.gh_release }}
