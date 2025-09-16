@@ -55,5 +55,4 @@ Whether you're a seasoned QEC researcher or just starting out, Deltakit supports
 in exploring new ways to implement QEC logic all the way to running complex
 QEC circuits on QPU hardware.
 
-This package, `deltakit-explorer`, is a component package of Deltakit; please see the
-[Deltakit](https://pypi.org/project/deltakit/) for more information.
+This package, `deltakit-explorer`, is a component package of Deltakit; please see [Deltakit](https://pypi.org/project/deltakit/) for more information.
