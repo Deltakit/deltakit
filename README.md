@@ -49,12 +49,12 @@ QEC circuits on QPU hardware.
 
 <table style="background-color: white;">
 <tr style="background-color: white;">
-<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/OgfY8q7.png" width="300" style="background-color: white;"></td>
-<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/usmrMre.png" width="300" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/OgfY8q7.png" width="200" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/usmrMre.png" width="200" style="background-color: white;"></td>
 </tr>
 <tr style="background-color: white;">
-<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/5evClQ1.png" width="300" style="background-color: white;"></td>
-<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/hAaXVb5.png" width="300" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/5evClQ1.png" width="200" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/hAaXVb5.png" width="200" style="background-color: white;"></td>
 </tr>
 </table>
 
