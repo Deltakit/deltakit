@@ -89,7 +89,8 @@ class GQLClient(APIClient):
 
     def _update_headers(self):
         self.auth_headers = {
-            "Authorization": "Bearer " + get_token()
+            "Authorization": "Bearer " + get_token(),
+            "X-Deltakit-Client": "yes",
         }
 
     def _get_transport(self):

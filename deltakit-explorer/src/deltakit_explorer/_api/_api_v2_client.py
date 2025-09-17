@@ -82,6 +82,7 @@ class APIv2Client(APIClient):
         self.auth_headers: dict[str, str] = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {get_token()}",
+            "X-Deltakit-Client": "yes",
         }
         self._request_session = requests.Session()
         retries = requests.adapters.Retry(
@@ -101,7 +102,8 @@ class APIv2Client(APIClient):
 
     def _update_headers(self):
         self.auth_headers = {
-            "Authorization": "Bearer " + get_token()
+            "Authorization": "Bearer " + get_token(),
+            "X-Deltakit-Client": "yes",
         }
 
     def _submit_task(
