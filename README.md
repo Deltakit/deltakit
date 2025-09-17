@@ -47,12 +47,16 @@ Whether you're a seasoned QEC researcher or just starting out, Deltakit supports
 in exploring new ways to implement QEC logic all the way to running complex
 QEC circuits on QPU hardware.
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0px; max-width: 800px; margin: 0 auto; background: white; padding: 15px;">
-  <img src="https://i.imgur.com/OgfY8q7.png" alt="Image 1" style="width: 100%; height: auto; display: block; border: none; outline: none; background: white; padding: 15px; box-sizing: border-box;">
-  <img src="https://i.imgur.com/usmrMre.png" alt="Image 2" style="width: 100%; height: auto; display: block; border: none; outline: none; background: white; padding: 15px; box-sizing: border-box;">
-  <img src="https://i.imgur.com/5evClQ1.png" alt="Image 3" style="width: 100%; height: auto; display: block; border: none; outline: none; background: white; padding: 15px; box-sizing: border-box;">
-  <img src="https://i.imgur.com/hAaXVb5.png" alt="Image 4" style="width: 100%; height: auto; display: block; border: none; outline: none; background: white; padding: 15px; box-sizing: border-box;">
-</div>
+<table style="background-color: white;">
+<tr style="background-color: white;">
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/OgfY8q7.png" width="300" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/usmrMre.png" width="300" style="background-color: white;"></td>
+</tr>
+<tr style="background-color: white;">
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/5evClQ1.png" width="300" style="background-color: white;"></td>
+<td style="background-color: white; padding: 10px;"><img src="https://i.imgur.com/hAaXVb5.png" width="300" style="background-color: white;"></td>
+</tr>
+</table>
 
 ## Quick Start
 
