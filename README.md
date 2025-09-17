@@ -47,14 +47,9 @@ Whether you're a seasoned QEC researcher or just starting out, Deltakit supports
 in exploring new ways to implement QEC logic all the way to running complex
 QEC circuits on QPU hardware.
 
-<table style="background-color: white;">
-<tr style="background-color: white;">
-<td style="background-color: white; padding: 10px;"><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a></td>
-<td style="background-color: white; padding: 10px;"><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a></td>
-</tr>
-<tr style="background-color: white;">
-<td style="background-color: white; padding: 10px;"><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a></td>
-<td style="background-color: white; padding: 10px;"><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a></td>
+<a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a>
+<a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
+
 </tr>
 </table>
 
