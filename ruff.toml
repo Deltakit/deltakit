@@ -60,6 +60,14 @@ target-version = "py310"
 [lint]
 select = ["A", "B", "E", "F", "N", "PL", "RUF100", "W"]
 
+# Specific per-file ignores
+[lint.per-file-ignores]
+"**/__init__.py" = [
+    # For the moment, dynamic __all__ generation raises a lot of issues with 
+    # F401 enabled, so ignore it where it happens, in __init__.py files.
+    "F401",
+]
+
 [format]
 # Like Black, use double quotes for strings.
 quote-style = "double"
