@@ -48,7 +48,7 @@
 | pox                       | 0.3.6             | BSD License                                                                    |
 | ppft                      | 1.7.7             | BSD License                                                                    |
 | propcache                 | 0.3.2             | Apache Software License                                                        |
-| pyparsing                 | 3.2.4             | UNKNOWN                                                                        |
+| pyparsing                 | 3.2.4             | MIT License                                                                    |
 | pytest                    | 8.4.2             | MIT License                                                                    |
 | python-dateutil           | 2.9.0.post0       | Apache Software License; BSD License                                           |
 | pytz                      | 2025.2            | MIT License                                                                    |
