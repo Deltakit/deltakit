@@ -2,7 +2,6 @@
 
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
-[![conda-forge][conda-badge]][conda-link]
 [![Python versions][python-badge]][pypi-link]
 [![Pixi][pixi-badge]][pixi-link]
 [![Typing][typing-badge]][typing-link]
@@ -18,9 +17,6 @@
 
 [pypi-badge]: https://img.shields.io/pypi/v/deltakit.svg
 [pypi-link]: https://pypi.org/project/deltakit/
-
-[conda-badge]: https://img.shields.io/conda/vn/conda-forge/deltakit
-[conda-link]: https://anaconda.org/conda-forge/deltakit
 
 [python-badge]: https://img.shields.io/pypi/pyversions/deltakit
 
