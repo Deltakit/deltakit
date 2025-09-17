@@ -2,15 +2,6 @@ name: Run test notebooks
 
 on:
   workflow_dispatch:
-    inputs:
-      target_backend:
-        description: 'Backend environment to run notebooks against'
-        required: true
-        default: 'prod'
-        type: choice
-        options:
-          - prod
-          - staging
 
 jobs:
   run-notebooks:
@@ -43,18 +34,8 @@ jobs:
           python -m pip install jupyter ipykernel nbconvert
           python -m pip install ./ ./deltakit-core ./deltakit-circuit ./deltakit-decode ./deltakit-explorer
 
-      - name: Run Jupyter notebooks on prod
-        if: ${{ inputs.target_backend == 'prod' || inputs.target_backend == ''}}
+      - name: Run Jupyter notebooks
         env:
             DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
         run: |
           jupyter nbconvert --to notebook --execute --inplace --debug "docs/examples/notebooks/${{ matrix.notebook }}"
-
-      - name: Run Jupyter notebooks on staging
-        if: ${{ inputs.target_backend == 'staging' }}
-        env:
-            DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN_STAGING }}
-            DELTAKIT_SERVER: ${{ secrets.STAGING_URL }}
-        run: |
-          jupyter nbconvert --to notebook --execute --inplace --debug "docs/examples/notebooks/${{ matrix.notebook }}"
- 
