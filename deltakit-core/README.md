@@ -6,7 +6,6 @@
 [![Pixi][pixi-badge]][pixi-link]
 [![Typing][typing-badge]][typing-link]
 [![License: Apache 2.0][license-badge]][license-link]
-[![codecov][codecov-badge]][codecov-link]
 [![SemVer][semver-badge]][semver-link]
 [![SPEC 0][spec0-badge]][spec0-link]
 [![Issues][issues-badge]][issues-link]
@@ -28,9 +27,6 @@
 
 [license-badge]: https://img.shields.io/badge/License-Apache_2.0-blue.svg
 [license-link]: https://www.apache.org/licenses/LICENSE-2.0
-
-[codecov-badge]: https://codecov.io/gh/Deltakit/deltakit/branch/main/graph/badge.svg
-[codecov-link]: https://codecov.io/gh/Deltakit/deltakit
 
 [semver-badge]: https://img.shields.io/badge/semver-2.0.0-blue
 [semver-link]: https://semver.org/spec/v2.0.0.html
