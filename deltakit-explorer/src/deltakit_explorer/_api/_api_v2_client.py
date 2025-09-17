@@ -102,6 +102,7 @@ class APIv2Client(APIClient):
 
     def _update_headers(self):
         self.auth_headers = {
+            "Content-Type": "application/json",
             "Authorization": "Bearer " + get_token(),
             "X-Deltakit-Client": "yes",
         }
