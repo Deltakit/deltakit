@@ -17,7 +17,7 @@ improve the logical performance of their devices. Deltakit
 can be used to perform simulations of all parts of QEC experiments
 if a QPU is not available.
 
-With Deltakit, users can:
+With Deltakit, you can:
 
 * **Benchmark logical fidelity** by decoding measurement data from QEC experiments or simulations
 * **Decode QEC experiments and simulations** using open-source decoders, as well as Riverlane proprietary decoders
