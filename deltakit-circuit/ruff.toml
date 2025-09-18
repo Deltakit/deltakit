@@ -10,31 +10,34 @@ ignore = []
 # Specific per-file ignores
 [lint.per-file-ignores]
 # Most of the gates are named in SCREAMING_SNAKE_CASE and that is expected.
+# This rule is only about naming, so it is not possible for a bug to go unoticed due to
+# this ignore.
 "src/deltakit_circuit/gates/*.py" = ["N801"]
 # We do not want to touch any module outside of deltakit-circuit for the moment,
 # and renaming the exception in the following file would do that so ignoring
 # for the moment.
+# This rule is only about naming, so it is not possible for a bug to go unoticed due to
+# this ignore.
 "src/deltakit_circuit/_parse_stim.py" = ["N818"]
-# For the moment, dynamic __all__ generation raises a lot of issues with 
-# F401 enabled, so ignore it where it happens, in __init__.py files.
+# For the moment, dynamic __all__ generation raises a lot of issues with F401 enabled,
+# so ignore it where it happens, in __init__.py files.
+# This rule only checks for unused imports. Worst that can happen is a performance hit
+# because a unused import takes CPU time. This is not a bug per-se, but we might want
+# to periodically check import times.
 "**/__init__.py" = ["F401"]
 
 # Test-specific ignores.
 "tests/**/*.py" = [    
     # Some tests have long function names which exceeds the line length limit in order 
     # to be descriptive. The names might also not respect the camel case requirement to
-    # include gate names in the function name. That is fine, so ignoring the respective
-    # errors.
+    # include gate names in the function name. That is fine because we want tests to be
+    # as expressive as possible. Also, this cannot introduce bugs.
     "E501", 
     "N802",
-    # Magic constants in tests does not seem like an issue here.
+    # Magic constants in tests are sub-optimal, but that rule is far from being a
+    # priority at the moment. New bugs might be introduced by this rule, for example if
+    # one of the magic numbers changes (e.g., if "Not found" becomes error 405 instead
+    # of 404) and this change is not reflected everywhere, but that seems sufficiently
+    # niche and unlikely to ignore that rule for now.
     "PLR2004",
-    # ruff reports "useless attribute access" on some code but the attribute access is
-    # not really useless, as the goal is to call it and see if it raises an exception,
-    # so this check is also ignored. 
-    "B018"
 ]
-# One test checking for invalid parameters is basically catching on Exception. That is
-# needed because the exception raised in each cases may be different, and Exception is
-# the only common parent class of all of them.
-"tests/test_noise_channels/test_pauli_noise.py" = ["B017"]
