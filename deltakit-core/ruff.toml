@@ -8,12 +8,18 @@ include = ["src/deltakit_core/**/*.py", "tests/**/*.py"]
 [lint.per-file-ignores]
 "tests/**/*.py" = [
     # Magic constants in tests are not an urgent issue.
+    # This ignore might introduce bugs if a constant changes (e.g. if "Not found"
+    # becomes error 405 instead of error 404) and not all occurrences are changed
+    # accordingly. That is deemed to be sufficiently improbable to still ignore this
+    # error.
     "PLR2004",
-    # Some tests have long lines. That is mostly due to long and descriptive test names
-    # which is a desirable feature. Removing that check for the tests only. 
-    "E501",
-    # Some test names/arguments are not strictly using camel_case as they contain some
-    # capitalised letters. This is not an issue as most of the time this casing helps
-    # with the readability.
-    "N802", "N803"
+    # Some tests have long function names which exceeds the line length limit in order 
+    # to be descriptive. That is fine, so ignoring the respective errors.
+    # This ignore is only about naming and so should not introduce any bug in the future
+    # by ignoring warnings that could prevent those bugs.
+    "E501"
 ]
+# Some test names/arguments are not strictly using camel_case as they contain some
+# capitalised letters. This is not an issue as most of the time this casing helps
+# with the readability.
+"tests/unit/decoding_graphs/test_parsing_dem_to_graphs.py" = ["N802", "N803"]
