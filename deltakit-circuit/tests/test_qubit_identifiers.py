@@ -381,7 +381,10 @@ def test_identifier_is_not_a_generator():
 
 def test_error_for_accessing_not_set_stim_id():
     with pytest.raises(ValueError, match=r".* has no stim identifier."):
-        Qubit((2, 34)).stim_identifier
+        # ruff reports "useless attribute access" on the line below but the attribute
+        # access is not really useless, as the goal is to call it and see if it raises
+        # an exception, so this check is ignored for that line.
+        Qubit((2, 34)).stim_identifier  # noqa: B018
 
 
 def test_accessing_stim_id_when_set():
