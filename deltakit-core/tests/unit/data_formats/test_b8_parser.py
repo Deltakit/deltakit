@@ -67,7 +67,7 @@ class TestB8ReadWriteMethods:
             *[(0, length) for length in (2, 4, 7, 8, 9, 41)],
             *[(1 << length - 1, length) for length in (2, 4, 7, 8, 9, 41)],
             (0b1010_1111_0000, 12),
-            (0b1111_1111_0000_0000_1010_0101_1110_0001_0100_1001, 40)
+            (0b1111_1111_0000_0000_1010_0101_1110_0001_0100_1001, 40),
         ],
     )
     def test_example_b8_measurements_parse(self, bits: int, length: int):
