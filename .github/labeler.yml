@@ -20,4 +20,4 @@ documentation:
 
 dev:
   - changed-files:
-    - any-glob-to-any-file: .github/** 
+    - any-glob-to-any-file: ['.github/**', 'tools/**']
