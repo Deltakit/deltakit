@@ -10,6 +10,7 @@
 [![SPEC 0][spec0-badge]][spec0-link]
 [![Issues][issues-badge]][issues-link]
 [![Discussions][discussions-badge]][discussions-link]
+[![DOI][doi-badge]][doi-link]
 
 [docs-badge]: https://readthedocs.org/projects/deltakit/badge/?version=latest
 [docs-link]: https://deltakit.readthedocs.io/en/latest/
@@ -39,6 +40,9 @@
 
 [discussions-badge]: https://img.shields.io/badge/discussions-join-blue?logo=github
 [discussions-link]: https://github.com/Deltakit/deltakit/discussions
+
+[doi-badge]: https://zenodo.org/badge/DOI/10.5281/zenodo.17145113.svg
+[doi-link]: https://doi.org/10.5281/zenodo.17145113
 
 Deltakit allows you to create and run quantum error correction (QEC) experiments with features
 including circuit generation, simulation, decoding and results analysis.
@@ -147,3 +151,19 @@ Help us make Deltakit better! Check out [Contributor guide](CONTRIBUTING.md)
 
 ## License
 This project is distributed under the [Apache 2.0 License](LICENSE).
+
+## Citation
+
+If you find this toolkit useful, please consider citing it:
+
+```bibtex
+@software{deltakit,
+  author = {Prawiroatmodjo, Guen and Burton, Angela and Suau, Adrien and Nnadi, Chidi and Bracken Ziad, Abbas and Melvin, Adam and Richardson, Adam and Walayat, Adnaan and Moylett, Alex and Virbule, Alise and Safehian, AmirReza and Patterson, Andrew and Buyskikh, Anton and Ruben, Archi and Barber, Ben and Reid, Brendan and Manuel, Cai Rees and Seremet, Dan and Byfield, David and Matekole, Elisha and Gallardo, Gabriel and Geher, Gyorgy and Turner, Jack and Lal, Jatin and Camps, Joan and Majaniemi, Joonas and Yates, Joseph and Johar, Kauser and Barnes, Kenton and Caune, Laura and Zigante, Lewis and Skoric, Luka and Jastrzebski, Marcin and Ghibaudi, Marco and Turner, Mark and Haberland, Matt and Stafford, Matthew and Blunt, Nick and Gillett, Nicole and Crawford, Ophelia and McBrien, Philip and Ishtiaq, Samin and Protasov, Stanislav and Wolanski, Stasiu and Hartley, Tom},
+  title        = {Deltakit},
+  month        = sep,
+  year         = 2025,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.17145113},
+  url          = {https://doi.org/10.5281/zenodo.17145113},
+}
+```
