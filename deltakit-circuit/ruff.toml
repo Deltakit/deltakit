@@ -1,4 +1,4 @@
-# Linting configuration for deltakit_circuit.
+# Linting configuration for deltakit_circuit.
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
@@ -26,7 +26,7 @@ ignore = []
 # to periodically check import times.
 "**/__init__.py" = ["F401"]
 
-# Test-specific ignores.
+# Test-specific ignores.
 "tests/**/*.py" = [    
     # Some tests have long function names which exceeds the line length limit in order 
     # to be descriptive. The names might also not respect the camel case requirement to

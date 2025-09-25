@@ -157,6 +157,7 @@ youre = "you're"
 distribtuion = "distribution"
 interm = "interm"
 ket = "ket"
+Alise = "Alise"
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking

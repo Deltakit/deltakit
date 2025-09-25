@@ -1,27 +1,20 @@
 name: Run pytest on specific packages
 
 on:
-  workflow_run:
-    workflows: ["Label PRs"]      # Name of the labeler workflow
-    types: [completed]
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
 
 jobs:
-  # Get changed labels
-  label-prs:
+  # Convert labels to JSON
+  labels-to-json:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     outputs:
       all-labels: ${{ steps.json_labels.outputs.JSON_LABELS_ALL }}
       new-labels: ${{ steps.json_labels.outputs.JSON_LABELS_NEW }}
     steps:
-      - id: label-PR
-        uses: actions/labeler@v5
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       # Transform labels to JSON compatible list to be used as
       # in matrix as a target
       - name: Checkout repo
@@ -38,7 +31,7 @@ jobs:
           NEW_LABELS: ${{ steps.label-PR.outputs.new-labels }}
 
   pytest:
-    needs: [label-prs]
+    needs: [labels-to-json]
     strategy:
       fail-fast: false
       matrix:
@@ -48,9 +41,6 @@ jobs:
           - {label: '312', version: '3.12'}
           - {label: '313', version: '3.13'}
         package: ${{ fromJSON(needs.label-prs.outputs.all-labels) }}
-    permissions:
-      contents: read
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

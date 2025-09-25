@@ -1,4 +1,4 @@
-# Linting configuration for deltakit_explorer.
+# Linting configuration for deltakit_explorer.
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
