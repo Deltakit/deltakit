@@ -13,7 +13,7 @@ include = ["src/deltakit_core/**/*.py", "tests/**/*.py"]
     # accordingly. That is deemed to be sufficiently improbable to still ignore this
     # error.
     "PLR2004",
-    # Some tests have long function names which exceeds the line length limit in order 
+    # Some tests have long function names which exceeds the line length limit in order
     # to be descriptive. That is fine, so ignoring the respective errors.
     # This ignore is only about naming and so should not introduce any bug in the future
     # by ignoring warnings that could prevent those bugs.

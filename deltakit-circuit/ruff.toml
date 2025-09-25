@@ -27,12 +27,12 @@ ignore = []
 "**/__init__.py" = ["F401"]
 
 # Test-specific ignores.
-"tests/**/*.py" = [    
-    # Some tests have long function names which exceeds the line length limit in order 
+"tests/**/*.py" = [
+    # Some tests have long function names which exceeds the line length limit in order
     # to be descriptive. The names might also not respect the camel case requirement to
     # include gate names in the function name. That is fine because we want tests to be
     # as expressive as possible. Also, this cannot introduce bugs.
-    "E501", 
+    "E501",
     "N802",
     # Magic constants in tests are sub-optimal, but that rule is far from being a
     # priority at the moment. New bugs might be introduced by this rule, for example if
