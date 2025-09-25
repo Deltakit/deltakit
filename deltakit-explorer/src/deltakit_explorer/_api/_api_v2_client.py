@@ -187,22 +187,28 @@ class APIv2Client(APIClient):
         request_id: str,
     ) -> dict[str, Any]:
         job = self._submit_task(query_name, variable_values, request_id)
-        # A client request ID is going to be different from
-        # a server-generated one.
-        Logging.info(f"Server created the job {job.request_id}", request_id)
-        while job.status in [JobStatus.SUBMITTED.value, JobStatus.IN_PROGRESS.value]:
-            time.sleep(APIv2Client.STATUS_CHECK_DELAY)
+        try:
+            # A client request ID is going to be different from
+            # a server-generated one.
+            Logging.info(f"Server created the job {job.request_id}", request_id)
+            while job.status in [JobStatus.SUBMITTED.value, JobStatus.IN_PROGRESS.value]:
+                time.sleep(APIv2Client.STATUS_CHECK_DELAY)
+                Logging.info(
+                    f"Job ({job.type}, {job.request_id}), status = {job.status}",
+                    request_id
+                )
+                job = self._get_job_status(job.request_id)
+            job.raise_on_error()
             Logging.info(
-                f"Job ({job.type}, {job.request_id}), status = {job.status}",
+                f"Job ({job.type}, {job.request_id}) completed, status = {job.status}",
                 request_id
             )
-            job = self._get_job_status(job.request_id)
-        job.raise_on_error()
-        Logging.info(
-            f"Job ({job.type}, {job.request_id}) completed, status = {job.status}",
-            request_id
-        )
-        return job.result
+            return job.result
+        except KeyboardInterrupt:
+            count = self.kill(job.request_id)
+            raise InterruptedError(
+                f"Cancelled job {job.request_id} ({count} worker(s))."
+            )
 
     @override
     def kill(self, request_id: str) -> int:

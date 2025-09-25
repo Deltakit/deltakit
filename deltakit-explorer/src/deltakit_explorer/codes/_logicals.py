@@ -58,7 +58,7 @@ def get_str_logical_operators_from_tableau(
     - Guarantees the logical operators are independent,
     - Does NOT guarantee the logical operators are minimum-weight,
     - Does NOT guarantee for CSS codes that X logical operators are made purely of X gates
-    and Z logical operators are made purely purely of Z gates (this is suspected but
+    and Z logical operators are made purely of Z gates (this is suspected but
     wasn't decidedly shown).
 
     From Stack Exchange post:

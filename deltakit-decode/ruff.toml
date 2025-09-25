@@ -1,11 +1,11 @@
-# Linting configuration for deltakit_decode.
+# Linting configuration for deltakit_decode.
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
 
 [lint]
 ignore = [
-    "B008",    # Default argument evaluation with class instantiation.
+    "B008",    # Default argument evaluation with class instantiation.
     "B905",    # Missing `strict` argument to `zip`
     "E501",    # line length > 88 (fix later)
     "PLR2004", # magic values, especially in tests
@@ -17,11 +17,11 @@ fixable = ["ALL"]
 unfixable = []
 
 [lint.per-file-ignores]
-# For the moment, dynamic __all__ generation raises a lot of issues with 
+# For the moment, dynamic __all__ generation raises a lot of issues with
 # F401 enabled, so ignore it where it happens, in __init__.py files.
 "__init__.py" = ["F401"]
-# The DecoderManager class needs a global variable for optimisation purposes. The goal
-# is to avoid to have to deepcopy the DecoderManager instance each time a new batch of
-# shots is required when performing computation with a process pool. For the moment,
+# The DecoderManager class needs a global variable for optimisation purposes. The goal
+# is to avoid to have to deepcopy the DecoderManager instance each time a new batch of
+# shots is required when performing computation with a process pool. For the moment,
 # we ignore specifically this error for that file.
 "src/deltakit_decode/analysis/_decoder_manager.py" = ["PLW0603"]
