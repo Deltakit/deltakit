@@ -35,7 +35,7 @@ repos:
     rev: 1.8.6
     hooks:
     - id: bandit
-      args: [--skip, B101, --exclude, tools/]
+      args: [-c, pyproject.toml]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.24.1

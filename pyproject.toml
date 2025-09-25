@@ -145,7 +145,8 @@ filterwarnings = [
 skip = [".pixi", ".tox", ".venv"]
 
 [tool.bandit]
-exclude_dirs = ['.github', '.pixi', '.tox', '.venv', './tools/vale.py']
+# './tools/vale.py' is for `pixi run bandit`; 'tools/vale.py' is for pre-commit
+exclude_dirs = ['.github', '.pixi', '.tox', '.venv', './tools/vale.py', 'tools/vale.py']
 skips = ['B101', 'B311']  # B101 is just use of `assert`; 'B311' is use of random module
 
 [tool.typos.default.extend-words]

@@ -41,7 +41,7 @@ class TestGQLClient:
                 errors=[graphql.GraphQLError("some message")]
             )
         )
-        randint = random.randint(100000, 999999)  # nosec B311
+        randint = random.randint(100000, 999999)
         mocker.patch("deltakit_explorer._utils._utils.APP_NAME", f"deltakit-testplorer-{randint}")
 
         client = Client("http://localhost/", api_version=1)
@@ -55,7 +55,7 @@ class TestGQLClient:
             "gql.client.SyncClientSession.execute",
             side_effect=KeyboardInterrupt,
         )
-        randint = random.randint(100000, 999999)  # nosec B311
+        randint = random.randint(100000, 999999)
         mocker.patch(
             "deltakit_explorer._utils._utils.APP_NAME",
             f"deltakit-testplorer-{randint}"
