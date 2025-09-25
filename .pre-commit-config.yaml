@@ -2,7 +2,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: check-yaml
       - id: end-of-file-fixer
       - id: check-added-large-files
       - id: check-case-conflict
@@ -10,7 +9,6 @@ repos:
       - id: check-symlinks
       - id: check-yaml
       - id: debug-statements
-      - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: name-tests-test
         exclude: _.*\.py$
