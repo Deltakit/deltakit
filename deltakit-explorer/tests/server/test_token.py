@@ -4,7 +4,7 @@ import os
 import pytest
 import random
 from pathlib import Path
-from tests.helpers.utils import FakeResponse
+from tests.helpers._utils import FakeResponse
 from deltakit_explorer._api import _auth
 from deltakit_explorer._api._client import Client
 from deltakit_explorer._api._gql_client import GQLClient
