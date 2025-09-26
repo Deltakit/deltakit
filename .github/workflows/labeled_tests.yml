@@ -32,6 +32,7 @@ jobs:
           ALL_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
       - name: Validate labels
         run: |
+          echo "labels: ${{ steps.labels-to-json.outputs.all-labels }}"
           if [ "${{ steps.labels-to-json.outputs.all-labels }}" = "" ]; then
             echo "No labels found. Failing workflow."
             exit 1

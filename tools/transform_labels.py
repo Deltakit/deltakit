@@ -4,7 +4,7 @@ Transform labels to JSON compatible list to be used in GitHub actions with https
 import json
 import os
 
-DEFAULT_PACKAGES = ["deltakit-explorer", "deltakit-circuit", "deltakit-core", "deltakit-decode"]
+DEFAULT_PACKAGES = ["deltakit-explorer", "deltakit-circuit", "deltakit-core", "deltakit-decode", "dev"]
 
 
 def transform(labels_str: str) -> str:
@@ -15,7 +15,6 @@ def transform(labels_str: str) -> str:
 
 def main():
     all_labels = os.getenv("ALL_LABELS", "")
-
     with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
         f.write(f"JSON_LABELS_ALL={transform(all_labels)}\n")
 
