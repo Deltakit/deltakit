@@ -30,6 +30,11 @@ jobs:
           echo "JSON_LABELS_ALL: ${JSON_LABELS_ALL}"
         env:
           ALL_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+      - name: Validate labels
+        run: |
+          if [ "${{ needs.labels-to-json.outputs.all-labels }}" = "[]"]; then
+            echo "No labels found. Failing workflow."
+            exit 1
 
   pytest:
     needs: [labels-to-json]
