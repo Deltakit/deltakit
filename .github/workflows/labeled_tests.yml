@@ -35,6 +35,7 @@ jobs:
           if [ "${{ steps.labels-to-json.outputs.all-labels }}" = "" ]; then
             echo "No labels found. Failing workflow."
             exit 1
+          fi
 
   pytest:
     needs: [labels-to-json]
