@@ -386,7 +386,10 @@ class TestOrderedDecodingEdges:
         edges = OrderedDecodingEdges([DecodingEdge(0, 1), DecodingEdge(1, 2)])
         other_edges = OrderedDecodingEdges([DecodingEdge(1, 2)])
         other_edges.append(edges, mod_2_filter=False)
-        ref = OrderedDecodingEdges([DecodingEdge(1, 2), DecodingEdge(0, 1), DecodingEdge(1, 2)], mod_2_filter=False)
+        ref = OrderedDecodingEdges(
+            [DecodingEdge(1, 2), DecodingEdge(0, 1), DecodingEdge(1, 2)],
+            mod_2_filter=False,
+        )
         assert other_edges == ref
 
     def test_append_ordered_decoding_edges_applies_mod_2_filter(self):
@@ -417,7 +420,10 @@ class TestOrderedDecodingEdges:
         other_edges = OrderedDecodingEdges([DecodingEdge(0, 1), DecodingEdge(1, 2)])
         edges = OrderedDecodingEdges([DecodingEdge(1, 2)])
         edges = edges + other_edges
-        ref = OrderedDecodingEdges([DecodingEdge(1, 2), DecodingEdge(0, 1), DecodingEdge(1, 2)], mod_2_filter=False)
+        ref = OrderedDecodingEdges(
+            [DecodingEdge(1, 2), DecodingEdge(0, 1), DecodingEdge(1, 2)],
+            mod_2_filter=False,
+        )
         assert edges == ref
 
 

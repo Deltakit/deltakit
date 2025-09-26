@@ -12,7 +12,7 @@ from deltakit_explorer._utils import _utils as utils
 
 
 def test_set_token(mocker):
-    randint = random.randint(100000, 999999)  # nosec B311
+    randint = random.randint(100000, 999999)
     mocker.patch("deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}")
     token = "2134"  # nosec B105
     _auth.set_token(token)
@@ -20,7 +20,7 @@ def test_set_token(mocker):
 
 
 def test_if_no_token_raises(mocker):
-    randint = random.randint(100000, 999999)  # nosec B311
+    randint = random.randint(100000, 999999)
     mocker.patch("deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}")
     utils.override_persisted_variables({}, utils.get_config_file_path())
     os.environ.pop(_auth.TOKEN_VARIABLE)

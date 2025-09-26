@@ -17,3 +17,7 @@ deltakit-decode:
 documentation:
   - changed-files:
       - any-glob-to-any-file: docs/**
+
+dev:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/**', 'tools/**']

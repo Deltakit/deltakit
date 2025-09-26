@@ -15,11 +15,9 @@ def transform(labels_str: str) -> str:
 
 def main():
     all_labels = os.getenv("ALL_LABELS", "")
-    new_labels = os.getenv("NEW_LABELS", "")
 
     with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
         f.write(f"JSON_LABELS_ALL={transform(all_labels)}\n")
-        f.write(f"JSON_LABELS_NEW={transform(new_labels)}\n")
 
 if __name__ == "__main__":
     main()

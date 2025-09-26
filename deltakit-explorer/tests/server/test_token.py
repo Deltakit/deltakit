@@ -4,7 +4,7 @@ import os
 import pytest
 import random
 from pathlib import Path
-from tests.helpers.utils import FakeResponse
+from tests.helpers._utils import FakeResponse
 from deltakit_explorer._api import _auth
 from deltakit_explorer._api._client import Client
 from deltakit_explorer._api._gql_client import GQLClient
@@ -43,7 +43,7 @@ class TestGQLClientTokenManipulations:
             "deltakit_explorer._api._client.Client.get_instance",
             return_value=client,
         )
-        randint = random.randint(1000, 9999)  # nosec B311
+        randint = random.randint(1000, 9999)
         token = f"abc-{randint}"
         Client.set_token(token, validate=False)
         assert _auth.get_token() == token
@@ -56,7 +56,7 @@ class TestGQLClientTokenManipulations:
             return_value=client,
         )
         Path.unlink(utils.get_config_file_path())
-        randint = random.randint(1000, 9999)  # nosec B311
+        randint = random.randint(1000, 9999)
         token = f"abc-{randint}"
         GQLClient("http://localhost").set_token(token, validate=False)
         assert _auth.get_token() == token
@@ -69,7 +69,7 @@ class TestGQLClientTokenManipulations:
         )
         mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(404))
         Path.unlink(utils.get_config_file_path())
-        randint = random.randint(1000, 9999)  # nosec B311
+        randint = random.randint(1000, 9999)
         token = f"abc-{randint}"
         Client.set_token(token, validate=True)
         assert _auth.get_token() == token
@@ -82,7 +82,7 @@ class TestGQLClientTokenManipulations:
         )
         mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(403))
         Path.unlink(utils.get_config_file_path())
-        randint = random.randint(1000, 9999)  # nosec B311
+        randint = random.randint(1000, 9999)
         token = f"abc-{randint}"
         with pytest.raises(ServerException):
             Client.set_token(token, validate=True)

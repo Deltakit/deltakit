@@ -42,7 +42,7 @@ def test_pauli_noise_channels_string_matches_expected_string(
 def test_channel_generator_from_prob_raises_error_with_wrong_args(
     noise_channel, bad_arguments
 ):
-    # The ignore on the following line is needed because the exception raised in each
+    # The ignore on the following line is needed because the exception raised in each
     # test cases may be different, and Exception is the only common parent class of all
     # of them.
     with pytest.raises(Exception):  # noqa: B017

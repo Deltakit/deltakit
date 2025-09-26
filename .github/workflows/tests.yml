@@ -38,7 +38,7 @@ jobs:
       - name: Install ${{ matrix.package }} with test dependencies
         run: |
           # this currently needs to install all base dependencies declared in pyproject.toml
-          pip install ".[tests]" ./deltakit-core ./deltakit-circuit ./deltakit-decode ./deltakit-explorer 
+          pip install ".[tests]" ./deltakit-core ./deltakit-circuit ./deltakit-decode ./deltakit-explorer
 
       - name: Run ${{ matrix.package }} tests
         run: |

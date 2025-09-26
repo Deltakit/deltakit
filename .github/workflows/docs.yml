@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pixi install
-      
+
       - name: Build all wheels and create zip file for docs build
         run: |
           pixi run build-all-wheels-zip-docs

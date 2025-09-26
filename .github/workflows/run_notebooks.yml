@@ -7,7 +7,7 @@ jobs:
   run-notebooks:
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
+      matrix:
         notebook: [
           "demo/4. advanced demo.ipynb",
           "google_qmem_experiment/decode.ipynb",

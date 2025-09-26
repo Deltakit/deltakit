@@ -32,8 +32,9 @@ def b8_to_syndromes(
     for offset in range(0, len(b8_byte_arr), bytes_per_shot):
         yield OrderedSyndrome.from_bitstring(
             np.unpackbits(
-                np.frombuffer(b8_byte_arr[offset : offset + bytes_per_shot],
-                              dtype=np.uint8),
+                np.frombuffer(
+                    b8_byte_arr[offset : offset + bytes_per_shot], dtype=np.uint8
+                ),
                 bitorder="little",
             ).tolist()
         )
@@ -51,8 +52,9 @@ def b8_to_measurements(b8_input: Path, measurement_num: int) -> Iterator[Bitstri
     for offset in range(0, len(b8_byte_arr), bytes_per_shot):
         yield Bitstring.from_bits(
             np.unpackbits(
-                np.frombuffer(b8_byte_arr[offset : offset + bytes_per_shot],
-                              dtype=np.uint8),
+                np.frombuffer(
+                    b8_byte_arr[offset : offset + bytes_per_shot], dtype=np.uint8
+                ),
                 bitorder="little",
             ).tolist()
         )
@@ -72,8 +74,9 @@ def b8_to_logical_flip(
     for offset in range(0, len(b8_byte_arr), bytes_per_shot):
         yield tuple(
             np.unpackbits(
-                np.frombuffer(b8_byte_arr[offset : offset + bytes_per_shot],
-                              dtype=np.uint8),
+                np.frombuffer(
+                    b8_byte_arr[offset : offset + bytes_per_shot], dtype=np.uint8
+                ),
                 bitorder="little",
             )[:num_logicals].tolist(),
         )
