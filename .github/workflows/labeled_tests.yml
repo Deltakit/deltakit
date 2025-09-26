@@ -25,9 +25,7 @@ jobs:
           python-version: "3.10"
       - id: json_labels
         run: |
-          echo "ALL_LABELS: ${ALL_LABELS}"
           python tools/transform_labels.py
-          echo "JSON_LABELS_ALL: ${JSON_LABELS_ALL}"
         env:
           ALL_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
 

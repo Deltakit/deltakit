@@ -1,4 +1,4 @@
-# Deltakit (component `deltakit-circuit`)
+# Deltakit (component `deltakit-circuit`) 
 
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
