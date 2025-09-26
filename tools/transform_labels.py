@@ -17,7 +17,7 @@ def transform(labels_str: str) -> str:
 
 def main():
     all_labels = os.getenv("ALL_LABELS", "")
-    
+
     with open(os.getenv("GITHUB_OUTPUT"), "a") as f:
         f.write(f"JSON_LABELS_ALL={transform(all_labels)}\n")
 
