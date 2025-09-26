@@ -30,13 +30,6 @@ jobs:
           echo "JSON_LABELS_ALL: ${JSON_LABELS_ALL}"
         env:
           ALL_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
-      # - name: Validate labels
-      #   run: |
-      #     echo "labels: ${{ steps.labels-to-json.outputs.all-labels }}"
-      #     if [ "${{ steps.labels-to-json.outputs.all-labels }}" = "" ]; then
-      #       echo "No labels found. Failing workflow."
-      #       exit 1
-      #     fi
 
   pytest:
     needs: [labels-to-json]
@@ -68,5 +61,4 @@ jobs:
         run: pixi add python=${{ matrix.python-version.version }}
 
       - name: Run ${{ matrix.package }} tests
-        if: contains(needs.labels-to-json.outputs.all-labels, matrix.package)
         run: pixi run -e ${{ matrix.package }}-tests-py${{ matrix.python-version.label }} tests
