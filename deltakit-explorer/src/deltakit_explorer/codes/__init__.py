@@ -15,6 +15,7 @@ from deltakit_explorer.codes._planar_code._unrotated_planar_code import \
 from deltakit_explorer.codes._planar_code._unrotated_toric_code import \
     UnrotatedToricCode
 from deltakit_explorer.codes._repetition_code import RepetitionCode
+from deltakit_explorer.codes._schedules._schedule_order import ScheduleOrder
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]

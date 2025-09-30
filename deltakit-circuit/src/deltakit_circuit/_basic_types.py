@@ -9,7 +9,7 @@ from __future__ import annotations
 from functools import cached_property
 from typing import NamedTuple, Union
 
-from deltakit_circuit import Coordinate
+from deltakit_circuit._qubit_identifiers import Coordinate
 from deltakit_circuit.gates import CX, CY, CZ, PauliBasis
 
 PauliBases = tuple[PauliBasis, ...]

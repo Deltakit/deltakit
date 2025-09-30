@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     import stim
 from deltakit_explorer._api._api_client import APIClient, APIEndpoints
 from deltakit_explorer._api._auth import (get_token,
+                                          https_verification_disabled,
                                           set_token)
 from deltakit_explorer._utils._logging import Logging
 from deltakit_explorer.enums._api_enums import DataFormat
@@ -117,6 +118,7 @@ class APIv2Client(APIClient):
             timeout=self.request_timeout,
             headers=headers,
             json=payload,
+            verify=not https_verification_disabled(),
         )
         if resp.ok:
             return Job(**resp.json())
@@ -131,6 +133,7 @@ class APIv2Client(APIClient):
             timeout=self.request_timeout,
             headers=headers,
             params={"request_id": request_id},
+            verify=not https_verification_disabled(),
         )
         if resp.status_code == 404:
             raise KeyError(f"Request {request_id} not found.")

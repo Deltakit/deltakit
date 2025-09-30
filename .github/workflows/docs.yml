@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pixi install
-      
+
       - name: Build all wheels and create zip file for docs build
         run: |
           pixi run build-all-wheels-zip-docs
@@ -35,3 +35,5 @@ jobs:
       - name: Build documentation
         run: |
           pixi run build_docs
+        env:
+          DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}

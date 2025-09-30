@@ -2,14 +2,14 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: check-yaml
-      - id: end-of-file-fixer
       - id: check-added-large-files
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-symlinks
       - id: check-yaml
+      - id: check-toml
       - id: debug-statements
+      - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: name-tests-test
@@ -26,13 +26,6 @@ repos:
       # Run the formatter.
       # - id: ruff-format
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.0
-    hooks:
-      - id: mypy
-        args:
-          - --config-file=mypy.ini
-
   - repo: https://github.com/crate-ci/typos
     rev: v1.34.0
     hooks:
@@ -42,7 +35,7 @@ repos:
     rev: 1.8.6
     hooks:
     - id: bandit
-      args: [--skip, B101, --exclude, tools/]
+      args: [-c, pyproject.toml]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.24.1
@@ -55,9 +48,3 @@ repos:
     rev: v1.7.7
     hooks:
       - id: actionlint
-
-  - repo: https://github.com/pycqa/isort
-    rev: 6.0.1
-    hooks:
-      - id: isort
-        name: isort (python)
