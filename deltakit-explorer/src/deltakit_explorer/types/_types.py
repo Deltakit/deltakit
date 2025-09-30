@@ -895,8 +895,8 @@ class DecodingResult:
         self,
         fails: int,
         shots: int,
-        times: list[float],
-        counts: list[int],
+        times: list[float] | None = None,
+        counts: list[int] | None = None,
         predictions_format: DataFormat = DataFormat.F01,
         predictionsFile: dict[str, str | None] | None = None,
     ):
@@ -912,6 +912,10 @@ class DecodingResult:
         """
         self.fails = fails
         self.shots = shots
+        if times is None:
+            times = []
+        if counts is None:
+            counts = [shots]
         self.times = times
         self.counts = counts
         self.predictions_format = predictions_format
@@ -930,12 +934,16 @@ class DecodingResult:
 
     def get_logical_error_probability(self) -> float:
         """Logical error probability, fails / shots."""
+        if self.shots <= 0:
+            return float("inf")
         return self.fails / self.shots
 
     def get_standard_deviation(self) -> float:
         """
         Return standard deviation of result
-        for a given number of shots and error rate."""
+        for a given number of shots and decoder fails."""
+        if self.shots <= 0:
+            return float("inf")
         hits = self.shots - self.fails
         return (self.fails * hits / self.shots ** 3) ** .5
 
@@ -985,10 +993,14 @@ class DecodingResult:
 
     def __str__(self) -> str:
         return (
-            f"DecodingResult(shots={self.shots},"
-            f"fails={self.fails},counts={self.counts},"
-            f"self.times={self.times})"
+            f"DecodingResult(shots={self.shots}, "
+            f"fails={self.fails}, "
+            f"LEP={self.get_logical_error_probability():.5f}"
+            f" ± {self.get_standard_deviation():.5f})"
         )
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 @dataclass

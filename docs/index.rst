@@ -66,7 +66,6 @@ To get started with Deltakit, follow these steps:
    Home <self>
    setup
    guide/getting_started
-   guide/authentication
    examples/index
 
 .. toctree::
