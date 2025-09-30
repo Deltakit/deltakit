@@ -138,7 +138,7 @@ def graph_to_json(
 
     If full flag is True, we additionally serialize:
 
-    - detector_records: dict contiaining detector metadata
+    - detector_records: dict containing detector metadata
     - edge_record: dict containing edge metadata
 
     Parameters
