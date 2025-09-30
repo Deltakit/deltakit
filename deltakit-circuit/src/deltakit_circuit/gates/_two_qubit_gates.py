@@ -74,7 +74,7 @@ class CY(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]])
     stim_string: ClassVar[str] = "CY"
 
 
-class CZ(  # type: ignore[misc]
+class CZ(
     ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]],
     SymmetricTwoQubitGate,
 ):
@@ -346,7 +346,7 @@ class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
     stim_string: ClassVar[str] = "SQRT_ZZ_DAG"
 
 
-class XCX(  # type: ignore[misc]
+class XCX(
     ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]
 ):
     """The X-controlled X gate. First qubit is the control, second qubit is
@@ -476,7 +476,7 @@ class YCX(ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "YCX"
 
 
-class YCY(  # type: ignore[misc]
+class YCY(
     ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]
 ):
     """The Y-controlled Y gate. First qubit is the control, second qubit is
@@ -575,7 +575,7 @@ class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "CXSWAP"
 
 
-class CZSWAP(  # type: ignore[misc]
+class CZSWAP(
     SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]
 ):
     """A combination CZ-and-SWAP gate. This gate is kak-equivalent

@@ -39,7 +39,7 @@ class CoordinateOffset(tuple):  # noqa: PLW1641
     """Class to track the coordinate offset in a Detector Error Model."""
 
     def __new__(cls, offset: Iterable[float | int] = ()):
-        return super().__new__(cls, offset)  # type: ignore[arg-type]
+        return super().__new__(cls, offset)
 
     def __add__(self, other: object) -> CoordinateOffset:
         if isinstance(other, collections.abc.Iterable):

@@ -440,7 +440,7 @@ class Bitstring:
 
     def __getitem__(self, index):
         if isinstance(index, int):
-            return (self._bits >> index) & 1  # type: ignore[return-value]
+            return (self._bits >> index) & 1
         if isinstance(index, slice):
             start, stop, _ = index.indices(len(self))
             mask = (1 << (stop - start)) - 1
@@ -564,7 +564,7 @@ class FixedWidthBitstring(Bitstring):
 
     def __getitem__(self, index):
         if isinstance(index, int):
-            return (self._bits >> index) & 1  # type: ignore[return-value]
+            return (self._bits >> index) & 1
         if isinstance(index, slice):
             start, stop, _ = index.indices(len(self))
             mask = (1 << (stop - start)) - 1

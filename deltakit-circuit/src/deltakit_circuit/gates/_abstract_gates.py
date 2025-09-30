@@ -381,9 +381,9 @@ class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):
         self, id_mapping: Mapping[T, U]
     ):
         if (new_id1 := id_mapping.get(self._operand1.unique_identifier)) is not None:
-            self._operand1 = Qubit(new_id1)  # type: ignore[arg-type]
+            self._operand1 = Qubit(new_id1)
         if (new_id2 := id_mapping.get(self._operand2.unique_identifier)) is not None:
-            self._operand2 = Qubit(new_id2)  # type: ignore[arg-type]
+            self._operand2 = Qubit(new_id2)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and set(self.qubits) == set(

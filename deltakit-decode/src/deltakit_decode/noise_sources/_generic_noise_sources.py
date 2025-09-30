@@ -314,7 +314,7 @@ class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
             sizes[index_smallest_bucket] += size
             gens[index_smallest_bucket] = chain(gens[index_smallest_bucket], gen)
 
-        return tuple(zip(gens, sizes))  # type: ignore
+        return tuple(zip(gens, sizes))
 
     @staticmethod
     def _lazy_product(
