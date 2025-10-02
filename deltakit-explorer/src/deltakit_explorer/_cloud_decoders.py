@@ -83,7 +83,7 @@ class _CloudDecoder:
             raise ValueError(
                 "Circuit must have at least one observable. "
                 "Please make sure your circuit has observables or provide "
-                "`num_observables` when instantiating an `LCDecoder`."
+                f"`num_observables` when instantiating an `{self.__class__.__name__}`."
             )
         observables = types.ObservableFlips(
             np.zeros((num_shots, self.num_observables), dtype=syndrome_batch.dtype)

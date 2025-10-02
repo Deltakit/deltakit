@@ -47,8 +47,7 @@ with the "Desktop development for C++" workload.
 ```bash
 # remove conflicting dependency:
 !pip uninstall datasets -y
-# upload you .whl files to the /content folder
-# at Google Colab, and then install deltakit:
+# and then install deltakit:
 !pip install deltakit
 ```
 :::

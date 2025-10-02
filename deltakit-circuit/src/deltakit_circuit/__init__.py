@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._annotations._observable import Observable
 from deltakit_circuit._annotations._shift_coordinates import ShiftCoordinates
+from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._circuit import Circuit, Layer
 from deltakit_circuit._detector_manipulation import trim_detectors
 from deltakit_circuit._gate_layer import GateLayer

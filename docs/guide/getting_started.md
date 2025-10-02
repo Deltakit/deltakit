@@ -248,3 +248,16 @@ from deltakit.explorer.analysis import calculate_lambda_and_lambda_stddev
 l, _ = calculate_lambda_and_lambda_stddev(distances, leps, leps_std)
 l
 ```
+
+Now that you have an overview of the four steps of QEC experimentation with Deltakit,
+please continue with the following guides.
+
+```{toctree}
+:maxdepth: 1
+
+authentication
+circuit_generation
+adding_noise
+simulation
+decoding
+analysis

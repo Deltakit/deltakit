@@ -58,5 +58,4 @@ jobs:
         run: pixi add python=${{ matrix.python-version.version }}
 
       - name: Run ${{ matrix.package }} tests
-        if: contains(needs.labels-to-json.outputs.all-labels, matrix.package)
         run: pixi run -e ${{ matrix.package }}-tests-py${{ matrix.python-version.label }} tests

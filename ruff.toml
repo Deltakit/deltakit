@@ -58,7 +58,7 @@ indent-width = 4
 target-version = "py310"
 
 [lint]
-select = ["A", "B", "E", "F", "N", "PL", "RUF100", "W"]
+select = ["A", "B", "E", "F", "N", "PL", "RUF100", "W", "NPY"]
 
 # Specific per-file ignores
 [lint.per-file-ignores]

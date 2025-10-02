@@ -11,6 +11,8 @@ def transform(labels_str: str) -> str:
     if not labels_str.strip():
         return json.dumps(DEFAULT_PACKAGES)
     labels = [label.strip() for label in labels_str.split(",") if label.strip() in DEFAULT_PACKAGES]
+    if not labels:
+        return json.dumps(DEFAULT_PACKAGES)
     return json.dumps(labels)
 
 def main():

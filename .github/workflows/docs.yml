@@ -33,3 +33,5 @@ jobs:
       - name: Build documentation
         run: |
           pixi run build_docs
+        env:
+          DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}

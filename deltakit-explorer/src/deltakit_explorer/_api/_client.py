@@ -30,6 +30,7 @@ from deltakit_explorer.types._types import (BinaryDataType, Decoder,
                                             PhysicalNoiseModel,
                                             QubitCoordinateToDetectorMapping,
                                             SI1000NoiseModel)
+from deltakit_explorer.qpu._noise import SI1000Noise
 
 
 # pylint: disable=too-many-locals,unsubscriptable-object
@@ -101,7 +102,7 @@ class Client:
     def add_noise(
         self,
         stim_circuit: str | stim.Circuit,
-        noise_model: PhysicalNoiseModel | SI1000NoiseModel,
+        noise_model: PhysicalNoiseModel | SI1000NoiseModel | SI1000Noise,
     ) -> str:
         """Given a stim circuit, changes all noise in the circuit to noise
         defined by user-given parameters. If the circuit is noiseless,
@@ -110,7 +111,7 @@ class Client:
         Args:
             stim_circuit: (str | stim.Circuit):
                 Noiseless circuit.
-            noise_model (PhysicalNoiseModel | SI1000NoiseModel):
+            noise_model (PhysicalNoiseModel | SI1000NoiseModel | SI1000Noise):
                 Noise model to apply to a circuit.
 
         Returns:
@@ -136,6 +137,8 @@ class Client:
         """
         query_id = Logging.info_and_generate_uid(locals())
         try:
+            if isinstance(noise_model, SI1000Noise):
+                noise_model = SI1000NoiseModel(p=noise_model.p, p_l=noise_model.pL)
             return self._api.add_noise(stim_circuit, noise_model, query_id)
         except Exception as ex:
             Logging.error(ex, query_id)
