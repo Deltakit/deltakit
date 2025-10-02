@@ -1,4 +1,6 @@
 name: Static Code Analysis
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

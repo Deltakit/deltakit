@@ -2,26 +2,37 @@
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
+include = ["src/deltakit_decode/**/*.py", "tests/**/*.py"]
 
 [lint]
 ignore = [
+    # deltakit_decode does not follow ruff format, and so long lines exist. This should 
+    # be fixed eventually, but is not urgent. It might be solved very quickly if we
+    # adopt ruff format.
+    # This ignore is purely stylistic, and so should not hide potential bugs.
+    "E501",
+    # Magic constants are not an urgent issue. This check is ignored for the moment.
+    "PLR2004",
+    # Too many arguments in function.
+    # Most of the functions/methods flagged by this check are fine (maximum is 8
+    # parameters instead of the maximum allowed of 5). This rule might be removed by
+    # directly changing the threshold of "maximum number of allowed parameters for one
+    # function".
+    # This check cannot "hide" potential bugs.
+    "PLR0913",
+    # Use of `zip` without the `strict` argument.
+    # For the moment we keep this ignore as technical debt. It will be properly removed
+    # in a future PR.
     "B008",    # Default argument evaluation with class instantiation.
     "B905",    # Missing `strict` argument to `zip`
-    "E501",    # line length > 88 (fix later)
-    "PLR2004", # magic values, especially in tests
-    "PLR0913",
 ]
-
-# Allow fix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
 
 [lint.per-file-ignores]
 # For the moment, dynamic __all__ generation raises a lot of issues with
 # F401 enabled, so ignore it where it happens, in __init__.py files.
-"__init__.py" = ["F401"]
-# The DecoderManager class needs a global variable for optimisation purposes. The goal
-# is to avoid to have to deepcopy the DecoderManager instance each time a new batch of
-# shots is required when performing computation with a process pool. For the moment,
+"**/__init__.py" = ["F401"]
+# The DecoderManager class needs a global variable for optimisation purposes. The goal
+# is to avoid to have to deepcopy the DecoderManager instance each time a new batch of
+# shots is required when performing computation with a process pool. For the moment,
 # we ignore specifically this error for that file.
 "src/deltakit_decode/analysis/_decoder_manager.py" = ["PLW0603"]

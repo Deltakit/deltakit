@@ -1,5 +1,7 @@
 ---
 name: Build, test, and publish stable wheels on PyPI
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

@@ -1,5 +1,7 @@
 ---
 name: Build docs
+permissions:
+  contents: read
 
 on:
   pull_request:

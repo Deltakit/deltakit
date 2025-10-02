@@ -700,11 +700,13 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
 
     def __init__(self,
                  erasure_probability: float,
-                 pauli_noise_model: IndependentMatchingNoise = NoMatchingNoise(),
+                 pauli_noise_model: IndependentMatchingNoise | None = None,
                  edge_filter: Optional[EdgeFilterT] = None):
         self.erasure_probability = erasure_probability
         self.edge_filter = edge_filter or IndependentMatchingNoise.empty_filter
-        self.pauli_noise_model = pauli_noise_model
+        self.pauli_noise_model = (
+            pauli_noise_model if pauli_noise_model is not None else NoMatchingNoise()
+        )
 
     def error_generator(
         self, code_data: HyperMultiGraph, seed: Optional[int] = None
