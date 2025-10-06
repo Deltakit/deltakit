@@ -11,7 +11,7 @@ import numpy.typing as npt
 import pandas
 
 from deltakit_explorer.analysis._analysis import (
-    LEPPRResults,
+    LogicalErrorRatePerRoundResults,
     LambdaResults,
     calculate_lambda_and_lambda_stddev,
     compute_logical_error_per_round,
@@ -129,7 +129,7 @@ def _compute_lambda_from_results(
 
 def _compute_logical_error_rate_per_round_from_results(
     num_rounds: Sequence[int], data: pandas.DataFrame
-) -> tuple[LEPPRResults, LEPPRReporter]:
+) -> tuple[LogicalErrorRatePerRoundResults, LEPPRReporter]:
     num_fails: list[int] = []
     num_shots: list[int] = []
     for nrounds in num_rounds:
