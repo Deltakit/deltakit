@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import ClassVar, Mapping, Self, TypeVar
+from typing import ClassVar, Generic, Mapping, Self, TypeVar
 
 import numpy
 import numpy.typing as npt
@@ -10,7 +10,7 @@ import numpy.typing as npt
 Computation = TypeVar("Computation")
 
 
-class NoiseInterface(ABC):
+class NoiseInterface(ABC, Generic[Computation]):
     """A minimal interface around a noise model to perform error-budgeting.
 
     Args:

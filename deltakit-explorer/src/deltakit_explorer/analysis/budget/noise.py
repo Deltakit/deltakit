@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import asdict
 from numbers import Number
 from typing import ClassVar, cast
 
+from deltakit_circuit._noise_factory import NoiseProfile
 import numpy
 import numpy.typing as npt
 from deltakit_circuit import Circuit, NoiseContext, measurement_noise_profile
@@ -19,7 +20,6 @@ from deltakit_circuit.gates._measurement_gates import MEASUREMENT_GATES
 from deltakit_circuit.gates._one_qubit_gates import ONE_QUBIT_GATES, I
 from deltakit_circuit.gates._reset_gates import RESET_GATES
 from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
-from deltakit_circuit.noise_channels._abstract_noise_channels import NoiseChannel
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1, Depolarise2
 from typing_extensions import override
 
@@ -37,8 +37,8 @@ def physical_noise_model_to_noise_parameters_and_native_gate_set_and_times(
 ) -> tuple[NoiseParameters, NativeGateSetAndTimes]:
     idle_noise = _idle_noise_from_t1_t2(noise_data.t_1, noise_data.t_2)
 
-    def _gate_noise(noise_context: NoiseContext) -> list[NoiseChannel]:
-        noise_ops: list[NoiseChannel] = []
+    def _gate_noise(noise_context: NoiseContext) -> list[Depolarise1 | Depolarise2]:
+        noise_ops: list[Depolarise1 | Depolarise2] = []
         for gate in noise_context.gate_layer.gates:
             qubits = gate.qubits
             if len(qubits) == 2:
@@ -51,13 +51,13 @@ def physical_noise_model_to_noise_parameters_and_native_gate_set_and_times(
                 )
         return noise_ops
 
-    gate_noise = [_gate_noise]
-    reset_noise: list[Callable[[NoiseContext], list[NoiseChannel]]] = [
+    gate_noise: list[NoiseProfile] = [_gate_noise]
+    reset_noise: list[NoiseProfile] = [
         lambda noise_context: Depolarise1.generator_from_prob(noise_data.p_reset_error)(
             noise_context.gate_layer_qubits(OneQubitResetGate)
         )
     ]
-    measurement_noise: list[Callable[[NoiseContext], list[NoiseChannel]]] = [
+    measurement_noise: list[NoiseProfile] = [
         lambda noise_context: Depolarise1.generator_from_prob(
             noise_data.p_meas_qubit_error
         )(noise_context.gate_layer_qubits(OneQubitMeasurementGate))
@@ -81,7 +81,7 @@ def physical_noise_model_to_noise_parameters_and_native_gate_set_and_times(
     return noise_parameters, native_gates
 
 
-class DeltakitNoise(NoiseInterface):
+class DeltakitNoise(NoiseInterface[Circuit]):
     num_noise_parameters: ClassVar[int] = 11
     parameter_names: ClassVar[tuple[str, ...]] = (
         "T1",
