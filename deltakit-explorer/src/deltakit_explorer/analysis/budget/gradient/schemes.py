@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from enum import Enum, auto
 from math import isclose, sqrt
 
 import numpy
@@ -142,13 +143,19 @@ class ThreePointBackwardDifference(NumericalScheme):
         super().__init__("backward", [-2, -1, 0], [1 / 2, -2, 3 / 2], 1)
 
 
-class FirstOrderDerivativeCentralDifference(NumericalScheme):
-    """A generic central scheme suitable for iterative step-size improvement in
-    numerical gradient estimation.
+class SchemeDirection(Enum):
+    CENTRAL = auto()
+    FORWARD = auto()
+    BACKWARD = auto()
+
+
+class FirstOrderDerivativeDifference(NumericalScheme):
+    """A generic scheme suitable for iterative step-size improvement in numerical
+    gradient estimation.
 
     For some functions, the step size ``h`` that should be used to approximate the
-    gradient is not known in advance. This class implements a centered numerical scheme
-    that is using successive powers of ``h`` as step sizes.
+    gradient is not known in advance. This class implements a numerical scheme that is
+    using successive powers of ``c`` to weight the step size.
 
     See the documentation of ``scipy.differentiate.derivative`` for a more in-depth
     overview:
@@ -174,28 +181,50 @@ class FirstOrderDerivativeCentralDifference(NumericalScheme):
             degenerate and likely to be of lower order.
     """
 
-    def __init__(self, approximation_order: int, c: float = 2):
+    def __init__(
+        self,
+        approximation_order: int,
+        c: float = 2,
+        direction: SchemeDirection = SchemeDirection.CENTRAL,
+    ):
         if isclose(c, 1):
             raise RuntimeError("Cannot have a scaling factor too close to 1.")
         name = f"central_{approximation_order}_1st_order_derivative"
         n = (approximation_order + 1) // 2
         # Note: strongly inspired from
         # https://github.com/scipy/scipy/blob/0cf8e9541b1a2457992bf4ec2c0c669da373e497/scipy/differentiate/_differentiate.py#L592
-        indices = numpy.arange(-n, n + 1)
+        indices: npt.NDArray[numpy.int_]
+        factor: float
+        match direction:
+            case SchemeDirection.CENTRAL:
+                indices = numpy.arange(-n, n + 1)
+                factor = c
+            case SchemeDirection.FORWARD | SchemeDirection.BACKWARD:
+                # We compute everything for the forward scheme, inverting the weights at
+                # the end if the user wants a backward scheme.
+                indices = numpy.arange(2 * n + 1)
+                factor = numpy.sqrt(c)
+
         powers = numpy.abs(indices) - 1.0
         signs = numpy.sign(indices)
 
-        h = signs * c**powers
+        h = signs * factor**powers
         A = numpy.vander(h, increasing=True).T
         b = numpy.zeros(2 * n + 1)
         b[1] = 1
         weights = numpy.linalg.solve(A, b)
 
-        # Enforce identities to improve accuracy
-        # 1. The central element is not used in a central difference scheme.
-        weights = numpy.delete(weights, [n], axis=0)
-        h = numpy.delete(h, [n], axis=0)
-        # 2. The weights of non-central elements are symmetric.
-        for i in range(n):
-            weights[-i - 1] = -weights[i]
+        # Enforce identities to improve accuracy if a central scheme is required.
+        if direction == SchemeDirection.CENTRAL:
+            # 1. The central element is not used in a central difference scheme.
+            weights = numpy.delete(weights, [n], axis=0)
+            h = numpy.delete(h, [n], axis=0)
+            # 2. The weights of non-central elements are symmetric.
+            for i in range(n):
+                weights[-i - 1] = -weights[i]
+
+        # Invert the weights if a backward scheme is needed
+        if direction == SchemeDirection.BACKWARD:
+            h, weights = -h, -weights
+
         super().__init__(name, h.tolist(), weights.tolist(), 1)
