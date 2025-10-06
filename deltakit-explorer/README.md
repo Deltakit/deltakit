@@ -12,7 +12,7 @@
 [![Discussions][discussions-badge]][discussions-link]
 
 [docs-badge]: https://readthedocs.org/projects/deltakit/badge/?version=latest
-[docs-link]: https://deltakit.readthedocs.io/en/latest/
+[docs-link]: https://deltakit.readthedocs.io/
 
 [pypi-badge]: https://img.shields.io/pypi/v/deltakit.svg
 [pypi-link]: https://pypi.org/project/deltakit/

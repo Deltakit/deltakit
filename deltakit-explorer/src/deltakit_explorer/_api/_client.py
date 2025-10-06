@@ -528,7 +528,7 @@ class Client:
         trimmed_circuit, trimmed_dets = self.trim_circuit_and_detectors(
             stim_circuit=experiment.noisy_circuit,
             # detectors are computed above
-            detectors=experiment.detectors,  # type: ignore[arg-type]
+            detectors=experiment.detectors,
         )
         # get defect rates for trimmed circuit
         all_qubit_defect_rates = self.defect_rates(

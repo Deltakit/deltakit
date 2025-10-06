@@ -45,8 +45,12 @@ jobs:
         run: pixi run ruff format --check
         if: ${{ always() }}
 
-      - name: mypy
+      - name: mypy-all (checking packages individually)
         run: pixi run mypy-all
+        if: ${{ always() }}
+
+      - name: mypy (checking packages together)
+        run: pixi run mypy .
         if: ${{ always() }}
 
       - name: deptry

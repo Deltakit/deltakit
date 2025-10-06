@@ -39,25 +39,25 @@ To get started with Deltakit, follow these steps:
           :alt: Error-correcting codes
           :align: center
           :width: 250px
-          :target: https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-codes
+          :target: https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes
 
      - .. figure:: _static/images/qpu_noise.png
           :alt: QPU and noise analysis
           :align: center
           :width: 250px
-          :target: https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-qpu
+          :target: https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu
 
    * - .. figure:: _static/images/experiments.png
           :alt: Experiments
           :align: center
           :width: 250px
-          :target: https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer
+          :target: https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer
 
      - .. figure:: _static/images/decoders.png
           :alt: Decoders
           :align: center
           :width: 250px
-          :target: https://deltakit.readthedocs.io/en/latest/api.html#deltakit-decode
+          :target: https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode
 
 .. toctree::
    :maxdepth: 2

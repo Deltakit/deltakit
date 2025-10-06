@@ -26,6 +26,33 @@ repos:
       # Run the formatter.
       - id: ruff-format
 
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.17.0
+    hooks:
+      - id: mypy
+        args:
+          - --config-file=mypy.ini
+        exclude: 'tests|build|tools|conftest\.py$'
+        additional_dependencies:
+          - numpy
+          - matplotlib
+          - seaborn
+          - networkx
+          - plotly
+          - pandas
+          - tqdm
+          - requests
+          - gql
+          - graphql-core
+          - galois
+          - types-seaborn
+          - types-networkx
+          - pandas-stubs
+          - types-tqdm
+          - types-requests
+          - plotly-stubs
+          - scipy-stubs
+
   - repo: https://github.com/crate-ci/typos
     rev: v1.37.1
     hooks:

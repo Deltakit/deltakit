@@ -6,7 +6,7 @@ include = ["src/deltakit_decode/**/*.py", "tests/**/*.py"]
 
 [lint]
 ignore = [
-    # deltakit_decode does not follow ruff format, and so long lines exist. This should 
+    # deltakit_decode does not follow ruff format, and so long lines exist. This should
     # be fixed eventually, but is not urgent. It might be solved very quickly if we
     # adopt ruff format.
     # This ignore is purely stylistic, and so should not hide potential bugs.
