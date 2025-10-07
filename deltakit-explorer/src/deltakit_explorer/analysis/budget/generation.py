@@ -52,17 +52,6 @@ def _generate_surface_code_memory_decoder_manager(
     return StimDecoderManager(decoder_circuit, decoder, metadata=metadata)
 
 
-def _generate_surface_code_memory_decoder_manager_from_h_wrapper(
-    data: tuple[int, int, NoiseInterface, int, tuple[int, float]],
-) -> StimDecoderManager | None:
-    d, nr, nm, mh, (npi, h) = data
-    # Early exit if the provided noise parameters are invalid.
-    if not nm.is_variation_on_parameter_valid(npi, mh * h):
-        return None
-    noise_model = nm.variate_noise_parameter_by(npi, mh * h)
-    return _generate_surface_code_memory_decoder_manager(d, nr, noise_model)
-
-
 def _generate_surface_code_memory_decoder_manager_wrapper(
     data: tuple[int, int, NoiseInterface],
 ) -> StimDecoderManager | None:
