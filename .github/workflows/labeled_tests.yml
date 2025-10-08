@@ -49,8 +49,5 @@ jobs:
         with:
           pixi-version: v0.56.0
 
-      - name: Instruct pixi to use specified Python version
-        run: pixi add python=${{ matrix.python-version.version }}
-
       - name: Run ${{ matrix.package }} tests
         run: pixi run -e ${{ matrix.package }}-tests-py${{ matrix.python-version.label }} tests
