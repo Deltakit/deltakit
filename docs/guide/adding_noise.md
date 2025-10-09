@@ -14,7 +14,7 @@ kernelspec:
 
 # Adding Noise
 
-*Want to follow along? {download}`Download this notebook.<adding_noise.md>`*
+*Want to follow along? {jupyter-download-nb}`Download this notebook.<adding_noise>`*
 
 ## Motivation
 

@@ -1,6 +1,20 @@
+---
+jupytext:
+  formats: md:myst
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.17.2
+kernelspec:
+  name: python3
+  display_name: Python 3 (ipykernel)
+  language: python
+---
+
 # Authentication
 
-*Want to follow along? {download}`Download this notebook.<authentication.md>`*
+*Want to follow along? {jupyter-download-nb}`Download this notebook.<authentication>`*
 
 This document provides information on authentication aspects.
 When you install Deltakit, you install a family of Python packages.

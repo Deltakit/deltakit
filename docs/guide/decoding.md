@@ -14,7 +14,7 @@ kernelspec:
 
 # Decoding
 
-*Want to follow along? {download}`Download this notebook.<decoding.md>`*
+*Want to follow along? {jupyter-download-nb}`Download this notebook.<decoding>`*
 
 In this guide, you will learn how to run a decoder on measurement results from a QEC experiment. To do this, you'll need to follow three steps:
 

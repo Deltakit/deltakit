@@ -14,7 +14,7 @@ kernelspec:
 
 # Simulation
 
-*Want to follow along? {download}`Download this notebook.<simulation.md>`*
+*Want to follow along? {jupyter-download-nb}`Download this notebook.<simulation>`*
 
 ## 1. Simulation of Measurements
 
@@ -204,8 +204,9 @@ sampler = noisy_rplanar_qmem.as_stim_circuit().compile_detector_sampler(seed=133
 detectors, observables = sampler.sample(1000, separate_observables=True)
 # these objects can be passed to a cloud decoder or used to represent data in different formats
 dets, obs = types.DetectionEvents(detectors), types.ObservableFlips(observables)
-with open("dets_from_circuit_sampler.b8", "wb") as file:
-    file.write(dets.as_b8_bytes())
+# Uncomment the following to write to a file:
+# with open("dets_from_circuit_sampler.b8", "wb") as file:
+#     file.write(dets.as_b8_bytes())
 
 # sampling from a detector error model
 dem = noisy_rplanar_qmem.as_stim_circuit().detector_error_model()
@@ -213,6 +214,7 @@ dem_sampler = dem.compile_sampler(seed=1337)
 detectors, observables, _ = dem_sampler.sample(shots=1000)
 # these objects can be passed to a cloud decoder or used to represent data in different formats
 dets, obs = types.DetectionEvents(detectors), types.ObservableFlips(observables)
-with open("dets_from_dem_sampler.01", "w") as file:
-    file.write(dets.as_01_string())
+# Uncomment the following to write to a file:
+# with open("dets_from_dem_sampler.01", "w") as file:
+#     file.write(dets.as_01_string())
 ```

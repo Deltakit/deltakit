@@ -40,6 +40,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
     "sphinx_design",
+    "jupyter_sphinx",
 ]
 myst_enable_extensions = [
     "colon_fence",
