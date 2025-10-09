@@ -282,7 +282,7 @@ Such circuits produce additional information about the leakage state of qubits t
 To generate such circuits, please refer to the chapter
 [Adding Noise](./adding_noise.md).
 
-The `LCDecoder` supports leakage as an additional input, and uses it for logical error rate reduction.
+The `LCDecoder` supports leakage as an additional input, and uses it for logical error probability per round reduction.
 
 ```{code-cell} ipython3
 from deltakit.explorer.types import SI1000NoiseModel

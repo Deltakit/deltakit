@@ -23,7 +23,7 @@ from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 # This value determines the maximum number of samples to take from the circuit.
 # A higher number of shots will provide a more accurate value of the
-# logical error rate.
+# logical error probability per round.
 max_shots = 1e7
 
 # File name to save output data.
@@ -175,7 +175,7 @@ def experiment_decoder_manager(
     x_distance: int, z_distance: int, num_rounds: int, physical_error_rate: float
 ) -> StimDecoderManager:
     """This function will combine all previous functions to return a single value: the
-    logical error rate.
+    logical error probability per round.
 
     Parameters
     ----------
@@ -191,7 +191,7 @@ def experiment_decoder_manager(
     Returns
     -------
     float
-        The logical error rate for this code instance.
+        The logical error probability per round for this code instance.
 
     """
 
@@ -228,13 +228,13 @@ def experiment_decoder_manager(
 
 
 def plot_per_round_logical_error(data, colors, distance: int) -> None:
-    """Plot the logical error rate of a single distance value,
+    """Plot the logical error probability per round of a single distance value,
     with data taken from the results CSV.
 
     Parameters
     ----------
     distance : int
-        Which distance value to plot the logical error rate of.
+        Which distance value to plot the logical error probability per round of.
     """
     subframe = data[(data["Num Rounds"] == distance)].sort_values(by=["Physical Error"])
 
@@ -259,9 +259,13 @@ def test_qmem():
     pt1pct1_shots, pt1pct1_fails = experiment_decoder_manager(
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.001
     ).run_batch_shots(1e5)
-    print(f"Logical error rate with physical error 1%: {pct1_fails / pct1_shots}")
     print(
-        f"Logical error rate with physical error .1%: {pt1pct1_fails / pt1pct1_shots}"
+        "logical error probability per round with physical error 1%: "
+        f"{pct1_fails / pct1_shots}"
+    )
+    print(
+        "logical error probability per round with physical error .1%:"
+        f"{pt1pct1_fails / pt1pct1_shots}"
     )
 
     distances = [3, 5, 7, 9]
@@ -309,7 +313,7 @@ def test_qmem():
     plt.yticks([10 ** (-i / 3) for i in range(25)], fontsize=20)
 
     plt.xlabel("Physical error probability, $p$", fontsize=20)
-    plt.ylabel("Logical error rate (per round)", fontsize=20)
+    plt.ylabel("logical error probability per round", fontsize=20)
     plt.grid()
     plt.legend()
 

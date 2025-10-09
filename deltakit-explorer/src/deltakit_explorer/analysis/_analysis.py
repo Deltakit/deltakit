@@ -25,7 +25,7 @@ def get_exp_fit(
     npt.NDArray[np.float64],
 ]:
     """
-    Implement logical error rate fit as described in
+    Implement logical error probability per round fit as described in
     https://arxiv.org/pdf/2310.05900.pdf (p.40) and
     https://arxiv.org/pdf/2207.06431.pdf (p.21). The first round (`r=0`)
     data points are excluded as the error suppression is stronger there
