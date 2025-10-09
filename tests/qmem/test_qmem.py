@@ -260,11 +260,11 @@ def test_qmem():
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.001
     ).run_batch_shots(1e5)
     print(
-        "logical error probability per round with physical error 1%: "
+        "Logical error probability per round with physical error 1%: "
         f"{pct1_fails / pct1_shots}"
     )
     print(
-        "logical error probability per round with physical error .1%:"
+        "Logical error probability per round with physical error .1%:"
         f"{pt1pct1_fails / pt1pct1_shots}"
     )
 
@@ -313,7 +313,7 @@ def test_qmem():
     plt.yticks([10 ** (-i / 3) for i in range(25)], fontsize=20)
 
     plt.xlabel("Physical error probability, $p$", fontsize=20)
-    plt.ylabel("logical error probability per round", fontsize=20)
+    plt.ylabel("Logical error probability per round", fontsize=20)
     plt.grid()
     plt.legend()
 
