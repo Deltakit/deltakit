@@ -663,10 +663,7 @@ def calculate_lambda_and_lambda_stddev(
     if lambda_value < 1.5 and min(distances) < 5:
         warnings.warn(
             "Lambda estimation is unreliable at low code distances and low values of "
-            "lambda. Please use distance 5 as a minimum. See Fig. S15 of Supplementary "
-            "information of 'Quantum error correction below the surface code threshold'"
-            " (https://www.nature.com/articles/s41586-024-08449-y#Sec8) for more "
-            "information.",
+            "lambda. Please use distance 5 as a minimum.",
         )
 
     # Error analysis explanation.
