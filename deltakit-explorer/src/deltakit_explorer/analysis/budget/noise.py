@@ -197,8 +197,6 @@ class DeltakitNoise(NoiseInterface[Circuit]):
     @override
     @classmethod
     def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
-        if parameters.size != 11:
-            return f"Invalid number of parameters (got {parameters.size}, expected 11)."
         t1, t2 = parameters[0], parameters[1]
         if t2 > 2 * t1:
             return f"Expected t2 ({t2:.3g}) <= 2 * t1 (2 * {t1:.3g} = {2 * t1:.3g})."
@@ -269,8 +267,6 @@ class SimplerNoise(NoiseInterface):
     @override
     @classmethod
     def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
-        if parameters.size != 2:
-            return f"Invalid number of parameters (got {parameters.size}, expected 2)."
         for i in range(2):
             SimplerNoise._check_is_probability(
                 parameters[i], SimplerNoise.parameter_names[i]

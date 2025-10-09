@@ -44,6 +44,11 @@ class NoiseInterface(ABC, Generic[Computation]):
     def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
         """Check if the provided ``parameters`` are valid for the noise model
         represented by ``cls``."""
+        if parameters.size != cls.num_noise_parameters:
+            return (
+                f"Invalid number of parameters (got {parameters.size}, expected "
+                f"{cls.num_noise_parameters})."
+            )
         return None
 
     @property
