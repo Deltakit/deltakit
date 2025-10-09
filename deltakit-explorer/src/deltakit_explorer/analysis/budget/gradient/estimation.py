@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Mapping, Type
+from typing import Callable, Mapping, Type
 
 from deltakit_explorer.analysis.budget.reporters import (
     LambdaReciprocalDerivativeReporter,
@@ -132,6 +132,7 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     min_fails: int = 100,
     target_stddev: float = 1e-4,
     max_round_number: int = 1024,
+    next_round_number_func: Callable[[int], int] = lambda x: 4 * x,
 ) -> list[int]:
     """Compute the ideal rounds to use to estimate the LEP per round.
 
@@ -171,7 +172,7 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     nrounds, *_ = simulate_different_round_numbers_for_lep_per_round_estimation(
         simulator=generate_surface_code_memory_and_run,
         heuristic_logical_error_lower_bound=0.2,
-        next_round_number_func=lambda r: 4 * r,
+        next_round_number_func=next_round_number_func,
         initial_round_number=initial_round_number,
         maximum_round_number=max_round_number,
     )
