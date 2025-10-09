@@ -246,7 +246,7 @@ def get_lambda_reciprocal_gradient(
             initial_step=absolute_maximum_xi_steps[npi],
             callback=print,
         )
-        gradient[npi], errors[npi] = res.df, res.error
+        gradient[0, npi], errors[0, npi] = res.df, res.error
         print(f"Estimated {res.df:.5g} +/- {res.error:.3g}")
         derivative_reporters.append(
             LambdaReciprocalDerivativeReporter(
