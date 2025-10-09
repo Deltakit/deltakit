@@ -214,7 +214,7 @@ other_allowed_tags = ["build", "chore", "ci", "docs", "style", "refactor", "test
 allowed_tags = ["feat", "fix", "perf", "build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
+python = ">=3.10,<3.14"
 deltakit-core = { path = "./deltakit-core/", develop = true }
 deltakit-circuit = { path = "./deltakit-circuit/", develop = true }
 deltakit-decode = { path = "./deltakit-decode/", develop = true }

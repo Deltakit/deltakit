@@ -147,7 +147,7 @@ conda env create -f environment.yml
 conda activate deltakit-conda
 
 # Run tests:
-pytest deltakit-explorer
+pytest
 ```
 :::
 
@@ -158,7 +158,7 @@ pytest deltakit-explorer
 poetry install --extras "dev"
 
 # Run tests:
-poetry run pytest deltakit-explorer
+poetry run pytest
 ```
 As shown, `pytest` is run outside of a poetry shell, hence the need for the
 `poetry run` prefix. If you have the `poetry shell` extension and activate it,
@@ -175,7 +175,7 @@ hatch env create
 hatch shell
 
 # Run tests:
-pytest deltakit-explorer
+pytest
 ```
 :::
 
@@ -186,7 +186,7 @@ pytest deltakit-explorer
 uv sync --extra dev
 
 # Run tests:
-uv run pytest deltakit-explorer
+uv run pytest
 ```
 As shown, `pytest` is run outside of a virtual environment, hence the need for the
 `uv run` prefix. If you use virtual environments with `uv` and activate the new
@@ -196,10 +196,14 @@ virtual environment, the prefix is not needed.
 ::::
 
 There is not a designated task runner for use with tools other than `pixi`. Common
-commands besides `pytest <package>` shown above  are `ruff check` for linting, `typos`
-to find typos, `mypy <package>` for static type checking, and `pre-commit run -a`
+commands besides `pytest` shown above  are `ruff check` for linting, `typos`
+to find typos, `mypy` for static type checking, and `pre-commit run -a`
 to run several pre-commit checks. For additional commands, see the `[tasks]`
 section of [`pixi.ini`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml).
+
+Deltakit itself is compatible with Python 3.10+, but some of its dependencies currently
+require Python <3.14. If you run into difficulties associated with a Python version,
+consider configuring your package manager to use an earlier version of Python.
 :::::
 
 ### Code of Conduct
