@@ -184,9 +184,9 @@ class TestAPICalls:
         url = "https://unknown/url"
         client = APIv2Client(url)
         mocker.patch.object(
-            client._request_session, "get", return_value=FakeResponse(403)
+            client._request_session, "get", return_value=FakeResponse(401)
         )
-        with pytest.raises(ServerException, match=r"\[403\] BODY text"):
+        with pytest.raises(ServerException, match=r"\[401\] BODY text"):
             client._get_job_status("123")
 
 

@@ -44,18 +44,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version.version }}
-
       - name: Set up Pixi
-        uses: prefix-dev/setup-pixi@v0.8.10
+        uses: prefix-dev/setup-pixi@v0.9.1
         with:
-          pixi-version: v0.49.0
-
-      - name: Instruct pixi to use specified Python version
-        run: pixi add python=${{ matrix.python-version.version }}
+          pixi-version: v0.56.0
 
       - name: Run ${{ matrix.package }} tests
         run: pixi run -e ${{ matrix.package }}-tests-py${{ matrix.python-version.label }} tests
