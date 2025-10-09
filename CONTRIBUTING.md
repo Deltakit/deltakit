@@ -89,6 +89,7 @@ Depending on system settings, you may experience a `Too many open files (os erro
 error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be
 resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`.
 ```
+
 ```{dropdown} Conda users...
 We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`.
 ```
