@@ -627,8 +627,7 @@ def calculate_lambda_and_lambda_stddev(
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
         raise ValueError(
             "Multiple entries were provided for the following distances: "
-            f"{non_unique_values}. This is not supported. Please make sure you only "
-            "provide one entry per distance."
+            f"{non_unique_values}. This is not supported."
         )
 
     # Make sure that there are no even distances.
