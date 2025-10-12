@@ -2,10 +2,6 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Callable, Mapping, Type
 
-from deltakit_explorer.analysis.budget.reporters import (
-    LambdaReciprocalDerivativeReporter,
-    LambdaReciprocalEstimationReporter,
-)
 from deltakit_explorer.codes._css._css_code_experiment_circuit import (
     css_code_memory_circuit,
 )
@@ -40,11 +36,7 @@ def vectorised_lambda_reciprocal(
     target_rse: float = 1e-4,
     data_directory: Path | None = None,
     max_workers: int = 1,
-) -> tuple[
-    npt.NDArray[numpy.float64],
-    npt.NDArray[numpy.float64],
-    list[LambdaReciprocalEstimationReporter],
-]:
+) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
     """Compute the value of ``1 / Λ`` in a vectorised manner.
 
     This function sole purpose is to be compatible with the interface needed by
@@ -104,7 +96,7 @@ def vectorised_lambda_reciprocal(
     )
     report = engine.run()
     # 3. Compute and return
-    lambdas, stddevs, reporters = compute_lambda_and_stddev_from_results(
+    lambdas, stddevs = compute_lambda_and_stddev_from_results(
         unique_xi, num_rounds_by_distance, report, return_reporters=True
     )
     # Un-uniquify
@@ -112,15 +104,10 @@ def vectorised_lambda_reciprocal(
     stddevs = stddevs[:, inverse_indices].reshape(ret_shape)
 
     assert lambdas.shape == ret_shape
-    reciprocal_reporters = [
-        LambdaReciprocalEstimationReporter(
-            lambda_reporter, 1 / lambd, stddev / lambd**2, x.tolist()
-        )
-        for x, lambd, stddev, lambda_reporter in zip(
-            xi.T, lambdas.flatten(), stddevs.flatten(), reporters, strict=True
-        )
-    ]
-    return 1 / lambdas, numpy.abs(stddevs / lambdas**2), reciprocal_reporters
+    print(xi)
+    print(lambdas)
+    print(lambdas.flatten())
+    return 1 / lambdas, numpy.abs(stddevs / lambdas**2)
 
 
 def compute_ideal_rounds_for_noise_model_and_distance(
@@ -164,9 +151,11 @@ def compute_ideal_rounds_for_noise_model_and_distance(
             lep = nfails / nshots
             stddev = lep * (1 - lep) / nshots
 
-        print(f"{stddev} > {target_stddev} and {nshots} < {max_shots}")
-        print(stddev > target_stddev, nshots < max_shots)
-        print(f"LEP [{num_rounds}] in {nshots} shots:", nfails / nshots)
+        # print(f"{stddev} > {target_stddev} and {nshots} < {max_shots}")
+        # print(stddev > target_stddev, nshots < max_shots)
+        print(
+            f"    LEP for {num_rounds:>4} rounds in {nshots:>6} shots: {lep:.4g} +/- {stddev:.4g}"
+        )
         return nfails, nshots
 
     nrounds, *_ = simulate_different_round_numbers_for_lep_per_round_estimation(
@@ -189,11 +178,7 @@ def get_lambda_reciprocal_gradient(
     target_rse: float = 1e-3,
     data_directory: Path | None = None,
     max_workers: int = 1,
-) -> tuple[
-    npt.NDArray[numpy.float64],
-    npt.NDArray[numpy.float64],
-    list[LambdaReciprocalDerivativeReporter],
-]:
+) -> tuple[ npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
     """Approximates ∇(1/Λ) at the provided ``xi``.
 
     This function approximates the gradient of 1/Λ with respect to each noise parameter
@@ -208,10 +193,8 @@ def get_lambda_reciprocal_gradient(
         (1, noise_model_type.num_noise_parameters), dtype=numpy.float64
     )
     errors = numpy.zeros_like(gradient)
-    derivative_reporters: list[LambdaReciprocalDerivativeReporter] = []
     for npi, noise_name in enumerate(noise_model_type.parameter_names):
         all_xs: list[float] = []
-        all_reporters: list[LambdaReciprocalEstimationReporter] = []
 
         def f(x: npt.NDArray[numpy.float64]) -> npt.NDArray[numpy.float64]:
             input_shape = x.shape
@@ -219,7 +202,7 @@ def get_lambda_reciprocal_gradient(
             xis_shape = (xi.size,) + tuple(1 for _ in x.shape)
             xis = numpy.tile(xi.reshape(xis_shape), (1, *x.shape))
             xis[npi, :] = x
-            lambda_, stddevs, reporters = vectorised_lambda_reciprocal(
+            lambda_, stddevs = vectorised_lambda_reciprocal(
                 xis,
                 noise_model_type,
                 num_rounds_by_distances,
@@ -232,9 +215,6 @@ def get_lambda_reciprocal_gradient(
             lambda_ = lambda_.reshape(input_shape)
             stddevs = stddevs.reshape(input_shape)
             all_xs.extend(x.flatten().tolist())
-            all_reporters.extend(reporters)
-            for reporter in reporters:
-                print(reporter.to_string())
             return lambda_
 
         # Estimating the derivative for each noise parameter separately.
@@ -248,9 +228,30 @@ def get_lambda_reciprocal_gradient(
         )
         gradient[0, npi], errors[0, npi] = res.df, res.error
         print(f"Estimated {res.df:.5g} +/- {res.error:.3g}")
-        derivative_reporters.append(
-            LambdaReciprocalDerivativeReporter(
-                all_xs, all_reporters, float(res.df), float(res.error)
-            )
-        )
-    return gradient, errors, derivative_reporters
+    return gradient, errors
+
+
+def get_lambda_reciprocal_values(
+    xis: npt.NDArray[numpy.float64],
+    noise_model_type: Type[NoiseInterface],
+    num_rounds_by_distances: Mapping[int, Sequence[int]],
+    max_shots: int = 10_000_000,
+    batch_size: int = 10_000,
+    target_rse: float = 1e-3,
+    data_directory: Path | None = None,
+    max_workers: int = 1,
+) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
+    """Approximates 1/Λ at the provided ``xis``."""
+    # We start by correctly approximating Λ with the provided noise parameters. This
+    # step is mainly here to devise the correct numbers of rounds that should be used.
+    lambda_, stddevs = vectorised_lambda_reciprocal(
+        xis,
+        noise_model_type,
+        num_rounds_by_distances,
+        max_shots,
+        batch_size,
+        target_rse,
+        data_directory,
+        max_workers,
+    )
+    return lambda_, stddevs

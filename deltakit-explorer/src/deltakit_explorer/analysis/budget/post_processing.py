@@ -1,11 +1,5 @@
 from collections.abc import Mapping, Sequence
-from typing import Literal, overload
 
-from deltakit_explorer.analysis.budget.reporters import (
-    LEPPRReporter,
-    LEPReporter,
-    LambdaEstimationReporter,
-)
 import numpy
 import numpy.typing as npt
 import pandas
@@ -17,43 +11,13 @@ from deltakit_explorer.analysis._analysis import (
     compute_logical_error_per_round,
 )
 
-
-@overload
-def compute_lambda_and_stddev_from_results(
-    xi: npt.NDArray[numpy.float64],
-    num_rounds_by_distance: Mapping[int, Sequence[int]],
-    data: pandas.DataFrame,
-    *,
-    return_reporters: Literal[False] = False,
-) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]: ...
-@overload
-def compute_lambda_and_stddev_from_results(
-    xi: npt.NDArray[numpy.float64],
-    num_rounds_by_distance: Mapping[int, Sequence[int]],
-    data: pandas.DataFrame,
-    *,
-    return_reporters: Literal[True],
-) -> tuple[
-    npt.NDArray[numpy.float64],
-    npt.NDArray[numpy.float64],
-    list[LambdaEstimationReporter],
-]: ...
-
-
 def compute_lambda_and_stddev_from_results(
     xi: npt.NDArray[numpy.float64],
     num_rounds_by_distance: Mapping[int, Sequence[int]],
     data: pandas.DataFrame,
     *,
     return_reporters: bool = False,
-) -> (
-    tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]
-    | tuple[
-        npt.NDArray[numpy.float64],
-        npt.NDArray[numpy.float64],
-        list[LambdaEstimationReporter],
-    ]
-):
+) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
     """Compute Λ from ``data`` for all the provided noise parameters in ``xi``.
 
     This function assumes that the provided ``data`` has been generated with
@@ -87,49 +51,36 @@ def compute_lambda_and_stddev_from_results(
     _, n = xi.shape
     ret: npt.NDArray[numpy.float64] = numpy.zeros((1, n), dtype=numpy.float64)
     stddev: npt.NDArray[numpy.float64] = numpy.zeros_like(ret)
-    reporters: list[LambdaEstimationReporter] = []
     for i in range(n):
         df = data[data["noise_parameters"].apply(lambda x: numpy.allclose(x, xi[:, i]))]
-        res, reporter = _compute_lambda_from_results(
+        res = _compute_lambda_from_results(
             num_rounds_by_distance, df
         )
         ret[0, i], stddev[0, i] = res.lambda_, res.lambda_stddev
-        reporters.append(reporter)
-    if return_reporters:
-        return ret, stddev, reporters
-    else:
-        return ret, stddev
+    return ret, stddev
 
 
 def _compute_lambda_from_results(
     num_rounds_by_distance: Mapping[int, Sequence[int]],
     data: pandas.DataFrame,
-) -> tuple[LambdaResults, LambdaEstimationReporter]:
+) -> LambdaResults:
     lerprs: list[float] = []
     lerpr_stddevs: list[float] = []
-    lerpr_reporters: list[LEPPRReporter] = []
     distances = sorted(num_rounds_by_distance.keys())
     for d in distances:
         df = data[data["distance"] == d]
-        leppr, reporter = _compute_logical_error_rate_per_round_from_results(
+        leppr = _compute_logical_error_rate_per_round_from_results(
             num_rounds_by_distance[d], df
         )
         lerprs.append(leppr.leppr)
         lerpr_stddevs.append(leppr.leppr_stddev)
-        lerpr_reporters.append(reporter)
     res = calculate_lambda_and_lambda_stddev(distances, lerprs, lerpr_stddevs)
-    return res, LambdaEstimationReporter(
-        distances,
-        lerpr_reporters,
-        res.lambda_,
-        res.lambda_stddev_fit,
-        res.lambda_stddev_propagated,
-    )
+    return res
 
 
 def _compute_logical_error_rate_per_round_from_results(
     num_rounds: Sequence[int], data: pandas.DataFrame
-) -> tuple[LogicalErrorRatePerRoundResults, LEPPRReporter]:
+) -> LogicalErrorRatePerRoundResults:
     num_fails: list[int] = []
     num_shots: list[int] = []
     for nrounds in num_rounds:
@@ -139,10 +90,4 @@ def _compute_logical_error_rate_per_round_from_results(
         num_fails.append(nfails)
         num_shots.append(nshots)
     res = compute_logical_error_per_round(num_fails, num_shots, num_rounds)
-    return res, LEPPRReporter(
-        list(num_rounds),
-        [LEPReporter(nf, ns) for nf, ns in zip(num_fails, num_shots, strict=True)],
-        res.leppr,
-        res.leppr_stddev_fit,
-        res.leppr_stddev_propagated,
-    )
+    return res

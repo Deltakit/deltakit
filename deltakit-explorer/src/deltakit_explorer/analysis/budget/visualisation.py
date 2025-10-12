@@ -50,7 +50,7 @@ def _text_size_in_data_coordinates(
     """
     assert hasattr(fig.canvas, "get_renderer")
     renderer = fig.canvas.get_renderer()
-    text_object = plt.text(0.5, 0.5, text)
+    text_object = ax.text(0.5, 0.5, text)
     bb = text_object.get_window_extent(renderer=renderer).transformed(
         ax.transData.inverted()
     )
@@ -65,8 +65,9 @@ def _draw_line_from_text_to_position(
     # First, get the coordinates at which the line will intersect with the bounding-box
     # of the text.
     assert hasattr(fig.canvas, "get_renderer")
+    renderer = fig.canvas.get_renderer()
     bl, tr = ax.transData.inverted().transform(
-        text.get_window_extent(fig.canvas.get_renderer())
+        text.get_window_extent(renderer)
     )
     cx, cy = (tr + bl) / 2
     slope = (cy - y) / (cx - x)
@@ -136,8 +137,8 @@ def plot_error_budget(
     y_axis_offset_from_zero: float = bar_height / 10
     bar_center: float = y_axis_offset_from_zero + bar_height / 2
     bar_top: float = y_axis_offset_from_zero + bar_height
-    non_fitting_texts_y: float = bar_top + bar_height / 5
-    ymax = non_fitting_texts_y + bar_height / 2
+    non_fitting_texts_ys: list[float] = [bar_top + i * bar_height / 4 for i in (1, 2)]
+    ymax = non_fitting_texts_ys[-1] + bar_height / 2
 
     # In case the user did not provide a figure or an axe, get it ourselves.
     if fig is None or ax is None:
@@ -149,11 +150,14 @@ def plot_error_budget(
     nft_centers: list[float] = []
     nft_bar_colours: list[str] = []
     nft_bar_centers: list[float] = []
+    twidths: list[float] = [_text_size_in_data_coordinates(fig, ax, d)[0] for d in contribution_descriptions]
 
     offset: float = 0
-    for contribution, description, colour in zip(
-        contributions, contribution_descriptions, _RIVERLANE_PLOT_COLOURS, strict=False
-    ):
+    for i in range(len(contributions)):
+        colour = _RIVERLANE_PLOT_COLOURS[i % len(_RIVERLANE_PLOT_COLOURS)]
+        description = contribution_descriptions[i]
+        contribution = contributions[i]
+        twidth = twidths[i]
         # We need to handle the special case of the excess noise. Doing that with
         # kwargs.
         kwargs: dict[str, Any] = {"color": colour, "edgecolor": colour}
@@ -167,7 +171,6 @@ def plot_error_budget(
         bar = ax.barh(
             bar_center, contribution, height=bar_height, left=offset, **kwargs
         )
-        twidth, _ = _text_size_in_data_coordinates(fig, ax, description)
         text_colour = (
             _RIVERLANE_DARK_TEXT_COLOUR
             if _colour_brightness(kwargs["color"]) > 0.5
@@ -196,20 +199,21 @@ def plot_error_budget(
     texts = [
         ax.text(
             center,
-            non_fitting_texts_y,
+            non_fitting_texts_ys[i % len(non_fitting_texts_ys)],
             text,
             horizontalalignment="center",
             color=colour,
         )
-        for (center, text, colour) in zip(
+        for i, (center, text, colour) in enumerate(zip(
             nft_centers, non_fitting_texts, nft_bar_colours
-        )
+        ))
     ]
+
     texts, _ = adjust_text(
         texts,
-        avoid_self=False,
-        expand=(1.1, 1),
-        only_move={step: "x" for step in ("text", "static", "explode", "pull")},
+        avoid_self=True,
+        expand=(1.1, 1.1),
+        only_move={step: "xy+" for step in ("explode", "pull")},
         ax=ax,
     )
     # Draw lines
