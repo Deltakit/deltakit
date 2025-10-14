@@ -21,7 +21,9 @@ class TestLEPPerRoundComputation:
             (1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2), (False, True)
         ),
     )
-    def test_on_synthetic_inputs(self, leppr: float, spam_error: float, is_noisy: bool):
+    def test_on_synthetic_inputs(
+        self, leppr: float, spam_error: float, is_noisy: bool
+    ) -> None:
         f_0 = 1 - 2 * spam_error
         rounds = np.arange(2, np.ceil(np.log(0.3 / f_0) / np.log(1 - 2 * leppr)), 2)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -46,7 +48,7 @@ class TestLEPPerRoundComputation:
     @pytest.mark.parametrize(
         "rounds", ([0, 1, 2, 3, 4, 3], [-2, 1, 1, 3, 3, 3], [4, 8, 4, 0, 5])
     )
-    def test_raises_when_duplicated_round_number(self, rounds: list[int]):
+    def test_raises_when_duplicated_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
         nprounds = np.asarray(rounds)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -61,7 +63,7 @@ class TestLEPPerRoundComputation:
     @pytest.mark.parametrize(
         "rounds", ([0, 1, 2, 3, 4], [-1, 4, 5, 7], [8, 4, 0, 5, -1, -348975])
     )
-    def test_raises_when_invalid_round_number(self, rounds: list[int]):
+    def test_raises_when_invalid_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
         nprounds = np.asarray(rounds)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -154,7 +156,7 @@ class TestLEPPerRoundComputation:
         assert leppr_stddevs == sorted(leppr_stddevs, reverse=True)
 
     @pytest.mark.parametrize("leppr", [5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2])
-    def test_single_point_fit(self, leppr: float):
+    def test_single_point_fit(self, leppr: float) -> None:
         rounds = 30
         num_shots = 100_000
         fidelity = (1 - 2 * leppr) ** rounds
@@ -244,7 +246,7 @@ class TestCalculateLambda:
     )
     def test_synthetic_values(
         self, distances: tuple[int, ...], lambda_: float, lambda0: float
-    ):
+    ) -> None:
         lepprs = [1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances]
         # Set standard deviations not too low to avoid getting into precision issues in
         # the fit and being outside of the 3*sigma interval due to precision issues.
@@ -281,7 +283,7 @@ class TestCalculateLambda:
     )
     def test_small_lambda_and_low_distance_warns(
         self, lamb: float, distances: list[int]
-    ):
+    ) -> None:
         lepprs = [0.1 * lamb ** (-(d + 1) / 2) for d in distances]
         lepprs_stddevs = [1e-10 for _ in distances]
         msg = "^Lambda estimation is unreliable at low code distances and low values of lambda."
