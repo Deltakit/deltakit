@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from math import sqrt
 from pathlib import Path
 from typing import Callable, Mapping, Type
 
@@ -137,7 +138,7 @@ def compute_ideal_rounds_for_noise_model_and_distance(
 
         nshots, nfails = decoder_manager.run_batch_shots(batch_size)
         lep = nfails / nshots
-        stddev = lep * (1 - lep) / nshots
+        stddev = sqrt(lep * (1 - lep) / nshots)
         while (stddev > target_stddev or nfails < min_fails) and nshots < max_shots:
             ns, nf = decoder_manager.run_batch_shots(
                 min(batch_size, max_shots - nshots)
@@ -145,10 +146,8 @@ def compute_ideal_rounds_for_noise_model_and_distance(
             nshots += ns
             nfails += nf
             lep = nfails / nshots
-            stddev = lep * (1 - lep) / nshots
+            stddev = sqrt(lep * (1 - lep) / nshots)
 
-        # print(f"{stddev} > {target_stddev} and {nshots} < {max_shots}")
-        # print(stddev > target_stddev, nshots < max_shots)
         print(
             f"    LEP for {num_rounds:>4} rounds in {nshots:>6} shots: {lep:.4g} +/- {stddev:.4g}"
         )
