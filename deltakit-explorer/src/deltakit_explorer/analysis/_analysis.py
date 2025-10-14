@@ -597,8 +597,8 @@ def calculate_lambda_and_lambda_stddev(
         - Λ is large enough to make the provided ``lep_per_round`` saturate
           floating-point accuracies.
 
-        Realistically, neither of the conditions are expected to occur practice due to
-        sampling noise and sampling overhead, but they might be checked by synthetic
+        Realistically, neither of the conditions are expected to occur in practice due
+        to sampling noise and sampling overhead, but they might be checked by synthetic
         data (e.g., in unit-tests).
 
     Examples:
