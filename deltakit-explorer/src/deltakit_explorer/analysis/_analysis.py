@@ -555,7 +555,7 @@ def calculate_lambda_and_lambda_stddev(
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
 ) -> LambdaResults:
-    """Calculate the error suppression factor (lambda) and its standard deviation.
+    """Calculate the error suppression factor (Λ) and its standard deviation.
 
     Requires the logical error probability (LEP) per round (which may be approximated
     as LEP / num_rounds for small LEP or computed with
@@ -570,9 +570,9 @@ def calculate_lambda_and_lambda_stddev(
 
     Args:
         distances (npt.NDArray[np.int\\_] | Sequence[int]): Distances at which
-            ``lep_per_round`` and ``lep_stddev_per_round`` are provided. Sizes of the
-            three parameters should match. Should only contain odd distances. Distance
-            3 data is unreliable for low Λ values (see Fig. S15 of Supplementary
+            ``lep_per_round`` and ``lep_stddev_per_round`` are provided. Should only
+            contain odd distances. Estimations of Λ may be unreliable when data from
+            distance 3 is used and the value of Λ is low (see Fig. S15 of Supplementary
             information of "Quantum error correction below the surface code threshold"
             at https://www.nature.com/articles/s41586-024-08449-y#Sec8). If such a
             situation is encountered, a warning will be emitted.
