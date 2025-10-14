@@ -648,12 +648,8 @@ def calculate_lambda_and_lambda_stddev(
     # numerical investigations have found that option 2 was behaving very poorly
     # (several orders of magnitude worse than option 1) when Λ0 is close to ``1``. For
     # that reason, option 1 is preferred below.
-    (slope, offset), cov = curve_fit(
-        lambda x, s, o: s * x + o,
-        distances,
-        logleppr,
-        sigma=logleppr_stddev,
-        absolute_sigma=True,
+    (slope, offset), cov = np.polyfit(
+        distances, logleppr, 1, w=1/logleppr_stddev, full=False, cov='unscaled'
     )
     slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
     lambda_value = float(np.exp(-2 * slope))
