@@ -588,17 +588,12 @@ def calculate_lambda_and_lambda_stddev(
         LambdaResults: detailed results of the computation.
 
     Note:
-        for extremal values of Λ, this function might emit a
-        ``scipy.optimize._optimize.OptimizeWarning`` with the message ``"Covariance of
-        the parameters could not be estimated"``. From numerical tests, this only seems
-        to happen when the estimation of Λ satisfies one of the following conditions:
+        For values of Λ very close to 1 (``abs(Λ - 1) < 1e-7``), this function might
+        emit a ``scipy.optimize._optimize.OptimizeWarning`` with the message
+        ``"Covariance of the parameters could not be estimated"``.
 
-        - ``abs(Λ - 1) < 1e-7``,
-        - Λ is large enough to make the provided ``lep_per_round`` saturate
-          floating-point accuracies.
-
-        Realistically, neither of the conditions are expected to occur in practice due
-        to sampling noise and sampling overhead, but they might be checked by synthetic
+        Realistically, that condition is not expected to occur in practice due to
+        sampling noise and sampling overhead, but it might be checked by synthetic
         data (e.g., in unit-tests).
 
     Examples:
