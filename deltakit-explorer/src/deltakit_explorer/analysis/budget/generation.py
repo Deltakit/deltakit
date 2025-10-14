@@ -3,24 +3,20 @@ from collections.abc import Sequence
 from concurrent.futures import ProcessPoolExecutor
 from typing import Mapping, Type
 
+from deltakit_explorer.analysis.budget.memory import MemoryGenerator, get_rotated_surface_code_memory_circuit
 import numpy
 import numpy.typing as npt
-from deltakit_circuit.gates._abstract_gates import PauliBasis
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
 from tqdm import tqdm
 
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
-from deltakit_explorer.codes._css._css_code_experiment_circuit import (
-    css_code_memory_circuit,
-)
-from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
-
 
 def _generate_surface_code_memory_decoder_manager(
     distance: int,
     num_rounds: int,
     noise_model: NoiseInterface,
+    memory_generator: MemoryGenerator,
 ) -> StimDecoderManager | None:
     """Generate a decoder manager with a rotated planar code memory experiment.
 
@@ -36,9 +32,7 @@ def _generate_surface_code_memory_decoder_manager(
         a decoder manager that can then be run using ``RunAllAnalysisEngine`` or
         ``None`` if the problem is ill-formed.
     """
-    circuit = css_code_memory_circuit(
-        RotatedPlanarCode(distance, distance), num_rounds, PauliBasis.Z
-    )
+    circuit = memory_generator(distance, num_rounds)
     noisy_circuit = noise_model.apply(circuit)
     decoder, decoder_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(
         noisy_circuit
@@ -53,7 +47,7 @@ def _generate_surface_code_memory_decoder_manager(
 
 
 def _generate_surface_code_memory_decoder_manager_wrapper(
-    data: tuple[int, int, NoiseInterface],
+    data: tuple[int, int, NoiseInterface, MemoryGenerator],
 ) -> StimDecoderManager | None:
     return _generate_surface_code_memory_decoder_manager(*data)
 
@@ -63,6 +57,7 @@ def generate_decoder_managers_for_lambda(
     noise_model_type: Type[NoiseInterface],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     max_workers: int = 1,
+    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
 ) -> list[StimDecoderManager]:
     """Generate several decoder managers from the provided arguments for a rotated
     planar code memory experiment.
@@ -125,15 +120,19 @@ def generate_decoder_managers_for_lambda(
         for d, rounds in num_rounds_by_distances.items()
     )
     parameters_iterator = (
-        (d, nr, nm)
-        for (d, nr), nm in itertools.product(
-            distance_and_rounds_iterator, (noise_model_type(x) for x in xi)
+        (d, nr, nm, memgen)
+        for ((d, nr), nm), memgen in zip(
+            itertools.product(
+                distance_and_rounds_iterator, (noise_model_type(x) for x in xi)
+            ),
+            itertools.repeat(memory_generator),
+            strict=False
         )
     )
     if max_workers == 1:
-        for distance, nrounds, noise_model in parameters_iterator:
+        for distance, nrounds, noise_model, memgen in parameters_iterator:
             manager = _generate_surface_code_memory_decoder_manager(
-                distance, nrounds, noise_model
+                distance, nrounds, noise_model, memgen
             )
             assert manager is not None
             decoder_managers.append(manager)

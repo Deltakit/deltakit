@@ -2,13 +2,9 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Callable, Mapping, Type
 
-from deltakit_explorer.codes._css._css_code_experiment_circuit import (
-    css_code_memory_circuit,
-)
-from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
+from deltakit_explorer.analysis.budget.memory import MemoryGenerator, get_rotated_surface_code_memory_circuit
 import numpy
 import numpy.typing as npt
-from deltakit_circuit.gates._abstract_gates import PauliBasis
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
@@ -19,7 +15,7 @@ from deltakit_explorer.analysis._analysis import (
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
 from deltakit_explorer.analysis.budget.generation import (
-    generate_decoder_managers_for_lambda,
+    generate_decoder_managers_for_lambda
 )
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.post_processing import (
@@ -120,6 +116,7 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     target_stddev: float = 1e-4,
     max_round_number: int = 1024,
     next_round_number_func: Callable[[int], int] = lambda x: 4 * x,
+    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
 ) -> list[int]:
     """Compute the ideal rounds to use to estimate the LEP per round.
 
@@ -131,8 +128,7 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     def generate_surface_code_memory_and_run(
         num_rounds: int,
     ) -> tuple[int, int]:
-        code_instance = RotatedPlanarCode(distance, distance)
-        circuit = css_code_memory_circuit(code_instance, num_rounds, PauliBasis.Z)
+        circuit = memory_generator(distance, num_rounds)
         noisy_circuit = noise_model.apply(circuit)
         decoder, decoder_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(
             noisy_circuit
