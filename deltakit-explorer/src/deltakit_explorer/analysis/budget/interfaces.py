@@ -130,3 +130,9 @@ class NoiseInterface(ABC, Generic[Computation]):
     @property
     def approximate_measurement_error_rate(self) -> float | None:
         return None
+
+    def get_relative_bounds(self, relative_factor: float) -> list[tuple[float, float]]:
+        if relative_factor <= 0 or relative_factor > 1:
+            raise ValueError("The provided relative factor should be in (0, 1].")
+        low, high = 1 - relative_factor, 1 + relative_factor
+        return [(low * p, high * p) for p in self.noise_parameters]
