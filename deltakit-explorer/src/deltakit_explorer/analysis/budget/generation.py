@@ -40,7 +40,7 @@ def _generate_surface_code_memory_decoder_manager(
     metadata = {
         "distance": distance,
         "num_rounds": num_rounds,
-        "noise_parameters": noise_model.noise_parameters,
+        **{f"noise_{name}": p for name, p in zip(noise_model.parameter_names, noise_model.noise_parameters)}
     }
 
     return StimDecoderManager(decoder_circuit, decoder, metadata=metadata)

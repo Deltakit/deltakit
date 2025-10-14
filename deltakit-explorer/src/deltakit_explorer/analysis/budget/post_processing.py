@@ -11,12 +11,21 @@ from deltakit_explorer.analysis._analysis import (
     compute_logical_error_per_round,
 )
 
+def _filter_non_close_noise_parameters(
+    data: pandas.DataFrame,
+    noise_parameters: npt.NDArray[numpy.float64],
+    noise_parameter_names: Sequence[str],
+) -> pandas.DataFrame:
+    ret = data
+    for name, param in zip(noise_parameter_names, noise_parameters):
+        ret = ret[numpy.isclose(ret[f"noise_{name}"], param)]
+    return ret
+
 def compute_lambda_and_stddev_from_results(
     xi: npt.NDArray[numpy.float64],
+    noise_parameter_names: Sequence[str],
     num_rounds_by_distance: Mapping[int, Sequence[int]],
     data: pandas.DataFrame,
-    *,
-    return_reporters: bool = False,
 ) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
     """Compute Λ from ``data`` for all the provided noise parameters in ``xi``.
 
@@ -52,7 +61,7 @@ def compute_lambda_and_stddev_from_results(
     ret: npt.NDArray[numpy.float64] = numpy.zeros((1, n), dtype=numpy.float64)
     stddev: npt.NDArray[numpy.float64] = numpy.zeros_like(ret)
     for i in range(n):
-        df = data[data["noise_parameters"].apply(lambda x: numpy.allclose(x, xi[:, i]))]
+        df = _filter_non_close_noise_parameters(data, xi[:, i], noise_parameter_names)
         res = _compute_lambda_from_results(
             num_rounds_by_distance, df
         )
