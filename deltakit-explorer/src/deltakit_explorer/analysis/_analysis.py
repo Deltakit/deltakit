@@ -530,15 +530,6 @@ class LambdaResults:
         lambda0 (float): computed error suppression multiplicative offset (value of Λ_0
             in the expression ``Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]``).
         lambda0_stddev (float): Λ_0 standard deviation.
-        lambda_stddev_propagated (float): standard deviation due to the propagation of
-            individual LEPPRs standard deviations used to estimate lambda.
-        lambda_stddev_fit (float): standard deviation due to the linear fit involved in
-            lambda computation.
-
-    Note:
-        attributes ending in ``_stddev_propagated`` or ``_stddev_fit`` are internal
-        estimations that might be useful to understand the contribution of each process
-        to the final standard-deviation estimation.
     """
 
     lambda_: float
@@ -546,8 +537,6 @@ class LambdaResults:
     lambda0: float
     lambda0_stddev: float
 
-    lambda_stddev_propagated: float
-    lambda_stddev_fit: float
 
 
 def calculate_lambda_and_lambda_stddev(
@@ -676,14 +665,7 @@ def calculate_lambda_and_lambda_stddev(
         lambda0
         * np.sqrt(offset_stddev**2 + lambda_value_stddev**2 / (4 * lambda_value**2))
     )
-    return LambdaResults(
-        lambda_value,
-        lambda_value_stddev,
-        lambda0,
-        lambda0_stddev,
-        2 * lambda_value,
-        slope_stddev,
-    )
+    return LambdaResults(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
 
 
 def get_lambda_fit(
