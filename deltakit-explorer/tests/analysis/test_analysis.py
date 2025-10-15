@@ -92,7 +92,7 @@ class TestLEPPerRoundComputation:
 
     def test_raises_when_too_many_fails(self):
         shots = 100_000
-        message = "^Got estimations of logical error probability per round above 0.5.*"
+        message = "^Got estimations of logical error probability above 0.5.*"
         with pytest.raises(RuntimeError, match=message):
             compute_logical_error_per_round(
                 [shots // 2 + 1] * 3, [shots] * 3, [2, 4, 6]

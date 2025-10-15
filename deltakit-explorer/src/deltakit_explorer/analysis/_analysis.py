@@ -265,7 +265,7 @@ def compute_logical_error_per_round(
 
     if np.any(fidelities <= 0):
         raise RuntimeError(
-            "Got estimations of logical error probabilities above 0.5. That is not "
+            "Got estimations of logical error probability above 0.5. That is not "
             "supported by this function. Please reduce your number of rounds. "
             f"Estimated logical error probabilities: {logical_error_probabilities}."
         )
