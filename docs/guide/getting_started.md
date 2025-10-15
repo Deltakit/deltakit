@@ -14,6 +14,8 @@ kernelspec:
 
 # Getting Started
 
+*Want to follow along? {download}`Download this notebook.<getting_started.md>`*
+
 Performing a QEC experiment with Deltakit typically involves four steps.
 
 1. In the *circuit generation* step, you generate a quantum circuit to implement the experiment

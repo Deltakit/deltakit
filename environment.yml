@@ -1,0 +1,15 @@
+name: deltakit-conda
+channels:
+- conda-forge
+- nodefaults
+dependencies:
+- pandoc >=3.7.0.2,<4
+- python >=3.10,<3.14
+- actionlint >=1.7
+- pip
+- pip:
+  - -e ./deltakit-core/
+  - -e ./deltakit-circuit/
+  - -e ./deltakit-decode/
+  - -e ./deltakit-explorer/
+  - -e ./[dev]
