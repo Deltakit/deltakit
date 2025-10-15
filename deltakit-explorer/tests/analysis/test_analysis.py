@@ -239,9 +239,9 @@ class TestCalculateLambda:
     @pytest.mark.parametrize(
         "distances,lambda_,lambda0",
         itertools.product(
-            ((5, 7, 9), (5, 9, 13), tuple(range(5, 22, 2))),
-            (0.7, 0.9, 1 - 1e-5, 1 - 1e-7, 1 + 1e-7, 1 + 1e-5, 1.1, 1.5, 2, 10, 20),
-            (0.01, 0.1, 1, 2, 10, 100),
+            ((5, 7, 9), (5, 9, 13), tuple(range(5, 50, 6))),
+            (0.7, 0.9, 1 - 1e-5, 1 - 1e-7, 1, 1 + 1e-7, 1 + 1e-5, 1.1, 1.5, 2, 10, 20),
+            (0.01, 0.1, 1 - 1e-5, 1 - 1e-7, 1, 1 + 1e-7, 1 + 1e-5, 2, 10, 100),
         ),
     )
     def test_synthetic_values(
