@@ -141,6 +141,7 @@ class LogicalErrorRatePerRoundResults:
         estimations that might be useful to understand the contribution of each process
         to the final standard-deviation estimation.
     """
+
     leppr: float
     leppr_stddev: float
     spam_error: float
@@ -302,7 +303,7 @@ def compute_logical_error_per_round(
         )
         num_rounds = np.hstack([[0], num_rounds])
         logfidelity = np.hstack([[0], logfidelity])
-        # We cannot set the stddev to 0 here because curve_fit will divide by that
+        # We cannot set the stddev to 0 here because curve_fit will divide by that
         # quantity, so make it very small.
         logfidelities_stddev = np.hstack([[1e-12], logfidelities_stddev])
 
@@ -314,7 +315,7 @@ def compute_logical_error_per_round(
         logfidelity,
         sigma=logfidelities_stddev,
         absolute_sigma=True,
-        # If the error probabilities are exactly 0, the solution should be (0, 0).
+        # If the error probabilities are exactly 0, the solution should be (0, 0).
         # Because we expect the error probabilities to be close to 0, start from (0, 0)
         # as a first estimate.
         p0=(0, 0),
@@ -366,6 +367,7 @@ def compute_logical_error_per_round(
         (1 - 2 * estimated_spam_error) / 2,
         offset_stddev,
     )
+
 
 def simulate_different_round_numbers_for_lep_per_round_estimation(
     simulator: Callable[[int], tuple[int, int]],
@@ -538,7 +540,6 @@ class LambdaResults:
     lambda0_stddev: float
 
 
-
 def calculate_lambda_and_lambda_stddev(
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
@@ -625,15 +626,15 @@ def calculate_lambda_and_lambda_stddev(
     logleppr_stddev = lep_stddev_per_round / lep_per_round
     # Note that the covariance matrix is used later to estimate the standard deviation
     # of the resulting estimation.
-    # Note that there are two ways to fit here:
+    # Note that there are two ways to fit here:
     # 1. Like what is done below, fit w.r.t the distance ``d``.
-    # 2. Fit w.r.t ``(d + 1) / 2``.
-    # Option 2 leads to simpler formulas, especially for standard deviation. But
+    # 2. Fit w.r.t ``(d + 1) / 2``.
+    # Option 2 leads to simpler formulas, especially for standard deviation. But
     # numerical investigations have found that option 2 was behaving very poorly
     # (several orders of magnitude worse than option 1) when Λ0 is close to ``1``. For
     # that reason, option 1 is preferred below.
     (slope, offset), cov = np.polyfit(
-        distances, logleppr, 1, w=1/logleppr_stddev, full=False, cov='unscaled'
+        distances, logleppr, 1, w=1 / logleppr_stddev, full=False, cov="unscaled"
     )
     slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
     lambda_value = float(np.exp(-2 * slope))
