@@ -30,9 +30,10 @@ class TestGQLClientTokenManipulations:
 
     def test_set_token_raises_on_server_v1_error(self):
         old_server = os.environ.pop(utils.DELTAKIT_SERVER_URL_ENV, default="")
-        os.environ[utils.DELTAKIT_SERVER_URL_ENV] = "https://riverlane.com/"
-        with pytest.raises(ServerException, match="^Token failed validation: Status 403"):
-            GQLClient("https://riverlane.com/").set_token("abc", validate=True)
+        os.environ[utils.DELTAKIT_SERVER_URL_ENV] = "https://deltakit.riverlane.com/proxy"
+        with pytest.raises(ServerException, match="^Token failed validation: Status 401"):
+            GQLClient("https://deltakit.riverlane.com/proxy").set_token("abcdefghijklmnopqrstuvwxyzabcdef", validate=True)
+            # Token should be a 32-character string
         if old_server:
             os.environ[utils.DELTAKIT_SERVER_URL_ENV] = old_server
 
@@ -74,15 +75,13 @@ class TestGQLClientTokenManipulations:
         Client.set_token(token, validate=True)
         assert _auth.get_token() == token
 
-    def test_set_token_v2_fails_on_403(self, mocker):
+    def test_set_token_v2_fails_on_401(self, mocker):
         client = Client("https://localhost/", api_version=2)
         mocker.patch(
             "deltakit_explorer._api._client.Client.get_instance",
             return_value=client,
         )
-        mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(403))
+        mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(401))
         Path.unlink(utils.get_config_file_path())
-        randint = random.randint(1000, 9999)
-        token = f"abc-{randint}"
         with pytest.raises(ServerException):
-            Client.set_token(token, validate=True)
+            Client.set_token("abcdefghijklmnopqrstuvwxyzabcdef", validate=True) # Token should be a 32-character string

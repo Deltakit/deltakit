@@ -14,6 +14,8 @@ kernelspec:
 
 # Simulation
 
+*Want to follow along? {download}`Download this notebook.<simulation.md>`*
+
 ## 1. Simulation of Measurements
 
 Decoding a quantum error correction experiment requires measurement data.
