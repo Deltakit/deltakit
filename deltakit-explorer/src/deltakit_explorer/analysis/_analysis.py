@@ -203,7 +203,7 @@ def compute_logical_error_per_round(
             the final estimation. See https://arxiv.org/pdf/2207.06431.pdf (p.21).
 
     Returns:
-        LogicalErrorRatePerRoundResults: detailed results of the computation.
+        LEPPRResults: detailed results of the computation.
 
     Examples:
         Calculating per-round logical error probability and its standard deviation
@@ -484,6 +484,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
 
     return np.asarray(nrounds), np.asarray(nfails), np.asarray(nshots)
 
+
 def calculate_lep_and_lep_stddev(
     fails: npt.NDArray[np.int_] | Sequence[int] | int,
     shots: npt.NDArray[np.int_] | Sequence[int] | int,
@@ -519,185 +520,6 @@ def calculate_lep_and_lep_stddev(
 
     return lep, lep_stddev
 
-
-@dataclass(frozen=True)
-class LambdaResults:
-    """Named-tuple-like class containing computation results from
-    :func:`calculate_lambda_and_lambda_stddev`.
-
-    Attributes:
-        lambda_ (float): computed error suppression factor.
-        lambda_stddev (float): lambda standard deviation.
-        lambda0 (float): computed error suppression multiplicative offset (value of Λ_0
-            in the expression ``Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]``).
-        lambda0_stddev (float): Λ_0 standard deviation.
-        lambda_stddev_propagated (float): standard deviation due to the propagation of
-            individual LEPPRs standard deviations used to estimate lambda.
-        lambda_stddev_fit (float): standard deviation due to the linear fit involved in
-            lambda computation.
-
-    Note:
-        attributes ending in ``_stddev_propagated`` or ``_stddev_fit`` are internal
-        estimations that might be useful to understand the contribution of each process
-        to the final standard-deviation estimation.
-    """
-
-    lambda_: float
-    lambda_stddev: float
-    lambda0: float
-    lambda0_stddev: float
-
-    lambda_stddev_propagated: float
-    lambda_stddev_fit: float
-
-
-def calculate_lambda_and_lambda_stddev(
-    distances: npt.NDArray[np.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
-) -> LambdaResults:
-    """Calculate the error suppression factor (lambda) and its standard deviation.
-
-    Requires the logical error probability (LEP) per round (which may be approximated
-    as LEP / num_rounds for small LEP or computed with
-    :func:`compute_logical_error_per_round` for a more precise approximation), and its
-    standard deviation (also returned by :func:`compute_logical_error_per_round`).
-
-    By providing the logical error probability for increasing code distances,
-    one can obtain an estimate for how error suppression scales with distances.
-    Note that lambda is a "rule of thumb". This approximation is unreliable near
-    threshold and for low code distances. If such a regime is detected, a warning will
-    be emitted by this function.
-
-    Args:
-        distances (npt.NDArray[np.int\\_] | Sequence[int]): Distances at which
-            ``lep_per_round`` and ``lep_stddev_per_round`` are provided. Sizes of the
-            three parameters should match. Should only contain odd distances. Distance
-            3 data is unreliable for low Λ values (see Fig. S15 of Supplementary
-            information of "Quantum error correction below the surface code threshold"
-            at https://www.nature.com/articles/s41586-024-08449-y#Sec8). If such a
-            situation is encountered, a warning will be emitted.
-        lep_per_round (npt.NDArray[np.float64] | Sequence[float]):
-            logical error probabilities per round computed for each code distance in
-            ``distances``. Should be the same size as ``distances``.
-        lep_stddev_per_round (npt.NDArray[np.float64] | Sequence[float]):
-            standard deviation of the logical error probabilities per round computed for
-            each code distance in ``distances``. Should be the same size as
-            ``distances``.
-
-    Returns:
-        LambdaResults: detailed results of the computation.
-
-    Note:
-        for extremal values of Λ, this function might emit a
-        ``scipy.optimize._optimize.OptimizeWarning`` with the message ``"Covariance of
-        the parameters could not be estimated"``. From numerical tests, this only seems
-        to happen when the estimation of Λ satisfies one of the following conditions:
-
-        - ``abs(Λ - 1) < 1e-7``,
-        - Λ is large enough to make the provided ``lep_per_round`` saturate
-          floating-point accuracies.
-
-        Realistically, none of the 2 conditions above can be checked in practice due to
-        sampling noise and sampling overhead, but they might be checked by synthetic
-        data (e.g., in unit-tests).
-
-    Examples:
-        Fitting the Λ value given information for 5, 7, and 9 round of a QEC
-        experiment::
-
-            res = calculate_lambda_and_lambda_stddev(
-                distances=[5, 7, 9],
-                lep_per_round=[1.992e-04, 4.314e-05, 7.556e-06],
-                lep_stddev_per_round=[1.2e-05, 9.3e-06, 3.9e-06],
-            )
-            lambda_, lambda_stddev = res.lambda_, res.lambda_stddev
-
-    """
-    # Make sure that the inputs are numpy arrays sorted by distance
-    isort = np.argsort(distances)
-    distances = np.asarray(distances)[isort]
-    lep_per_round = np.asarray(lep_per_round)[isort]
-    lep_stddev_per_round = np.asarray(lep_stddev_per_round)[isort]
-
-    # Check that we do not have duplicate data for the same distance as that will
-    # confuse the numerical methods used in this function.
-    unique_counts = np.unique_counts(distances)
-    non_unique_entries_mask = unique_counts.counts > 1
-    if np.any(non_unique_entries_mask):
-        non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
-        raise ValueError(
-            "Multiple entries were provided for the following distances: "
-            f"{non_unique_values}. This is not supported. Please make sure you only "
-            "provide one entry per distance."
-        )
-
-    # Make sure that there are no even distances.
-    if np.any(distances % 2 == 0):
-        raise ValueError(
-            "Found at least one even distance in the provided distances "
-            f"({distances.tolist()}). This is not supported."
-        )
-
-    logleppr = np.log(lep_per_round)
-    logleppr_stddev = lep_stddev_per_round / lep_per_round
-    # Note that the covariance matrix is used later to estimate the standard deviation
-    # of the resulting estimation.
-    # Note that there are two ways to fit here:
-    # 1. Like what is done below, fit w.r.t the distance ``d``.
-    # 2. Fit w.r.t ``(d + 1) / 2``.
-    # Option 2 leads to simpler formulas, especially for standard deviation. But
-    # numerical investigations have found that option 2 was behaving very poorly
-    # (several orders of magnitude worse than option 1) when Λ0 is close to ``1``. For
-    # that reason, option 1 is preferred below.
-    (slope, offset), cov = curve_fit(
-        lambda x, s, o: s * x + o,
-        distances,
-        logleppr,
-        sigma=logleppr_stddev,
-        absolute_sigma=True,
-    )
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
-    lambda_value = float(np.exp(-2 * slope))
-    lambda_value_stddev = float(lambda_value * 2 * slope_stddev)
-
-    if lambda_value < 1.5 and min(distances) < 5:
-        warnings.warn(
-            "Lambda estimation is unreliable at low code distances and low values of "
-            "lambda. Please use distance 5 as a minimum. See Fig. S15 of Supplementary "
-            "information of 'Quantum error correction below the surface code threshold'"
-            " (https://www.nature.com/articles/s41586-024-08449-y#Sec8) for more "
-            "information.",
-        )
-
-    # Error analysis explanation.
-    # We start from Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
-    # Applying ln:  ln(Ɛ_d) = - ln(Λ_0) - (d+1)/2 * ln(Λ)
-    #                       = - ln(Λ_0) - ln(Λ)/2 - d * ln(Λ)/2
-    # The linear fit performed above gave us slope  = -ln(Λ)/2
-    #                                        offset = -ln(Λ_0) - ln(Λ)/2
-    # So Λ_0 = exp(-offset - ln(Λ)/2)
-    # Error analysis (to compute the standard deviation of Λ_0) done with the formulas
-    # in https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae:
-    # σ(ln(Λ)/2) = σ(Λ) / (2 * Λ)
-    # σ(offset) is obtained from the covariance matrix
-    # σ(-offset - ln(Λ)/2) = sqrt(σ(offset)**2 + σ(ln(Λ) / 2)**2)
-    #                      = sqrt(σ(offset)**2 + σ(Λ)**2 / (4 * Λ**2))
-    # σ(exp(-offset - ln(Λ)/2)) = exp(-offset - ln(Λ)/2) * σ(-offset - ln(Λ)/2)
-    #                           = Λ_0 * sqrt(σ(offset)**2 + σ(Λ)**2 / (4 * Λ**2))
-    lambda0 = float(np.exp(-offset - np.log(lambda_value) / 2))
-    lambda0_stddev = float(
-        lambda0
-        * np.sqrt(offset_stddev**2 + lambda_value_stddev**2 / (4 * lambda_value**2))
-    )
-    return LambdaResults(
-        lambda_value,
-        lambda_value_stddev,
-        lambda0,
-        lambda0_stddev,
-        2 * lambda_value,
-        slope_stddev,
-    )
 
 
 def get_lambda_fit(

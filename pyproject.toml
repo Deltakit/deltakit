@@ -212,3 +212,33 @@ mode = "update"
 [tool.semantic_release.commit_parser_options]
 other_allowed_tags = ["build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
 allowed_tags = ["feat", "fix", "perf", "build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+deltakit-core = { path = "./deltakit-core/", develop = true }
+deltakit-circuit = { path = "./deltakit-circuit/", develop = true }
+deltakit-decode = { path = "./deltakit-decode/", develop = true }
+deltakit-explorer = { path = "./deltakit-explorer/", develop = true }
+
+[tool.hatch.envs.default]
+pre-install-commands = [
+  "pip install -e ./deltakit-core",
+  "pip install -e ./deltakit-circuit",
+  "pip install -e ./deltakit-decode",
+  "pip install -e ./deltakit-explorer",
+]
+features = ["dev"]
+
+[tool.uv.workspace]
+members = [
+  "deltakit-core",
+  "deltakit-circuit",
+  "deltakit-decode",
+  "deltakit-explorer",
+]
+
+[tool.uv.sources]
+deltakit-core     = { workspace = true }
+deltakit-circuit  = { workspace = true }
+deltakit-decode   = { workspace = true }
+deltakit-explorer = { workspace = true }

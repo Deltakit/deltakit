@@ -7,8 +7,6 @@ version: 2
 # Set the OS, Python version, and other tools you might need
 build:
   os: ubuntu-24.04
-  tools:
-    python: "3.13"
   commands:
     - curl -sSf https://pixi.sh/install.sh | sh
     - /home/docs/.pixi/bin/pixi run sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html

@@ -1,15 +1,14 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
+
 import itertools
 import re
 
-from deltakit_explorer.analysis._analysis import (
-    calculate_lambda_and_lambda_stddev,
-    compute_logical_error_per_round,
-)
 import numpy as np
 import pytest
+
 from deltakit_explorer import Logging, analysis
+from deltakit_explorer.analysis._analysis import compute_logical_error_per_round
 
 
 class TestLEPPerRoundComputation:
@@ -19,7 +18,9 @@ class TestLEPPerRoundComputation:
             (1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2), (False, True)
         ),
     )
-    def test_on_synthetic_inputs(self, leppr: float, spam_error: float, is_noisy: bool):
+    def test_on_synthetic_inputs(
+        self, leppr: float, spam_error: float, is_noisy: bool
+    ) -> None:
         f_0 = 1 - 2 * spam_error
         rounds = np.arange(2, np.ceil(np.log(0.3 / f_0) / np.log(1 - 2 * leppr)), 2)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -44,7 +45,7 @@ class TestLEPPerRoundComputation:
     @pytest.mark.parametrize(
         "rounds", ([0, 1, 2, 3, 4, 3], [-2, 1, 1, 3, 3, 3], [4, 8, 4, 0, 5])
     )
-    def test_raises_when_duplicated_round_number(self, rounds: list[int]):
+    def test_raises_when_duplicated_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
         nprounds = np.asarray(rounds)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -59,7 +60,7 @@ class TestLEPPerRoundComputation:
     @pytest.mark.parametrize(
         "rounds", ([0, 1, 2, 3, 4], [-1, 4, 5, 7], [8, 4, 0, 5, -1, -348975])
     )
-    def test_raises_when_invalid_round_number(self, rounds: list[int]):
+    def test_raises_when_invalid_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
         nprounds = np.asarray(rounds)
         num_shots = 100_000 + np.zeros_like(rounds)
@@ -152,7 +153,7 @@ class TestLEPPerRoundComputation:
         assert leppr_stddevs == sorted(leppr_stddevs, reverse=True)
 
     @pytest.mark.parametrize("leppr", [5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2])
-    def test_single_point_fit(self, leppr: float):
+    def test_single_point_fit(self, leppr: float) -> None:
         rounds = 30
         num_shots = 100_000
         fidelity = (1 - 2 * leppr) ** rounds
@@ -231,62 +232,6 @@ class TestCurveFit:
             )
 
 
-class TestCalculateLambda:
-    @pytest.mark.parametrize(
-        "distances,lambda_,lambda0",
-        itertools.product(
-            ((5, 7, 9), (5, 9, 13), tuple(range(5, 22, 2))),
-            (0.7, 0.9, 1 - 1e-5, 1 - 1e-7, 1 + 1e-7, 1 + 1e-5, 1.1, 1.5, 2, 10, 20),
-            (0.01, 0.1, 1, 2, 10, 100),
-        ),
-    )
-    def test_synthetic_values(
-        self, distances: tuple[int, ...], lambda_: float, lambda0: float
-    ):
-        lepprs = [1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances]
-        # Set standard deviations not too low to avoid getting into precision issues in
-        # the fit and being outside of the 3*sigma interval due to precision issues.
-        lepprs_stddev = [1e-7 for _ in distances]
-        res = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev)
-        # Test that the estimated quantities are within 3*sigma of the real one.
-        assert pytest.approx(res.lambda_, abs=3 * res.lambda_stddev) == lambda_
-        assert pytest.approx(res.lambda0, abs=3 * res.lambda0_stddev) == lambda0
-        assert isinstance(res.lambda_, float)
-        assert isinstance(res.lambda_stddev, float)
-        assert isinstance(res.lambda0, float)
-        assert isinstance(res.lambda0_stddev, float)
-
-    def test_non_unique_distances_raises(self):
-        distances = [5, 5, 7]
-        lepprs = [0.01, 0.01, 0.001]
-        lepprs_stddevs = [1e-10, 1e-10, 1e-10]
-        with pytest.raises(ValueError, match="^Multiple entries were provided"):
-            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
-
-    def test_even_distances_raises(self):
-        distances = [2, 4, 6]
-        lepprs = [0.01, 0.001, 0.0001]
-        lepprs_stddevs = [1e-10, 1e-10, 1e-10]
-        with pytest.raises(ValueError, match="^Found at least one even distance"):
-            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
-
-    @pytest.mark.parametrize(
-        "lamb,distances",
-        itertools.product(
-            (0.1, 0.5, 0.9, 1 - 1e-7, 1 + 1e-7, 1.1, 1.2, 1.3, 1.4),
-            ([3, 5, 7], list(range(3, 20, 4))),
-        ),
-    )
-    def test_small_lambda_and_low_distance_warns(
-        self, lamb: float, distances: list[int]
-    ):
-        lepprs = [0.1 * lamb ** (-(d + 1) / 2) for d in distances]
-        lepprs_stddevs = [1e-10 for _ in distances]
-        msg = "^Lambda estimation is unreliable at low code distances and low values of lambda."
-        with pytest.warns(UserWarning, match=msg):
-            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
-
-
 class TestCalculateLep:
     def test_calculate_lep_no_fails_raises(self):
         fails = [500, 200, 25, 0]
@@ -300,6 +245,15 @@ class TestCalculateLep:
         lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(fails=100, shots=1000)
         np.testing.assert_allclose(lep, true_lep)
         np.testing.assert_allclose(lep_stddev, true_lep_stddev, atol=1e-8)
+
+    def test_calculate_lep_returns_correct_values(self):
+        true_leps = [0.1, 0.02, 0.005]
+        true_lep_stddevs = [0.00948683, 0.00442719, 0.00223047]
+        leps, lep_stddevs = analysis.calculate_lep_and_lep_stddev(
+            fails=[100, 20, 5], shots=1000
+        )
+        np.testing.assert_allclose(leps, true_leps)
+        np.testing.assert_allclose(lep_stddevs, true_lep_stddevs, atol=1e-8)
 
 
 class TestGetLambdaFit:

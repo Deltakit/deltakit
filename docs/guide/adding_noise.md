@@ -14,6 +14,8 @@ kernelspec:
 
 # Adding Noise
 
+*Want to follow along? {download}`Download this notebook.<adding_noise.md>`*
+
 ## Motivation
 
 The goal of Quantum Error Correction is to correct errors, which are caused by different noise mechanisms.
