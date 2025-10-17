@@ -99,10 +99,5 @@ class TestCalculateLambda:
         res2 = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev, m2)
         # Estimations of lambda and lambda0 are already checked by another test, so we
         # only check that the standard deviations actually agree here.
-        # Relative difference of 10% is not enough to make all tests pass, but a
-        # relative difference of 15% is. Even though that seems high, this is not that
-        # much considering that the computation methods are quite different (e.g.
-        # "direct" VS "d" that even calls different fitting functions) and that the
-        # compared values are standard deviations.
-        assert pytest.approx(res1.lambda_stddev, rel=1.5e-1) == res2.lambda_stddev
-        assert pytest.approx(res1.lambda0_stddev, rel=1.5e-1) == res2.lambda0_stddev
+        assert pytest.approx(res1.lambda_stddev, rel=1e-6) == res2.lambda_stddev
+        assert pytest.approx(res1.lambda0_stddev, rel=1e-6) == res2.lambda0_stddev

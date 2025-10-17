@@ -122,8 +122,6 @@ def _lambda_fit_with_d_plus_1_over_2(
     lambda_value_stddev = float(lambda_value * slope_stddev)
     lambda0 = float(numpy.exp(-offset))
     lambda0_stddev = float(lambda0 * offset_stddev)
-    print("Correlation matrix:")
-    print(cov)
     return LambdaResults(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
 
 
@@ -158,9 +156,9 @@ def _lambda_fit_with_direct(
         maxfev=10000,
     )
     lamb0_stddev, lamb_stddev = numpy.sqrt(numpy.diagonal(cov))
-    print("Correlation matrix:")
-    print(cov)
-    return LambdaResults(float(lamb), lamb_stddev, float(lamb0), lamb0_stddev)
+    return LambdaResults(
+        float(lamb), float(lamb_stddev), float(lamb0), float(lamb0_stddev)
+    )
 
 
 _LAMBDA_FITTING_METHODS: dict[
@@ -207,7 +205,9 @@ def calculate_lambda_and_lambda_stddev(
             each code distance in ``distances``. Should be the same size as
             ``distances``.
         method (Literal["d", "(d+1)/2", "direct"]): mathematical method used to fit the
-            data. Defaults to "(d+1)/2".
+            data. Defaults to "(d+1)/2". All 3 methods show remarkable numerical
+            agreement, but "direct" is slower than both "d" and "(d+1)/2", so these last
+            2 should be preferred in general.
 
     Returns:
         LambdaResults: detailed results of the computation.
