@@ -168,7 +168,7 @@ Authorization = "Authorization" # Web-related field.
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
-extend-exclude = ["docs/styles"]
+extend-exclude = ["docs/styles", "**/LICENSE"]
 
 [tool.coverage.run]
 omit = [
