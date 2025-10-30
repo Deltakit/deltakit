@@ -868,7 +868,7 @@ class CSSCode(StabiliserCode):
         """
         hx_mat, hz_mat = self.parity_check_matrices
 
-        return len(self.data_qubits) - (
+        return len(self.data_qubits) - int(
             np.linalg.matrix_rank(galois.GF2(hx_mat))
             + np.linalg.matrix_rank(galois.GF2(hz_mat))
         )

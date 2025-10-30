@@ -1,26 +1,37 @@
 ---
 name: Build docs
+permissions:
+  contents: read
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
+  check-deltakit-token:
+    name: Check if Deltakit token exists
+    runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.deltakit-token.outputs.exists }}
+    steps:
+        - id: deltakit-token
+          env:
+              DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
+          if: ${{ env.DELTAKIT_TOKEN != '' }}
+          run: echo "exists=true" >> $GITHUB_OUTPUT
+
   build-docs:
+    needs: [check-deltakit-token]
+    if: needs.check-deltakit-token.outputs.exists == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
       - name: Set up Pixi
-        uses: prefix-dev/setup-pixi@v0.8.10
+        uses: prefix-dev/setup-pixi@v0.9.1
         with:
-          pixi-version: v0.50.2
+          pixi-version: v0.56.0
 
       - name: Install dependencies
         run: |
@@ -33,3 +44,5 @@ jobs:
       - name: Build documentation
         run: |
           pixi run build_docs
+        env:
+          DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}

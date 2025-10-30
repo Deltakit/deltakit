@@ -10,14 +10,13 @@ import pandas as pd
 import pytest
 from deltakit_circuit import Circuit, measurement_noise_profile
 from deltakit_circuit.gates import CX, MZ, RZ, H, OneQubitResetGate, PauliBasis
-from deltakit_circuit.noise_channels import (Depolarise1, Depolarise2,
-                                             PauliXError)
+from deltakit_circuit.noise_channels import Depolarise1, Depolarise2, PauliXError
 from deltakit_decode import PyMatchingDecoder
 from deltakit_decode.analysis import RunAllAnalysisEngine, StimDecoderManager
-from deltakit_explorer.codes._css._css_code_experiment_circuit import \
-    css_code_memory_circuit
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
+from deltakit_explorer.codes._css._css_code_experiment_circuit import (
+    css_code_memory_circuit,
+)
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
 from deltakit_explorer.qpu import QPU
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
@@ -30,11 +29,13 @@ max_shots = 1e7
 # File name to save output data.
 filename = f"RPC_MWPM_X_MEM_{max_shots:.0e}_shots.csv"
 
+
 def rotated_planar_xmem_noiseless(
     x_distance: int, z_distance: int, num_rounds: int
 ) -> Tuple[RotatedPlanarCode, Circuit]:
-    """This function takes as input quantum memory parameters (X-distance, Z-distance, Num Rounds)
-    and returns a noiseless logical-X quantum memory circuit in a default gate set.
+    """This function takes as input quantum memory parameters (X-distance, Z-distance,
+    Num Rounds) and returns a noiseless logical-X quantum memory circuit in a default
+    gate set.
 
     Parameters
     ----------
@@ -62,10 +63,11 @@ def rotated_planar_xmem_noiseless(
 
     return code, memory_circuit
 
+
 def noise_model(physical_error_rate: float) -> NoiseParameters:
-    """This function takes as input a single parameter: the physical noise rate (p) of our noise model.
-    It creates the same noise model as outlined in the paper https://arxiv.org/abs/2205.09828 and returns
-    the relevant NoiseParameters object.
+    """This function takes as input a single parameter: the physical noise rate (p) of
+    our noise model. It creates the same noise model as outlined in the paper
+    https://arxiv.org/abs/2205.09828 and returns the relevant NoiseParameters object.
 
     Parameters
     ----------
@@ -97,7 +99,8 @@ def noise_model(physical_error_rate: float) -> NoiseParameters:
         )
     ]
 
-    # Measurements outcomes are incorrectly recorded with probability physical_error_rate.
+    # Measurements outcomes are incorrectly recorded with probability
+    # physical_error_rate.
     measurement_flip_noise = measurement_noise_profile(physical_error_rate)
 
     # Idle qubits are affected by unbiased depolarising noise channels.
@@ -114,11 +117,13 @@ def noise_model(physical_error_rate: float) -> NoiseParameters:
 
     return noise_model
 
+
 def rotated_planar_xmem_noisy(
     x_distance: int, z_distance: int, num_rounds: int, noise_model: NoiseParameters
 ) -> Circuit:
-    """This function uses similar inputs to `rotated_planar_xmem_noiseless`, with the addition of a noise model.
-    It also has a restricted gate set hardcoded in, to match the gate set used in the paper.
+    """This function uses similar inputs to `rotated_planar_xmem_noiseless`, with the
+    addition of a noise model. It also has a restricted gate set hardcoded in, to match
+    the gate set used in the paper.
 
 
     Parameters
@@ -135,7 +140,8 @@ def rotated_planar_xmem_noisy(
     Returns
     -------
     Circuit
-        A `deltakit.circuit.Circuit` object describing a noisy quantum memory experiment.
+        A `deltakit.circuit.Circuit` object describing a noisy quantum memory
+        experiment.
     """
 
     # Get code object and the noiseless circuit
@@ -164,10 +170,12 @@ def rotated_planar_xmem_noisy(
 
     return noisy_circuit
 
+
 def experiment_decoder_manager(
     x_distance: int, z_distance: int, num_rounds: int, physical_error_rate: float
 ) -> StimDecoderManager:
-    """This function will combine all previous functions to return a single value: the logical error rate.
+    """This function will combine all previous functions to return a single value: the
+    logical error rate.
 
     Parameters
     ----------
@@ -251,8 +259,10 @@ def test_qmem():
     pt1pct1_shots, pt1pct1_fails = experiment_decoder_manager(
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.001
     ).run_batch_shots(1e5)
-    print(f"Logical error rate with physical error 1%: {pct1_fails/pct1_shots}")
-    print(f"Logical error rate with physical error .1%: {pt1pct1_fails/pt1pct1_shots}")
+    print(f"Logical error rate with physical error 1%: {pct1_fails / pct1_shots}")
+    print(
+        f"Logical error rate with physical error .1%: {pt1pct1_fails / pt1pct1_shots}"
+    )
 
     distances = [3, 5, 7, 9]
     physical_error_rates = np.logspace(-5, -1.75, 14)
@@ -268,18 +278,20 @@ def test_qmem():
         for phys in physical_error_rates:
             num_shots = int(min(phys**-2, max_shots))
             decoder_managers.extend(
-                (num_shots, experiment_decoder_manager(distance, distance, distance, phys))
-                for distance in distances
+                (num_shots, experiment_decoder_manager(d, d, d, phys))
+                for d in distances
             )
 
         # Aggregate managers into run engines for multiprocessing
         data_frames = [
             RunAllAnalysisEngine(
-                experiment_name = f"experiment_{num_shots}_{phys}",
-                decoder_managers = [manager for _, manager in manager_groups],
-                max_shots = num_shots
+                experiment_name=f"experiment_{num_shots}_{phys}",
+                decoder_managers=[manager for _, manager in manager_groups],
+                max_shots=num_shots,
             ).run()
-            for num_shots, manager_groups in groupby(decoder_managers, key=itemgetter(0))
+            for num_shots, manager_groups in groupby(
+                decoder_managers, key=itemgetter(0)
+            )
         ]
         pd.concat(data_frames).to_csv(filename, index=False)
 

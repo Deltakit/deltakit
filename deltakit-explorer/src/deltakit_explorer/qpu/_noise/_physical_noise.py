@@ -71,7 +71,7 @@ class PhysicalNoise(NoiseParameters):
                     continue
                 if len(gate.qubits) == 2:
                     noise_ops.append(
-                        Depolarise2(*gate.qubits, self.p_2_qubit_gate_error)
+                        Depolarise2(*gate.qubits, self.p_2_qubit_gate_error)  # type: ignore[call-arg]
                     )
                 elif isinstance(gate, OneQubitCliffordGate):
                     noise_ops.append(

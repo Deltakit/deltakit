@@ -173,7 +173,7 @@ def test_loop_until_observable_rse_below_threshold_runs_correct_number_of_shots(
 
 
 def test_loop_until_observable_rse_below_threshold_stops_below_threshold(half_fail_decoder_managers):
-    rse_target = 10**np.random.uniform(low=-2, high=0)
+    rse_target = 10**np.random.default_rng().uniform(low=-2, high=0)
     engine = RunAllAnalysisEngine(
         "test_experiment",
         loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(

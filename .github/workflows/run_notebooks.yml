@@ -1,4 +1,6 @@
 name: Run test notebooks
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

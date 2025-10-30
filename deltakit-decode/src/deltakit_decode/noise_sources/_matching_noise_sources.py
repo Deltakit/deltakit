@@ -339,7 +339,7 @@ class EdgeProbabilityMatchingNoise(IndependentMatchingNoise):
         # The lambda needs to be annotated with a default argument so that the
         # argument is captured within the for loop.
         edge_p_err_decompositions = (
-            UniformMatchingNoise(p_err, lambda _, e=edges: e)  # type: ignore
+            UniformMatchingNoise(p_err, lambda _, e=edges: e)
             .importance_sampling_decomposition(code_data, inner_coefficient_limit)
             for (p_err, edges), inner_coefficient_limit in zip(
                 p_err_edges.items(), inner_model_coefficient_limits)
@@ -492,7 +492,7 @@ class AdditiveSequentialMatchingNoise(
             partial(model.error_generator, code_data, seed_)
             for model, seed_ in zip(self.internal_sources, offset_seed(seed))
         )
-        for error in CombinedSequences._lazy_product(*error_generators):  # type: ignore[arg-type]
+        for error in CombinedSequences._lazy_product(*error_generators):
             yield OrderedDecodingEdges(chain.from_iterable(error))
 
     def sequence_size(self, code_data: Any) -> int:
@@ -593,7 +593,7 @@ class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
             min_bucket_i = sizes.index(min(sizes))
             sizes[min_bucket_i] += size
             iterators[min_bucket_i] = chain(iterators[min_bucket_i], iterator)
-        return tuple(zip(iterators, sizes))  # type: ignore
+        return tuple(zip(iterators, sizes))
 
     def field_values(self) -> Dict[str, Any]:
         base_dict = super().field_values()
@@ -700,11 +700,13 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
 
     def __init__(self,
                  erasure_probability: float,
-                 pauli_noise_model: IndependentMatchingNoise = NoMatchingNoise(),
+                 pauli_noise_model: IndependentMatchingNoise | None = None,
                  edge_filter: Optional[EdgeFilterT] = None):
         self.erasure_probability = erasure_probability
         self.edge_filter = edge_filter or IndependentMatchingNoise.empty_filter
-        self.pauli_noise_model = pauli_noise_model
+        self.pauli_noise_model = (
+            pauli_noise_model if pauli_noise_model is not None else NoMatchingNoise()
+        )
 
     def error_generator(
         self, code_data: HyperMultiGraph, seed: Optional[int] = None

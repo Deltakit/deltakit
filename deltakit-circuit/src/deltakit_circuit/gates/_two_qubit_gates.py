@@ -74,7 +74,7 @@ class CY(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]])
     stim_string: ClassVar[str] = "CY"
 
 
-class CZ(  # type: ignore[misc]
+class CZ(
     ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]],
     SymmetricTwoQubitGate,
 ):
@@ -346,9 +346,7 @@ class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
     stim_string: ClassVar[str] = "SQRT_ZZ_DAG"
 
 
-class XCX(  # type: ignore[misc]
-    ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]
-):
+class XCX(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
     """The X-controlled X gate. First qubit is the control, second qubit is
     the target. Applies an X gate to the target if the control is in the
     ``|->`` state.
@@ -476,9 +474,7 @@ class YCX(ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "YCX"
 
 
-class YCY(  # type: ignore[misc]
-    ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]
-):
+class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
     """The Y-controlled Y gate. First qubit is the control, second qubit is
     the target. Applies a Y gate to the target if the control is in the
     ``|-i>`` state.
@@ -575,9 +571,7 @@ class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "CXSWAP"
 
 
-class CZSWAP(  # type: ignore[misc]
-    SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]
-):
+class CZSWAP(SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]):
     """A combination CZ-and-SWAP gate. This gate is kak-equivalent
     to the `ISWAP` gate. Equivalent to `H` on the target qubit, followed
     by `CNOT` from target to control, `CNOT` from control to target,

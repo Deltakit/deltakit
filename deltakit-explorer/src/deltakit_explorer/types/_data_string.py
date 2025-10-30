@@ -125,7 +125,7 @@ class DataString:
         return DataString(cls._hex_string_to_bytes(data_string[7:]))
 
     @property
-    def data(self):
+    def data(self) -> bytes:
         """Read-only accessor to the data."""
         return self._data
 

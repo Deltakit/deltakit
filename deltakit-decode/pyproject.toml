@@ -46,6 +46,7 @@ dependencies = [
   "typing-extensions",
   "tqdm >=4.66.2",
   "pandas-stubs",
+  "plotly-stubs",
 ]
 
 [project.urls]

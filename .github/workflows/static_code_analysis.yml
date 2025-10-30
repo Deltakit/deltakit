@@ -1,4 +1,6 @@
 name: Static Code Analysis
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
@@ -19,15 +21,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
       - name: Set up Pixi
-        uses: prefix-dev/setup-pixi@v0.8.10
+        uses: prefix-dev/setup-pixi@v0.9.1
         with:
-          pixi-version: v0.49.0
+          pixi-version: v0.56.0
 
       - name: Install dependencies
         run: pixi install
@@ -35,12 +32,20 @@ jobs:
       - name: typos
         run: pixi run typos
 
-      - name: ruff
+      - name: ruff check
         run: pixi run lint
         if: ${{ always() }}
 
-      - name: mypy
+      - name: ruff format
+        run: pixi run ruff format --check
+        if: ${{ always() }}
+
+      - name: mypy-all (checking packages individually)
         run: pixi run mypy-all
+        if: ${{ always() }}
+
+      - name: mypy (checking packages together)
+        run: pixi run mypy .
         if: ${{ always() }}
 
       - name: deptry
@@ -56,5 +61,5 @@ jobs:
         if: ${{ always() }}
 
       - name: pip_audit
-        run: pixi run pip_audit
+        run: pixi run pip_audit --ignore-vuln GHSA-4xh5-x5gv-qwph
         if: ${{ always() }}

@@ -13,7 +13,7 @@
 [![DOI][doi-badge]][doi-link]
 
 [docs-badge]: https://readthedocs.org/projects/deltakit/badge/?version=latest
-[docs-link]: https://deltakit.readthedocs.io/en/latest/
+[docs-link]: https://deltakit.readthedocs.io/
 
 [pypi-badge]: https://img.shields.io/pypi/v/deltakit.svg
 [pypi-link]: https://pypi.org/project/deltakit/
@@ -51,8 +51,8 @@ Whether you're a seasoned QEC researcher or just starting out, Deltakit supports
 in exploring new ways to implement QEC logic all the way to running complex
 QEC circuits on QPU hardware.
 
-<a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a><br>
-<a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/latest/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
+<a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a><br>
+<a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
 
 </tr>
 </table>
@@ -138,7 +138,7 @@ circuit = css_code_stability_circuit(
 print(circuit)
 ```
 
-Learn more by reading the [Deltakit docs](https://deltakit.readthedocs.io/en/latest/)!
+Learn more by reading the [Deltakit docs](https://deltakit.readthedocs.io/)!
 
 ## Support
 

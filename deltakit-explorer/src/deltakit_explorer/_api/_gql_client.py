@@ -49,7 +49,7 @@ class GQLClient(APIClient):
         """
         The constructor accepts and endpoint and a timeout.
         `base_url` is a URL of the service.
-        - `/api/graphql/` accepts GraphQL POST-qeries,
+        - `/api/graphql/` accepts GraphQL POST-queries,
         - `/api/data/` allows GET-requests of content.
 
         Args:

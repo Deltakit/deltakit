@@ -41,7 +41,12 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx_design",
 ]
-myst_enable_extensions = ["colon_fence", "dollarmath", "amsmath", "substitution",]
+myst_enable_extensions = [
+    "colon_fence",
+    "dollarmath",
+    "amsmath",
+    "substitution",
+]
 
 nb_execution_mode = "force"
 nb_execution_excludepatterns = [
@@ -63,12 +68,16 @@ autodoc_member_order = "bysource"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["Thumbs.db", ".DS_Store", "json/*",
-                    "_build/jupyter_execute",
-                    "_build/html",
-                    "examples/notebooks/demo",
-                    "examples/notebooks/template_notebook.ipynb",
-                    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.ipynb"]
+exclude_patterns = [
+    "Thumbs.db",
+    ".DS_Store",
+    "json/*",
+    "_build/jupyter_execute",
+    "_build/html",
+    "examples/notebooks/demo",
+    "examples/notebooks/template_notebook.ipynb",
+    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.ipynb",
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -82,7 +91,7 @@ html_favicon = "logo/deltakit_favicon.png"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_permalinks_icon = '<span>#</span>'
+html_permalinks_icon = "<span>#</span>"
 html_theme = "sphinxawesome_theme"
 
 # no link to an *.rst source
@@ -102,11 +111,11 @@ mathjax3_config = {
         "packages": {"[+]": ["physics"]}  # Add the physics package
     },
     "loader": {
-        "load": ["[tex]/physics"]         # Load physics extension
-    }
+        "load": ["[tex]/physics"]  # Load physics extension
+    },
 }
 
-highlight_language = 'python3'
+highlight_language = "python3"
 
 suppress_warnings = [
     "autosummary.import_cycle",

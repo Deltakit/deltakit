@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       all-labels: ${{ steps.json_labels.outputs.JSON_LABELS_ALL }}
-      new-labels: ${{ steps.json_labels.outputs.JSON_LABELS_NEW }}
     steps:
       # Transform labels to JSON compatible list to be used as
       # in matrix as a target
@@ -27,8 +26,7 @@ jobs:
         run: |
           python tools/transform_labels.py
         env:
-          ALL_LABELS: ${{ steps.label-PR.outputs.all-labels }}
-          NEW_LABELS: ${{ steps.label-PR.outputs.new-labels }}
+          ALL_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
 
   pytest:
     needs: [labels-to-json]
@@ -40,25 +38,16 @@ jobs:
           - {label: '311', version: '3.11'}
           - {label: '312', version: '3.12'}
           - {label: '313', version: '3.13'}
-        package: ${{ fromJSON(needs.label-prs.outputs.all-labels) }}
+        package: ${{ fromJSON(needs.labels-to-json.outputs.all-labels) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version.version }}
-
       - name: Set up Pixi
-        uses: prefix-dev/setup-pixi@v0.8.10
+        uses: prefix-dev/setup-pixi@v0.9.1
         with:
-          pixi-version: v0.49.0
-
-      - name: Instruct pixi to use specified Python version
-        run: pixi add python=${{ matrix.python-version.version }}
+          pixi-version: v0.56.0
 
       - name: Run ${{ matrix.package }} tests
-        if: contains(needs.label-prs.outputs.all-labels, matrix.package)
         run: pixi run -e ${{ matrix.package }}-tests-py${{ matrix.python-version.label }} tests

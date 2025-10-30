@@ -116,7 +116,7 @@ cmd = "isort ."
 
 [dependencies]
 pandoc = ">=3.7.0.2,<4"
-python = ">=3.10"
+python = ">=3.10,<3.14"
 actionlint = ">=1.7"
 pixi-pycharm = ">=0.0.8,<0.0.9"
 
@@ -128,7 +128,7 @@ deltakit-explorer = { path = "./deltakit-explorer/", editable = true }
 deltakit = { path = "./", editable = true, extras=["dev"] }
 
 [feature.python.dependencies]
-python = ">=3.10"
+python = ">=3.10,<3.14"
 
 [feature.py310.dependencies]
 python = "3.10.*"

@@ -37,9 +37,10 @@ class StimDecoderManager(
         Stim circuit to use to inform how noise samples are generated.
     decoder : GraphDecoder
         Decoder to use to decode generated shots.
-    noise_model : NoiseModel[stim.Circuit, StimOutput], optional
-        Stim circuit based noise model to use, by default `SampleStimNoise`
-        which will just directly take samples from the `stim_noise_circuit`.
+    noise_model : NoiseModel[stim.Circuit, StimOutput] | None, optional
+        Stim circuit based noise model to use, when `None` an instance of
+        `SampleStimNoise` which will just directly take samples from the
+        `stim_noise_circuit` is used.
     reporters : Optional[List[BaseReporter]], optional
         Optional list of reporters to give extra information about a decoder,
         by default None.
@@ -54,11 +55,13 @@ class StimDecoderManager(
             self,
             stim_noise_circuit: stim.Circuit,
             decoder: GraphDecoder,
-            noise_model: NoiseModel[stim.Circuit, StimOutput] = SampleStimNoise(),
+            noise_model: NoiseModel[stim.Circuit, StimOutput] | None = None,
             reporters: Optional[List[BaseReporter]] = None,
             metadata: Optional[Dict[str, str]] = None,
             seed: Optional[int] = None,
             batch_size: int = int(1e4)):
+        if noise_model is None:
+            noise_model = SampleStimNoise()
         super().__init__(noise_model,
                          len(decoder.logicals),
                          reporters,

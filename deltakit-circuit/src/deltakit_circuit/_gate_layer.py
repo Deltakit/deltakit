@@ -115,7 +115,7 @@ class GateLayer(Generic[T]):
         for gate in chain(self._non_measurement_gates, self._measurement_gates):
             # Is maybe dangerous because the mutation happens regardless of
             # whether the error is raised or not
-            gate.transform_qubits(id_mapping)  # type: ignore[arg-type]
+            gate.transform_qubits(id_mapping)
             if intersection := new_qubits.intersection(gate.qubits):
                 raise DuplicateQubitError(gate, intersection)
             new_qubits.update(gate.qubits)

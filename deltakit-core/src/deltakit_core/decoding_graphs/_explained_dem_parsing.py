@@ -41,7 +41,7 @@ def depolarising_as_independent(probability: float, num_qubits: int) -> float:
         )
     p_with_i = probability / mixing_probability
     exponent = 1 / 2 ** (2 * num_qubits - 1)
-    return (1 - ((1 - p_with_i) ** exponent)) / 2
+    return float((1 - (1 - p_with_i) ** exponent) / 2)
 
 
 def noise_probability(noise_channel: stim.CircuitTargetsInsideInstruction) -> float:
@@ -69,7 +69,7 @@ def noise_probability(noise_channel: stim.CircuitTargetsInsideInstruction) -> fl
     if noise_channel.gate == "DEPOLARIZE2":
         return depolarising_as_independent(noise_channel.args[0], 2)
     if noise_channel.gate in ("X_ERROR", "Y_ERROR", "Z_ERROR"):
-        return noise_channel.args[0]
+        return float(noise_channel.args[0])
     raise TypeError(f"Unsupported gate type: {noise_channel.gate}")
 
 

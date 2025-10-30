@@ -127,7 +127,7 @@ dev = [
     "python-semantic-release>=10.2.0",
     "tomlkit>=0.13,<1",
     "deptry>=0.23, <1",
-    "ipykernel >=6.29.5,<7"
+    "ipykernel >=6.29.5,<7",
 ]
 
 # for mypy configuration, see `mypy.ini`.
@@ -161,6 +161,7 @@ youre = "you're"
 distribtuion = "distribution"
 interm = "interm"
 ket = "ket"
+ND = "ND"  # part of NDArray
 Alise = "Alise"
 DEPOLARIZE = "DEPOLARIZE"
 
@@ -215,3 +216,33 @@ mode = "update"
 [tool.semantic_release.commit_parser_options]
 other_allowed_tags = ["build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
 allowed_tags = ["feat", "fix", "perf", "build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.14"
+deltakit-core = { path = "./deltakit-core/", develop = true }
+deltakit-circuit = { path = "./deltakit-circuit/", develop = true }
+deltakit-decode = { path = "./deltakit-decode/", develop = true }
+deltakit-explorer = { path = "./deltakit-explorer/", develop = true }
+
+[tool.hatch.envs.default]
+pre-install-commands = [
+  "pip install -e ./deltakit-core",
+  "pip install -e ./deltakit-circuit",
+  "pip install -e ./deltakit-decode",
+  "pip install -e ./deltakit-explorer",
+]
+features = ["dev"]
+
+[tool.uv.workspace]
+members = [
+  "deltakit-core",
+  "deltakit-circuit",
+  "deltakit-decode",
+  "deltakit-explorer",
+]
+
+[tool.uv.sources]
+deltakit-core     = { workspace = true }
+deltakit-circuit  = { workspace = true }
+deltakit-decode   = { workspace = true }
+deltakit-explorer = { workspace = true }

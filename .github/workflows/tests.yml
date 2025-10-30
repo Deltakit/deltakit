@@ -1,4 +1,6 @@
 name: Run pytest on all packages
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

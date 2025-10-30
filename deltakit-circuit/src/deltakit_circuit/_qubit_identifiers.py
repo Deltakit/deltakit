@@ -174,7 +174,7 @@ class SweepBit:
         return f"SweepBit({self._bit_index})"
 
 
-class Coordinate(tuple):
+class Coordinate(Tuple[float, ...]):
     """Class which represents general coordinates.
 
     Parameters
@@ -184,7 +184,7 @@ class Coordinate(tuple):
     """
 
     def __new__(cls, *coordinates: float):
-        return super().__new__(cls, coordinates)  # type: ignore[arg-type]
+        return super().__new__(cls, coordinates)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Coordinate) and super().__eq__(other)

@@ -207,7 +207,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             if isinstance(layer, (GateLayer, NoiseLayer, Circuit)):
                 layer.transform_qubits(id_mapping)
             elif isinstance(layer, Detector):
-                layer.transform_coordinates(id_mapping)  # type: ignore[arg-type]
+                layer.transform_coordinates(id_mapping)
 
     def append_layers(self, layers: Layer | Iterable[Layer]):
         """Append any layers to the end of this circuit. If a layer consisting
@@ -424,16 +424,10 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             if isinstance(layer, GateLayer):
                 for gate in layer.gates:
                     if isinstance(gate, OneQubitMeasurementGate):
-                        layer.replace_gates(
-                            {
-                                gate: lambda gate: type(gate)(gate.qubit)  # type: ignore
-                            }
-                        )
+                        layer.replace_gates({gate: lambda gate: type(gate)(gate.qubit)})
                     elif isinstance(gate, MPP):
                         layer.replace_gates(
-                            {
-                                gate: lambda gate: type(gate)(gate.pauli_product)  # type: ignore
-                            }
+                            {gate: lambda gate: type(gate)(gate.pauli_product)}
                         )
             elif isinstance(layer, Circuit) and recursive:
                 layer.remove_noise(recursive)

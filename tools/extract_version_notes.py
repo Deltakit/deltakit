@@ -1,6 +1,7 @@
 """
 Extracts most recent release notes from `CHANGELOG.md` for use in a GitHub release
 """
+
 import re
 import sys
 from pathlib import Path

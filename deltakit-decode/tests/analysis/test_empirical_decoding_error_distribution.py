@@ -179,7 +179,7 @@ class TestEmpiricalDecodingErrorDistribution:
         self._distribution_data_is_equal(distr1 + distr2,distr2 + distr1)
 
     @pytest.mark.parametrize("num_logicals", [5, 1, 13])
-    def test_addition_is_assoicative(self, num_logicals: int):
+    def test_addition_is_associative(self, num_logicals: int):
         distr1 = EmpiricalDecodingErrorDistribution(num_logicals)
         distr2 = EmpiricalDecodingErrorDistribution(num_logicals)
         distr3 = EmpiricalDecodingErrorDistribution(num_logicals)
