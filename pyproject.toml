@@ -164,6 +164,7 @@ ket = "ket"
 ND = "ND"  # part of NDArray
 Alise = "Alise"
 DEPOLARIZE = "DEPOLARIZE"
+Authorization = "Authorization" # Web-related field.
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
