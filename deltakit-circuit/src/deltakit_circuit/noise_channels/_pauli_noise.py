@@ -102,9 +102,14 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
     stim_string: ClassVar[str] = "PAULI_CHANNEL_1"
 
     def __init__(
-        self, qubit: Qubit[T] | T, p_x: float = 0.0, p_y: float = 0.0, p_z: float = 0.0
+        self,
+        qubit: Qubit[T] | T,
+        p_x: float = 0.0,
+        p_y: float = 0.0,
+        p_z: float = 0.0,
+        tag: str | None = None,
     ):
-        super().__init__(qubit=qubit, probabilities=(p_x, p_y, p_z))
+        super().__init__(qubit=qubit, probabilities=(p_x, p_y, p_z), tag=tag)
         self.p_x = p_x
         self.p_y = p_y
         self.p_z = p_z
@@ -135,8 +140,9 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
         return hash((self.__class__, self.qubit, self.probabilities))
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}({self.qubit}, p_x={self.p_x}, "
+            f"{self.stim_string}{tag_repr}({self.qubit}, p_x={self.p_x}, "
             f"p_y={self.p_y}, p_z={self.p_z})"
         )
 
@@ -228,6 +234,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         p_zx: float = 0.0,
         p_zy: float = 0.0,
         p_zz: float = 0.0,
+        tag: str | None = None,
     ):
         probabilities = (
             p_ix,
@@ -246,7 +253,9 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
             p_zy,
             p_zz,
         )
-        super().__init__(qubit1=qubit1, qubit2=qubit2, probabilities=probabilities)
+        super().__init__(
+            qubit1=qubit1, qubit2=qubit2, probabilities=probabilities, tag=tag
+        )
         self.p_ix = p_ix
         self.p_iy = p_iy
         self.p_iz = p_iz
@@ -274,8 +283,9 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         return hash((self.__class__, self._qubit1, self._qubit2, self.probabilities))
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}"
+            f"{self.stim_string}{tag_repr}"
             f"(qubit1={self._qubit1}, qubit2={self._qubit2}, "
             f"p_ix={self.p_ix}, p_iy={self.p_iy}, p_iz={self.p_iz}, "
             f"p_xi={self.p_xi}, p_xx={self.p_xx}, p_xy={self.p_xy}, "

@@ -205,62 +205,67 @@ def _parse_single_qubit_noise_instruction(
     ],
     instruction_targets: Iterable[stim.GateTarget],
     probability: float,
+    tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     qubits = (
         qubit_mapping.get(target.value, Qubit(target.value))
         for target in instruction_targets
     )
-    return NoiseLayer(noise_class(qubit, probability) for qubit in qubits)
+    return NoiseLayer(noise_class(qubit, probability, tag=tag) for qubit in qubits)
 
 
 def _parse_depolarise_2_noise_instruction(
     instruction_targets: Sequence[stim.GateTarget],
     probability: float,
+    tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     qubits = [
         qubit_mapping.get(target.value, Qubit(target.value))
         for target in instruction_targets
     ]
-    return NoiseLayer(Depolarise2.from_consecutive(qubits, probability))
+    return NoiseLayer(Depolarise2.from_consecutive(qubits, probability, tag=tag))
 
 
 def _parse_pauli_channel_1_instruction(
     instruction_targets: Iterable[stim.GateTarget],
     probabilities: Iterable[float],
+    tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     qubits = (
         qubit_mapping.get(target.value, Qubit(target.value))
         for target in instruction_targets
     )
-    return NoiseLayer(PauliChannel1(qubit, *probabilities) for qubit in qubits)
+    return NoiseLayer(PauliChannel1(qubit, *probabilities, tag=tag) for qubit in qubits)
 
 
 def _parse_pauli_channel_2_instruction(
     instruction_targets: Iterable[stim.GateTarget],
     probabilities: Iterable[float],
+    tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     qubits = [
         qubit_mapping.get(target.value, Qubit(target.value))
         for target in instruction_targets
     ]
-    return NoiseLayer(PauliChannel2.from_consecutive(qubits, *probabilities))
+    return NoiseLayer(PauliChannel2.from_consecutive(qubits, *probabilities, tag=tag))
 
 
 def _parse_correlated_error_instruction(
     noise_class: Type[CorrelatedError | ElseCorrelatedError],
     instruction_targets: Iterable[stim.GateTarget],
     probability: float,
+    tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     pauli_product: PauliProduct = PauliProduct(
         cast(_PauliGate, _classify_pauli_target(target, qubit_mapping))
         for target in instruction_targets
     )
-    return NoiseLayer(noise_class(pauli_product, probability))
+    return NoiseLayer(noise_class(pauli_product, probability, tag=tag))
 
 
 def parse_stim_gate_instruction(
@@ -336,6 +341,7 @@ def parse_stim_noise_instruction(
     deltakit_circuit_noise_class: Type[_NoiseChannel],
     instruction_targets: Sequence[stim.GateTarget],
     instruction_arguments: Sequence[float],
+    instruction_tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> NoiseLayer:
     """Parse a single instruction which is a noise into a NoiseLayer.
@@ -348,6 +354,8 @@ def parse_stim_noise_instruction(
         The stim instruction targets to act the noise channel on.
     instruction_arguments : Sequence[float]
         The probabilities which define the noise channel.
+    instruction_tag : (str | None)
+        Tag associated with the instruction. None if no tag was present.
 
     Returns
     -------
@@ -367,25 +375,30 @@ def parse_stim_noise_instruction(
             deltakit_circuit_noise_class,
             instruction_targets,
             instruction_arguments[0],
+            instruction_tag,
             qubit_mapping,
         )
     if issubclass(deltakit_circuit_noise_class, Depolarise2):
         return _parse_depolarise_2_noise_instruction(
-            instruction_targets, instruction_arguments[0], qubit_mapping
+            instruction_targets,
+            instruction_arguments[0],
+            instruction_tag,
+            qubit_mapping,
         )
     if issubclass(deltakit_circuit_noise_class, PauliChannel1):
         return _parse_pauli_channel_1_instruction(
-            instruction_targets, instruction_arguments, qubit_mapping
+            instruction_targets, instruction_arguments, instruction_tag, qubit_mapping
         )
     if issubclass(deltakit_circuit_noise_class, PauliChannel2):
         return _parse_pauli_channel_2_instruction(
-            instruction_targets, instruction_arguments, qubit_mapping
+            instruction_targets, instruction_arguments, instruction_tag, qubit_mapping
         )
     if issubclass(deltakit_circuit_noise_class, (CorrelatedError, ElseCorrelatedError)):
         return _parse_correlated_error_instruction(
             deltakit_circuit_noise_class,
             instruction_targets,
             instruction_arguments[0],
+            instruction_tag,
             qubit_mapping,
         )
     raise ValueError(
@@ -497,7 +510,11 @@ def parse_circuit_instruction(
         )
     if (noise_class := NOISE_CHANNEL_MAPPING.get(instruction_name, None)) is not None:
         return parse_stim_noise_instruction(
-            noise_class, instruction_targets, instruction_arguments, qubit_mapping
+            noise_class,
+            instruction_targets,
+            instruction_arguments,
+            instruction_tag,
+            qubit_mapping,
         )
     if instruction_name == "DETECTOR":
         return parse_detector(instruction)
