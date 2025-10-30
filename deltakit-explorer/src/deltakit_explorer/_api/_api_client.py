@@ -164,7 +164,7 @@ class APIClient(ABC):  # pragma: nocover
         Args:
             detectors (DetectionEvents):
                 DetectionEvents values from simulations to compute defect rates.
-            stim_circuit (str | stim.Circuit): Circuit to analyze.
+            stim_circuit (str | stim.Circuit): Circuit to analyse.
             request_id (str): Identifier of the request."""
         raise NotImplementedError()
 
@@ -179,7 +179,7 @@ class APIClient(ABC):  # pragma: nocover
         """Get correlation matrix for detectors.
 
         Args:
-            detectors (DetectionEvents): Detector data to analyze.
+            detectors (DetectionEvents): Detector data to analyse.
             noise_floor_circuit (str | stim.Circuit): Circuit with the minimal noise.
             use_default_noise_model_edges (bool): Whether to use default noise model edges.
             request_id (str): Identifier of the request.

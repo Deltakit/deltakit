@@ -136,7 +136,7 @@ def graph_to_json(
     - logicals: List of sorted tuples for logical edges
     - boundary: Decoding graph boundary. None if it doesn't exist.
 
-    If full flag is True, we additionally serialize:
+    If full flag is True, we additionally serialise:
 
     - detector_records: dict containing detector metadata
     - edge_record: dict containing edge metadata

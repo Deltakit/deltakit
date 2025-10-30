@@ -747,7 +747,7 @@ class TestExampleRPlanar3x3x1DemToDecodingGraph:
             if example_decoding_graph.detector_is_boundary(node)
         )
         assert (
-            len(list(example_decoding_graph.neighbors(boundary)))
+            len(list(example_decoding_graph.neighbours(boundary)))
             == len(example_decoding_graph.nodes) - 1
         )
 

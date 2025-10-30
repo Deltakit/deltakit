@@ -239,9 +239,9 @@ class TestDecodingHyperMultiGraph:
     @pytest.mark.parametrize(
         "detector, expected_nodes", [(0, {1, 2, 6}), (6, {0, 2, 3})]
     )
-    def test_neighbors_returns_expected_edges(self, detector, expected_nodes):
+    def test_neighbours_returns_expected_edges(self, detector, expected_nodes):
         graph = decoding_hyper_multigraph_with_multi_hyperedges()
-        assert set(node for node in graph.neighbors(detector)) == expected_nodes
+        assert set(node for node in graph.neighbours(detector)) == expected_nodes
 
     def test_hyper_multigraph_without_duplicate_edges_gives_expected_parity_check_matrix(
         self,

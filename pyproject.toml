@@ -167,10 +167,16 @@ DEPOLARIZE = "DEPOLARIZE"
 depolarization = "depolarization"
 Authorization = "Authorization" # Web-related field.
 color = "color" # Used in matplotlib and stim APIs.
-
+colors = "colors"
+optimize = "optimize" # scipy.optimize
+ax = "ax" # Typical naming for matplotlib Axes instances.
+center = "center"
+stabilizer = "stabilizer"
+stabilizers = "stabilizers"
+synchronize = "synchronize" # multiprocessing import
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
-extend-exclude = ["docs/styles", "**/LICENSE"]
+extend-exclude = ["docs/styles", "**/LICENSE", "**/*.html", "licenses.confluence"]
 
 [tool.coverage.run]
 omit = [
