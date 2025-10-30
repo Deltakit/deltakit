@@ -1,5 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
-# This module is not currently public; this __init__.py file is a historical artifact
+# This module is not currently public; this __init__.py file is a historical artefact
 # and can be removed, adjusting imports within other `deltakit_explorer` modules
 # accordingly.
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
