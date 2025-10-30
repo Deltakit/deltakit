@@ -23,7 +23,7 @@ from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 # This value determines the maximum number of samples to take from the circuit.
 # A higher number of shots will provide a more accurate value of the
-# logical error probability per round.
+# logical error probability.
 max_shots = 1e7
 
 # File name to save output data.
@@ -175,7 +175,7 @@ def experiment_decoder_manager(
     x_distance: int, z_distance: int, num_rounds: int, physical_error_rate: float
 ) -> StimDecoderManager:
     """This function will combine all previous functions to return a single value: the
-    logical error probability per round.
+    logical error probability.
 
     Parameters
     ----------
@@ -191,7 +191,7 @@ def experiment_decoder_manager(
     Returns
     -------
     float
-        The logical error probability per round for this code instance.
+        The logical error probability for this code instance.
 
     """
 
@@ -260,11 +260,10 @@ def test_qmem():
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.001
     ).run_batch_shots(1e5)
     print(
-        "Logical error probability per round with physical error 1%: "
-        f"{pct1_fails / pct1_shots}"
+        f"Logical error probability with physical error 1%: {pct1_fails / pct1_shots}"
     )
     print(
-        "Logical error probability per round with physical error .1%:"
+        "Logical error probability with physical error .1%:"
         f"{pt1pct1_fails / pt1pct1_shots}"
     )
 

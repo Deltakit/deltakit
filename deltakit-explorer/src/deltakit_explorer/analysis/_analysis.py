@@ -380,7 +380,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
     """Compute QEC results to estimate the logical error probability per round.
 
     This function aims at encapsulating the practical knowledge about logical error
-    probability perr round computation to help any user computing the required logical
+    probability per round computation to help any user computing the required logical
     error probabilities for useful number of rounds.
 
     It repeatedly calls ``simulator`` with a number of rounds growing according to
