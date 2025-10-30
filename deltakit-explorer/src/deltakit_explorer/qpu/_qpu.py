@@ -243,7 +243,7 @@ class QPU:
         total_time += schedule.previous_layer_times[-1]
         return total_time * circuit.iterations
 
-    def _add_noise_to_circuit(self, circuit: Circuit) -> Circuit:
+    def add_noise_to_circuit(self, circuit: Circuit) -> Circuit:
         """
         Add noise to the supplied circuit based on the QPU's noise model.
 
@@ -357,7 +357,7 @@ class QPU:
             Compiled circuit with noise added.
         """
         return remove_identities(
-            self._add_noise_to_circuit(
+            self.add_noise_to_circuit(
                 self.compile_circuit(circuit, remove_paulis)
             )
         )
