@@ -124,7 +124,8 @@ class OneQubitGate(Gate[T]):
         return (stim.GateTarget(qubit_mapping[self.qubit]),)
 
     def __repr__(self) -> str:
-        return f"{self.stim_string}({self.qubit})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return f"{self.stim_string}{tag_repr}({self.qubit})"
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and self.qubit == other.qubit
@@ -265,9 +266,11 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         )
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
             f"{'!' if self.is_inverted else ''}"
-            f"{self.stim_string}({self.qubit}, probability={self.probability})"
+            f"{self.stim_string}{tag_repr}({self.qubit}, "
+            f"probability={self.probability})"
         )
 
 
@@ -366,7 +369,8 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
             yield cls(control, target, tag=tag)
 
     def __repr__(self) -> str:
-        return f"{self.stim_string}({self._operand1}, {self._operand2})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return f"{self.stim_string}{tag_repr}({self._operand1}, {self._operand2})"
 
 
 class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):
@@ -464,4 +468,8 @@ class ControlledGate(TwoOperandGate[UT, VT]):
         return hash((self.__class__, self.control, self.target))
 
     def __repr__(self) -> str:
-        return f"{self.stim_string}(control={self.control}, target={self.target})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return (
+            f"{self.stim_string}{tag_repr}(control={self.control}, "
+            f"target={self.target})"
+        )

@@ -425,8 +425,10 @@ class MPP(Gate[T]):
         return hash((self.__class__, self._pauli_product, self._probability))
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}({self.pauli_product}, probability={self.probability})"
+            f"{self.stim_string}{tag_repr}({self.pauli_product}, "
+            f"probability={self.probability})"
         )
 
 
