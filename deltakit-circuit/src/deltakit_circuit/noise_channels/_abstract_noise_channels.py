@@ -171,7 +171,9 @@ class OneProbabilityNoiseChannel(NoiseChannel[T]):
 
     @property
     def stim_identifier(self) -> NoiseStimIdentifier:
-        return NoiseStimIdentifier(self.__class__.stim_string, (self.probability,))
+        return NoiseStimIdentifier(
+            self.__class__.stim_string, (self.probability,), self.tag
+        )
 
 
 class MultiProbabilityNoiseChannel(NoiseChannel[T]):
@@ -200,7 +202,9 @@ class MultiProbabilityNoiseChannel(NoiseChannel[T]):
 
     @property
     def stim_identifier(self) -> NoiseStimIdentifier:
-        return NoiseStimIdentifier(self.__class__.stim_string, self.probabilities)
+        return NoiseStimIdentifier(
+            self.__class__.stim_string, self.probabilities, self.tag
+        )
 
 
 OneQubitNoiseChannelT = TypeVar("OneQubitNoiseChannelT", bound="OneQubitNoiseChannel")
@@ -285,7 +289,7 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
         tag: str | None = None,
         **kwargs,
     ):
-        super().__init__(tag, *args, **kwargs)
+        super().__init__(tag, *args, tag=tag, **kwargs)
         qubit1 = Qubit(qubit1) if not isinstance(qubit1, Qubit) else qubit1
         qubit2 = Qubit(qubit2) if not isinstance(qubit2, Qubit) else qubit2
         if qubit1 == qubit2:
@@ -420,7 +424,11 @@ class OneQubitOneProbabilityNoiseChannel(
         return hash((self.__class__, self.qubit, self.probability))
 
     def __repr__(self) -> str:
-        return f"{self.stim_string}({self.qubit}, probability={self.probability})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return (
+            f"{self.stim_string}{tag_repr}({self.qubit}, "
+            f"probability={self.probability})"
+        )
 
 
 PPN = TypeVar("PPN", bound="PauliProductNoise")
@@ -517,6 +525,8 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
         return hash((self._pauli_product, self._probability))
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}({self.pauli_product}, probability={self.probability})"
+            f"{self.stim_string}{tag_repr}({self.pauli_product}, "
+            f"probability={self.probability})"
         )
