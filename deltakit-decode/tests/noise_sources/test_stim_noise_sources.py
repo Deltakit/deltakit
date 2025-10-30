@@ -191,7 +191,7 @@ class TestOptionedStim:
             optioned_stim.permute_stim_circuit(clean_stim_circuit))
         assert expected_circuit == circuit
 
-    def test_applying_before_round_data_depolarization_raises_not_implemented_exception(self):
+    def test_applying_before_round_data_depolarisation_raises_not_implemented_exception(self):
         with pytest.raises(NotImplementedError):
             OptionedStim(before_round_data_depolarisation=0.333)
 

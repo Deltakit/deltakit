@@ -164,7 +164,9 @@ ket = "ket"
 ND = "ND"  # part of NDArray
 Alise = "Alise"
 DEPOLARIZE = "DEPOLARIZE"
+depolarization = "depolarization"
 Authorization = "Authorization" # Web-related field.
+color = "color" # Used in matplotlib and stim APIs.
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
