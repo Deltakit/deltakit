@@ -399,8 +399,6 @@ class OneQubitOneProbabilityNoiseChannel(
 
     def __init__(self, qubit: Qubit[T] | T, probability: float, tag: str | None = None):
         super().__init__(qubit, probability, tag=tag)
-        # OneQubitNoiseChannel.__init__(self, qubit, tag=tag)
-        # OneProbabilityNoiseChannel.__init__(self, probability, tag=tag)
 
     def approx_equals(
         self, other: object, *, rel_tol: float = 1e-9, abs_tol: float = 0
