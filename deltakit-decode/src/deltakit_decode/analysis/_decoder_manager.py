@@ -132,10 +132,10 @@ class DecoderManager(ABC):
         `pool`. Cap the number of processes created such that a minimum of
         `min_tasks_per_process` should be running per process. By default the ABC
         implementation is a naive serial execution of run_batch_shots which should
-        be overridden for better parallel resource utilization. This method will block
+        be overridden for better parallel resource utilisation. This method will block
         until it is finished.
 
-        Each process in the pool should be initialized with this decoder manager stored
+        Each process in the pool should be initialised with this decoder manager stored
         in the process global variables by calling `configure_pool`. The Manager
         authenticates that a worker processes has a consistent decoder manager with the
         main process by comparing the managers `_mp_token`. The pool should have its
@@ -382,7 +382,7 @@ class NoiseModelDecoderManager(DecoderManager,
         inner_batch_limit = int(batch_limit) // processes if batch_limit is not None \
             else batch_limit
         # Attempt to run batches in parallel. If the pool has caused a process to lose
-        # the decoder manager in its globals memory, then reinitialize processes with
+        # the decoder manager in its globals memory, then reinitialise processes with
         # the decoder manager object and run batches in the same process call.
         try:
             partial_worker = partial(_run_process, self._mp_token,

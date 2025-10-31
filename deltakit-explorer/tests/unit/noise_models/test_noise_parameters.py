@@ -83,7 +83,7 @@ class TestIdleNoiseFromT1T2:
     def test_typical_case(self):
         # From `Ghosh et al. <https://arxiv.org/abs/1210.5799>`_:
         #
-        # "II.B: The asymmetric depolarization channel (ADC) is sucha a model,
+        # "II.B: The asymmetric depolarisation channel (ADC) is such a model,
         # where a decoherent qubit is assumed to suffer from discrete Pauli X
         # (bit-flip) errors, Z (phase flip) errors, or Y (both)..."
         #
@@ -110,7 +110,7 @@ class TestIdleNoiseFromT1T2:
         noise_context = NoiseContext(circuit, circuit.layers[0])
         noise_channel_result = _idle_noise_from_t1_t2(t, t)(noise_context, t)
 
-        # "If T2 = T1, the ADC reduces to the symmetric depolarization channel."
+        # "If T2 = T1, the ADC reduces to the symmetric depolarisation channel."
         # In this case, $p_X = p_Y = p_Z = (1 - \exp(-t/t1)) / 4$.
         # `Depolarise1` applies a randomly chosen Pauli with a given probability $p / 3$,
         # so the appropriate $p$ to use is $3 * (1 - \exp(-t/t1)) / 4 = 0.75 * (1 - \exp(-t/t1)$

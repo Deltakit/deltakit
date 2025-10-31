@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """
 Classes and functions to encapsulate syndrome extraction schedules for Planar codes.
-This module is not currently public; this __init__.py file is a historical artifact
+This module is not currently public; this __init__.py file is a historical artefact
 and can be removed, adjusting imports within other `deltakit_explorer` modules
 accordingly.
 """

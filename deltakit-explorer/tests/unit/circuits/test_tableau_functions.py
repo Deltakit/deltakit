@@ -8891,7 +8891,7 @@ class TestCompileResetAndMeasToNativeGates:
         up_to_paulis,
     ):
         # when parametrizing over `up_to_paulis`, the dictionaries in `comp_data`
-        # and `layer_ind_lookup` are not re-initialized.
+        # and `layer_ind_lookup` are not re-initialised.
         # `_compile_reset_and_meas_to_native_gates` mutates them, and this would
         # cause problems.
         comp_data = deepcopy(comp_data)
