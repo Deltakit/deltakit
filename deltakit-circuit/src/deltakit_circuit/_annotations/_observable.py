@@ -19,6 +19,8 @@ class Observable:
         Give a way of identifying this observable
     measurements: MeasurementRecord | Iterable[MeasurementRecord]
         The measurement records which identify the logical observable.
+    tag: str | None
+        An optional instruction tag.
     """
 
     stim_string = "OBSERVABLE_INCLUDE"
@@ -27,6 +29,7 @@ class Observable:
         self,
         observable_index: int,
         measurements: MeasurementRecord | Iterable[MeasurementRecord],
+        tag: str | None = None,
     ):
         if observable_index < 0:
             raise ValueError("Observable index cannot be negative.")
@@ -36,6 +39,11 @@ class Observable:
             if isinstance(measurements, MeasurementRecord)
             else frozenset(measurements)
         )
+        self._tag = tag
+
+    @property
+    def tag(self) -> str | None:
+        return self._tag
 
     @property
     def measurements(self) -> FrozenSet[MeasurementRecord]:
@@ -58,7 +66,10 @@ class Observable:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        stim_circuit.append(self.stim_string, stim_targets, self._observable_index)
+        stim_tag = self._tag if self._tag is not None else ""
+        stim_circuit.append(
+            self.stim_string, stim_targets, self._observable_index, tag=stim_tag
+        )
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -71,7 +82,11 @@ class Observable:
         return hash((self._observable_index, self._measurements))
 
     def __repr__(self) -> str:
-        return f"Observable({list(self.measurements)}, index={self._observable_index})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return (
+            f"Observable{tag_repr}({list(self.measurements)}, "
+            f"index={self._observable_index})"
+        )
 
     @property
     def observable_index(self) -> int:

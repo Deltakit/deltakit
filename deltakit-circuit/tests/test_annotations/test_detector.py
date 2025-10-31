@@ -132,6 +132,13 @@ class TestDetector:
             Detector(MeasurementRecord(-1), iterable).coordinate, Coordinate
         )
 
+    @pytest.mark.parametrize("tag", [None, "", "sjkdhf", "λ", "leaky<0>"])
+    def test_tag_on_instruction(self, tag: str | None) -> None:
+        detector = Detector(
+            [MeasurementRecord(-1), MeasurementRecord(-2)], Coordinate(0, 1, 2), tag=tag
+        )
+        assert detector.tag == tag
+
 
 class TestCoordinateTransforms:
     def test_detector_with_none_coordinate_maps_to_none(self):

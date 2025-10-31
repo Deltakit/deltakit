@@ -13,6 +13,7 @@ class NoiseStimIdentifier(NamedTuple):
 
     stim_string: str
     probabilities: Tuple[float, ...]
+    tag: str | None = None
 
 
 class AppendArguments(NamedTuple):
@@ -23,3 +24,4 @@ class AppendArguments(NamedTuple):
     stim_string: str
     stim_targets: Tuple[stim.GateTarget, ...]
     arguments: Tuple[float, ...]
+    tag: str | None = None

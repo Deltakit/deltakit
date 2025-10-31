@@ -115,7 +115,7 @@ class VisDecodingGraph3D:
         traces: List[go.Trace] = []
         traces += self.get_node_traces()
         if categorise_edges:
-            traces += self.get_categorized_edges_traces()
+            traces += self.get_categorised_edges_traces()
         else:
             traces += self.get_edges_traces()
         if syndrome is not None:
@@ -196,7 +196,7 @@ class VisDecodingGraph3D:
             traces.append(edge_trace)
         return traces
 
-    def get_categorized_edges_traces(self) -> List[go.Trace]:
+    def get_categorised_edges_traces(self) -> List[go.Trace]:
         """Add edges of the base graph as lines to traces"""
         (
             _,

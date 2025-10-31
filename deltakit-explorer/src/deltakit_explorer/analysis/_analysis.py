@@ -220,7 +220,7 @@ def compute_logical_error_per_round(
 
     """
     # Get the inputs as numpy arrays.
-    # Sanitization: also make sure that the inputs are sorted.
+    # Sanitisation: also make sure that the inputs are sorted.
     isort = np.argsort(num_rounds)
     num_rounds = np.asarray(num_rounds)[isort]
     num_failed_shots = np.asarray(num_failed_shots)[isort]

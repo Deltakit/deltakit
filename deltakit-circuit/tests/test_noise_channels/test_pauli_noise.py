@@ -101,6 +101,49 @@ def test_stim_identifier_matches_expected_identifier_for_single_probability_nois
             "p_yi=0.008, p_yx=0.009, p_yy=0.01, p_yz=0.011, "
             "p_zi=0.012, p_zx=0.013, p_zy=0.014, p_zz=0.015)",
         ),
+        (
+            PauliXError(Qubit(0), 0.02, tag="λ<0>"),
+            "X_ERROR[λ<0>](Qubit(0), probability=0.02)",
+        ),
+        (
+            PauliYError(Qubit(1), 0.01, tag="λ<0>"),
+            "Y_ERROR[λ<0>](Qubit(1), probability=0.01)",
+        ),
+        (
+            PauliZError(Qubit(2), 0.03, tag="λ<0>"),
+            "Z_ERROR[λ<0>](Qubit(2), probability=0.03)",
+        ),
+        (
+            PauliChannel1(Qubit(0), 0.01, 0.02, 0.03, tag="λ<0>"),
+            "PAULI_CHANNEL_1[λ<0>](Qubit(0), p_x=0.01, p_y=0.02, p_z=0.03)",
+        ),
+        (
+            PauliChannel2(
+                Qubit(0),
+                Qubit(1),
+                0.001,
+                0.002,
+                0.003,
+                0.004,
+                0.005,
+                0.006,
+                0.007,
+                0.008,
+                0.009,
+                0.01,
+                0.011,
+                0.012,
+                0.013,
+                0.014,
+                0.015,
+                tag="λ<0>",
+            ),
+            "PAULI_CHANNEL_2[λ<0>](qubit1=Qubit(0), qubit2=Qubit(1), "
+            "p_ix=0.001, p_iy=0.002, p_iz=0.003, "
+            "p_xi=0.004, p_xx=0.005, p_xy=0.006, p_xz=0.007, "
+            "p_yi=0.008, p_yx=0.009, p_yy=0.01, p_yz=0.011, "
+            "p_zi=0.012, p_zx=0.013, p_zy=0.014, p_zz=0.015)",
+        ),
     ],
 )
 def test_pauli_noise_channel_repr_matches_expected_representation(

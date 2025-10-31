@@ -149,6 +149,9 @@ skip = [".pixi", ".tox", ".venv"]
 exclude_dirs = ['.github', '.pixi', '.tox', '.venv', './tools/vale.py', 'tools/vale.py']
 skips = ['B101', 'B311']  # B101 is just use of `assert`; 'B311' is use of random module
 
+[tool.typos.default]
+locale = 'en-gb'
+
 [tool.typos.default.extend-words]
 # Don't correct "iy" - often used in the context of "probability of an IY operation"
 iy = "iy"
@@ -160,10 +163,22 @@ interm = "interm"
 ket = "ket"
 ND = "ND"  # part of NDArray
 Alise = "Alise"
+DEPOLARIZE = "DEPOLARIZE"
+depolarization = "depolarization"
+Authorization = "Authorization" # Web-related field.
+color = "color" # Used in matplotlib and stim APIs.
+colors = "colors"
+optimize = "optimize" # scipy.optimize
+ax = "ax" # Typical naming for matplotlib Axes instances.
+center = "center"
+stabilizer = "stabilizer"
+stabilizers = "stabilizers"
+synchronize = "synchronize" # multiprocessing import
+neighbors = "neighbors"
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
-extend-exclude = ["docs/styles"]
+extend-exclude = ["docs/styles", "**/LICENSE", "**/*.html", "licenses.confluence"]
 
 [tool.coverage.run]
 omit = [
