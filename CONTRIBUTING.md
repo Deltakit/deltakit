@@ -14,7 +14,7 @@ writing code!) from anyone.
 ## Types of Contributions
 ### Issues
 #### Bug reports
-We define a "bug" as a discrepancy between documented and actual behavior or
+We define a "bug" as a discrepancy between documented and actual behaviour or
 an *inaccurate* error message. (If it's not a "bug", see {ref}`contributing-enhancement-requests`.)
 First, check to see if the bug has already been reported on the
 [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
@@ -26,7 +26,7 @@ If so, leave a comment; if not, create a
 #### Enhancement Requests
 Other requests (besides bug reports) are also welcome!
 For instance, if the documentation needs improvement, if you disagree with
-documented behavior, or if you are asking for a new feature, we'd appreciate
+documented behaviour, or if you are asking for a new feature, we'd appreciate
 your thoughts.
 First, check to see if a similar request already has an
 [open issue](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
@@ -230,7 +230,7 @@ specification with the following exceptions:
 - Use `request` as the prefix for a request;
   more descriptive prefixes (`feat`/`perf`) are used for PRs/commits.
 
-Other commit *types* that we recognize include `release` (for work relating to release tooling
+Other commit *types* that we recognise include `release` (for work relating to release tooling
 and/or releases) and `dev` (for development work that doesn't fit in another category), but
 typically these types will only be used by package maintainers.
 

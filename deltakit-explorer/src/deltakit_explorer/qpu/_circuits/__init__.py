@@ -3,7 +3,7 @@
 This module aggregates functions to manipulate `deltakit_circuit.Circuit` objects.
 These include native gate compilation, noise introduction,
 and various optimisations.
-This module is not currently public; this __init__.py file is a historical artifact
+This module is not currently public; this __init__.py file is a historical artefact
 and can be removed, adjusting imports within other `deltakit_explorer` modules
 accordingly.
 """

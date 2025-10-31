@@ -29,7 +29,7 @@ class JSONable:
 
     @staticmethod
     def _to_json(obj) -> Any:
-        """Convert dataclass or object to dict for JSON serialization."""
+        """Convert dataclass or object to dict for JSON serialisation."""
         if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
             return JSONable._to_json(dataclasses.asdict(obj))
         if isinstance(obj, dict):
@@ -43,7 +43,7 @@ class JSONable:
         if obj is None:
             return None
         raise ValueError(
-            f"Object of type {type(obj)} is not a dataclass or serializable object."
+            f"Object of type {type(obj)} is not a dataclass or serialisable object."
         )
 
     def to_json(self) -> dict:

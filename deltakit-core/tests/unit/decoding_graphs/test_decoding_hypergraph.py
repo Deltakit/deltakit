@@ -261,7 +261,7 @@ class TestDecodingHyperGraph:
             assert incident_edges == expected_edge
 
     @pytest.mark.parametrize(
-        "hypergraph, expected_neighbors",
+        "hypergraph, expected_neighbours",
         [
             (
                 decoding_hypergraph_without_hyperedges(),
@@ -273,12 +273,12 @@ class TestDecodingHyperGraph:
             ),
         ],
     )
-    def test_neighbors_return_expected_nodes(self, hypergraph, expected_neighbors):
-        neighbors = {
+    def test_neighbours_return_expected_nodes(self, hypergraph, expected_neighbours):
+        neighbours = {
             syndrome: set(hypergraph.neighbors(syndrome))
-            for syndrome in expected_neighbors.keys()
+            for syndrome in expected_neighbours.keys()
         }
-        assert neighbors == expected_neighbors
+        assert neighbours == expected_neighbours
 
     @pytest.mark.parametrize(
         "edge_data, detector_records, expected_boundary, expected_nx_edges",
