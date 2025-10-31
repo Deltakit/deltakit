@@ -275,7 +275,7 @@ class TestDecodingHyperGraph:
     )
     def test_neighbours_return_expected_nodes(self, hypergraph, expected_neighbours):
         neighbours = {
-            syndrome: set(hypergraph.neighbours(syndrome))
+            syndrome: set(hypergraph.neighbors(syndrome))
             for syndrome in expected_neighbours.keys()
         }
         assert neighbours == expected_neighbours

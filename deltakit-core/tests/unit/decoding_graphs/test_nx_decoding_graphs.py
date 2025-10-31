@@ -410,7 +410,7 @@ class TestAnyNXBasedGraph:
         self, edges_nodes_graph, syndrome_bit, expected_neighbours
     ):
         _, _, decoding_graph = edges_nodes_graph
-        neighbours = set(decoding_graph.neighbours(syndrome_bit))
+        neighbours = set(decoding_graph.neighbors(syndrome_bit))
         assert neighbours == expected_neighbours
 
     @pytest.mark.parametrize(
