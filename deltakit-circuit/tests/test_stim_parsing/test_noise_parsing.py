@@ -11,6 +11,7 @@ def test_probability_is_added_on_noise_channels():
         sp.noise_channels.PauliXError,
         [stim.GateTarget(0)],
         [probability],
+        instruction_tag="",
         qubit_mapping={},
     )
     assert layer.noise_channels[0].probability == probability
@@ -22,7 +23,9 @@ def test_error_is_raised_when_gate_class_is_passed_to_the_noise_parser():
         match=r"Given noise class:.*is not a "
         "valid deltakit_circuit noise channel.",
     ):
-        parse_stim_noise_instruction(sp.gates.X, [0, 2, 3], [0.01], qubit_mapping={})
+        parse_stim_noise_instruction(
+            sp.gates.X, [0, 2, 3], [0.01], instruction_tag="", qubit_mapping={}
+        )
 
 
 @pytest.mark.parametrize(

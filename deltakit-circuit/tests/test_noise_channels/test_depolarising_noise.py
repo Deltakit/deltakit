@@ -115,8 +115,16 @@ def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
     [
         (Depolarise1(Qubit(0), 0.001), "DEPOLARIZE1(Qubit(0), probability=0.001)"),
         (
+            Depolarise1(Qubit(0), 0.001, tag="λ<0>"),
+            "DEPOLARIZE1[λ<0>](Qubit(0), probability=0.001)",
+        ),
+        (
             Depolarise2(Qubit(0), Qubit(1), 0.01),
             "DEPOLARIZE2(qubit1=Qubit(0), qubit2=Qubit(1), probability=0.01)",
+        ),
+        (
+            Depolarise2(Qubit(0), Qubit(1), 0.01, tag="λ<0>"),
+            "DEPOLARIZE2[λ<0>](qubit1=Qubit(0), qubit2=Qubit(1), probability=0.01)",
         ),
     ],
 )

@@ -10,7 +10,7 @@ pip install deltakit
 
 ### Installation in a virtual environment or Colab
 
-In a terminal with your favorite distribution of Python/pip on the path, browse to a working folder for the virtual environment and run:
+In a terminal with your favourite distribution of Python/pip on the path, browse to a working folder for the virtual environment and run:
 
 ::::{tab-set}
 :::{tab-item} macOS / Linux

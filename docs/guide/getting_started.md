@@ -25,12 +25,12 @@ Performing a QEC experiment with Deltakit typically involves four steps.
 3. In the *decoding* step, you choose a decoder to decode your measurement results. You can use
    both open-source decoders, like minimum weight perfect matching (MWPM), and propriety
    decoders, like Ambiguity Clustering (AC).
-4. In the *analysis* step, you interpret the results of your QEC experiment, and calculate and visualize
+4. In the *analysis* step, you interpret the results of your QEC experiment, and calculate and visualise
    the logical error probability and error suppression factor $\Lambda$.
 
 ## Circuit Generation
 
-### Idealized Circuit
+### Idealised Circuit
 To generate the underlying circuit for quantum memory experiments, there are several common quantum error correction codes you can use, including:
 
 - Rotated planar codes ({class}`RotatedPlanarCode <deltakit.explorer.codes.RotatedPlanarCode>`),
@@ -70,7 +70,7 @@ To convert the `circuit` to [`stim`](https://github.com/quantumlib/Stim), you ca
 stim_circuit = circuit.as_stim_circuit()
 ```
 
-which is then easy to visualize:
+which is then easy to visualise:
 
 ```{code-cell} ipython3
 stim_circuit.diagram(type="timeline-svg")
@@ -189,7 +189,7 @@ print(f"There were {n_fails} failures out of {n_shots} shots.")
 ```
 
 ## Analysis
-Deltakit also provides tools for summarizing the results of experiments. To calculate the LEP (Logical Error Probability) and its standard error, use the
+Deltakit also provides tools for summarising the results of experiments. To calculate the LEP (Logical Error Probability) and its standard error, use the
 {meth}`calculate_lep_and_lep_stddev <deltakit.explorer.analysis.calculate_lep_and_lep_stddev>` function.
 
 ```{code-cell} ipython3
@@ -209,7 +209,7 @@ np.testing.assert_allclose(lep, lep0)
 np.testing.assert_allclose(lep_stddev, lep_stddev0)
 ```
 
-Now you can start varying different parameters to see how that changes the logical error probability, such as the code distance. You can pass a list of decoder managers and number of shots to {class}`RunAllAnalysisEngine <deltakit.decode.analysis.RunAllAnalysisEngine>`, and use the `run` method to run your simulations. This method then returns a dataframe that summarizes the results.
+Now you can start varying different parameters to see how that changes the logical error probability, such as the code distance. You can pass a list of decoder managers and number of shots to {class}`RunAllAnalysisEngine <deltakit.decode.analysis.RunAllAnalysisEngine>`, and use the `run` method to run your simulations. This method then returns a dataframe that summarises the results.
 
 ```{code-cell} ipython3
 from deltakit.decode.analysis import RunAllAnalysisEngine
