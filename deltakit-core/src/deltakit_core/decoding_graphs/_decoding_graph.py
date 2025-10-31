@@ -92,7 +92,7 @@ class HyperMultiGraph(ABC, Generic[AnyEdgeT]):
         """Iterator for the incident edges connected to a given detector."""
 
     @abstractmethod
-    def neighbours(self, detector: int) -> Iterator[int]:
+    def neighbors(self, detector: int) -> Iterator[int]:
         """Iterator for the neighbours of a given detector."""
 
     @property
@@ -235,7 +235,7 @@ class DecodingHyperMultiGraph(HyperMultiGraph[Tuple[DecodingHyperEdge, int]]):
     def incident_edges(self, detector: int) -> Iterator[Tuple[DecodingHyperEdge, int]]:
         yield from self._node_to_incident_edges[detector]
 
-    def neighbours(self, detector: int) -> Iterator[int]:
+    def neighbors(self, detector: int) -> Iterator[int]:
         incident_edges = self.incident_edges(detector)
         neighbour_nodes = {
             node
@@ -408,7 +408,7 @@ class DecodingHyperGraph(HyperMultiGraph[DecodingHyperEdge]):
     def incident_edges(self, detector: int) -> Iterator[DecodingHyperEdge]:
         yield from self._node_to_incident_edges[detector]
 
-    def neighbours(self, detector: int) -> Iterator[int]:
+    def neighbors(self, detector: int) -> Iterator[int]:
         incident_edges = self.incident_edges(detector)
         neighbour_nodes = {
             node
@@ -537,7 +537,7 @@ class NXGraph(HyperMultiGraph[AnyEdgeT], Generic[NXGraphT, AnyEdgeT]):
         """
         return self._graph.adj
 
-    def neighbours(self, detector: int) -> Iterator[int]:
+    def neighbors(self, detector: int) -> Iterator[int]:
         yield from self._graph[detector]
 
     def detector_is_boundary(self, detector: int) -> bool:

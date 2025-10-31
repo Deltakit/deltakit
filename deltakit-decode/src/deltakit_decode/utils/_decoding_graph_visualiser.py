@@ -35,7 +35,7 @@ class VisDecodingGraph3D:
                 boundary_nodes.add(node)
             elif any(
                 self.decoding_graph.detector_is_boundary(n)
-                for n in self.decoding_graph.neighbours(node)
+                for n in self.decoding_graph.neighbors(node)
             ):
                 boundary_adj_nodes.add(node)
             else:
