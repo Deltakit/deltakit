@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import permutations
+import itertools
 
 import pytest
 import stim
@@ -33,9 +34,18 @@ def test_one_qubit_gate_stim_string_matches_expected_string(
     assert one_qubit_gate.stim_string == expected_string
 
 
-@pytest.mark.parametrize("one_qubit_gate", gates.ONE_QUBIT_GATES)
-def test_one_qubit_gates_repr_matches_expected_representation(one_qubit_gate):
-    assert repr(one_qubit_gate(Qubit(0))) == f"{one_qubit_gate.stim_string}(Qubit(0))"
+@pytest.mark.parametrize(
+    "one_qubit_gate,tag",
+    itertools.product(gates.ONE_QUBIT_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+)
+def test_one_qubit_gates_repr_matches_expected_representation(
+    one_qubit_gate, tag: str | None
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
+    assert (
+        repr(one_qubit_gate(Qubit(0), tag=tag))
+        == f"{one_qubit_gate.stim_string}{tag_repr}(Qubit(0))"
+    )
 
 
 @pytest.mark.parametrize("one_qubit_gate", gates.ONE_QUBIT_GATES)

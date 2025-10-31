@@ -39,7 +39,7 @@ To perform a release:
 5. Finally, the release manager triggers the stable release workflow on the tagged commit
    ("Build, test, and publish stable wheels" on GitHub Actions,
    [`stable_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/stable_release.yml)).
-   This builds and publishes the artifacts to PyPI and GitHub, and it renders and uploads the documentation to
+   This builds and publishes the artefacts to PyPI and GitHub, and it renders and uploads the documentation to
    GitHub pages.
 
 The latest stable version of `deltakit` can be installed with `pip install deltakit`.
@@ -85,7 +85,7 @@ serves to document the relevant changes.)
 To perform an alpha release, the release manager triggers the alpha release workflow on the desired commit
 ("Build, test, and publish alpha wheels" on GitHub Actions,
  [`alpha_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/alpha_release.yml)).
-This builds and publishes the artifacts to PyPI, and it associates a tag with the commit on GitHub.
+This builds and publishes the artefacts to PyPI, and it associates a tag with the commit on GitHub.
 
 The latest alpha version of `deltakit` can be installed by using `pip` with the `--pre` option, specifying
 the desired version number; e.g., `pip install deltakit --pre 0.4.0a20250904222833`.

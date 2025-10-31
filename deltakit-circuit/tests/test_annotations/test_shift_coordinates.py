@@ -1,4 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
+import pytest
 import stim
 from deltakit_circuit import ShiftCoordinates
 
@@ -18,3 +19,9 @@ def test_shift_coordinate_instances_are_not_equal_if_their_shifts_are_different(
 
 def test_repr_of_shift_coordinates_matches_expected_representation():
     assert repr(ShiftCoordinates((0, 1, 2))) == "ShiftCoordinates(Coordinate(0, 1, 2))"
+
+
+@pytest.mark.parametrize("tag", [None, "", "sjkdhf", "λ", "leaky<0>"])
+def test_tag_on_instruction(tag: str | None) -> None:
+    instr = ShiftCoordinates((0, 1, 2), tag=tag)
+    assert instr.tag == tag

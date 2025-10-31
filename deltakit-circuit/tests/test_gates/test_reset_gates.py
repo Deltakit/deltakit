@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import permutations
+import itertools
 
 import pytest
 import stim
@@ -31,9 +32,18 @@ def test_reset_gate_basis_is_expected_basis(reset_gate, expected_basis):
     assert reset_gate.basis == expected_basis
 
 
-@pytest.mark.parametrize("reset_gate", gates.RESET_GATES)
-def test_repr_of_reset_gate_matches_the_expected_representation(reset_gate):
-    assert repr(reset_gate(Qubit(3))) == f"{reset_gate.stim_string}(Qubit(3))"
+@pytest.mark.parametrize(
+    "reset_gate,tag",
+    itertools.product(gates.RESET_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+)
+def test_repr_of_reset_gate_matches_the_expected_representation(
+    reset_gate, tag: str | None
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
+    assert (
+        repr(reset_gate(Qubit(3), tag=tag))
+        == f"{reset_gate.stim_string}{tag_repr}(Qubit(3))"
+    )
 
 
 @pytest.mark.parametrize("reset_gate", gates.RESET_GATES)

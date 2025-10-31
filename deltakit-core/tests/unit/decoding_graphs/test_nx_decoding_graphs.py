@@ -398,7 +398,7 @@ class TestAnyNXBasedGraph:
         assert all(edge not in graph.no_boundary_view.edges for edge in boundary_edges)
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, syndrome_bit, expected_neighbors",
+        "edges_nodes_graph, syndrome_bit, expected_neighbours",
         [
             (edge_list_node_list_and_decoding_graph_layered(), 2, {0, 1, 3, 6}),
             (edge_list_node_list_and_decoding_multi_graph_layered(), 2, {0, 1, 3, 6}),
@@ -406,12 +406,12 @@ class TestAnyNXBasedGraph:
             (edge_list_node_list_and_decoding_multi_graph_layered(), 0, {1, 2, 3, 4}),
         ],
     )
-    def test_neighbor_nodes_found(
-        self, edges_nodes_graph, syndrome_bit, expected_neighbors
+    def test_neighbour_nodes_found(
+        self, edges_nodes_graph, syndrome_bit, expected_neighbours
     ):
         _, _, decoding_graph = edges_nodes_graph
-        neighbors = set(decoding_graph.neighbors(syndrome_bit))
-        assert neighbors == expected_neighbors
+        neighbours = set(decoding_graph.neighbors(syndrome_bit))
+        assert neighbours == expected_neighbours
 
     @pytest.mark.parametrize(
         "edges_nodes_graph, endpoints, expected_path",

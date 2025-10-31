@@ -73,8 +73,14 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
 
     stim_string: ClassVar[str] = "DEPOLARIZE2"
 
-    def __init__(self, qubit1: Qubit[T] | T, qubit2: Qubit[T] | T, probability: float):
-        super().__init__(qubit1=qubit1, qubit2=qubit2, probability=probability)
+    def __init__(
+        self,
+        qubit1: Qubit[T] | T,
+        qubit2: Qubit[T] | T,
+        probability: float,
+        tag: str | None = None,
+    ):
+        super().__init__(qubit1=qubit1, qubit2=qubit2, probability=probability, tag=tag)
 
     def approx_equals(
         self, other: object, *, rel_tol: float = 1e-9, abs_tol: float = 0
@@ -98,8 +104,9 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         return hash((self.__class__, self._qubit1, self._qubit2, self.probability))
 
     def __repr__(self) -> str:
+        tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}"
+            f"{self.stim_string}{tag_repr}"
             f"(qubit1={self._qubit1}, qubit2={self._qubit2}, "
             f"probability={self.probability})"
         )

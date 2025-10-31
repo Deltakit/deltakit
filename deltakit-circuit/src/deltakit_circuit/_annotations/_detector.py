@@ -20,6 +20,8 @@ class Detector:
         The measurements that this is the detectors of.
     coordinate: Iterable[float] | None
         An optional coordinate to associate with this detector.
+    tag: str | None
+        An optional instruction tag.
     """
 
     stim_string = "DETECTOR"
@@ -28,6 +30,7 @@ class Detector:
         self,
         measurements: MeasurementRecord | Iterable[MeasurementRecord],
         coordinate: Iterable[float] | None = None,
+        tag: str | None = None,
     ):
         self._measurements = (
             frozenset((measurements,))
@@ -35,6 +38,11 @@ class Detector:
             else frozenset(measurements)
         )
         self._coordinate = Coordinate(*coordinate) if coordinate is not None else None
+        self._tag = tag
+
+    @property
+    def tag(self) -> str | None:
+        return self._tag
 
     @property
     def coordinate(self) -> Coordinate | None:
@@ -82,10 +90,11 @@ class Detector:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        if (coordinate := self.coordinate) is None:
-            stim_circuit.append(self.stim_string, stim_targets)
-        else:
-            stim_circuit.append(self.stim_string, stim_targets, coordinate)
+        stim_arguments = self.coordinate if self.coordinate is not None else tuple()
+        stim_tag = self._tag if self._tag is not None else ""
+        stim_circuit.append(
+            self.stim_string, stim_targets, stim_arguments, tag=stim_tag
+        )
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -98,4 +107,8 @@ class Detector:
         return hash((self._measurements, self._coordinate))
 
     def __repr__(self) -> str:
-        return f"Detector({list(self.measurements)}, coordinate={self.coordinate})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return (
+            f"Detector{tag_repr}({list(self.measurements)}, "
+            f"coordinate={self.coordinate})"
+        )
