@@ -40,7 +40,7 @@ To generate the underlying circuit for quantum memory experiments, there are sev
 - Bivariate bicycle codes ({class}`BivariateBicycleCode <deltakit.explorer.codes.BivariateBicycleCode>`), and
 - (More generally) any CSS code ({class}`CSSCode <deltakit.explorer.codes.CSSCode>`).
 
-To get the logical error rate with a quantum memory experiment, for example, you can use the rotated planar code to encode a logical qubit:
+To get the logical error probability with a quantum memory experiment, for example, you can use the rotated planar code to encode a logical qubit:
 
 ```{code-cell} ipython3
 from deltakit.explorer import codes

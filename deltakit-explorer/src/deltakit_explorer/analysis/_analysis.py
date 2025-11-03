@@ -25,7 +25,7 @@ def get_exp_fit(
     npt.NDArray[np.float64],
 ]:
     """
-    Implement logical error rate fit as described in
+    Implement logical error probability per round fit as described in
     https://arxiv.org/pdf/2310.05900.pdf (p.40) and
     https://arxiv.org/pdf/2207.06431.pdf (p.21). The first round (`r=0`)
     data points are excluded as the error suppression is stronger there
@@ -46,7 +46,7 @@ def get_exp_fit(
     Returns:
         Tuple[float, npt.NDArray, npt.NDArray, npt.NDArray]:
             A tuple consisting of
-            - an epsilon parameter value (error rate per round);
+            - an epsilon parameter value (error probability per round);
             - an interpolated graph (2 value), computed with this value;
             - error bars value.
 
@@ -116,15 +116,15 @@ def get_exp_fit(
 
 
 @dataclass(frozen=True)
-class LogicalErrorRatePerRoundResults:
+class LogicalErrorProbabilityPerRoundResults:
     """Named-tuple-like class containing computation results from
     :func:`compute_logical_error_per_round`.
 
     Attributes:
         leppr (float): Logical Error Probability Per Round (LEPPR).
         leppr_stddev (float): LEPPR standard deviation.
-        spam_error (float): computed SPAM error-rate.
-        spam_error_stddev (float): SPAM error-rate standard deviation.
+        spam_error (float): computed SPAM error probability.
+        spam_error_stddev (float): SPAM error probability standard deviation.
         leppr_stddev_propagated (float): standard deviation due to the propagation of
             individual logical error probabilities standard deviations used to estimate
             the LEPPR.
@@ -132,9 +132,9 @@ class LogicalErrorRatePerRoundResults:
             LEPPR computation.
         spam_error_stddev_propagated (float): standard deviation due to the propagation
             of individual logical error probabilities standard deviations used to
-            estimate the SPAM error-rate.
+            estimate the SPAM error probability.
         spam_error_stddev_fit (float): standard deviation due to the linear fit involved
-            in SPAM error-rate computation.
+            in SPAM error probability computation.
 
     Note:
         attributes ending in ``_stddev_propagated`` or ``_stddev_fit`` are internal
@@ -159,9 +159,9 @@ def compute_logical_error_per_round(
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     *,
     force_include_single_round: bool = False,
-) -> LogicalErrorRatePerRoundResults:
-    """Compute the logical error-rate per round from different logical error-rate
-    computations.
+) -> LogicalErrorProbabilityPerRoundResults:
+    """Compute the logical error probability per round from different logical error
+    probability computations.
 
     This function implements the method described in:
 
@@ -169,8 +169,8 @@ def compute_logical_error_per_round(
     2. https://arxiv.org/pdf/2207.06431.pdf (p.21)
     3. https://arxiv.org/pdf/2505.09684.pdf (p.8)
 
-    to recover an estimator of the logical error-rate per round from the estimated
-    values of logical error-rates for several round durations.
+    to recover an estimator of the logical error probability per round from the
+    estimated values of logical error probabilities for several round durations.
 
     Args:
         num_failed_shots (npt.NDArray[np.int_] | Sequence[int]):
@@ -193,8 +193,8 @@ def compute_logical_error_per_round(
             error is assumed to be ``0`` and an estimation will still be returned.
 
             Heuristically, to increase the returned estimation precision, you should try
-            to provide data for rounds such that the estimated logical error-rate for
-            the number of rounds ``max(num_rounds)`` is approximately ``0.4``. This
+            to provide data for rounds such that the estimated logical error probability
+            for the number of rounds ``max(num_rounds)`` is approximately ``0.4``. This
             ``0.4`` value has been set to reduce fitting errors.
         force_include_single_round (bool):
             if ``True``, data obtained from 1-round experiment will be used in the
@@ -259,27 +259,27 @@ def compute_logical_error_per_round(
             "shots to have at least one error, else the problem is ill-formed."
         )
 
-    logical_error_rates = num_failed_shots / num_shots
-    fidelities = 1 - 2 * logical_error_rates
+    logical_error_probabilities = num_failed_shots / num_shots
+    fidelities = 1 - 2 * logical_error_probabilities
 
     if np.any(fidelities <= 0):
         raise RuntimeError(
-            "Got estimations of logical error-rates above 0.5. That is not supported "
-            "by this function. Please reduce your number of rounds. Estimated logical "
-            f"error-rates: {logical_error_rates}."
+            "Got estimations of logical error probability above 0.5. That is not "
+            "supported by this function. Please reduce your number of rounds. "
+            f"Estimated logical error probabilities: {logical_error_probabilities}."
         )
     # Check if the heuristic guideline on the number of rounds is verified.
-    max_logical_error_rate = np.max(logical_error_rates)
-    if max_logical_error_rate < 0.2:
+    max_logical_error_probability = np.max(logical_error_probabilities)
+    if max_logical_error_probability < 0.2:
         warnings.warn(
-            f"The maximum estimated logical error-rate ({max_logical_error_rate}) is "
-            "below 0.2. The returned estimation might be better if you add data with "
-            "more rounds such that the maximum estimated logical error-rate is closer "
-            "to 0.4."
+            "The maximum estimated logical error probability "
+            f"({max_logical_error_probability}) is below 0.2. The returned estimation "
+            "might be better if you add data with more rounds such that the maximum "
+            "estimated logical error probability is closer to 0.4."
         )
 
     # We want to do a linear regression on the log values of fidelity, and obtain the
-    # per-round error rate like that.
+    # per-round error probability like that.
     # Applying the logarithm function will change non-uniformly the standard deviation
     # of each variable, which makes the standard linear regression estimator biased. The
     # best linear unbiased estimator in that case is obtained by solving a weighted
@@ -290,7 +290,7 @@ def compute_logical_error_per_round(
     # We approximate the standard deviation with an error propagation analysis. This
     # method has been tested against scipy and returns similar results.
     # Alias for more readability
-    pl = logical_error_rates
+    pl = logical_error_probabilities
     pl_stddev = np.sqrt(pl * (1 - pl) / num_shots)
     logfidelities_stddev = 2 * pl_stddev / fidelities
 
@@ -307,8 +307,8 @@ def compute_logical_error_per_round(
         # quantity, so make it very small.
         logfidelities_stddev = np.hstack([[1e-12], logfidelities_stddev])
 
-    # Note that the covariance matrix is used later to estimate the logical error-rate
-    # per round standard deviation.
+    # Note that the covariance matrix is used later to estimate the logical error
+    # probability per round standard deviation.
     (slope, offset), cov = curve_fit(
         lambda x, s, o: s * x + o,
         num_rounds,
@@ -344,8 +344,8 @@ def compute_logical_error_per_round(
         )
 
     # Following https://arxiv.org/pdf/2505.09684v1 (Methods - Extracting logical error
-    # per cycle, page 8) we estimate the variance on the logical error-rate per cycle
-    # (named Perrc below) using the formula
+    # per cycle, page 8) we estimate the variance on the logical error probability per
+    # round (named Perrc below) using the formula
     #      sigma(Perrc) = (1 - Perrc) * sigma(slope)
     # The standard deviation on the linear fit parameters can be obtained through the
     # covariance matrix diagonal entries.
@@ -357,7 +357,7 @@ def compute_logical_error_per_round(
     # Else
     estimated_spam_error = float((1 - np.exp(offset)) / 2)
     estimated_spam_error_stddev = (1 - 2 * estimated_spam_error) * offset_stddev / 2
-    return LogicalErrorRatePerRoundResults(
+    return LogicalErrorProbabilityPerRoundResults(
         estimated_logical_error_per_round,
         estimated_logical_error_per_round_stddev,
         estimated_spam_error,
@@ -377,18 +377,18 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
     heuristic_logical_error_lower_bound: float = 0.25,
     heuristic_logical_error_upper_bound: float = 0.45,
 ) -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], npt.NDArray[np.int_]]:
-    """Compute QEC results to estimate the logical error-rate per round.
+    """Compute QEC results to estimate the logical error probability per round.
 
-    This function aims at encapsulating the practical knowledge about logical error-rate
-    per round computation to help any user computing the required logical error-rates
-    for useful number of rounds.
+    This function aims at encapsulating the practical knowledge about logical error
+    probability per round computation to help any user computing the required logical
+    error probabilities for useful number of rounds.
 
     It repeatedly calls ``simulator`` with a number of rounds growing according to
     ``next_round_number_func``, starting from ``initial_round_number``,
-    until the logical error-rate is above ``heuristic_logical_error_lower_bound``. If
-    the final step returned a logical error-rate above
-    ``heuristic_logical_error_upper_bound``, the algorithm then goes backward and
-    replaces that last value with the first one under that limit.
+    until the logical error probability is above
+    ``heuristic_logical_error_lower_bound``. If the final step returned a logical error
+    probability above ``heuristic_logical_error_upper_bound``, the algorithm then goes
+    backward and replaces that last value with the first one under that limit.
 
     Args:
         simulator (Callable[[int], tuple[int, int]]):
@@ -405,15 +405,16 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
         maximum_round_number (int): if set, this function will stop once the next
             number of rounds (computed with ``next_round_number_func``) is above that
             threshold. If not set, only the other stopping criterions apply.
-        heuristic_logical_error_lower_bound (float): minimum target logical error-rate
-            for the final round. Might not be verified by the return of this function if
-            ``maximum_round_number`` is set and reached before that minimum threshold.
-        heuristic_logical_error_upper_bound (float): maximal target logical error-rate
-            for the final round. Should be set sufficiently below ``0.5`` such that the
-            uncertainties (mostly due to finite sampling) on the computed logical
-            error-rate (LER) are low enough to not introduce a plateau in the log-plot
-            of the fidelity log(F) = log(1 - 2*LER). Experimentally, ``0.45`` seems to
-            check that.
+        heuristic_logical_error_lower_bound (float): minimum target logical error
+            probability for the final round. Might not be verified by the return of this
+            function if ``maximum_round_number`` is set and reached before that minimum
+            threshold.
+        heuristic_logical_error_upper_bound (float): maximal target logical error
+            probability for the final round. Should be set sufficiently below ``0.5``
+            such that the uncertainties (mostly due to finite sampling) on the computed
+            logical error probability (LEP) are low enough to not introduce a plateau in
+            the log-plot of the fidelity log(F) = log(1 - 2*LEP). Experimentally,
+            ``0.45`` seems to check that.
 
     Returns:
         tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], npt.NDArray[np.int_]]:
@@ -455,7 +456,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
 
     # Generate experiments until the number of repetitions is large enough (which is
     # heuristically determined as
-    # ``logical error-rate > heuristic_logical_error_lower_bound``).
+    # ``logical error probability > heuristic_logical_error_lower_bound``).
     while (nfails[-1] / nshots[-1]) < heuristic_logical_error_lower_bound:
         new_round_number = next_round_number_func(nrounds[-1])
         if new_round_number > maximum_round_number:
@@ -465,7 +466,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
         nfails.append(nfail)
         nshots.append(nshot)
 
-    # We do not want to include logical error-rates above
+    # We do not want to include logical error probabilities above
     # ``heuristic_logical_error_upper_bound``.
     # We go back using smaller steps until we find a last point that is over
     # ``heuristic_logical_error_lower_bound`` but under

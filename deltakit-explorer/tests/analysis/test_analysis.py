@@ -96,7 +96,7 @@ class TestLEPPerRoundComputation:
 
     def test_raises_when_too_many_fails(self):
         shots = 100_000
-        message = "^Got estimations of logical error-rates above 0.5.*"
+        message = "^Got estimations of logical error probability above 0.5.*"
         with pytest.raises(RuntimeError, match=message):
             compute_logical_error_per_round(
                 [shots // 2 + 1] * 3, [shots] * 3, [2, 4, 6]
@@ -104,14 +104,18 @@ class TestLEPPerRoundComputation:
 
     def test_warn_when_max_lep_is_too_small(self):
         shots = 100_000
-        message = r"^The maximum estimated logical error-rate \([^\)]+\) is below 0.2.*"
+        message = (
+            "^The maximum estimated logical error probability "
+            r"\([^\)]+\) is below 0.2.*"
+        )
         with pytest.warns(UserWarning, match=message):
             compute_logical_error_per_round([2460, 4343, 6151], [shots] * 3, [2, 4, 6])
 
     def test_warn_when_linear_fit_is_bad(self):
         f_0 = 1 - 0.01
         rounds = np.arange(2, 61, 5)
-        # Non-constant logical error-rate per round that should trigger the R2 check.
+        # Non-constant logical error probability per round that should trigger the R2
+        # check.
         leppr = np.array(
             [
                 0.00485509,
