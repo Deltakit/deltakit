@@ -130,8 +130,11 @@ def _lambda_fit_with_direct(
     lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
 ) -> LambdaResults:
-    """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
-    of ``lep_per_round`` with ``(distance + 1) / 2``.
+    """Compute Λ, Λ_0 and their associated standard deviations by fitting
+    ``lep_per_round`` to ``1 / Λ_0 * Λ**(-(distance + 1) / 2)`` directly.
+
+    This method does not rely on least-square polynomial fitting but rather on a more
+    generic method. As such, it requires more time to converge.
     """
     # Prepare data for the fit.
     distances = numpy.asarray(distances, dtype=numpy.int_)
@@ -213,9 +216,10 @@ def calculate_lambda_and_lambda_stddev(
         LambdaResults: detailed results of the computation.
 
     Note:
-        For values of Λ very close to 1 (``abs(Λ - 1) < 1e-7``), this function might
-        emit a ``scipy.optimize._optimize.OptimizeWarning`` with the message
-        ``"Covariance of the parameters could not be estimated"``.
+        For values of Λ very close to 1 (``abs(Λ - 1) < 1e-7``) and
+        ``method == "direct"``, this function might emit a
+        ``scipy.optimize._optimize.OptimizeWarning`` with the message ``"Covariance of
+        the parameters could not be estimated"``.
 
         Realistically, that condition is not expected to occur in practice due to
         sampling noise and sampling overhead, but it might be checked by synthetic
