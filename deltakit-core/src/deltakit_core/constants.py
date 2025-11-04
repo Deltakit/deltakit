@@ -16,10 +16,6 @@ class RiverlaneColors(Enum):
     BLACK_70_PERC = "#777776"
 
 
-RIVERLANE_COLORS_LISTFinal: Final[list[str]] = [
-    color.value for color in RiverlaneColors
-]
-
 RIVERLANE_PLOT_COLOURS: Final[list[str]] = [
     "#006F62",
     "#FF6A00",
