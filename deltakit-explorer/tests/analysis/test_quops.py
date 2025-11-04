@@ -4,7 +4,7 @@ from __future__ import annotations
 from math import exp, log
 
 import pytest
-from deltakit_explorer.analysis._quops import \
+from deltakit.explorer.analysis import \
     RotatedPlanarErrorSuppressionCalculator
 
 
@@ -22,7 +22,8 @@ class TestRotatedPlanarErrorSuppressionCalculator:
     def test_constructor_raises_ValueError_for_invalid_arguments(self, p_0, lambda_):
         with pytest.raises(
             ValueError,
-            match="Error suppression requires lambda > 1 and e_L\(d\) < 0.5 for all distances greater than 3"
+            # Use a raw string to avoid invalid escape sequences (e.g. \( ) becoming a SyntaxWarning under -W error
+            match=r"Error suppression requires lambda > 1 and e_L\(d\) < 0.5 for all distances greater than 3"
         ):
             RotatedPlanarErrorSuppressionCalculator(p_0, lambda_)
 
