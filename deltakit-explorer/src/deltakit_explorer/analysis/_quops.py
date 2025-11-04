@@ -1,4 +1,9 @@
-"""Contains functions
+# (c) Copyright Riverlane 2020-2025.
+"""Contains functions for calculating QuOps based on error suppression models.
+
+References
+----------
+- https://doi.org/10.48550/arXiv.2408.13687
 """
 
 import warnings
