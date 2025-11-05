@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from math import floor
 from typing import Callable
 
-import numpy as np
+import numpy
 import numpy.typing as npt
 from scipy.optimize import curve_fit
 
@@ -19,21 +19,6 @@ class LogicalErrorProbabilityPerRoundResults:
         leppr_stddev (float): LEPPR standard deviation.
         spam_error (float): computed SPAM error probability.
         spam_error_stddev (float): SPAM error probability standard deviation.
-        leppr_stddev_propagated (float): standard deviation due to the propagation of
-            individual logical error probabilities standard deviations used to estimate
-            the LEPPR.
-        leppr_stddev_fit (float): standard deviation due to the linear fit involved in
-            LEPPR computation.
-        spam_error_stddev_propagated (float): standard deviation due to the propagation
-            of individual logical error probabilities standard deviations used to
-            estimate the SPAM error probability.
-        spam_error_stddev_fit (float): standard deviation due to the linear fit involved
-            in SPAM error probability computation.
-
-    Note:
-        attributes ending in ``_stddev_propagated`` or ``_stddev_fit`` are internal
-        estimations that might be useful to understand the contribution of each process
-        to the final standard-deviation estimation.
     """
 
     leppr: float
@@ -41,16 +26,11 @@ class LogicalErrorProbabilityPerRoundResults:
     spam_error: float
     spam_error_stddev: float
 
-    leppr_stddev_propagated: float
-    leppr_stddev_fit: float
-    spam_error_stddev_propagated: float
-    spam_error_stddev_fit: float
-
 
 def compute_logical_error_per_round(
-    num_failed_shots: npt.NDArray[np.int_] | Sequence[int],
-    num_shots: npt.NDArray[np.int_] | Sequence[int],
-    num_rounds: npt.NDArray[np.int_] | Sequence[int],
+    num_rounds: npt.NDArray[numpy.int_] | Sequence[int],
+    logical_error_probabilities: npt.NDArray[numpy.floating] | Sequence[float],
+    logical_error_probabilities_stddev: npt.NDArray[numpy.floating] | Sequence[float],
     *,
     force_include_single_round: bool = False,
 ) -> LogicalErrorProbabilityPerRoundResults:
@@ -67,24 +47,18 @@ def compute_logical_error_per_round(
     estimated values of logical error probabilities for several round durations.
 
     Args:
-        num_failed_shots (npt.NDArray[np.int_] | Sequence[int]):
-            a sequence of integers representing the number of failed shots for each of
-            the number of rounds in ``num_rounds``. Should be the same length as
-            ``num_rounds``.
-        num_shots (npt.NDArray[np.int_] | Sequence[int]):
-            a sequence of integers representing the total number of shots for each of
-            the number of rounds in ``num_rounds``. Should be the same length as
-            ``num_rounds``.
-        num_rounds (npt.NDArray[np.int_] | Sequence[int]):
+        num_rounds (npt.NDArray[numpy.int_] | Sequence[int]):
             a sequence of integers representing the number of rounds used to get the
-            corresponding results in ``num_failed_shots`` and ``num_shots``. Any value
-            inferior to 1 (``< 1``) is automatically removed from this list along with
-            the corresponding values in ``num_shots`` and ``num_failed_shots``. Any
-            value equal to 1 is removed from this list along with the corresponding
-            values in ``num_shots`` and ``num_failed_shots`` iff
-            ``force_include_single_round`` is ``False``. If only one data-point is
-            provided (or left after the removal process described just before), the SPAM
-            error is assumed to be ``0`` and an estimation will still be returned.
+            corresponding results in ``logical_error_probabilities`` and
+            ``logical_error_probabilities_stddev``. Any value below 1 (``< 1``) is
+            automatically removed from this list along with the corresponding values in
+            ``logical_error_probabilities`` and ``logical_error_probabilities_stddev``.
+            Any value equal to 1 is removed from this list along with the corresponding
+            values in ``logical_error_probabilities`` and
+            ``logical_error_probabilities_stddev`` iff ``force_include_single_round`` is
+            ``False``. If only one data-point is provided (or left after the removal
+            process described just before), the SPAM error is assumed to be ``0`` and an
+            estimation will still be returned.
 
             Heuristically, to increase the returned estimation precision, you should try
             to provide data for rounds such that the estimated logical error probability
@@ -114,16 +88,18 @@ def compute_logical_error_per_round(
     """
     # Get the inputs as numpy arrays.
     # Sanitisation: also make sure that the inputs are sorted.
-    isort = np.argsort(num_rounds)
-    num_rounds = np.asarray(num_rounds)[isort]
-    num_failed_shots = np.asarray(num_failed_shots)[isort]
-    num_shots = np.asarray(num_shots)[isort]
+    isort = numpy.argsort(num_rounds)
+    num_rounds = numpy.asarray(num_rounds)[isort]
+    logical_error_probabilities = numpy.asarray(logical_error_probabilities)[isort]
+    logical_error_probabilities_stddev = numpy.asarray(
+        logical_error_probabilities_stddev
+    )[isort]
 
     # Check that we do not have duplicate data for the same number of rounds as that
     # will confuse the numerical methods used in this function.
-    unique_counts = np.unique_counts(num_rounds)
+    unique_counts = numpy.unique_counts(num_rounds)
     non_unique_entries_mask = unique_counts.counts > 1
-    if np.any(non_unique_entries_mask):
+    if numpy.any(non_unique_entries_mask):
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
         raise RuntimeError(
             "Multiple entries were provided for the following number of rounds: "
@@ -138,32 +114,63 @@ def compute_logical_error_per_round(
             "should be >= 1."
         )
         num_rounds = num_rounds[1:]
-        num_failed_shots = num_failed_shots[1:]
-        num_shots = num_shots[1:]
+        logical_error_probabilities = logical_error_probabilities[1:]
+        logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
 
     # Filter out the r == 1 input if not forced to include it by the user.
     if num_rounds[0] == 1 and not force_include_single_round:
         num_rounds = num_rounds[1:]
-        num_failed_shots = num_failed_shots[1:]
-        num_shots = num_shots[1:]
+        logical_error_probabilities = logical_error_probabilities[1:]
+        logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
 
-    if np.any(num_failed_shots == 0):
-        raise RuntimeError(
-            "Got an experiment without any errors. You should increase the number of "
-            "shots to have at least one error, else the problem is ill-formed."
+    # Filter out logical error probabilities above 0.5 as that will lead to negative
+    # fidelities.
+    invalid_lep_indices = logical_error_probabilities > 0.5
+    if numpy.any(invalid_lep_indices):
+        warnings.warn(
+            "Found at least one invalid (i.e., > 0.5) logical error probability. "
+            "Ignoring all the provided logical error probabilities above 0.5."
+        )
+        valid_lep_indices = numpy.logical_not(invalid_lep_indices)
+        num_rounds = num_rounds[valid_lep_indices]
+        logical_error_probabilities = logical_error_probabilities[valid_lep_indices]
+        logical_error_probabilities_stddev = logical_error_probabilities_stddev[
+            valid_lep_indices
+        ]
+
+    # Checking the validity of the filtered data.
+    if num_rounds.size == 0:
+        raise ValueError(
+            "No valid data was provided. Please ensure that the data provided is "
+            "correct. If you provided data, look at the warnings to understand why it "
+            "was considered invalid and ignored by this function."
         )
 
-    logical_error_probabilities = num_failed_shots / num_shots
-    fidelities = 1 - 2 * logical_error_probabilities
-
-    if np.any(fidelities <= 0):
-        raise RuntimeError(
-            "Got estimations of logical error probability above 0.5. That is not "
-            "supported by this function. Please reduce your number of rounds. "
-            f"Estimated logical error probabilities: {logical_error_probabilities}."
+    # If the user only provided one data point, we can use a direct approximate formula
+    # without having to call a fitting function.
+    if logical_error_probabilities.size == 1:
+        warnings.warn(
+            "Only one valid data-point provided for logical error probability per "
+            "round. Continuing computation assuming that SPAM error is negligible."
         )
+        rounds = num_rounds[0]
+        lep = float(logical_error_probabilities[0])
+        lep_stddev = float(logical_error_probabilities_stddev[0])
+        # Implement Eq. (4) from section A.2.2. at page 40 of
+        # https://arxiv.org/pdf/2310.05900.
+        estimated_logical_error_per_round = (1 - (1 - 2 * lep) ** (1 / rounds)) / 2
+        estimated_logical_error_per_round_stddev = (
+            lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
+        )
+        return LogicalErrorProbabilityPerRoundResults(
+            estimated_logical_error_per_round,
+            estimated_logical_error_per_round_stddev,
+            0,
+            0,
+        )
+
     # Check if the heuristic guideline on the number of rounds is verified.
-    max_logical_error_probability = np.max(logical_error_probabilities)
+    max_logical_error_probability = numpy.max(logical_error_probabilities)
     if max_logical_error_probability < 0.2:
         warnings.warn(
             "The maximum estimated logical error probability "
@@ -172,6 +179,7 @@ def compute_logical_error_per_round(
             "estimated logical error probability is closer to 0.4."
         )
 
+    fidelities = 1 - 2 * logical_error_probabilities
     # We want to do a linear regression on the log values of fidelity, and obtain the
     # per-round error probability like that.
     # Applying the logarithm function will change non-uniformly the standard deviation
@@ -180,26 +188,10 @@ def compute_logical_error_per_round(
     # least square problem where the weights corresponds to the reciprocal of the
     # variance of each observation.
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
-    logfidelity = np.log(fidelities)
+    logfidelity = numpy.log(fidelities)
     # We approximate the standard deviation with an error propagation analysis. This
     # method has been tested against scipy and returns similar results.
-    # Alias for more readability
-    pl = logical_error_probabilities
-    pl_stddev = np.sqrt(pl * (1 - pl) / num_shots)
-    logfidelities_stddev = 2 * pl_stddev / fidelities
-
-    # If the user only provided one data point, we add a noiseless data-point assuming
-    # that the SPAM error is 0.
-    if logfidelity.size == 1:
-        warnings.warn(
-            "Only one data-point provided for logical error probability per round. "
-            "Continuing computation assuming that SPAM error is negligible."
-        )
-        num_rounds = np.hstack([[0], num_rounds])
-        logfidelity = np.hstack([[0], logfidelity])
-        # We cannot set the stddev to 0 here because curve_fit will divide by that
-        # quantity, so make it very small.
-        logfidelities_stddev = np.hstack([[1e-12], logfidelities_stddev])
+    logfidelities_stddev = 2 * logical_error_probabilities_stddev / fidelities
 
     # Note that the covariance matrix is used later to estimate the logical error
     # probability per round standard deviation.
@@ -214,21 +206,21 @@ def compute_logical_error_per_round(
         # as a first estimate.
         p0=(0, 0),
         # Both slope and offset are used to recover a probability with the expression
-        # p = (1 - np.exp(value)) / 2. Because a probability needs to be in [0, 1], we
-        # have that value <= np.log(1).
+        # p = (1 - numpy.exp(value)) / 2. Because a probability needs to be in [0, 1], we
+        # have that value <= numpy.log(1).
         # Note: even though the below bounds are valid, setting bounds changes the
         # default optimisation method from "lm" to "trf". There is at least one
         # real-world example where setting those bounds led to incorrect results, so not
         # including them for the moment.
-        # bounds=((-np.inf, -np.inf), (np.log(1), np.log(1))),
+        # bounds=((-numpy.inf, -numpy.inf), (numpy.log(1), numpy.log(1))),
     )
 
-    estimated_logical_error_per_round = float((1 - np.exp(slope)) / 2)
+    estimated_logical_error_per_round = float((1 - numpy.exp(slope)) / 2)
     # Compute the standard R2 (Coefficient of determination) using the formula
     # ``R2 = 1 - SSE / SST`` where SSE is the Sum of Squares Error and SST is the Sum of
     # Square Total that are computed below.
-    sse = np.sum((logfidelity - offset - slope * num_rounds) ** 2)
-    sst = np.sum((logfidelity - np.mean(logfidelity)) ** 2)
+    sse = numpy.sum((logfidelity - offset - slope * num_rounds) ** 2)
+    sst = numpy.sum((logfidelity - numpy.mean(logfidelity)) ** 2)
     r2 = float(1 - sse / sst)
     if abs(r2) < 0.98:
         warnings.warn(
@@ -243,23 +235,19 @@ def compute_logical_error_per_round(
     #      sigma(Perrc) = (1 - Perrc) * sigma(slope)
     # The standard deviation on the linear fit parameters can be obtained through the
     # covariance matrix diagonal entries.
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
-    estimated_logical_error_per_round_stddev = (
+    slope_stddev, offset_stddev = numpy.sqrt(numpy.diagonal(cov))
+    estimated_logical_error_per_round_stddev = float(
         (1 - 2 * estimated_logical_error_per_round) * slope_stddev / 2
     )
-
-    # Else
-    estimated_spam_error = float((1 - np.exp(offset)) / 2)
-    estimated_spam_error_stddev = (1 - 2 * estimated_spam_error) * offset_stddev / 2
+    estimated_spam_error = float((1 - numpy.exp(offset)) / 2)
+    estimated_spam_error_stddev = float(
+        (1 - 2 * estimated_spam_error) * offset_stddev / 2
+    )
     return LogicalErrorProbabilityPerRoundResults(
         estimated_logical_error_per_round,
         estimated_logical_error_per_round_stddev,
         estimated_spam_error,
         estimated_spam_error_stddev,
-        (1 - 2 * estimated_logical_error_per_round) / 2,
-        slope_stddev,
-        (1 - 2 * estimated_spam_error) / 2,
-        offset_stddev,
     )
 
 
@@ -270,7 +258,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
     maximum_round_number: int | None = None,
     heuristic_logical_error_lower_bound: float = 0.25,
     heuristic_logical_error_upper_bound: float = 0.45,
-) -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], npt.NDArray[np.int_]]:
+) -> tuple[npt.NDArray[numpy.int_], npt.NDArray[numpy.int_], npt.NDArray[numpy.int_]]:
     """Compute QEC results to estimate the logical error probability per round.
 
     This function aims at encapsulating the practical knowledge about logical error
@@ -311,7 +299,7 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
             ``0.45`` seems to check that.
 
     Returns:
-        tuple[npt.NDArray[np.int_], npt.NDArray[np.int_], npt.NDArray[np.int_]]:
+        tuple[npt.NDArray[numpy.int_], npt.NDArray[numpy.int_], npt.NDArray[numpy.int_]]:
             A tuple consisting of
             - the different number of rounds corresponding to the two other entries,
             - the number of failed shots for the corresponding number of rounds,
@@ -377,4 +365,4 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
         nfails.append(nfail)
         nshots.append(nshot)
 
-    return np.asarray(nrounds), np.asarray(nfails), np.asarray(nshots)
+    return numpy.asarray(nrounds), numpy.asarray(nfails), numpy.asarray(nshots)
