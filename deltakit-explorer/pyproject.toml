@@ -41,7 +41,7 @@ dependencies = [
     "requests_toolbelt >=1.0.0",  # needed by gql, which doesn't automatically install it
     "pymatching >= 2.2.2",
     "galois >= 0.4.6",
-    "bposd >= 2.1",
+    "bposd @ git+https://github.com/quantumgizmos/bp_osd.git@8894ec654b24ae875c07e5a361dcae9a77d748ce",
     "pandas >= 2.0",
     "pandas-stubs",
     "types-seaborn",
