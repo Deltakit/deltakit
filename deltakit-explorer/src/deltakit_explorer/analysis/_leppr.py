@@ -64,6 +64,13 @@ def compute_logical_error_per_round(
             to provide data for rounds such that the estimated logical error probability
             for the number of rounds ``max(num_rounds)`` is approximately ``0.4``. This
             ``0.4`` value has been set to reduce fitting errors.
+        logical_error_probabilities (npt.NDArray[numpy.floating] | Sequence[float]):
+            logical error probabilities computed for each of the provided
+            ``num_rounds``. Should be the same length as ``num_rounds``.
+        logical_error_probabilities_stddev (npt.NDArray[numpy.floating] | Sequence[float]):
+            standard deviation of the logical error probabilities provided in
+            ``logical_error_probabilities``. Should be the same length as
+            ``num_rounds``.
         force_include_single_round (bool):
             if ``True``, data obtained from 1-round experiment will be used in the
             computation if provided in ``num_rounds``. Default to ``False`` which
