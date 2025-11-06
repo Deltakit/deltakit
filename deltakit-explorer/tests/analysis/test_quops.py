@@ -46,7 +46,7 @@ def test_predict_distance_for_quops_method_raises_when_quops_too_big():
         ValueError,
         match="Could not find a solution"
     ):
-        distance = predict_distance_for_quops(4e-2, 1.05, 1e9)
+        predict_distance_for_quops(4e-2, 1.05, 1e9)
 
 
 @pytest.mark.parametrize(
