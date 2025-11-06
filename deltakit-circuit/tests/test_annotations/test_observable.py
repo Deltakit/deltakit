@@ -87,3 +87,9 @@ def test_observable_index_write_protected():
     observable = Observable(0, MeasurementRecord(-1))
     with pytest.raises(AttributeError):
         observable.observable_index = 4
+
+
+@pytest.mark.parametrize("tag", [None, "", "sjkdhf", "λ", "leaky<0>"])
+def test_tag_on_instruction(tag: str | None) -> None:
+    obs = Observable(0, [MeasurementRecord(-1), MeasurementRecord(-2)], tag=tag)
+    assert obs.tag == tag

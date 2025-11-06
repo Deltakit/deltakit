@@ -11,7 +11,7 @@ from deltakit_circuit._parse_stim import (
 def test_probability_is_added_on_measurement_gates():
     probability = 0.001
     layer = parse_stim_gate_instruction(
-        sp.gates.MZ, [stim.GateTarget(0)], [probability], qubit_mapping={}
+        sp.gates.MZ, [stim.GateTarget(0)], [probability], "", qubit_mapping={}
     )
     assert list(layer.gates)[0].probability == probability
 
@@ -29,7 +29,7 @@ def test_error_is_raised_when_noise_class_is_passed_to_gate_parser():
         "valid deltakit_circuit gate.",
     ):
         parse_stim_gate_instruction(
-            sp.noise_channels.PauliXError, [0, 1], [], qubit_mapping={}
+            sp.noise_channels.PauliXError, [0, 1], [], "", qubit_mapping={}
         )
 
 

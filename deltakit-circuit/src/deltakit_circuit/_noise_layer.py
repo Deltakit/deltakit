@@ -135,14 +135,15 @@ class NoiseLayer(Generic[T]):
                 noise_channel.stim_targets(qubit_mapping)
             )
         uncorrelated_noise = [
-            AppendArguments(stim_string, tuple(targets), probabilities)
-            for (stim_string, probabilities), targets in grouped_noise.items()
+            AppendArguments(stim_string, tuple(targets), probabilities, tag)
+            for (stim_string, probabilities, tag), targets in grouped_noise.items()
         ]
         correlated_noise = [
             AppendArguments(
                 noise_channel.stim_string,
                 noise_channel.stim_targets(qubit_mapping),
                 noise_channel.probabilities,
+                noise_channel.tag,
             )
             for noise_channel in self._correlated_noise_channels
         ]
@@ -172,10 +173,12 @@ class NoiseLayer(Generic[T]):
             if qubit_mapping is None
             else qubit_mapping
         )
-        for stim_string, targets, probabilities in self._collect_noise_channels(
+        for stim_string, targets, probabilities, tag in self._collect_noise_channels(
             qubit_mapping
         ):
-            stim_circuit.append(stim_string, targets, probabilities)
+            stim_circuit.append(
+                stim_string, targets, probabilities, tag=tag if tag is not None else ""
+            )
 
     def approx_equals(  # noqa: PLR0911
         self,

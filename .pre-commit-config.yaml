@@ -52,6 +52,7 @@ repos:
           - types-requests
           - plotly-stubs
           - scipy-stubs
+          - semver
 
   - repo: https://github.com/crate-ci/typos
     rev: v1.37.1

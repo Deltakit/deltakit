@@ -45,6 +45,10 @@ def test_correlated_error_stim_string_matches_expected_string(
             "CORRELATED_ERROR([PauliX(Qubit(0))], probability=0.002)",
         ),
         (
+            CorrelatedError(PauliX(Qubit(0)), probability=0.002, tag="λ<0>"),
+            "CORRELATED_ERROR[λ<0>]([PauliX(Qubit(0))], probability=0.002)",
+        ),
+        (
             ElseCorrelatedError(
                 PauliProduct([PauliZ(Qubit(0)), PauliY(Qubit(1))]), 0.02
             ),
@@ -53,6 +57,10 @@ def test_correlated_error_stim_string_matches_expected_string(
         (
             ElseCorrelatedError(PauliX(Qubit(0)), probability=0.002),
             "ELSE_CORRELATED_ERROR([PauliX(Qubit(0))], probability=0.002)",
+        ),
+        (
+            ElseCorrelatedError(PauliX(Qubit(0)), probability=0.002, tag="λ<0>"),
+            "ELSE_CORRELATED_ERROR[λ<0>]([PauliX(Qubit(0))], probability=0.002)",
         ),
     ],
 )

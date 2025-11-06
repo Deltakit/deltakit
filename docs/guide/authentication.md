@@ -1,5 +1,7 @@
 # Authentication
 
+*Want to follow along? {download}`Download this notebook.<authentication.md>`*
+
 This document provides information on authentication aspects.
 When you install Deltakit, you install a family of Python packages.
 While most features are available immediately after installation,

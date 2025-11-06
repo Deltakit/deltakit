@@ -21,8 +21,17 @@ class ShiftCoordinates:
         the absolute coordinate.
     """
 
-    def __init__(self, coordinate_shift: Iterable[int | float]):
+    def __init__(
+        self,
+        coordinate_shift: Iterable[int | float],
+        tag: str | None = None,
+    ):
         self._coordinate_shift = Coordinate(*coordinate_shift)
+        self._tag = tag
+
+    @property
+    def tag(self) -> str | None:
+        return self._tag
 
     def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):
         """Updates stim_circuit with the single stim circuit which contains
@@ -37,7 +46,8 @@ class ShiftCoordinates:
         _qubit_mapping : None
             Unused argument to keep interface with other layer classes clean.
         """
-        stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift)
+        stim_tag = self._tag if self._tag is not None else ""
+        stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift, tag=stim_tag)
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -49,4 +59,5 @@ class ShiftCoordinates:
         return hash(self._coordinate_shift)
 
     def __repr__(self) -> str:
-        return f"ShiftCoordinates({self._coordinate_shift})"
+        tag_repr = f"[{self._tag}]" if self._tag is not None else ""
+        return f"ShiftCoordinates{tag_repr}({self._coordinate_shift})"

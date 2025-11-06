@@ -20,10 +20,10 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from deltakit_core.constants import RIVERLANE_PLOT_COLOURS
-from deltakit_explorer.analysis import LogicalErrorRatePerRoundResults, calculate_lambda_and_lambda_stddev, get_lambda_fit
+from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults, calculate_lambda_and_lambda_stddev, get_lambda_fit
 
 def plot_logical_error_probability_per_round(
-    leppr_data: LogicalErrorRatePerRoundResults,
+    leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
     logical_error_probability_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
@@ -33,7 +33,7 @@ def plot_logical_error_probability_per_round(
     """Plot the logical error probability per round data and the fitted curve.
 
     Args:
-        leppr_data (LogicalErrorRatePerRoundResults):
+        leppr_data (LogicalErrorProbabilityPerRoundResults):
             Data class containing logical error probability per round fit results.
         num_rounds (npt.NDArray[np.int_] | Sequence[int]):
             a sequence of integers representing the number of rounds used to get the
@@ -184,11 +184,12 @@ def plot_lambda(
     if fig is None and ax is None:
         fig, ax = plt.subplots()
 
-    lambda_val, lambda_val_stddev = calculate_lambda_and_lambda_stddev(
+    res = calculate_lambda_and_lambda_stddev(
         distances=distances,
         lep_per_round=lep_per_round,
         lep_stddev_per_round=lep_stddev_per_round,
     )
+    lambda_val, lambda_val_stddev = res.lambda_, res.lambda_stddev
     ax.errorbar(distances, lep_per_round, yerr=lep_stddev_per_round, fmt="o", color=RIVERLANE_PLOT_COLOURS[0])
 
     y_vals = get_lambda_fit(distances, lep_per_round, lep_stddev_per_round)
@@ -479,26 +480,3 @@ def defect_rates(
     plt.ylabel("Defect rate")
     plt.legend(loc="lower right", frameon=False)
     return plt
-
-if __name__ == "__main__":
-    from deltakit_explorer.analysis import calculate_lep_and_lep_stddev, compute_logical_error_per_round
-
-    num_failed_shots=[34, 151, 356]
-    num_shots=[500000] * 3
-    num_rounds=[2, 4, 6]
-
-    # plot logical error probabilities
-    lep, lep_stddev = calculate_lep_and_lep_stddev(fails=num_failed_shots, shots=num_shots)
-
-    res = compute_logical_error_per_round(
-                num_failed_shots=num_failed_shots,
-                num_shots=num_shots,
-                num_rounds=num_rounds,
-            )
-    fig, ax = plot_logical_error_probability_per_round(
-        res,
-        num_rounds=num_rounds,
-        logical_error_probability=lep,
-        logical_error_probability_stddev=lep_stddev,
-        )
-    plt.show()

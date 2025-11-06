@@ -159,7 +159,7 @@ class TestSD6NoiseModel:
             noise_model=noise_model,
             native_gates_and_times=native_gates,
         )
-        noisy_circuit = qpu._add_noise_to_circuit(circuit)
+        noisy_circuit = qpu.add_noise_to_circuit(circuit)
         assert expected_noisy_circuit == noisy_circuit
 
     def test_sd6_noise_str(self):
