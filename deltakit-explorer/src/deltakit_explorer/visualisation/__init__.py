@@ -3,9 +3,10 @@
 
 from deltakit_explorer.visualisation._visualisation import (correlation_matrix,
                                                             defect_diagram,
-                                                            defect_rates,
-                                                            plot_logical_error_probability_per_round,
-                                                            plot_lambda)
+                                                            defect_rates)
+from deltakit_explorer.visualisation._lambda import plot_lambda
+from deltakit_explorer.visualisation._leppr import plot_logical_error_probability_per_round
+
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]
