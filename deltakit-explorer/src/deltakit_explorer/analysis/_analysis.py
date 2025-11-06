@@ -5,10 +5,16 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from deltakit_core.deprecation import deprecated
 import numpy as np
 import numpy.typing as npt
+import semver
 
-
+@deprecated(
+    reason="A better function is now available.",
+    replaced_by="deltakit.explorer.analysis.compute_logical_error_per_round",
+    removed_in_version=semver.Version(1, 0, 0),
+)
 def get_exp_fit(
     logical_fails_all_rounds: npt.NDArray[np.int_] | list[int],
     shots_all_rounds: npt.NDArray[np.int_] | list[int],
@@ -148,6 +154,14 @@ def calculate_lep_and_lep_stddev(
 
 
 
+@deprecated(
+    reason=(
+        "A better function is now available. The output of this function can now be "
+        "computed with error bars and any number of points."
+    ),
+    replaced_by="deltakit.explorer.analysis.calculate_lambda_and_lambda_stddev",
+    removed_in_version=semver.Version(1, 0, 0),
+)
 def get_lambda_fit(
     distances: list[int], lep_per_round: list[float], lep_stddev_per_round: list[float]
 ) -> npt.NDArray[np.float64]:

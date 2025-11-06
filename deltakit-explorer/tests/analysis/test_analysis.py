@@ -11,6 +11,7 @@ from deltakit_explorer.analysis._analysis import (
 
 
 class TestCurveFit:
+
     def test_get_exp_fit_fits(self):
         # the method is very fragile, as it involves 3 mathematical concepts with
         # different restrictions.
@@ -28,12 +29,13 @@ class TestCurveFit:
         ]
         shots = [1000] * len(noisy_prob_data)
         fails = [round(p * s) for s, p in zip(shots, noisy_prob_data)]
-        eps, _, y, yerr = get_exp_fit(
-            logical_fails_all_rounds=fails,
-            shots_all_rounds=shots,
-            all_rounds=rounds,
-            interpolation_points=6,
-        )
+        with pytest.warns(DeprecationWarning):
+            eps, _, y, yerr = get_exp_fit(
+                logical_fails_all_rounds=fails,
+                shots_all_rounds=shots,
+                all_rounds=rounds,
+                interpolation_points=6,
+            )
         assert pytest.approx(epsilon, rel=0.05) == eps
         assert pytest.approx(y[0], rel=0.05) == prob_data[0]
         assert pytest.approx(y[-1], rel=0.05) == prob_data[-1]
@@ -44,7 +46,7 @@ class TestCurveFit:
         rounds = [1, 3, 5, 7, 9, 11]
         shots = [1000] * len(rounds)
         fails = [0] * len(rounds)
-        with pytest.raises(np.linalg.LinAlgError):
+        with pytest.raises(np.linalg.LinAlgError), pytest.warns(DeprecationWarning):
             get_exp_fit(
                 logical_fails_all_rounds=fails,
                 shots_all_rounds=shots,
@@ -57,7 +59,7 @@ class TestCurveFit:
         shots = [1000] * len(rounds)
         # fildelity is 1 - 2p = 1.0 - 1.2 = -0.2
         fails = [495 + i for i in rounds]
-        with pytest.raises(AssertionError):
+        with pytest.raises(AssertionError), pytest.warns(DeprecationWarning):
             get_exp_fit(
                 logical_fails_all_rounds=fails,
                 shots_all_rounds=shots,
@@ -93,9 +95,10 @@ class TestCalculateLep:
 class TestGetLambdaFit:
     def test_get_lambda_fit_returns_correct_values(self):
         true_lep_fit = [0.000201, 0.000039, 0.00000758]
-        lep_fit = get_lambda_fit(
-            distances=[5, 7, 9],
-            lep_per_round=[1.992e-04, 4.314e-05, 7.556e-06],
-            lep_stddev_per_round=[1.99579718e-05, 9.28881002e-06, 3.88728658e-07],
-        )
+        with pytest.warns(DeprecationWarning):
+            lep_fit = get_lambda_fit(
+                distances=[5, 7, 9],
+                lep_per_round=[1.992e-04, 4.314e-05, 7.556e-06],
+                lep_stddev_per_round=[1.99579718e-05, 9.28881002e-06, 3.88728658e-07],
+            )
         assert pytest.approx(lep_fit, rel=0.002) == true_lep_fit
