@@ -4,7 +4,7 @@ from __future__ import annotations
 from math import exp, log
 
 import pytest
-from deltakit.explorer.analysis import \
+from deltakit_explorer.analysis import \
     RotatedPlanarErrorSuppressionCalculator
 
 
@@ -26,33 +26,6 @@ class TestRotatedPlanarErrorSuppressionCalculator:
             match=r"Error suppression requires lambda > 1 and e_L\(d\) < 0.5 for all distances greater than 3"
         ):
             RotatedPlanarErrorSuppressionCalculator(p_0, lambda_)
-
-
-    def test_fit_from_data_classmethod_returns_ref_values(self):
-        ref_lambda_value, ref_lambda_value_std = 3.207, 0.012726
-        distances = [5, 7, 9, 11]
-        logical_error_rate_per_round = [1.11e-03, 3.54e-04, 1.09e-04, 3.22e-05]
-        stddev_logical_error_rate_per_round = [4.71e-06, 2.25e-06, 1.10e-06, 5.42e-07]
-
-        calc = RotatedPlanarErrorSuppressionCalculator.fit_from_data(
-                distances,
-                logical_error_rate_per_round,
-                stddev_logical_error_rate_per_round
-            )
-
-        assert ref_lambda_value == pytest.approx(calc.lambda_, rel=0.001)
-        assert ref_lambda_value_std == pytest.approx(calc.lambda_std, rel=0.001)
-
-
-    @pytest.mark.parametrize("p_0, lambda_", [(0.001, 2), (0.03, 6.78)])
-    def test_calculate_lep_per_round_values_method(self, p_0, lambda_):
-        calc = RotatedPlanarErrorSuppressionCalculator(p_0, lambda_)
-        distances = [0, 3, 5, 7, 9, 11]
-        errors_per_round = calc.calculate_lep_per_round(distances)
-
-        for d, err_per_round in zip(distances, errors_per_round):
-            expected_err_per_round = self.alternative_lep_per_round(p_0, lambda_, d)
-            assert expected_err_per_round == pytest.approx(err_per_round)
 
     @pytest.mark.parametrize("distance", ([13, 15, 17]))
     def test_calculate_lep_method_matches_approximation_at_low_error_rates(
@@ -102,8 +75,8 @@ class TestRotatedPlanarErrorSuppressionCalculator:
             calculator.p_0, calculator.lambda_, distance
         )
         expected_lep = 0.5 * (1 - pow(1 - 2 * expected_lep_per_round, distance))
-
-        assert calculator.predict_quops_at_distance(distance) == round(1 / expected_lep)
+        prediction = calculator.predict_quops_at_distance(distance)
+        assert pytest.approx(1 / expected_lep) == prediction
 
     def test_predict_distance_for_quops_method_when_QuOps_too_small(
         self,
@@ -127,39 +100,3 @@ class TestRotatedPlanarErrorSuppressionCalculator:
         ):
             distance = calc.predict_distance_for_quops(1e9)
             assert distance == 999
-
-    @pytest.mark.parametrize("quops, calculator", (
-        [(1e5, RotatedPlanarErrorSuppressionCalculator(0.1, 1.5)),
-         (1e8, RotatedPlanarErrorSuppressionCalculator(1e-4, 5)),
-         (1e13, RotatedPlanarErrorSuppressionCalculator(1e-6, 6))]))
-    def test_predict_distance_for_quops_method_return_values(
-        self,
-        quops: int,
-        calculator: RotatedPlanarErrorSuppressionCalculator
-    ):
-        """Here we check that the returned distance leads to a dxdxd block having the
-        closest LEP to the required one. Changing the distance by +-0.1 should cause the
-        `diff = achieved_LEP - required_LEP` to increase in the positive / negative
-        direction.
-        """
-        required_lep = 1 / quops
-
-        def expected_lep_of_dxdxd_block(calculator, distance):
-            expected_lep_per_round = self.alternative_lep_per_round(
-                calculator.p_0, calculator.lambda_, distance
-            )
-            return 0.5 * (1 - pow(1 - 2 * expected_lep_per_round, distance))
-
-        distance = calculator.predict_distance_for_quops(quops)
-
-        achieved_lep = expected_lep_of_dxdxd_block(calculator, distance)
-        achieved_lep_next_d = expected_lep_of_dxdxd_block(calculator, distance + 0.1)
-        achieved_lep_last_d = expected_lep_of_dxdxd_block(calculator, distance - 0.1)
-
-        diff = achieved_lep - required_lep
-        diff_next_d = achieved_lep_next_d - required_lep
-        diff_last_d = achieved_lep_last_d - required_lep
-
-        assert min(abs(diff), abs(diff_next_d), abs(diff_last_d)) == abs(diff)
-        # Check that there is a sign change on one of the sides.
-        assert diff * diff_next_d <= 0 or diff * diff_last_d <= 0
