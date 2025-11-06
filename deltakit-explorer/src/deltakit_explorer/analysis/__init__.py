@@ -6,7 +6,7 @@ from deltakit_explorer.analysis._analysis import (
     get_exp_fit, get_lambda_fit)
 
 from deltakit_explorer.analysis._quops import \
-    RotatedPlanarErrorSuppressionCalculator
+    predict_distance_for_quops, predict_quops_at_distance
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]
