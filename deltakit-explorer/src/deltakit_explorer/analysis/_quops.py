@@ -22,7 +22,7 @@ def _equal_or_less_descending_bisection(
     with func(D) <= target.
 
     Parameters:
-        func (Callable): a descenting function.
+        func (Callable): a descending function.
         target (float): a value to search for.
         minimum (int): minimum tested value of D.
         maximum (int): maximum tested value of D.
