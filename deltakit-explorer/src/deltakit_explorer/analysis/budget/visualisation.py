@@ -137,7 +137,7 @@ def plot_error_budget(
     y_axis_offset_from_zero: float = bar_height / 10
     bar_center: float = y_axis_offset_from_zero + bar_height / 2
     bar_top: float = y_axis_offset_from_zero + bar_height
-    non_fitting_texts_ys: list[float] = [bar_top + i * bar_height / 4 for i in (1, 2)]
+    non_fitting_texts_ys: list[float] = [bar_top + i * bar_height / 3 for i in (1, 2)]
     ymax = non_fitting_texts_ys[-1] + bar_height / 2
 
     # In case the user did not provide a figure or an axe, get it ourselves.
@@ -209,16 +209,18 @@ def plot_error_budget(
         ))
     ]
 
-    texts, _ = adjust_text(
-        texts,
-        avoid_self=True,
-        expand=(1.1, 1.1),
-        only_move={step: "xy+" for step in ("explode", "pull")},
-        ax=ax,
-    )
+    if texts:
+        texts, _ = adjust_text(
+            texts,
+            target_x=nft_bar_centers,
+            target_y=[bar_top for _ in range(len(nft_bar_centers))],
+            avoid_self=False,
+            only_move={step: "x" for step in ("explode", "pull", "text", "static")},
+            ax=ax,
+        )
     # Draw lines
     for target, text, colour in zip(nft_bar_centers, texts, nft_bar_colours):
-        _draw_line_from_text_to_position(fig, ax, text, target, bar_top, colour)
+        _draw_line_from_text_to_position(fig, ax, text, target, bar_top, colour, t=0)
 
     # Removing the ticks on the Y-axis as these have no meaning here.
     ax.set_yticks([])
@@ -227,6 +229,7 @@ def plot_error_budget(
     ax.spines["right"].set_visible(False)
     # Add axis labels
     ax.set_xlabel("Error budget, 1/Λ")
+
     if save_to_filename is not None:
         fig.savefig(save_to_filename)
 
