@@ -1,14 +1,13 @@
 from collections.abc import Mapping, Sequence
 
+from deltakit_explorer.analysis.lambda_ import LambdaResults, calculate_lambda_and_lambda_stddev
 import numpy
 import numpy.typing as npt
 import pandas
 
 from deltakit_explorer.analysis._analysis import (
     LogicalErrorRatePerRoundResults,
-    LambdaResults,
-    calculate_lambda_and_lambda_stddev,
-    compute_logical_error_per_round,
+    compute_logical_error_per_round
 )
 
 def _filter_non_close_noise_parameters(
@@ -62,9 +61,7 @@ def compute_lambda_and_stddev_from_results(
     stddev: npt.NDArray[numpy.float64] = numpy.zeros_like(ret)
     for i in range(n):
         df = _filter_non_close_noise_parameters(data, xi[:, i], noise_parameter_names)
-        res = _compute_lambda_from_results(
-            num_rounds_by_distance, df
-        )
+        res = _compute_lambda_from_results(num_rounds_by_distance, df)
         ret[0, i], stddev[0, i] = res.lambda_, res.lambda_stddev
     return ret, stddev
 
