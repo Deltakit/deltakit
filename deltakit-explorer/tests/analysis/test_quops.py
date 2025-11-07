@@ -38,6 +38,13 @@ def test_predict_distance_for_quops_method_when_quops_too_small(
     with pytest.raises(ValueError, match="Number of QuOps should be at least 2"):
         predict_distance_for_quops(*default_parameters, 1)
 
+@pytest.mark.parametrize("lambda0", [-1, 0, 0.9999, 1.000])
+def test_predict_distance_for_quops_method_when_lambda_too_small(
+    lambda0,
+):
+    with pytest.raises(ValueError, match="Lambda should be greater than 0"):
+        predict_distance_for_quops(0.001, lambda0, 10)
+
 
 def test_predict_distance_for_quops_method_raises_when_quops_too_big():
     # Create a system that has a lambda very close to threshold and try and reach
