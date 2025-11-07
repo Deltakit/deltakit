@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import chain, permutations, product
+import itertools
 
 import pytest
 import stim
@@ -125,19 +126,31 @@ class TestFromConsecutive:
         )
 
 
-@pytest.mark.parametrize("two_qubit_gate", CONTROLLED_GATES)
-def test_repr_of_controlled_gates_matches_expected_representation(two_qubit_gate):
+@pytest.mark.parametrize(
+    "two_qubit_gate,tag",
+    itertools.product(CONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+)
+def test_repr_of_controlled_gates_matches_expected_representation(
+    two_qubit_gate, tag: str | None
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
-        repr(two_qubit_gate(Qubit(1), Qubit(2)))
-        == f"{two_qubit_gate.stim_string}(control=Qubit(1), target=Qubit(2))"
+        repr(two_qubit_gate(Qubit(1), Qubit(2), tag=tag))
+        == f"{two_qubit_gate.stim_string}{tag_repr}(control=Qubit(1), target=Qubit(2))"
     )
 
 
-@pytest.mark.parametrize("two_qubit_gate", UNCONTROLLED_GATES)
-def test_repr_of_uncontrolled_gate_matches_expected_representation(two_qubit_gate):
+@pytest.mark.parametrize(
+    "two_qubit_gate,tag",
+    itertools.product(UNCONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+)
+def test_repr_of_uncontrolled_gate_matches_expected_representation(
+    two_qubit_gate, tag: str | None
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
-        repr(two_qubit_gate(Qubit(1), Qubit(0)))
-        == f"{two_qubit_gate.stim_string}(Qubit(1), Qubit(0))"
+        repr(two_qubit_gate(Qubit(1), Qubit(0), tag=tag))
+        == f"{two_qubit_gate.stim_string}{tag_repr}(Qubit(1), Qubit(0))"
     )
 
 

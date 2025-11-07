@@ -168,7 +168,7 @@ def _cloud_css_code_experiment_circuit(
             m_B_powers=css_code.m_B_powers,
         )
     else:
-        raise ValueError("Unrecognized `css_code` type.")
+        raise ValueError("Unrecognised `css_code` type.")
     basis_gates: Optional[list[str]] = None
     if use_iswap_gates:
         basis_gates = [

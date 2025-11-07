@@ -2,7 +2,7 @@
 # the repo. Unless a later match takes precedence,
 # @mdhaber will be requested for review when someone opens
 # a pull request.
-*                   @mdhaber
+*                   @nelimee
 
 # @KentonRL owns any file in deltakit-decode
 # directory anywhere in the repository.

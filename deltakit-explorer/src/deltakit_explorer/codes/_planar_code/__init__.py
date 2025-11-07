@@ -2,7 +2,7 @@
 """
 This module provides classes to define quantum memory experiments for
 planar unrotated and rotated codes. It is not currently public; this
-__init__.py file is a historical artifact and can be removed, adjusting
+__init__.py file is a historical artefact and can be removed, adjusting
 imports within other `deltakit_explorer` modules accordingly.
 """
 

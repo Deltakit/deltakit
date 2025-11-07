@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import permutations
+import itertools
 
 import pytest
 from deltakit_circuit import (
@@ -53,27 +54,37 @@ def test_one_qubit_measurement_gate_bases_match_expected_basis(
 
 
 @pytest.mark.parametrize(
-    "measurement_gate_class", gates.MEASUREMENT_GATES - {gates.MPP}
+    "measurement_gate_class,tag,probability",
+    itertools.product(
+        gates.MEASUREMENT_GATES - {gates.MPP},
+        [None, "", "sjkdhf", "λ", "leaky<0>"],
+        [0.0, 0.02],
+    ),
 )
-@pytest.mark.parametrize("probability", [0.0, 0.02])
 def test_repr_of_non_inverted_one_qubit_measurement_gate_matches_expected_representation(
-    measurement_gate_class, probability
-):
+    measurement_gate_class, tag: str | None, probability: float
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
-        repr(measurement_gate_class(Qubit(3), probability, False))
-        == f"{measurement_gate_class.stim_string}(Qubit(3), probability={probability})"
+        repr(measurement_gate_class(Qubit(3), probability, False, tag=tag))
+        == f"{measurement_gate_class.stim_string}{tag_repr}(Qubit(3), probability={probability})"
     )
 
 
 @pytest.mark.parametrize(
-    "measurement_gate_class", gates.MEASUREMENT_GATES - {gates.MPP}
+    "measurement_gate_class,tag",
+    itertools.product(
+        gates.MEASUREMENT_GATES - {gates.MPP},
+        [None, "", "sjkdhf", "λ", "leaky<0>"],
+    ),
 )
 def test_repr_of_inverted_one_qubit_measurement_gate_matches_expected_representation(
-    measurement_gate_class,
-):
+    measurement_gate_class, tag: str | None
+) -> None:
+    tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
-        repr(measurement_gate_class(Qubit(3), 0.1, True))
-        == f"!{measurement_gate_class.stim_string}(Qubit(3), probability=0.1)"
+        repr(measurement_gate_class(Qubit(3), 0.1, True, tag=tag))
+        == f"!{measurement_gate_class.stim_string}{tag_repr}(Qubit(3), probability=0.1)"
     )
 
 
@@ -87,6 +98,12 @@ def test_repr_of_inverted_one_qubit_measurement_gate_matches_expected_representa
         (
             gates.MPP(MeasurementPauliProduct([PauliY(0), PauliZ(1)]), 0.02),
             "MPP([PauliY(Qubit(0)), PauliZ(Qubit(1))], probability=0.02)",
+        ),
+        (
+            gates.MPP(
+                MeasurementPauliProduct([PauliY(0), PauliZ(1)]), 0.02, tag="λ<0>"
+            ),
+            "MPP[λ<0>]([PauliY(Qubit(0)), PauliZ(Qubit(1))], probability=0.02)",
         ),
     ],
 )

@@ -87,6 +87,11 @@ def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
     [
         (Leakage(Qubit(0), 0.001), "LEAKAGE(Qubit(0), probability=0.001)"),
         (Relax(Qubit(0), 0.01), "RELAX(Qubit(0), probability=0.01)"),
+        (
+            Leakage(Qubit(0), 0.001, tag="λ<0>"),
+            "LEAKAGE[λ<0>](Qubit(0), probability=0.001)",
+        ),
+        (Relax(Qubit(0), 0.01, tag="λ<0>"), "RELAX[λ<0>](Qubit(0), probability=0.01)"),
     ],
 )
 def test_repr_of_leakage_noise_matches_expected_representation(

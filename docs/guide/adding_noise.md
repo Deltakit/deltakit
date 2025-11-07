@@ -126,7 +126,7 @@ deltakit_toy_noisy.as_stim_circuit().diagram("timeline-html")
 
 ## `PhysicalNoise` class
 
-On the other end of the modeling spectrum is a model with seven parameters.
+On the other end of the modelling spectrum is a model with seven parameters.
 All these parameters are characteristics of the QPU and can be derived during device calibration.
 You can often find these numbers in the datasheets of hardware companies.
 

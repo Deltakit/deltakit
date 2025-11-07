@@ -21,6 +21,9 @@ from typing import (
 )
 
 import stim
+
+from deltakit_circuit._noise_factory import GateReplacementPolicy
+from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
 from deltakit_circuit._stim_identifiers import AppendArguments
 from deltakit_circuit.gates import MPP, _Gate, _MeasurementGate
@@ -34,8 +37,6 @@ from deltakit_circuit.gates._abstract_gates import (
 from deltakit_circuit.gates._one_qubit_gates import _OneQubitCliffordGate
 from deltakit_circuit.gates._reset_gates import _ResetGate
 from deltakit_circuit.gates._two_qubit_gates import _TwoQubitGate
-from deltakit_circuit._noise_factory import GateReplacementPolicy
-from deltakit_circuit._qubit_identifiers import Qubit, T, U
 
 _NonMeasurementGate = Union[_OneQubitCliffordGate, _ResetGate, _TwoQubitGate]
 
@@ -207,15 +208,16 @@ class GateLayer(Generic[T]):
         """Collect all of the same gate types together."""
         gate_args = []
         unordered_gates: DefaultDict[
-            Type[_NonMeasurementGate], List[stim.GateTarget]
+            tuple[Type[_NonMeasurementGate], str | None], List[stim.GateTarget]
         ] = defaultdict(list)
         for non_measurement_gate in self._non_measurement_gates:
-            unordered_gates[non_measurement_gate.__class__].extend(
+            key = (non_measurement_gate.__class__, non_measurement_gate.tag)
+            unordered_gates[key].extend(
                 non_measurement_gate.stim_targets(qubit_mapping)
             )
-        for unordered_gate, targets in unordered_gates.items():
+        for (unordered_gate, tag), targets in unordered_gates.items():
             gate_args.append(
-                AppendArguments(unordered_gate.stim_string, tuple(targets), (0,))
+                AppendArguments(unordered_gate.stim_string, tuple(targets), (0,), tag)
             )
         for measurement_gate in self._measurement_gates:
             gate_args.append(
@@ -223,6 +225,7 @@ class GateLayer(Generic[T]):
                     measurement_gate.stim_string,
                     measurement_gate.stim_targets(qubit_mapping),
                     (measurement_gate.probability,),
+                    measurement_gate.tag,
                 )
             )
         return gate_args
@@ -251,13 +254,13 @@ class GateLayer(Generic[T]):
             if qubit_mapping is None
             else qubit_mapping
         )
-        for gate_string, targets, error_probability in self._collect_gates(
+        for gate_string, targets, error_probability, tag in self._collect_gates(
             qubit_mapping
         ):
-            if error_probability == (0,):
-                stim_circuit.append(gate_string, targets)
-            else:
-                stim_circuit.append(gate_string, targets, error_probability)
+            args = tuple() if error_probability == (0,) else error_probability
+            stim_circuit.append(
+                gate_string, targets, args, tag=tag if tag is not None else ""
+            )
 
     def approx_equals(
         self,
