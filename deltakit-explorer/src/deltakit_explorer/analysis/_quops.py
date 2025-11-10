@@ -15,20 +15,24 @@ def _equal_or_less_brute_force_search(
     target: float,
     minimum: int,
     maximum: int,
+    step: int,
 ) -> int | None:
     """Brute force search or the solution at on an interval.
-    
+
     func(...) is (unfortunately) not always a monotonic function.
     The function searches for smallest D from [min, max],
     with func(D) <= target.
 
-    Parameters:
+    Parameters
+    ----------
         func (Callable): a descending function.
         target (float): a value to search for.
         minimum (int): minimum tested value of D.
         maximum (int): maximum tested value of D.
+        step (int): next value to consider is D+step.
 
-    Returns:
+    Returns
+    -------
         int | None:
             a value, which safisfies the search, or None.
     """
@@ -36,8 +40,9 @@ def _equal_or_less_brute_force_search(
         value = func(minimum)
         if value <= target:
             return minimum
-        minimum += 1
+        minimum += step
     return None
+
 
 def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: int) -> float:
     """Returns the probability of observing a logical error on a code of fixed
@@ -52,9 +57,9 @@ def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: in
     return 0.5 * (1 - (1 - 2 * lep_per_round) ** num_rounds)
 
 def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> float:
-    """Returns the number of QuOps, given distance. 
-    
-    This uses the definition that the number of QuOps achievable is 1 / pL, where 
+    """Returns the number of QuOps, given distance.
+
+    This uses the definition that the number of QuOps achievable is 1 / pL, where
     pL is the probability of a logical error occurring in distance-D, D-round block.
 
     Parameters
@@ -95,7 +100,7 @@ def predict_distance_for_quops(
         Number of desired QuOps, must be a positive integer greater than 2.
     max_distance (int):
         maximum distance to consider. Default is 999.
- 
+
     Raises
     ------
     ValueError
@@ -116,27 +121,13 @@ def predict_distance_for_quops(
         required_lep,
         minimum=1,
         maximum=max_distance,
+        step=2,  # seek for odd solutions
     )
     if distance is not None:
-        if distance % 2 == 0:
-            # return odd distances. If distance N is even,
-            # its error suppression power is the same as for
-            # N-1. So, we need to use N+1 to guarantee the
-            # expected error suppression.
-            return distance + 1
         return distance
     else:
         text = (
             f"Could not find a solution between [1, {max_distance}] "
-            "for LEP(distance) < 1 / QoOps."
+            "for LEP(distance) < 1 / QuOps. Increase max_distance."
         )
-        if lambda_ > 1.0:
-            text += (
-                f" As lambda({lambda_:.4f}) > 1.0, solution exists. "
-                "Please expand the search interval with max_distance."
-            )
-        else:
-            text += (
-                f" As lambda({lambda_:.4f}) <= 1.0, solution does not exist."
-            )
         raise ValueError(text)
