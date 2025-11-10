@@ -1,12 +1,13 @@
 from collections.abc import Mapping, Sequence
 
+from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
 from deltakit_explorer.analysis.lambda_ import LambdaResults, calculate_lambda_and_lambda_stddev
 import numpy
 import numpy.typing as npt
 import pandas
 
-from deltakit_explorer.analysis._analysis import (
-    LogicalErrorRatePerRoundResults,
+from deltakit_explorer.analysis import (
+    LogicalErrorProbabilityPerRoundResults,
     compute_logical_error_per_round
 )
 
@@ -86,7 +87,7 @@ def _compute_lambda_from_results(
 
 def _compute_logical_error_rate_per_round_from_results(
     num_rounds: Sequence[int], data: pandas.DataFrame
-) -> LogicalErrorRatePerRoundResults:
+) -> LogicalErrorProbabilityPerRoundResults:
     num_fails: list[int] = []
     num_shots: list[int] = []
     for nrounds in num_rounds:
@@ -95,5 +96,6 @@ def _compute_logical_error_rate_per_round_from_results(
         nshots = data_row["shots"].values[0]
         num_fails.append(nfails)
         num_shots.append(nshots)
-    res = compute_logical_error_per_round(num_fails, num_shots, num_rounds)
+    lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, num_shots)
+    res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
     return res

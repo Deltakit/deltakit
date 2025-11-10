@@ -1,18 +1,17 @@
 from math import sqrt
 from typing import Callable
 
+from deltakit_decode._mwpm_decoder import PyMatchingDecoder
+from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
+
+from deltakit_explorer.analysis import (
+    simulate_different_round_numbers_for_lep_per_round_estimation,
+)
+from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
-from deltakit_decode._mwpm_decoder import PyMatchingDecoder
-from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
-
-
-from deltakit_explorer.analysis._analysis import (
-    simulate_different_round_numbers_for_lep_per_round_estimation,
-)
-from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 
 
 def compute_ideal_rounds_for_noise_model_and_distance(
