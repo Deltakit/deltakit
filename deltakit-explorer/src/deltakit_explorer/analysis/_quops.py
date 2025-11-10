@@ -81,7 +81,7 @@ def predict_distance_for_quops(
     decimal place. Uses the definition that the number of QuOps achievable at a
     particular distance is 1 / pL, where pL is the probability of a logical error
     occurring during a distance-D, D-round memory experiment
-    without state preparation or measurment error.
+    without state preparation or measurement error.
 
     Parameters
     ----------
