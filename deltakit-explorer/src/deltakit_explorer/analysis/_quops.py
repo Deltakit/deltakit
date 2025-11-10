@@ -84,8 +84,10 @@ def predict_distance_for_quops(
     num_quops: float,
     max_distance: int=999,
 ) -> int:
-    """Returns the nearest odd distance that achieves the desired number of QuOps to one
-    decimal place. Uses the definition that the number of QuOps achievable at a
+    """Returns the nearest odd distance that achieves the desired
+    number of QuOps.
+
+    Uses the definition that the number of QuOps achievable at a
     particular distance is 1 / pL, where pL is the probability of a logical error
     occurring during a distance-D, D-round memory experiment
     without state preparation or measurement error.
