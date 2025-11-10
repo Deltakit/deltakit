@@ -99,7 +99,9 @@ def predict_distance_for_quops(
     Raises
     ------
     ValueError
-        - if solution is not found
+        - if solution is not found;
+        - num_quops < 2;
+        - lambda_ <= 1.0
     """
 
     if num_quops < 2:
