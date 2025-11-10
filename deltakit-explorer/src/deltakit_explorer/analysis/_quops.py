@@ -122,12 +122,12 @@ def predict_distance_for_quops(
         return distance
     else:
         text = (
-            f"Could not find a solution between [1, {max_distance}] " 
+            f"Could not find a solution between [1, {max_distance}] "
             "for LEP(distance) < 1 / QoOps."
         )
         if lambda_ > 1.0:
             text += (
-                f" As lambda({lambda_:.4f}) > 1.0, solution exists."
+                f" As lambda({lambda_:.4f}) > 1.0, solution exists. "
                 "Please expand the search interval with max_distance."
             )
         else:
