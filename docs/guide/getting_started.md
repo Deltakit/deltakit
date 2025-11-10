@@ -247,8 +247,8 @@ function:
 
 ```{code-cell} ipython3
 from deltakit.explorer.analysis import calculate_lambda_and_lambda_stddev
-l, _ = calculate_lambda_and_lambda_stddev(distances, leps, leps_std)
-l
+res = calculate_lambda_and_lambda_stddev(distances, leps, leps_std)
+res.lambda_
 ```
 
 Now that you have an overview of the four steps of QEC experimentation with Deltakit,
