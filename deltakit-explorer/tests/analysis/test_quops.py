@@ -15,7 +15,7 @@ def alternative_lep_per_round(p_0: float, lambda_: float, d: int) -> float:
     return p_0 * exp(-log(lambda_) * (d + 1) / 2)
 
 @pytest.fixture
-def default_parameters():
+def default_parameters() -> Parameters:
     return Parameters(1e-7, 8)
 
 
@@ -51,17 +51,14 @@ def test_predict_distance_for_quops_method_when_quops_too_small(
 def test_predict_distance_for_quops_method_when_lambda_too_small(
     lambda_,
 ):
-    with pytest.raises(ValueError, match="Lambda should be greater than 0"):
+    with pytest.raises(ValueError, match="Lambda should be greater than 1"):
         predict_distance_for_quops(0.001, lambda_, 10)
 
 
 def test_predict_distance_for_quops_method_raises_when_quops_too_big():
     # Create a system that has a lambda very close to threshold and try and reach
     # a large number of QuOps with this.
-    with pytest.raises(
-        ValueError,
-        match="Could not find a solution"
-    ):
+    with pytest.raises(ValueError, match="Could not find a solution"):
         predict_distance_for_quops(4e-2, 1.05, 1e9)
 
 

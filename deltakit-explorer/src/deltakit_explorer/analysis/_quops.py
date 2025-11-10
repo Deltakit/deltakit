@@ -11,12 +11,13 @@ from typing import Callable
 
 
 def _equal_or_less_brute_force_search(
-    func: Callable,
+    func: Callable[[int], float],
     target: float,
     minimum: int,
     maximum: int,
 ) -> int | None:
     """Brute force search or the solution at on an interval.
+    
     func(...) is (unfortunately) not always a monotonic function.
     The function searches for smallest D from [min, max],
     with func(D) <= target.
@@ -51,9 +52,10 @@ def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: in
     return 0.5 * (1 - (1 - 2 * lep_per_round) ** num_rounds)
 
 def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> float:
-    """Returns the number of QuOps, given distance. This
-    uses the definition that the number of QuOps achievable is 1 / pL, where pL is
-    the probability of a logical error occurring in distance-D, D-round block.
+    """Returns the number of QuOps, given distance. 
+    
+    This uses the definition that the number of QuOps achievable is 1 / pL, where 
+    pL is the probability of a logical error occurring in distance-D, D-round block.
 
     Parameters
     ----------
@@ -66,7 +68,7 @@ def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> 
     """
     if distance % 2 == 0:
         raise ValueError(
-            "This method gives correct estimation only at odd distances."
+            "This method gives correct estimation only at odd distances. "
             f"Distance provided: {distance}"
         )
     return 1. / _calculate_lep(lambda0, lambda_, distance, distance)
@@ -93,6 +95,7 @@ def predict_distance_for_quops(
         Number of desired QuOps, must be a positive integer greater than 2.
     max_distance (int):
         maximum distance to consider. Default is 999.
+ 
     Raises
     ------
     ValueError
@@ -103,7 +106,7 @@ def predict_distance_for_quops(
         raise ValueError("Number of QuOps should be at least 2")
 
     if lambda_ <= 1.0:
-        raise ValueError("Lambda should be greater than 0 to ensure error suppression")
+        raise ValueError("Lambda should be greater than 1 to ensure error suppression")
 
     required_lep = 1. / num_quops
     distance = _equal_or_less_brute_force_search(
