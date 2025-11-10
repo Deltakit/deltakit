@@ -10,14 +10,14 @@ References
 from typing import Callable
 
 
-def _equal_or_less_descending_bisection(
+def _equal_or_less_brute_force_search(
     func: Callable,
     target: float,
     minimum: int,
     maximum: int,
 ) -> int | None:
-    """Binary search in the given boundaries for a descending function.
-    func(...) is expected to be a monotonic descending function.
+    """Brute force search or the solution at on an interval.
+    func(...) is (unfortunately) not always a monotonic function.
     The function searches for smallest D from [min, max],
     with func(D) <= target.
 
@@ -32,17 +32,13 @@ def _equal_or_less_descending_bisection(
             a value, which safisfies the search, or None.
     """
     while minimum < maximum:
-        mid = (minimum + maximum) // 2
-        if func(mid) <= target:
-            maximum = mid
-        else:
-            minimum = mid + 1
-    if func(maximum) <= target:
-        return maximum
-    else:
-        return None
+        value = func(minimum)
+        if value <= target:
+            return minimum
+        minimum += 1
+    return None
 
-def _calculate_lep(p0: float, lambda0: float, distance: int, num_rounds: int) -> float:
+def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: int) -> float:
     """Returns the probability of observing a logical error on a code of fixed
     distance after a number of rounds.
 
@@ -50,41 +46,53 @@ def _calculate_lep(p0: float, lambda0: float, distance: int, num_rounds: int) ->
     https://doi.org/10.48550/arXiv.2408.13687 which is the sum of the probabilities
     of all ways of there being an odd number of errors in fixed number of rounds.
     """
-    lep_per_round = p0 * lambda0 ** (-(distance + 1) / 2)
+    lep_per_round = lambda0 * lambda_ ** (-(distance + 1) / 2)
     # At `lep_per_round` << 1 this is be approximated as `lep_per_round * num_rounds`
     return 0.5 * (1 - (1 - 2 * lep_per_round) ** num_rounds)
 
-def predict_quops_at_distance(p0: float, lambda0: float, distance: int) -> float:
+def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> float:
     """Returns the number of QuOps, given distance. This
     uses the definition that the number of QuOps achievable is 1 / pL, where pL is
-    the probability of a logical error occurring in a dxdxd block.
+    the probability of a logical error occurring in distance-D, D-round block.
 
     Parameters
     ----------
-    p0 (float):
-        SPAM error.
     lambda0 (float):
+        constant factor of lambda fit.
+    lambda_ (float):
         Error suppression factor.
     distance (int):
         The distance at which to calculate the number of QuOps.
     """
-    return 1. / _calculate_lep(p0, lambda0, distance, distance)
+    if distance % 2 == 0:
+        raise ValueError(
+            "This method gives correct estimation only at odd distances."
+            f"Distance provided: {distance}"
+        )
+    return 1. / _calculate_lep(lambda0, lambda_, distance, distance)
 
-def predict_distance_for_quops(p0: float, lambda0: float, num_quops: float) -> int:
-    """Returns the nearest distance that achieves the desired number of QuOps to one
+def predict_distance_for_quops(
+    lambda0: float,
+    lambda_: float,
+    num_quops: float,
+    max_distance: int=999,
+) -> int:
+    """Returns the nearest odd distance that achieves the desired number of QuOps to one
     decimal place. Uses the definition that the number of QuOps achievable at a
     particular distance is 1 / pL, where pL is the probability of a logical error
-    occurring during a dxdxd memory experiment.
+    occurring during a distance-D, D-round memory experiment
+    without state preparation or measurment error.
 
     Parameters
     ----------
-    p0 (float):
-        SPAM error.
     lambda0 (float):
+        constant factor of lambda fit.
+    lambda_ (float):
         Error suppression factor.
     num_quops (int):
         Number of desired QuOps, must be a positive integer greater than 2.
-
+    max_distance (int):
+        maximum distance to consider. Default is 999.
     Raises
     ------
     ValueError
@@ -94,17 +102,36 @@ def predict_distance_for_quops(p0: float, lambda0: float, num_quops: float) -> i
     if num_quops < 2:
         raise ValueError("Number of QuOps should be at least 2")
 
-    if lambda0 <= 1.0:
+    if lambda_ <= 1.0:
         raise ValueError("Lambda should be greater than 0 to ensure error suppression")
 
     required_lep = 1. / num_quops
-    distance = _equal_or_less_descending_bisection(
-        lambda x: _calculate_lep(p0, lambda0, x, x),
+    distance = _equal_or_less_brute_force_search(
+        lambda x: _calculate_lep(lambda0, lambda_, x, x),
         required_lep,
-        minimum=2,
-        maximum=999,
+        minimum=1,
+        maximum=max_distance,
     )
     if distance is not None:
+        if distance % 2 == 0:
+            # return odd distances. If distance N is even,
+            # its error suppression power is the same as for
+            # N-1. So, we need to use N+1 to guarantee the
+            # expected error suppression.
+            return distance + 1
         return distance
     else:
-        raise ValueError("Could not find a solution for LEP(distance) < 1 / QoOps")
+        text = (
+            f"Could not find a solution between [1, {max_distance}] " 
+            "for LEP(distance) < 1 / QoOps."
+        )
+        if lambda_ > 1.0:
+            text += (
+                f" As lambda({lambda_:.4f}) > 1.0, solution exists."
+                "Please expand the search interval with max_distance."
+            )
+        else:
+            text += (
+                f" As lambda({lambda_:.4f}) <= 1.0, solution does not exist."
+            )
+        raise ValueError(text)

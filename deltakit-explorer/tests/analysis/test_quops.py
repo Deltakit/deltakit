@@ -9,7 +9,7 @@ from deltakit_explorer.analysis import \
     predict_distance_for_quops, predict_quops_at_distance
 
 
-Parameters = namedtuple("Parameters", ["p_0", "lambda_"])
+Parameters = namedtuple("Parameters", ["lambda0", "lambda_"])
 
 def alternative_lep_per_round(p_0: float, lambda_: float, d: int) -> float:
     return p_0 * exp(-log(lambda_) * (d + 1) / 2)
@@ -25,11 +25,20 @@ def test_predict_quops_at_distance_method(
     distance: int
 ):
     expected_lep_per_round = alternative_lep_per_round(
-        default_parameters.p_0, default_parameters.lambda_, distance
+        default_parameters.lambda0, default_parameters.lambda_, distance
     )
     expected_lep = 0.5 * (1 - pow(1 - 2 * expected_lep_per_round, distance))
     prediction = predict_quops_at_distance(*default_parameters, distance)
     assert pytest.approx(1 / expected_lep) == prediction
+
+
+@pytest.mark.parametrize("distance", ([2, 20, 1432]))
+def test_predict_quops_at_distance_raises_at_even(
+    default_parameters: Parameters,
+    distance: int
+):
+    with pytest.raises(ValueError, match="odd"):
+        predict_quops_at_distance(*default_parameters, distance)
 
 
 def test_predict_distance_for_quops_method_when_quops_too_small(
@@ -38,12 +47,12 @@ def test_predict_distance_for_quops_method_when_quops_too_small(
     with pytest.raises(ValueError, match="Number of QuOps should be at least 2"):
         predict_distance_for_quops(*default_parameters, 1)
 
-@pytest.mark.parametrize("lambda0", [-1, 0, 0.9999, 1.000])
+@pytest.mark.parametrize("lambda_", [-1, 0, 0.9999, 1.000])
 def test_predict_distance_for_quops_method_when_lambda_too_small(
-    lambda0,
+    lambda_,
 ):
     with pytest.raises(ValueError, match="Lambda should be greater than 0"):
-        predict_distance_for_quops(0.001, lambda0, 10)
+        predict_distance_for_quops(0.001, lambda_, 10)
 
 
 def test_predict_distance_for_quops_method_raises_when_quops_too_big():
@@ -57,7 +66,7 @@ def test_predict_distance_for_quops_method_raises_when_quops_too_big():
 
 
 @pytest.mark.parametrize(
-    "p0, lambda_, distance, quops",
+    "lambda0, lambda_, distance, quops",
     [
         (1.0e-3, 2.0, 11, 5819.090965902487),
         (1.0e-2, 1.5, 5, 68.30475477033615),
@@ -66,25 +75,21 @@ def test_predict_distance_for_quops_method_raises_when_quops_too_big():
         (1.0e-4, 2.1, 21, 1667989.0518755822),
     ]
 )
-def test_predict_qoups_by_distance_constants(p0, lambda_, distance, quops):
-    prediction = predict_quops_at_distance(p0, lambda_, distance)
+def test_predict_qoups_by_distance_constants(lambda0, lambda_, distance, quops):
+    prediction = predict_quops_at_distance(lambda0, lambda_, distance)
     assert pytest.approx(prediction, rel=1e-4) == quops
 
 
 @pytest.mark.parametrize(
-    "p0, lambda_, distance, quops",
+    "lambda0, lambda_, distance, quops",
     [
         (1.0e-3, 2.0, 11, 5800),
-        # TODO: this test fails, as it actually finds
-        # a solution better: no QEC (d=1).
-        # in this case the function is not descending
-        # Question: how do I treat this?
-        # (1.0e-2, 1.5, 5, 65),
+        (1.0e-2, 1.5, 1, 65),
         (1.0e-4, 2.05, 13, 110000),
         # megaqoup
         (1.0e-4, 2.1, 21, 1660000),
     ]
 )
-def test_predict_distance_for_qoups_constants(p0, lambda_, distance, quops):
-    dist = predict_distance_for_quops(p0, lambda_, quops)
+def test_predict_distance_for_qoups_constants(lambda0, lambda_, distance, quops):
+    dist = predict_distance_for_quops(lambda0, lambda_, quops)
     assert pytest.approx(dist, rel=1e-4) == distance
