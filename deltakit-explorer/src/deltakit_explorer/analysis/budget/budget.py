@@ -16,7 +16,6 @@ import numpy.typing as npt
 import numpy
 
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
-import pandas
 
 
 def _variate_ith_parameter_by(
@@ -237,35 +236,32 @@ def get_error_budget(
     # Note: noise_parameters[:,0] is always ``noise_model.noise_parameters``.
     noise_parameters = numpy.asarray(xis, dtype=numpy.float64).T
 
-    if data_file is None or not data_file.exists():
-        # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
-        # Prepare the computation by building the decoder managers.
-        decoder_managers = generate_decoder_managers_for_lambda(
-            noise_parameters,
-            type(noise_model),
-            num_rounds_by_distances,
-            max_workers,
-            memory_generator=memory_generator,
-        )
+    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
+    # Prepare the computation by building the decoder managers.
+    decoder_managers = generate_decoder_managers_for_lambda(
+        noise_parameters,
+        type(noise_model),
+        num_rounds_by_distances,
+        max_workers,
+        memory_generator=memory_generator,
+    )
 
-        # Start the computation
-        num_points = noise_model.num_noise_parameters * num_points_per_parameters
-        engine = RunAllAnalysisEngine(
-            experiment_name=f"Estimating Λ on {num_points} points",
-            decoder_managers=decoder_managers,
-            max_shots=num_shots,
-            batch_size=batch_size,
-            # Early stopping when we have a low-enough standard deviation
-            loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
-                lep_target_rse, lep_computation_min_fails
-            ),
-            num_parallel_processes=max_workers,
-        )
-        report = engine.run()
-        if data_file is not None:
-            report.to_csv(data_file)
-    else:
-        report = pandas.read_csv(data_file)
+    # Start the computation
+    num_points = noise_model.num_noise_parameters * num_points_per_parameters
+    engine = RunAllAnalysisEngine(
+        experiment_name=f"Estimating Λ on {num_points} points",
+        decoder_managers=decoder_managers,
+        max_shots=num_shots,
+        batch_size=batch_size,
+        # Early stopping when we have a low-enough standard deviation
+        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
+            lep_target_rse, lep_computation_min_fails
+        ),
+        num_parallel_processes=max_workers,
+    )
+    report = engine.run()
+    if data_file is not None:
+        report.to_csv(data_file)
 
     # Post-process the results to get all the estimations for 1 / Λ
     lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
