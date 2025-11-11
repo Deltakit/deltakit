@@ -11,5 +11,8 @@ from deltakit_explorer.analysis._leppr import (
     compute_logical_error_per_round, LogicalErrorProbabilityPerRoundResults,
     simulate_different_round_numbers_for_lep_per_round_estimation)
 
+from deltakit_explorer.analysis._quops import \
+    predict_distance_for_quops, predict_quops_at_distance
+
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]
