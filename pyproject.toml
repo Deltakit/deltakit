@@ -178,6 +178,7 @@ stabilizer = "stabilizer"
 stabilizers = "stabilizers"
 synchronize = "synchronize" # multiprocessing import
 neighbors = "neighbors"
+capitalize = "capitalize"
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking

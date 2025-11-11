@@ -7,19 +7,22 @@ from dataclasses import asdict
 from numbers import Number
 from typing import ClassVar, cast
 
-from deltakit_circuit._noise_factory import NoiseProfile
 import numpy
 import numpy.typing as npt
 from deltakit_circuit import Circuit, NoiseContext, measurement_noise_profile
+from deltakit_circuit._noise_factory import NoiseProfile
+from deltakit_circuit.gates import (
+    MEASUREMENT_GATES,
+    ONE_QUBIT_GATES,
+    RESET_GATES,
+    TWO_QUBIT_GATES,
+    I,
+)
 from deltakit_circuit.gates._abstract_gates import (
     OneQubitCliffordGate,
     OneQubitMeasurementGate,
     OneQubitResetGate,
 )
-from deltakit_circuit.gates._measurement_gates import MEASUREMENT_GATES
-from deltakit_circuit.gates._one_qubit_gates import ONE_QUBIT_GATES, I
-from deltakit_circuit.gates._reset_gates import RESET_GATES
-from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1, Depolarise2
 from typing_extensions import override
 
@@ -271,4 +274,47 @@ class SimplerNoise(NoiseInterface):
             SimplerNoise._check_is_probability(
                 parameters[i], SimplerNoise.parameter_names[i]
             )
+        return super().is_valid(parameters)
+
+
+class SimplestNoise(NoiseInterface):
+    num_noise_parameters: ClassVar[int] = 1
+    parameter_names: ClassVar[tuple[str, ...]] = ("Gate error",)
+
+    def __init__(
+        self,
+        noise_parameters: Sequence[float] | npt.NDArray[numpy.float64],
+        name: str | None = None,
+    ):
+        super().__init__(noise_parameters, name)
+
+    @classmethod
+    def from_noise_parameters(
+        cls, gate_error: float = 0, name: str | None = None
+    ) -> SimplestNoise:
+        return cls([gate_error], name)
+
+    @override
+    def apply(self, computation: Circuit) -> Circuit:
+        gate_noise: list[NoiseProfile] = [
+            lambda noise_context: Depolarise2.generator_from_prob(
+                self._get_value("Gate error")
+            )(noise_context.gate_layer_qubits(None, gate_qubit_count=2))
+        ]
+        qpu = QPU(
+            computation.qubits, noise_model=NoiseParameters(gate_noise=gate_noise)
+        )
+        return qpu.compile_and_add_noise_to_circuit(computation)
+
+    @staticmethod
+    def _check_is_probability(v: float, name: str) -> None:
+        if v < 0 or v > 1:
+            raise ValueError(f"Expected 0 <= {name.capitalize()} <= 1 but got {v}.")
+
+    @override
+    @classmethod
+    def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
+        SimplerNoise._check_is_probability(
+            parameters[0], SimplerNoise.parameter_names[0]
+        )
         return super().is_valid(parameters)

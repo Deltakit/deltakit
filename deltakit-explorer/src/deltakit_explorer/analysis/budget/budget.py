@@ -1,10 +1,15 @@
-from collections.abc import Iterator, Sequence, Mapping
 import math
+from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
+
+import numpy
+import numpy.typing as npt
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
+
 from deltakit_explorer.analysis.budget.generation import (
     generate_decoder_managers_for_lambda,
 )
+from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
@@ -12,25 +17,21 @@ from deltakit_explorer.analysis.budget.memory import (
 from deltakit_explorer.analysis.budget.post_processing import (
     compute_lambda_and_stddev_from_results,
 )
-import numpy.typing as npt
-import numpy
-
-from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 
 
 def _variate_ith_parameter_by(
-    central_point: npt.NDArray[numpy.float64],
-    variations: npt.NDArray[numpy.float64],
+    central_point: npt.NDArray[numpy.floating],
+    variations: npt.NDArray[numpy.floating],
     i: int,
-) -> Iterator[npt.NDArray[numpy.float64]]:
+) -> Iterator[npt.NDArray[numpy.floating]]:
     """Returns versions of ``central_point`` where the ``i``-th parameter is
     successively replaced by values in ``variations``.
 
     Args:
-        central_point (npt.NDArray[numpy.float64]): base 1-dimensional array of numbers
+        central_point (npt.NDArray[numpy.floating]): base 1-dimensional array of numbers
             of shape ``(n,)`` that will be copied, modified on the ``i``-th variable and
             returned.
-        variations (npt.NDArray[numpy.float64]): 1-dimensional array of shape ``(m,)``
+        variations (npt.NDArray[numpy.floating]): 1-dimensional array of shape ``(m,)``
             containing values that should be used to replace the ``i``-th entry of
             ``central_point``.
         i (int): index of the entry in ``central_point`` that should be changed.
@@ -47,9 +48,9 @@ def _variate_ith_parameter_by(
 
 
 def _approximate_derivative_at_point_from_values(
-    x: npt.NDArray[numpy.float64],
-    y: npt.NDArray[numpy.float64],
-    stddevs: npt.NDArray[numpy.float64],
+    x: npt.NDArray[numpy.floating],
+    y: npt.NDArray[numpy.floating],
+    stddevs: npt.NDArray[numpy.floating],
     gradient_approximation_point: float,
     degree: int = 3,
     noise_name: str | None = None,
@@ -90,7 +91,7 @@ def _get_variance_of_gradient_estimation_at_c(
             f(alpha * cov, c) == alpha * f(cov, c)
 
     Args:
-        cov (npt.NDArray[numpy.float64]): an array of shape ``(d + 1, d + 1)``
+        cov (npt.NDArray[numpy.floating]): an array of shape ``(d + 1, d + 1)``
             representing the covariance matrix of the coefficients defining the degree-d
             polynomial used to estimate the gradient.
         c (float): point at which the degree-d polynomial will be used to estimate the
@@ -127,13 +128,8 @@ def _get_variance_of_gradient_estimation_at_c(
 
 
 def _get_interpolation_points(
-    a: float,
-    b: float,
-    c: float,
-    num_points: int,
-    degree: int,
-    x0: npt.NDArray[numpy.float64] | None = None,
-) -> npt.NDArray[numpy.float64]:
+    a: float, b: float, c: float, num_points: int, degree: int
+) -> npt.NDArray[numpy.floating]:
     """
     Find a good set of points to estimate the gradient at point ``c`` by fitting a
     degree-d polynomial on the interval ``[a, b]``.
@@ -142,58 +138,32 @@ def _get_interpolation_points(
     be used to fit a degree-d polynomial and will minimise the variance of the fitted
     polynomial gradient at point ``c``.
 
-    The polynomial regression problem is presented here:
-    https://en.wikipedia.org/wiki/Polynomial_regression#Matrix_form_and_calculation_of_estimates.
+    For the moment, this function simply returns evenly spaced points. Eventually, it
+    might return an optimised set of points to reduce the variance of the resulting
+    gradient estimation (e.g., using a D-optimal design, see
+    https://en.wikipedia.org/wiki/Optimal_experimental_design).
 
-    Assuming the observation errors (i.e., input errors) are uncorrelated, the
-    covariance matrix of the estimated coefficients is: ::
+    Args:
+        a (float): lower bound of the interval in which fitting points should be
+            computed.
+        b (float): upper bound of the interval in which fitting points should be
+            computed.
+        c (float): point at which the gradient will be estimated.
+        num_points (int): number of points to return within ``[a, b]``.
+        degree (int): degree of the polynomial that will be used to fit the values
+            computed at each of the points returned by this function.
 
-        (XᵀWX)⁻¹
+    Returns:
+        a sorted array of ``num_points`` points within ``[a, b]`` and without duplicates
+        that should be used to evaluate the function to fit with a degree ``degree``
+        polynomial.
 
-    where X is the Vandermonde matrix (https://en.wikipedia.org/wiki/Vandermonde_matrix)
-    obtained from the points on which the function has been evaluated and W is the
-    inverse of the covariance matrix of the input parameters.
-
-    In our specific case, the input parameters come from uncorrelated random samplings
-    so W is a diagonal matrix with each diagonal entry being 1 / σ(in)² which means that
-    it commutes with both Xᵀ and X and so can be factored out of the matrix
-    inversion: ::
-
-        W⁻¹ (XᵀX)⁻¹
-
-    Because W is an input parameter outside of our control at that point (this function
-    is concerned about providing the best points at which the function to fit should be
-    evaluated), we can ignore it from further analysis.
-
-    This means that this function should aim at finding ``num_points`` points in
-    ``[a, b]`` such that (XᵀX)⁻¹ (which only depends on the points at which the
-    function to fit is evaluated) minimise some metric.
-
-    Because we know in this specific case that we will use that degree-d polynomial to
-    approximate the gradient at point ``c``, we know exactly which quantity we want to
-    minimise: the variance of the resulting gradient estimate.
-
-    The variance of the gradient estimate is computed from the covariance matrix of the
-    polynomial coefficients. One problem is that this covariance matrix cannot be
-    evaluated until we have W. One way of solving this problem is to assume that W is
-    a constant times the identity matrix (which is equivalent to assuming that each
-    result from the original function evaluation is associated with the same standard
-    deviation). This should not be too far from the reality in our case because each
-    estimation of 1 / Λ is done with the same number of distances, repetitions and
-    shots. With:
-
-    1. this assumption (W = aI),
-    2. the fact that the function computing the variance of the gradient estimation
-       preserves scalar multiplication on its ``cov`` parameter,
-    3. and the fact that finding the parameters minimising the cost function C(.) and
-       a * C(.) are the same provided that a > 0,
-
-    we can find our optimal points by minimising the variance simply computed from
-    ``X``.
+    Raises:
+        ValueError: if ``a < c < b`` is not verified.
     """
     if not a < c < b:
         raise ValueError(f"Expected {a=} < {c=} < {b=}")
-    return numpy.linspace(a, b, num_points, dtype=numpy.float64)
+    return numpy.linspace(a, b, num_points, dtype=numpy.floating)
 
 
 def get_error_budget(
@@ -209,10 +179,10 @@ def get_error_budget(
     fitting_degree: int = 3,
     max_workers: int = 1,
     data_file: Path | None = None,
-) -> tuple[float, float, npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
+) -> tuple[float, float, npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
     central_point = noise_model.noise_parameters.reshape((-1, 1))
-    xis: list[npt.NDArray[numpy.float64]] = [central_point.reshape((-1,))]
+    xis: list[npt.NDArray[numpy.floating]] = [central_point.reshape((-1,))]
     for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
         variations = _get_interpolation_points(
             minimum,
@@ -223,7 +193,7 @@ def get_error_budget(
         )
         xis.extend(_variate_ith_parameter_by(central_point, variations, i))
     # Note: noise_parameters[:,0] is always ``noise_model.noise_parameters``.
-    noise_parameters = numpy.asarray(xis, dtype=numpy.float64).T
+    noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
 
     # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
     # Prepare the computation by building the decoder managers.

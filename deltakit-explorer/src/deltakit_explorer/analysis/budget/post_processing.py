@@ -13,7 +13,7 @@ from deltakit_explorer.analysis import (
 
 def _filter_non_close_noise_parameters(
     data: pandas.DataFrame,
-    noise_parameters: npt.NDArray[numpy.float64],
+    noise_parameters: npt.NDArray[numpy.floating],
     noise_parameter_names: Sequence[str],
 ) -> pandas.DataFrame:
     ret = data
@@ -22,11 +22,11 @@ def _filter_non_close_noise_parameters(
     return ret
 
 def compute_lambda_and_stddev_from_results(
-    xi: npt.NDArray[numpy.float64],
+    xi: npt.NDArray[numpy.floating],
     noise_parameter_names: Sequence[str],
     num_rounds_by_distance: Mapping[int, Sequence[int]],
     data: pandas.DataFrame,
-) -> tuple[npt.NDArray[numpy.float64], npt.NDArray[numpy.float64]]:
+) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     """Compute Λ from ``data`` for all the provided noise parameters in ``xi``.
 
     This function assumes that the provided ``data`` has been generated with
@@ -35,7 +35,7 @@ def compute_lambda_and_stddev_from_results(
     provided here.
 
     Args:
-        xi (npt.NDArray[numpy.float64]): an array of shape ``(m, n)``, where ``m`` is
+        xi (npt.NDArray[numpy.floating]): an array of shape ``(m, n)``, where ``m`` is
             the number of noise parameters needed by ``noise_model_type`` and ``n`` the
             number of points to evaluate Λ on.
         num_rounds_by_distances (Mapping[int, Sequence[int]]): the different number of
@@ -58,8 +58,8 @@ def compute_lambda_and_stddev_from_results(
     if len(xi.shape) != 2:
         raise ValueError(f"Expected a 2-dimensional array but got shape {xi.shape}.")
     _, n = xi.shape
-    ret: npt.NDArray[numpy.float64] = numpy.zeros((1, n), dtype=numpy.float64)
-    stddev: npt.NDArray[numpy.float64] = numpy.zeros_like(ret)
+    ret: npt.NDArray[numpy.floating] = numpy.zeros((1, n), dtype=numpy.floating)
+    stddev: npt.NDArray[numpy.floating] = numpy.zeros_like(ret)
     for i in range(n):
         df = _filter_non_close_noise_parameters(data, xi[:, i], noise_parameter_names)
         res = _compute_lambda_from_results(num_rounds_by_distance, df)

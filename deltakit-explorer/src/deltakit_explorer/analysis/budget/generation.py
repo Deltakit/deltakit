@@ -53,7 +53,7 @@ def _generate_surface_code_memory_decoder_manager_wrapper(
 
 
 def generate_decoder_managers_for_lambda(
-    xi: npt.NDArray[numpy.float64],
+    xi: npt.NDArray[numpy.floating],
     noise_model_type: Type[NoiseInterface],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     max_workers: int = 1,
@@ -77,7 +77,7 @@ def generate_decoder_managers_for_lambda(
         and ``num_rounds`` except if you really need it.
 
     Args:
-        xi (npt.NDArray[numpy.float64]): an array of shape ``(m, n)``, where ``m`` is
+        xi (npt.NDArray[numpy.floating]): an array of shape ``(m, n)``, where ``m`` is
             the number of noise parameters needed by ``noise_model_type`` and ``n`` the
             number of points to evaluate Λ on.
         noise_model_type (Type[NoiseInterface]): noise model that should be applied to
