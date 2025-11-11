@@ -191,19 +191,8 @@ def _get_interpolation_points(
     we can find our optimal points by minimising the variance simply computed from
     ``X``.
     """
-    assert a < c < b
-    if x0 is None:
-        x0 = numpy.linspace(a, b, num_points, dtype=numpy.float64)
-
-    def f(x: npt.NDArray[numpy.floating]) -> float:
-        ordered_x = numpy.sort(x)
-        X = numpy.vander(ordered_x, degree + 1, increasing=True)
-        cov = numpy.linalg.inv(X.T @ X)
-        res = _get_variance_of_gradient_estimation_at_c(cov, c)
-        return res
-
-    # result = scipy.optimize.minimize(f, x0, bounds=[(a, b) for _ in range(num_points)])
-
+    if not a < c < b:
+        raise ValueError(f"Expected {a=} < {c=} < {b=}")
     return numpy.linspace(a, b, num_points, dtype=numpy.float64)
 
 
