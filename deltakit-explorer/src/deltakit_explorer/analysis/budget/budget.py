@@ -72,12 +72,12 @@ def _approximate_derivative_at_point_from_values(
     )
     # Compute the variance of the derivative estimate
     standard_deviation = math.sqrt(
-        _get_variance_of_gradient_estimation_at_c(cov, gradient_approximation_point)
+        _get_variance_of_gradient_estimation_at_point(cov, gradient_approximation_point)
     )
     return derivative, standard_deviation
 
 
-def _get_variance_of_gradient_estimation_at_c(
+def _get_variance_of_gradient_estimation_at_point(
     cov: npt.NDArray[numpy.floating], c: float
 ) -> float:
     """Get the variance of the gradient estimation at the point ``c`` for a polynomial
@@ -180,6 +180,60 @@ def get_error_budget(
     max_workers: int = 1,
     data_file: Path | None = None,
 ) -> tuple[float, float, npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
+    """Compute the error budget of the provided ``noise_model``.
+
+    Args:
+        noise_model (NoiseInterface): noise model to estimate the budget of. Each
+            parameter should be independent.
+        num_rounds_by_distances (Mapping[int, Sequence[int]]): a mapping from each code
+            distance that should be tested to the number of rounds that should be
+            sampled in order to estimate the logical error-probability per round, to
+            ultimately get 1 / Λ.
+        noise_parameters_exploration_bounds (list[tuple[float, float]]): ``(min, max)``
+            bounds for each noise parameter of the provided ``noise_model``. A degree
+            ``fitting_degree`` polynomial will be fitted on the interval ``[min, max]``.
+            The corresponding noise parameter from the provided ``noise_model`` should
+            be strictly contained in ``[min, max]`` (i.e., for any valid ``i``, the
+            following is true:
+            ``noise_parameters_exploration_bounds[i][0] <
+            noise_model.noise_parameters[i] <
+            noise_parameters_exploration_bounds[i][1]``).
+        num_points_per_parameters (int): number of different values to try for each
+            noise parameter. Corresponds to the number of points that will be used to
+            fit a degree ``fitting_degree`` polynomial. As such, should be greater than
+            ``fitting_degree + 1``.
+        num_shots (int): maximum number of shots per sampling task. A sampling task may
+            stop with a lower number of samples if additional conditions are met, see
+            ``lep_target_rse`` or ``lep_computation_min_fails`` for more details.
+        batch_size (int): number of sampling experiments that are submitted per batch.
+        memory_generator (MemoryGenerator): a callable that can generate a memory
+            experiment. The resulting circuit will go through the provided
+            ``noise_model`` for different values of the noise parameters.
+        lep_target_rse (float): target relative standard error under which a sampling
+            task is considered precise enough and can be stopped before ``num_shots``
+            sampling tasks have returned.
+        lep_computation_min_fails (int): minimum number of failures that should be
+            witnessed before stopping a sampling task. A sampling task may stop with less
+            failures, for example if ``num_shots`` shots have been performed.
+        fitting_degree (int): degree of polynomial that will be used to approximate
+            1 / Λ and to compute each of its derivatives. Should be lower than
+            ``num_points_per_parameters - 1``. Higher values will incur higher standard
+            deviation. Default to 3, which seems to be a good compromise between fit
+            accuracy and resulting standard deviation.
+        max_workers (int): max number of parallel processes used by the function.
+            Default to 1 which means fully sequential.
+        data_file (Path | None): if provided, a valid path to which simulation data will
+            be saved. Default to not provided, which means nothing is saved on disk.
+
+    Returns:
+        a 4-tuple containing:
+            - an estimation of 1 / Λ for the provided noise model.
+            - an estimation of the standard deviation of 1 / Λ.
+            - an array with one entry per noise parameter in the provided noise model,
+              each entry containing the contribution of that parameter to the 1 / Λ
+              budget.
+            - an array containing the standard deviations of each contribution.
+    """
     # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
     central_point = noise_model.noise_parameters.reshape((-1, 1))
     xis: list[npt.NDArray[numpy.floating]] = [central_point.reshape((-1,))]
