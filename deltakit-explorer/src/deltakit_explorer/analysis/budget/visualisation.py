@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import colorsys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-import colorsys
 
 import matplotlib
 import matplotlib.colors
@@ -44,7 +44,7 @@ def _scale_lightness(rgb: tuple[float, float, float] | str, scale_l: float):
     if isinstance(rgb, str):
         rgb = matplotlib.colors.ColorConverter.to_rgb(rgb)
     # convert rgb to hls
-    # Ignore E741 because "l" here is not really ambiguous and this function is small.
+    # Ignore E741 because "l" here is not really ambiguous and this function is small.
     h, l, s = colorsys.rgb_to_hls(*rgb)  # noqa: E741
     # manipulate h, l, s values and return as rgb
     return colorsys.hls_to_rgb(h, min(1, l * scale_l), s=s)
@@ -182,7 +182,11 @@ def plot_error_budget(
         twidth = twidths[i]
         # We need to handle the special case of the excess noise. Doing that with
         # kwargs.
-        kwargs: dict[str, Any] = {"color": colour, "edgecolor": colour}
+        kwargs: dict[str, Any] = {
+            "color": colour,
+            "edgecolor": colour,
+            "ecolor": _scale_lightness(colour, 0.8),
+        }
         if description.lower() == excess_noise_description.lower():
             # Note that the RGB values of the colour below matter: we want it to be
             # white because the background will be white, and text colour will be picked
@@ -190,14 +194,19 @@ def plot_error_budget(
             kwargs["color"] = "#FFFFFF00"
             kwargs["edgecolor"] = _RIVERLANE_NEUTRAL_GREY
             kwargs["hatch"] = "///"
+            kwargs["ecolor"] = _scale_lightness(_RIVERLANE_NEUTRAL_GREY, 0.8)
         stddev = contributions_stddev[i] if contributions_stddev is not None else None
+        xerr_bounds = (
+            ((min(stddev, abs(contribution)),), (stddev,))
+            if stddev is not None
+            else None
+        )
         bar = ax.barh(
             bar_center,
             contribution,
             height=bar_height,
             left=offset,
-            xerr=stddev,
-            ecolor=_scale_lightness(colour, 0.8),
+            xerr=xerr_bounds,
             capsize=2,
             **kwargs,
         )
