@@ -1,175 +1,27 @@
-import math
-from collections.abc import Iterator, Mapping, Sequence
-from pathlib import Path
+from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
 
+from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
 import numpy
 import numpy.typing as npt
-from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
-from deltakit_explorer.analysis.budget.generation import (
-    generate_decoder_managers_for_lambda,
-)
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
-from deltakit_explorer.analysis.budget.post_processing import (
-    compute_lambda_and_stddev_from_results,
-)
 
 
-def _variate_ith_parameter_by(
-    central_point: npt.NDArray[numpy.floating],
-    variations: npt.NDArray[numpy.floating],
-    i: int,
-) -> Iterator[npt.NDArray[numpy.floating]]:
-    """Returns versions of ``central_point`` where the ``i``-th parameter is
-    successively replaced by values in ``variations``.
-
-    Args:
-        central_point (npt.NDArray[numpy.floating]): base 1-dimensional array of numbers
-            of shape ``(n,)`` that will be copied, modified on the ``i``-th variable and
-            returned.
-        variations (npt.NDArray[numpy.floating]): 1-dimensional array of shape ``(m,)``
-            containing values that should be used to replace the ``i``-th entry of
-            ``central_point``.
-        i (int): index of the entry in ``central_point`` that should be changed.
-
-    Yields:
-        ``m`` arrays of shape ``(n,)`` that are copies of ``central_point`` with the
-        ``i``-th coordinate entry replaced with an entry from ``variations``.
-    """
-    central_point = central_point.reshape((-1, 1))
-    variations = variations.reshape((-1,))
-    parameters = numpy.tile(central_point, (1, variations.size))
-    parameters[i, :] = variations
-    yield from parameters.T
-
-
-def _approximate_derivative_at_point_from_values(
-    x: npt.NDArray[numpy.floating],
-    y: npt.NDArray[numpy.floating],
-    stddevs: npt.NDArray[numpy.floating],
-    gradient_approximation_point: float,
-    degree: int = 3,
-    noise_name: str | None = None,
-) -> tuple[float, float]:
-    # Perform the approximation using the provided standard deviations
-    coefficients, cov = numpy.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
-
-    # Flipping the coefficients and covariance matrix to have the index corresponding to
-    # the degree (i.e., ``coefficients[i]`` is multiplying ``x**i`` in the polynomial
-    # and ``cov[i,i]`` is the variance of ``coefficients[i]``).
-    coefficients, cov = numpy.flip(coefficients), numpy.flip(cov)
-
-    # Compute the derivative
-    derivative = float(
-        sum(
-            coefficient * (power + 1) * gradient_approximation_point**power
-            for power, coefficient in enumerate(coefficients[1:])
-        )
-    )
-    # Compute the variance of the derivative estimate
-    standard_deviation = math.sqrt(
-        _get_variance_of_gradient_estimation_at_point(cov, gradient_approximation_point)
-    )
-    return derivative, standard_deviation
-
-
-def _get_variance_of_gradient_estimation_at_point(
-    cov: npt.NDArray[numpy.floating], c: float
-) -> float:
-    """Get the variance of the gradient estimation at the point ``c`` for a polynomial
-    with uncertainties on its coefficients provided by the covariance matrix ``cov``.
-
-    Note:
-        Let this function be called ``f``. ``f`` preserves scalar multiplication on its
-        ``cov`` input parameter. That means that for any real value of ``c`` and
-        ``alpha`` the following is true: ::
-
-            f(alpha * cov, c) == alpha * f(cov, c)
-
-    Args:
-        cov (npt.NDArray[numpy.floating]): an array of shape ``(d + 1, d + 1)``
-            representing the covariance matrix of the coefficients defining the degree-d
-            polynomial used to estimate the gradient.
-        c (float): point at which the degree-d polynomial will be used to estimate the
-            gradient value.
-
-    Returns:
-        The variance of the gradient estimation at point ``c``.
-    """
-    # From https://en.wikipedia.org/wiki/Covariance#Covariance_of_linear_combinations we
-    # have an easy formula for the variance involving the covariance matrix. We build
-    # the terms of the sum in a copy of the ``cov`` matrix.
-    # We do not need to use the first row/column of the covariance matrix because it is
-    # linked with the intersect, that is not used when computing the derivative.
-    derivative_cov = numpy.copy(cov[1:, 1:])
-    num_derivative_coefficients = derivative_cov.shape[0]
-    # The original polynomial at ``x`` is given by
-    #       sum(a[i] * x**i for i in range(0, n+1))
-    # Its derivative is then given by
-    #       sum(a[i+1] * (i+1) * x**i for i in range(0, n))
-    # Removing a[0] from a (and so shifting its indexing by 1, which is what we just did
-    # with the covariance matrix above) we have the derivative given by
-    #       sum(a[i] * (i+1) * x**i for i in range(0, n))
-    # When evaluating the gradient at the point c, the degree i coefficient of the
-    # derivative (that is ``a[i]`` above or equivalently the degree (i+1) coefficient of
-    # the original polynomial) is multiplied by (i + 1) * c**i. We can ignore (i.e., not
-    # change) the degree 0 as the factor is (0 + 1) * c**0 = 1.
-    for i in range(1, num_derivative_coefficients):
-        derivative_cov[i, :] *= (i + 1) * c**i
-        derivative_cov[:, i] *= (i + 1) * c**i
-    # Finally, according to
-    # https://en.wikipedia.org/wiki/Covariance#Covariance_of_linear_combinations,
-    # the variance is given by the sum of the derivative covariance matrix above.
-    return float(numpy.sum(derivative_cov))
-
-
-def _get_interpolation_points(
-    a: float, b: float, c: float, num_points: int, degree: int
-) -> npt.NDArray[numpy.floating]:
-    """
-    Find a good set of points to estimate the gradient at point ``c`` by fitting a
-    degree-d polynomial on the interval ``[a, b]``.
-
-    This function finds ``num_points`` points ``x`` between ``a`` and ``b`` that should
-    be used to fit a degree-d polynomial and will minimise the variance of the fitted
-    polynomial gradient at point ``c``.
-
-    For the moment, this function simply returns evenly spaced points. Eventually, it
-    might return an optimised set of points to reduce the variance of the resulting
-    gradient estimation (e.g., using a D-optimal design, see
-    https://en.wikipedia.org/wiki/Optimal_experimental_design).
-
-    Args:
-        a (float): lower bound of the interval in which fitting points should be
-            computed.
-        b (float): upper bound of the interval in which fitting points should be
-            computed.
-        c (float): point at which the gradient will be estimated.
-        num_points (int): number of points to return within ``[a, b]``.
-        degree (int): degree of the polynomial that will be used to fit the values
-            computed at each of the points returned by this function.
-
-    Returns:
-        a sorted array of ``num_points`` points within ``[a, b]`` and without duplicates
-        that should be used to evaluate the function to fit with a degree ``degree``
-        polynomial.
-
-    Raises:
-        ValueError: if ``a < c < b`` is not verified.
-    """
-    if not a < c < b:
-        raise ValueError(f"Expected {a=} < {c=} < {b=}")
-    return numpy.linspace(a, b, num_points, dtype=numpy.floating)
+@dataclass
+class ErrorBudgetingResults:
+    contributions: npt.NDArray[numpy.floating]
+    contribution_stddevs: npt.NDArray[numpy.floating]
 
 
 def get_error_budget(
     noise_model: NoiseInterface,
     num_rounds_by_distances: Mapping[int, Sequence[int]],
-    noise_parameters_exploration_bounds: list[tuple[float, float]],
+    noise_parameters_exploration_bounds: list[tuple[float, float]] | None = None,
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
@@ -178,8 +30,7 @@ def get_error_budget(
     lep_computation_min_fails: int = 10,
     fitting_degree: int = 3,
     max_workers: int = 1,
-    data_file: Path | None = None,
-) -> tuple[float, float, npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
+) -> ErrorBudgetingResults:
     """Compute the error budget of the provided ``noise_model``.
 
     Args:
@@ -197,7 +48,9 @@ def get_error_budget(
             following is true:
             ``noise_parameters_exploration_bounds[i][0] <
             noise_model.noise_parameters[i] <
-            noise_parameters_exploration_bounds[i][1]``).
+            noise_parameters_exploration_bounds[i][1]``). If ``None``, default value is
+            ``p / 10`` (resp. ``20 * p``) for the lower (resp. upper) bound of the noise
+            parameter ``p``.
         num_points_per_parameters (int): number of different values to try for each
             noise parameter. Corresponds to the number of points that will be used to
             fit a degree ``fitting_degree`` polynomial. As such, should be greater than
@@ -222,100 +75,35 @@ def get_error_budget(
             accuracy and resulting standard deviation.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
-        data_file (Path | None): if provided, a valid path to which simulation data will
-            be saved. Default to not provided, which means nothing is saved on disk.
 
     Returns:
-        a 4-tuple containing:
-            - an estimation of 1 / Λ for the provided noise model.
-            - an estimation of the standard deviation of 1 / Λ.
-            - an array with one entry per noise parameter in the provided noise model,
-              each entry containing the contribution of that parameter to the 1 / Λ
-              budget.
-            - an array containing the standard deviations of each contribution.
+        the error-budgeting result, which consists of an array of contributions for each
+        of the noise parameters of the provided ``noise_model`` along with their
+        associated standard deviations.
     """
-    # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
-    central_point = noise_model.noise_parameters.reshape((-1, 1))
-    xis: list[npt.NDArray[numpy.floating]] = [central_point.reshape((-1,))]
-    for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
-        variations = _get_interpolation_points(
-            minimum,
-            maximum,
-            noise_model.noise_parameters[i],
-            num_points_per_parameters,
-            fitting_degree,
-        )
-        xis.extend(_variate_ith_parameter_by(central_point, variations, i))
-    # Note: noise_parameters[:,0] is always ``noise_model.noise_parameters``.
-    noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
-
-    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
-    # Prepare the computation by building the decoder managers.
-    decoder_managers = generate_decoder_managers_for_lambda(
-        noise_parameters,
+    # We will compute the gradient at the half point following the methodology outlined
+    # in "Exponential suppression of bit or phase errors with cyclic error correction".
+    point = noise_model.noise_parameters / 2
+    # Set heuristic default value for the bounds if not provided.
+    if noise_parameters_exploration_bounds is None:
+        noise_parameters_exploration_bounds = [(p / 10, 20 * p) for p in point]
+    # Evaluate the gradient.
+    gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
         type(noise_model),
+        point,
         num_rounds_by_distances,
+        noise_parameters_exploration_bounds,
+        num_points_per_parameters,
+        num_shots,
+        batch_size,
+        memory_generator,
+        lep_target_rse,
+        lep_computation_min_fails,
+        fitting_degree,
         max_workers,
-        memory_generator=memory_generator,
     )
-
-    # Start the computation
-    num_points = noise_model.num_noise_parameters * num_points_per_parameters
-    engine = RunAllAnalysisEngine(
-        experiment_name=f"Estimating Λ on {num_points} points",
-        decoder_managers=decoder_managers,
-        max_shots=num_shots,
-        batch_size=batch_size,
-        # Early stopping when we have a low-enough standard deviation
-        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
-            lep_target_rse, lep_computation_min_fails
-        ),
-        num_parallel_processes=max_workers,
-    )
-    report = engine.run()
-    if data_file is not None:
-        report.to_csv(data_file)
-
-    # Post-process the results to get all the estimations for 1 / Λ
-    lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
-        noise_parameters, noise_model.parameter_names, num_rounds_by_distances, report
-    )
-    lambda_reciprocals = 1 / lambdas
-    lambda_reciprocal_stddevs = numpy.abs(lambda_stddevs / lambdas**2)
-
-    # We now have all the estimations of 1 / Λ, we can approximate the gradient
-    # Note that ``noise_parameters``, ``lambda_reciprocals`` and
-    # ``lambda_reciprocal_stddevs`` have the same shapes: a 2-dimensional array with
-    # values as columns. Additionally, the first column corresponds to the original
-    # noise model parameters, and each following group of ``num_points_per_parameters``
-    # columns correspond to the variation of 1 parameter.
-    gradient: list[float] = []
-    gradient_stddev: list[float] = []
-    for npi, noise_parameter in enumerate(noise_model.noise_parameters):
-        start = 1 + num_points_per_parameters * npi
-        end = 1 + num_points_per_parameters * (npi + 1)
-        # Index 0 is ``noise_model.noise_parameters``, so it can be included in all
-        # estimations.
-        column_indices = [0, *list(range(start, end))]
-        x = noise_parameters[npi, column_indices]
-        y = lambda_reciprocals[0, column_indices]
-        stddevs = lambda_reciprocal_stddevs[0, column_indices]
-        derivative, stddev = _approximate_derivative_at_point_from_values(
-            x,
-            y,
-            stddevs,
-            noise_parameter,
-            degree=fitting_degree,
-            noise_name=noise_model.parameter_names[npi],
-        )
-        gradient.append(derivative)
-        gradient_stddev.append(stddev)
-
+    # We computed the gradient at the point ``x / 2``, we can now apply it to the
+    # original noise parameters to recover an estimate.
     contributions = numpy.abs(gradient * noise_model.noise_parameters)
     stddevs = numpy.abs(gradient_stddev * noise_model.noise_parameters)
-    return (
-        lambda_reciprocals[0, 0],
-        lambda_reciprocal_stddevs[0, 0],
-        contributions,
-        stddevs,
-    )
+    return ErrorBudgetingResults(contributions, stddevs)

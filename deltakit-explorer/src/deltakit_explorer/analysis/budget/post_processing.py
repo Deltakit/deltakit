@@ -86,16 +86,22 @@ def _compute_lambda_from_results(
 
 
 def _compute_logical_error_rate_per_round_from_results(
-    num_rounds: Sequence[int], data: pandas.DataFrame
+    num_rounds: npt.NDArray[numpy.int_] | Sequence[int], data: pandas.DataFrame
 ) -> LogicalErrorProbabilityPerRoundResults:
-    num_fails: list[int] = []
-    num_shots: list[int] = []
+    num_fails: npt.NDArray[numpy.int_] | list[int] = []
+    num_shots: npt.NDArray[numpy.int_] | list[int] = []
     for nrounds in num_rounds:
         data_row = data.query(f"num_rounds == {nrounds}")
         nfails = data_row["fails"].values[0]
         nshots = data_row["shots"].values[0]
         num_fails.append(nfails)
         num_shots.append(nshots)
+    # Filter out 0 fails
+    non_zeros_mask = numpy.asarray(num_fails) != 0
+    num_rounds = numpy.asarray(num_rounds)[non_zeros_mask]
+    num_fails = numpy.asarray(num_fails)[non_zeros_mask]
+    num_shots = numpy.asarray(num_shots)[non_zeros_mask]
+
     lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, num_shots)
     res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
     return res
