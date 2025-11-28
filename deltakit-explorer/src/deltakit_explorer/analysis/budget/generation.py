@@ -3,7 +3,6 @@ from collections.abc import Sequence
 from concurrent.futures import ProcessPoolExecutor
 from typing import Mapping, Type
 
-from deltakit_explorer.analysis.budget.memory import MemoryGenerator, get_rotated_surface_code_memory_circuit
 import numpy
 import numpy.typing as npt
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
@@ -11,6 +10,11 @@ from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManag
 from tqdm import tqdm
 
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
+from deltakit_explorer.analysis.budget.memory import (
+    MemoryGenerator,
+    get_rotated_surface_code_memory_circuit,
+)
+
 
 def _generate_surface_code_memory_decoder_manager(
     distance: int,
@@ -40,7 +44,12 @@ def _generate_surface_code_memory_decoder_manager(
     metadata = {
         "distance": distance,
         "num_rounds": num_rounds,
-        **{f"noise_{name}": p for name, p in zip(noise_model.parameter_names, noise_model.noise_parameters)}
+        **{
+            f"noise_{name}": p
+            for name, p in zip(
+                noise_model.parameter_names, noise_model.noise_parameters
+            )
+        },
     }
 
     return StimDecoderManager(decoder_circuit, decoder, metadata=metadata)
@@ -126,7 +135,7 @@ def generate_decoder_managers_for_lambda(
                 distance_and_rounds_iterator, (noise_model_type(x) for x in xi)
             ),
             itertools.repeat(memory_generator),
-            strict=False
+            strict=False,
         )
     )
     if max_workers == 1:

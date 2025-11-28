@@ -14,7 +14,7 @@ class NoiseInterface(ABC, Generic[Computation]):
     """A minimal interface around a noise model to perform error-budgeting.
 
     Args:
-        noise_parameters (Sequence[float] | npt.NDArray[numpy.float64]):
+        noise_parameters (Sequence[float] | npt.NDArray[numpy.floating]):
             the floating-point values representing noise parameters for the underlying
             noise model.
         parameter_names (Sequence[str]): a name representing the noise parameter for
@@ -28,20 +28,18 @@ class NoiseInterface(ABC, Generic[Computation]):
 
     def __init__(
         self,
-        noise_parameters: Sequence[float] | npt.NDArray[numpy.float64],
+        noise_parameters: Sequence[float] | npt.NDArray[numpy.floating],
         name: str | None = None,
     ) -> None:
-        self._noise_parameters = numpy.asarray(noise_parameters, dtype=numpy.float64)
-        self._name = (
-            name if name is not None else "_".join(self.parameter_names)
-        )
+        self._noise_parameters = numpy.asarray(noise_parameters, dtype=numpy.floating)
+        self._name = name if name is not None else "_".join(self.parameter_names)
 
     @abstractmethod
     def apply(self, computation: Computation) -> Computation:
         """Apply the noise model represented by ``self`` to the provided computation."""
 
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
+    def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
         """Check if the provided ``parameters`` are valid for the noise model
         represented by ``cls``."""
         if parameters.size != cls.num_noise_parameters:
@@ -52,13 +50,13 @@ class NoiseInterface(ABC, Generic[Computation]):
         return None
 
     @property
-    def noise_parameters(self) -> npt.NDArray[numpy.float64]:
+    def noise_parameters(self) -> npt.NDArray[numpy.floating]:
         return self._noise_parameters
 
     def variate_by(
         self,
         noise_parameters_deltas: (
-            Sequence[float] | npt.NDArray[numpy.float64] | Mapping[str, float]
+            Sequence[float] | npt.NDArray[numpy.floating] | Mapping[str, float]
         ),
     ) -> Self:
         """Returns a new noise model with its noise parameters changed by the provided
@@ -66,7 +64,7 @@ class NoiseInterface(ABC, Generic[Computation]):
 
         Args:
             noise_parameters_deltas \
-            (Sequence[float] | npt.NDArray[numpy.float64] | Mapping[str, float]):
+            (Sequence[float] | npt.NDArray[numpy.floating] | Mapping[str, float]):
                 the amount by which each noise parameter should be offset in order to
                 create a new noise model.
 
@@ -79,30 +77,30 @@ class NoiseInterface(ABC, Generic[Computation]):
                 noise_parameters_deltas[name] for name in self.parameter_names
             ]
         noise_parameters_deltas = numpy.asarray(
-            noise_parameters_deltas, dtype=numpy.float64
+            noise_parameters_deltas, dtype=numpy.floating
         )
         return type(self)(self.noise_parameters + noise_parameters_deltas, self._name)
 
     def is_variation_valid(
-        self, parameters_variation: npt.NDArray[numpy.float64]
+        self, parameters_variation: npt.NDArray[numpy.floating]
     ) -> str | None:
         return self.is_valid(self._noise_parameters + parameters_variation)
 
     def is_variation_on_parameter_valid(
         self, noise_parameter_index: int, variation: float
     ) -> str | None:
-        e = numpy.zeros((self.num_noise_parameters,), dtype=numpy.float64)
+        e = numpy.zeros((self.num_noise_parameters,), dtype=numpy.floating)
         e[noise_parameter_index] = variation
         return self.is_variation_valid(e)
 
     def variate_noise_parameter_by(
         self, noise_parameter_index: int, variation: float
     ) -> Self:
-        e = numpy.zeros((self.num_noise_parameters,), dtype=numpy.float64)
+        e = numpy.zeros((self.num_noise_parameters,), dtype=numpy.floating)
         e[noise_parameter_index] = variation
         return self.variate_by(e)
 
-    def get_heuristic_steps(self, factor: float = 0.02) -> npt.NDArray[numpy.float64]:
+    def get_heuristic_steps(self, factor: float = 0.02) -> npt.NDArray[numpy.floating]:
         return factor * self._noise_parameters
 
     def to_dict(self) -> dict[str, float]:

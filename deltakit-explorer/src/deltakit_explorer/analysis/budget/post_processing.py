@@ -1,25 +1,33 @@
 from collections.abc import Mapping, Sequence
+import warnings
 
-from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
-from deltakit_explorer.analysis.lambda_ import LambdaResults, calculate_lambda_and_lambda_stddev
 import numpy
 import numpy.typing as npt
 import pandas
 
 from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundResults,
-    compute_logical_error_per_round
+    compute_logical_error_per_round,
 )
+from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
+from deltakit_explorer.analysis.lambda_ import (
+    LambdaResults,
+    calculate_lambda_and_lambda_stddev,
+)
+
 
 def _filter_non_close_noise_parameters(
     data: pandas.DataFrame,
     noise_parameters: npt.NDArray[numpy.floating],
     noise_parameter_names: Sequence[str],
 ) -> pandas.DataFrame:
+    """Return a filtered view over ``data`` such that all entries are close to the
+    provided ``noise_parameters``."""
     ret = data
     for name, param in zip(noise_parameter_names, noise_parameters):
         ret = ret[numpy.isclose(ret[f"noise_{name}"], param)]
     return ret
+
 
 def compute_lambda_and_stddev_from_results(
     xi: npt.NDArray[numpy.floating],
@@ -96,8 +104,13 @@ def _compute_logical_error_rate_per_round_from_results(
         nshots = data_row["shots"].values[0]
         num_fails.append(nfails)
         num_shots.append(nshots)
-    # Filter out 0 fails
+    # Filter out 0 fails
     non_zeros_mask = numpy.asarray(num_fails) != 0
+    if not numpy.all(non_zeros_mask):
+        warnings.warn(
+            "Found at least one sampling task with 0 fails. It will be ignored for "
+            "logical error probability computation."
+        )
     num_rounds = numpy.asarray(num_rounds)[non_zeros_mask]
     num_fails = numpy.asarray(num_fails)[non_zeros_mask]
     num_shots = numpy.asarray(num_shots)[non_zeros_mask]

@@ -1,11 +1,11 @@
-from dataclasses import dataclass
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 
-from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
 import numpy
 import numpy.typing as npt
 
+from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.memory import (
     MemoryGenerator,
