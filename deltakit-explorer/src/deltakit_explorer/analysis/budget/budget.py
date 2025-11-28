@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
 import numpy
@@ -30,6 +31,7 @@ def get_error_budget(
     lep_computation_min_fails: int = 10,
     fitting_degree: int = 3,
     max_workers: int = 1,
+    data_path: Path | None = None,
 ) -> ErrorBudgetingResults:
     """Compute the error budget of the provided ``noise_model``.
 
@@ -81,13 +83,13 @@ def get_error_budget(
         of the noise parameters of the provided ``noise_model`` along with their
         associated standard deviations.
     """
-    # We will compute the gradient at the half point following the methodology outlined
-    # in "Exponential suppression of bit or phase errors with cyclic error correction".
+    # We will compute the gradient at the half point following the methodology outlined
+    # in "Exponential suppression of bit or phase errors with cyclic error correction".
     point = noise_model.noise_parameters / 2
-    # Set heuristic default value for the bounds if not provided.
+    # Set heuristic default value for the bounds if not provided.
     if noise_parameters_exploration_bounds is None:
         noise_parameters_exploration_bounds = [(p / 10, 20 * p) for p in point]
-    # Evaluate the gradient.
+    # Evaluate the gradient.
     gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
         type(noise_model),
         point,
@@ -101,9 +103,11 @@ def get_error_budget(
         lep_computation_min_fails,
         fitting_degree,
         max_workers,
+        data_path=data_path,
     )
     # We computed the gradient at the point ``x / 2``, we can now apply it to the
     # original noise parameters to recover an estimate.
     contributions = numpy.abs(gradient * noise_model.noise_parameters)
     stddevs = numpy.abs(gradient_stddev * noise_model.noise_parameters)
+
     return ErrorBudgetingResults(contributions, stddevs)

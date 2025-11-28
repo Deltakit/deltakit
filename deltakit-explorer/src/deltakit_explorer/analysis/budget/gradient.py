@@ -1,9 +1,11 @@
 import math
 import warnings
+from pathlib import Path
 from typing import Iterator, Mapping, Sequence
 
 import numpy
 import numpy.typing as npt
+import pandas
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
 from deltakit_explorer.analysis.budget.generation import (
@@ -30,9 +32,9 @@ def _get_interpolation_points(
     be used to fit a degree-d polynomial and will minimise the variance of the fitted
     polynomial gradient at point ``c``.
 
-    For the moment, this function simply returns evenly spaced points. Eventually, it
-    might return an optimised set of points to reduce the variance of the resulting
-    gradient estimation (e.g., using a D-optimal design, see
+    For the moment, this function simply returns evenly spaced points on a log-space.
+    Eventually, it might return an optimised set of points to reduce the variance of the
+    resulting gradient estimation (e.g., using a D-optimal design, see
     https://en.wikipedia.org/wiki/Optimal_experimental_design).
 
     Args:
@@ -55,7 +57,9 @@ def _get_interpolation_points(
     """
     if not a < c < b:
         raise ValueError(f"Expected {a=} < {c=} < {b=}")
-    return numpy.linspace(a, b, num_points, dtype=numpy.floating)
+    return numpy.logspace(
+        numpy.log10(a), numpy.log10(b), num_points, dtype=numpy.floating
+    )
 
 
 def _variate_ith_parameter_by(
@@ -92,6 +96,7 @@ def _approximate_derivative_at_point_from_values(
     stddevs: npt.NDArray[numpy.floating],
     gradient_approximation_point: float,
     degree: int = 3,
+    noise_name: str | None = None,
 ) -> tuple[float, float]:
     # Perform the approximation using the provided standard deviations
     coefficients, cov = numpy.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
@@ -171,6 +176,7 @@ def compute_1_over_lambda_gradient_at(
     lep_computation_min_fails: int = 10,
     fitting_degree: int = 3,
     max_workers: int = 1,
+    data_path: Path | None = None,
 ) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     """The gradient of 1 / Λ at the provided ``noise_model_parameters``.
 
@@ -271,30 +277,34 @@ def compute_1_over_lambda_gradient_at(
     # Note that noise_parameters[:, 0] is always ``central_point``.
     noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
 
-    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
-    # Prepare the computation by building the decoder managers.
-    decoder_managers = generate_decoder_managers_for_lambda(
-        noise_parameters,
-        noise_model_type,
-        num_rounds_by_distances,
-        max_workers,
-        memory_generator=memory_generator,
-    )
+    if data_path is not None and data_path.exists():
+        report = pandas.read_csv(data_path)
+    else:
+        # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
+        # Prepare the computation by building the decoder managers.
+        decoder_managers = generate_decoder_managers_for_lambda(
+            noise_parameters,
+            noise_model_type,
+            num_rounds_by_distances,
+            max_workers,
+            memory_generator=memory_generator,
+        )
 
-    # Start the computation
-    num_points = noise_model_type.num_noise_parameters * num_points_per_parameters
-    engine = RunAllAnalysisEngine(
-        experiment_name=f"Estimating Λ on {num_points} points",
-        decoder_managers=decoder_managers,
-        max_shots=num_shots,
-        batch_size=batch_size,
-        # Early stopping when we have a low-enough standard deviation
-        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
-            lep_target_rse, lep_computation_min_fails
-        ),
-        num_parallel_processes=max_workers,
-    )
-    report = engine.run()
+        # Start the computation
+        num_points = noise_model_type.num_noise_parameters * num_points_per_parameters
+        engine = RunAllAnalysisEngine(
+            experiment_name=f"Estimating Λ on {num_points} points",
+            decoder_managers=decoder_managers,
+            max_shots=num_shots,
+            batch_size=batch_size,
+            # Early stopping when we have a low-enough standard deviation
+            loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
+                lep_target_rse, lep_computation_min_fails
+            ),
+            num_parallel_processes=max_workers,
+        )
+        report = engine.run()
+        report.to_csv(data_path)
 
     # Post-process the results to get all the estimations for 1 / Λ
     lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
@@ -324,7 +334,12 @@ def compute_1_over_lambda_gradient_at(
         y = lambda_reciprocals[0, column_indices]
         stddevs = lambda_reciprocal_stddevs[0, column_indices]
         derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
-            x, y, stddevs, noise_parameter, degree=fitting_degree,
+            x,
+            y,
+            stddevs,
+            noise_parameter,
+            degree=fitting_degree,
+            noise_name=noise_model_type.parameter_names[npi],
         )
         gradient.append(derivative)
         gradient_stddev.append(derivative_stddev)
