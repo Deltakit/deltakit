@@ -198,7 +198,12 @@ def compute_1_over_lambda_gradient_at(
             following is true:
             ``noise_parameters_exploration_bounds[i][0] <
             noise_model.noise_parameters[i] <
-            noise_parameters_exploration_bounds[i][1]``).
+            noise_parameters_exploration_bounds[i][1]``). Ideally, the lower (resp.
+            upper) bound provided must be such that the logical error probability when
+            replacing the parameter with its lower (resp. upper) bound is above
+            ``100 / num_shots`` to ensure enough fails are observed with ``num_shots``
+            shots (resp. below ``1 / 2`` to ensure that we can compute the logical error
+            probability per round).
         num_points_per_parameters (int): number of different values to try for each
             noise parameter. Corresponds to the number of points that will be used to
             fit a degree ``fitting_degree`` polynomial. As such, should be greater than
