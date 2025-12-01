@@ -8,6 +8,10 @@ import numpy.typing as npt
 import pandas
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
+from deltakit_explorer.analysis.budget.discretisation import (
+    GradientFitDiscretisationGenerator,
+    get_logarithmic_points,
+)
 from deltakit_explorer.analysis.budget.generation import (
     generate_decoder_managers_for_lambda,
 )
@@ -19,47 +23,6 @@ from deltakit_explorer.analysis.budget.memory import (
 from deltakit_explorer.analysis.budget.post_processing import (
     compute_lambda_and_stddev_from_results,
 )
-
-
-def _get_interpolation_points(
-    a: float, b: float, c: float, num_points: int, degree: int
-) -> npt.NDArray[numpy.floating]:
-    """
-    Find a good set of points to estimate the gradient at point ``c`` by fitting a
-    degree-d polynomial on the interval ``[a, b]``.
-
-    This function finds ``num_points`` points ``x`` between ``a`` and ``b`` that should
-    be used to fit a degree-d polynomial and will minimise the variance of the fitted
-    polynomial gradient at point ``c``.
-
-    For the moment, this function simply returns evenly spaced points on a log-space.
-    Eventually, it might return an optimised set of points to reduce the variance of the
-    resulting gradient estimation (e.g., using a D-optimal design, see
-    https://en.wikipedia.org/wiki/Optimal_experimental_design).
-
-    Args:
-        a (float): lower bound of the interval in which fitting points should be
-            computed.
-        b (float): upper bound of the interval in which fitting points should be
-            computed.
-        c (float): point at which the gradient will be estimated.
-        num_points (int): number of points to return within ``[a, b]``.
-        degree (int): degree of the polynomial that will be used to fit the values
-            computed at each of the points returned by this function.
-
-    Returns:
-        a sorted array of ``num_points`` points within ``[a, b]`` and without duplicates
-        that should be used to evaluate the function to fit with a degree ``degree``
-        polynomial.
-
-    Raises:
-        ValueError: if ``a < c < b`` is not verified.
-    """
-    if not a < c < b:
-        raise ValueError(f"Expected {a=} < {c=} < {b=}")
-    return numpy.logspace(
-        numpy.log10(a), numpy.log10(b), num_points, dtype=numpy.floating
-    )
 
 
 def _variate_ith_parameter_by(
@@ -174,6 +137,7 @@ def compute_1_over_lambda_gradient_at(
     memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
+    discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
     data_path: Path | None = None,
@@ -221,6 +185,10 @@ def compute_1_over_lambda_gradient_at(
         lep_computation_min_fails (int): minimum number of failures that should be
             witnessed before stopping a sampling task. A sampling task may stop with less
             failures, for example if ``num_shots`` shots have been performed.
+        discretisation_generator (GradientFitDiscretisationGenerator): a callable
+            generating points that can be used to compute 1 / Λ on different values and
+            fit a degree ``fitting_degree`` polynomial. Default to logarithmically
+            spaced points.
         fitting_degree (int): degree of polynomial that will be used to approximate
             1 / Λ and to compute each of its derivatives. Should be lower than
             ``num_points_per_parameters - 1``. Higher values will incur higher standard
@@ -270,7 +238,7 @@ def compute_1_over_lambda_gradient_at(
     central_point: npt.NDArray[numpy.floating] = noise_model_parameters.reshape((-1, 1))
     xis: list[npt.NDArray[numpy.floating]] = [central_point.reshape((-1,))]
     for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
-        variations = _get_interpolation_points(
+        variations = discretisation_generator(
             minimum,
             maximum,
             central_point[i],

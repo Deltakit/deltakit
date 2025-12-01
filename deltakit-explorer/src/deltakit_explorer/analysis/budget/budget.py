@@ -2,6 +2,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from deltakit_explorer.analysis.budget.discretisation import GradientFitDiscretisationGenerator, get_logarithmic_points
 import numpy
 import numpy.typing as npt
 
@@ -29,6 +30,7 @@ def get_error_budget(
     memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
+    discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
     data_path: Path | None = None,
@@ -74,6 +76,10 @@ def get_error_budget(
         lep_computation_min_fails (int): minimum number of failures that should be
             witnessed before stopping a sampling task. A sampling task may stop with less
             failures, for example if ``num_shots`` shots have been performed.
+        discretisation_generator (GradientFitDiscretisationGenerator): a callable
+            generating points that can be used to compute 1 / Λ on different values and
+            fit a degree ``fitting_degree`` polynomial. Default to logarithmically
+            spaced points.
         fitting_degree (int): degree of polynomial that will be used to approximate
             1 / Λ and to compute each of its derivatives. Should be lower than
             ``num_points_per_parameters - 1``. Higher values will incur higher standard
@@ -105,6 +111,7 @@ def get_error_budget(
         memory_generator,
         lep_target_rse,
         lep_computation_min_fails,
+        discretisation_generator,
         fitting_degree,
         max_workers,
         data_path=data_path,
