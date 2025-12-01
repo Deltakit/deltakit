@@ -139,7 +139,11 @@ def generate_decoder_managers_for_lambda(
         )
     )
     if max_workers == 1:
-        for distance, nrounds, noise_model, memgen in parameters_iterator:
+        for distance, nrounds, noise_model, memgen in tqdm(
+            parameters_iterator,
+            total=total_circuits,
+            desc="Generating quantum circuits",
+        ):
             manager = _generate_surface_code_memory_decoder_manager(
                 distance, nrounds, noise_model, memgen
             )
