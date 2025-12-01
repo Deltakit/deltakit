@@ -4,12 +4,16 @@ import numpy
 import numpy.typing as npt
 from deltakit_decode.analysis import RunAllAnalysisEngine
 
-from deltakit_explorer.analysis.budget import (
-    MemoryGenerator,
-    NoiseInterface,
-    compute_lambda_and_stddev_from_results,
+from deltakit_explorer.analysis.budget.generation import (
     generate_decoder_managers_for_lambda,
+)
+from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
+from deltakit_explorer.analysis.budget.memory import (
+    MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
+)
+from deltakit_explorer.analysis.budget.post_processing import (
+    compute_lambda_and_stddev_from_results,
 )
 
 
