@@ -198,11 +198,6 @@ def compute_1_over_lambda_gradient_at(
             Default to 1 which means fully sequential.
         data_file (Path | None): if provided, a valid path to which simulation data will
             be saved. Default to not provided, which means nothing is saved on disk.
-        include_lambda_reciprocal (bool): if ``True``, the value of 1 / Λ (and its
-            standard deviation) on the noise model parameters will be estimated by the
-            function and returned. This is useful to estimate the "Excess" noise in
-            error budgets. Setting this to ``True`` leads to additional computation, so
-            only use it if you need it.
 
     Returns:
         the error-budgeting result, which consists of an array of contributions for each
