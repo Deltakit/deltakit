@@ -91,10 +91,10 @@ def _draw_line_from_text_to_position(
 
 
 def plot_error_budget(
-    contributions: npt.NDArray[numpy.float64] | Sequence[float],
+    contributions: npt.NDArray[numpy.floating] | Sequence[float],
     contribution_descriptions: Sequence[str],
     contributions_stddev: (
-        npt.NDArray[numpy.float64] | Sequence[float | None] | None
+        npt.NDArray[numpy.floating] | Sequence[float | None] | None
     ) = None,
     fig: Figure | None = None,
     ax: Axes | None = None,
@@ -104,12 +104,12 @@ def plot_error_budget(
     """Plot the provided error budget.
 
     Args:
-        contributions (npt.NDArray[numpy.float64] | Sequence[float]):
+        contributions (npt.NDArray[numpy.floating] | Sequence[float]):
             error-budget as an array of numbers.
         contribution_descriptions (Sequence[str]): textual description of each error
             mechanism involved in ``contributions``. Will be plotted on the error-budget
             figure.
-        contributions_stddev (npt.NDArray[numpy.float64] | Sequence[float | None] | None):
+        contributions_stddev (npt.NDArray[numpy.floating] | Sequence[float | None] | None):
             standard deviation of the provided values in ``contributions``. Default to
             ``None``, which does not draw the error-bars. If an array is provided,
             ``None`` values mean "no error-bars for this value" (this is often the case
