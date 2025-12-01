@@ -21,7 +21,8 @@ class ErrorBudgetingResults:
 
 
 def get_error_budget(
-    noise_model: NoiseInterface,
+    noise_model_type: type[NoiseInterface],
+    noise_model_parameters: npt.NDArray[numpy.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     noise_parameters_exploration_bounds: list[tuple[float, float]] | None = None,
     num_points_per_parameters: int = 10,
@@ -38,8 +39,11 @@ def get_error_budget(
     """Compute the error budget of the provided ``noise_model``.
 
     Args:
-        noise_model (NoiseInterface): noise model to estimate the budget of. Each
-            parameter should be independent.
+        noise_model_type (type[NoiseInterface]): type of the noise model to estimate the
+            gradient of.
+        noise_model_parameters (npt.NDArray[numpy.floating] | Sequence[float]): valid
+            parameters to instantiate the type provided as ``noise_model_type``
+            representing the point at which the gradient should be computed.
         num_rounds_by_distances (Mapping[int, Sequence[int]]): a mapping from each code
             distance that should be tested to the number of rounds that should be
             sampled in order to estimate the logical error-probability per round, to
@@ -95,13 +99,13 @@ def get_error_budget(
     """
     # We will compute the gradient at the half point following the methodology outlined
     # in "Exponential suppression of bit or phase errors with cyclic error correction".
-    point = noise_model.noise_parameters / 2
+    point = numpy.asarray(noise_model_parameters) / 2
     # Set heuristic default value for the bounds if not provided.
     if noise_parameters_exploration_bounds is None:
         noise_parameters_exploration_bounds = [(p / 10, 20 * p) for p in point]
     # Evaluate the gradient.
     gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
-        type(noise_model),
+        noise_model_type,
         point,
         num_rounds_by_distances,
         noise_parameters_exploration_bounds,
@@ -118,7 +122,7 @@ def get_error_budget(
     )
     # We computed the gradient at the point ``x / 2``, we can now apply it to the
     # original noise parameters to recover an estimate.
-    contributions = numpy.abs(gradient * noise_model.noise_parameters)
-    stddevs = numpy.abs(gradient_stddev * noise_model.noise_parameters)
+    contributions = numpy.abs(gradient * noise_model_parameters)
+    stddevs = numpy.abs(gradient_stddev * noise_model_parameters)
 
     return ErrorBudgetingResults(contributions, stddevs)
