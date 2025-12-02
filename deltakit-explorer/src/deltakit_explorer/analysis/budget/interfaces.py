@@ -20,7 +20,6 @@ class NoiseInterface(ABC, Generic[Computation]):
         parameter_names (Sequence[str]): a name representing the noise parameter for
             each entry in ``noise_parameters``.
         name (str | None): name of the noise model.
-
     """
 
     num_noise_parameters: ClassVar[int]

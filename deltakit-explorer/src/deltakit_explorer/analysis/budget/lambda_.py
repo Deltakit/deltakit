@@ -31,7 +31,8 @@ def compute_1_over_lambda_at(
     """Compute 1 / Λ.
 
     Warning:
-        This is a helper function to compute 1 / Λ when you need a **single** evaluation.
+        This is a helper function to compute 1 / Λ when you need a **single**
+        evaluation.
         For error budgeting, :func:`~deltakit_explorer.analysis.budget.get_error_budget`
         will be able to parallelise more efficiently, while also performing several
         checks and optimisations.

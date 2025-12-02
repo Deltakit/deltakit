@@ -6,6 +6,7 @@ import colorsys
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+import warnings
 
 import matplotlib
 import matplotlib.colors
@@ -251,7 +252,7 @@ def plot_error_budget(
     ]
 
     if texts:
-        texts, _ = adjust_text(
+        ret = adjust_text(
             texts,
             target_x=nft_bar_centres,
             target_y=[bar_top for _ in range(len(nft_bar_centres))],
@@ -259,6 +260,12 @@ def plot_error_budget(
             only_move=dict.fromkeys(("explode", "pull", "text", "static"), "x"),
             ax=ax,
         )
+        if ret is None:
+            warnings.warn(
+                "Call to adjust_text failed. Labels will likely not be well positioned."
+            )
+        else:
+           texts, _ = ret
     # Draw lines
     for target, text, colour in zip(nft_bar_centres, texts, nft_bar_colours):
         _draw_line_from_text_to_position(fig, ax, text, target, bar_top, colour, t=0)

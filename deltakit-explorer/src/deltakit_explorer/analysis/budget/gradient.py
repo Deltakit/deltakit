@@ -1,5 +1,4 @@
 import math
-import warnings
 from collections.abc import Iterator, Mapping, Sequence
 
 import numpy
@@ -58,6 +57,34 @@ def _approximate_derivative_at_point_from_values(
     gradient_approximation_point: float,
     degree: int = 3,
 ) -> tuple[float, float]:
+    """Approximate the gradient at ``gradient_approximation_point`` from the given ``x``
+    and ``y``.
+
+    This function fits a degree ``degree`` polynomial to the points given by ``x``,
+    ``y`` and ``stddevs`` (the standard deviation of each point in ``y``) and then
+    computes the gradient of the fitted polynomial at ``gradient_approximation_points``.
+
+    This algorithm is used to use as much as possible the standard deviation information
+    and to avoid non-linear behaviour at the extremities of the interval containing all
+    values in ``x`` to affect too much the gradient.
+
+    Args:
+        x (npt.NDArray[numpy.floating]): exact values on which we evaluated a noisy
+            function. Should be a 1-dimensional array.
+        y (npt.NDArray[numpy.floating]): best estimation of the result obtained from the
+            noisy function evaluation when evaluated on the corresponding entry in
+            ``x``. Should be a 1-dimensional array.
+        stddevs (npt.NDArray[numpy.floating]): standard deviation of the estimate in
+            ``y``. Should be a 1-dimensional array.
+        gradient_approximation_point (float): point at which the gradient should be
+            estimated.
+        degree (int): degree of the polynomial to fit the provided points and estimate
+            the gradient at ``gradient_approximation_point``.
+
+    Returns:
+        value of the gradient (a single float because ``x``, ``y`` and ``stddevs`` are
+        one-dimensional arrays) and the standard deviation of the estimate.
+    """
     # Perform the approximation using the provided standard deviations
     coefficients, cov = numpy.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
 
@@ -201,15 +228,6 @@ def compute_1_over_lambda_gradient_at(
     """
 
     # Checking inputs.
-    if num_points_per_parameters % 2 == 1:
-        warnings.warn(
-            "Got an odd value for ``num_points_per_parameters``. This is sub-optimal "
-            "as the central point will be included twice. Only using "
-            f"{num_points_per_parameters - 1} points in the explicit discretisation, "
-            "the central point will be included automatically."
-        )
-        num_points_per_parameters -= 1
-
     if num_points_per_parameters + 1 < fitting_degree + 2:
         msg = (
             f"Estimation of the standard deviation requires at least "
@@ -237,7 +255,7 @@ def compute_1_over_lambda_gradient_at(
         )
         xis.extend(_variate_ith_parameter_by(central_point, variations, i))
 
-    # Note that noise_parameters[:, 0] is always ``central_point``.
+    # Note: noise_parameters[:, 0] is always ``central_point``.
     noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
 
     # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
