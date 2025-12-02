@@ -63,7 +63,8 @@ class NoiseInterface(ABC, Generic[Computation]):
     def _get_value(self, parameter_name: str) -> float:
         if (index := self._get_index(parameter_name)) != -1:
             return self._noise_parameters[index]
-        raise IndexError(f"Parameter {parameter_name} not found.")
+        msg = f"Parameter {parameter_name} not found."
+        raise IndexError(msg)
 
     @property
     def name(self) -> str:

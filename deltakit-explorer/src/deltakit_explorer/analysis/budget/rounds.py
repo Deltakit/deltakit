@@ -1,4 +1,4 @@
-from typing import Callable
+from collections.abc import Callable
 
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager

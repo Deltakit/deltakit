@@ -1,5 +1,5 @@
-from collections.abc import Mapping, Sequence
 import warnings
+from collections.abc import Mapping, Sequence
 
 import numpy
 import numpy.typing as npt
@@ -10,7 +10,7 @@ from deltakit_explorer.analysis import (
     compute_logical_error_per_round,
 )
 from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
-from deltakit_explorer.analysis.lambda_ import (
+from deltakit_explorer.analysis._lambda import (
     LambdaResults,
     calculate_lambda_and_lambda_stddev,
 )
@@ -64,13 +64,16 @@ def compute_lambda_and_stddev_from_results(
         standard deviations.
     """
     if len(xi.shape) != 2:
-        raise ValueError(f"Expected a 2-dimensional array but got shape {xi.shape}.")
+        msg = f"Expected a 2-dimensional array but got shape {xi.shape}."
+        raise ValueError(msg)
     _, n = xi.shape
     ret: npt.NDArray[numpy.floating] = numpy.zeros((1, n), dtype=numpy.floating)
     stddev: npt.NDArray[numpy.floating] = numpy.zeros_like(ret)
     for i in range(n):
-        df = _filter_non_close_noise_parameters(data, xi[:, i], noise_parameter_names)
-        res = _compute_lambda_from_results(num_rounds_by_distance, df)
+        filtered_data = _filter_non_close_noise_parameters(
+            data, xi[:, i], noise_parameter_names
+        )
+        res = _compute_lambda_from_results(num_rounds_by_distance, filtered_data)
         ret[0, i], stddev[0, i] = res.lambda_, res.lambda_stddev
     return ret, stddev
 
@@ -83,14 +86,12 @@ def _compute_lambda_from_results(
     lerpr_stddevs: list[float] = []
     distances = sorted(num_rounds_by_distance.keys())
     for d in distances:
-        df = data[data["distance"] == d]
         leppr = _compute_logical_error_rate_per_round_from_results(
-            num_rounds_by_distance[d], df
+            num_rounds_by_distance[d], data[data["distance"] == d]
         )
         lerprs.append(leppr.leppr)
         lerpr_stddevs.append(leppr.leppr_stddev)
-    res = calculate_lambda_and_lambda_stddev(distances, lerprs, lerpr_stddevs)
-    return res
+    return calculate_lambda_and_lambda_stddev(distances, lerprs, lerpr_stddevs)
 
 
 def _compute_logical_error_rate_per_round_from_results(
@@ -100,8 +101,8 @@ def _compute_logical_error_rate_per_round_from_results(
     num_shots: npt.NDArray[numpy.int_] | list[int] = []
     for nrounds in num_rounds:
         data_row = data.query(f"num_rounds == {nrounds}")
-        nfails = data_row["fails"].values[0]
-        nshots = data_row["shots"].values[0]
+        nfails = data_row["fails"].to_numpy()[0]
+        nshots = data_row["shots"].to_numpy()[0]
         num_fails.append(nfails)
         num_shots.append(nshots)
     # Filter out 0 fails
@@ -116,5 +117,4 @@ def _compute_logical_error_rate_per_round_from_results(
     num_shots = numpy.asarray(num_shots)[non_zeros_mask]
 
     lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, num_shots)
-    res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
-    return res
+    return compute_logical_error_per_round(num_rounds, lep, lep_stddev)

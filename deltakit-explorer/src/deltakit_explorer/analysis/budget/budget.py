@@ -1,13 +1,12 @@
 from collections.abc import Mapping, Sequence
-from pathlib import Path
+
+import numpy
+import numpy.typing as npt
 
 from deltakit_explorer.analysis.budget.discretisation import (
     GradientFitDiscretisationGenerator,
     get_logarithmic_points,
 )
-import numpy
-import numpy.typing as npt
-
 from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
 from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget.memory import (
@@ -30,7 +29,6 @@ def get_error_budget(
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
-    data_path: Path | None = None,
 ) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     """Compute the error budget of the provided ``noise_model``.
 
@@ -114,7 +112,6 @@ def get_error_budget(
         discretisation_generator,
         fitting_degree,
         max_workers,
-        data_path=data_path,
     )
     # We computed the gradient at the point ``x / 2``, we can now apply it to the
     # original noise parameters to recover an estimate.

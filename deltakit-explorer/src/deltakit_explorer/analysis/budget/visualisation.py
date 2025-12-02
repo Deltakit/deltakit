@@ -62,8 +62,9 @@ def _text_size_in_data_coordinates(
 
     Adapted From https://stackoverflow.com/a/36959454.
     """
-    assert hasattr(fig.canvas, "get_renderer")
-    renderer = fig.canvas.get_renderer()
+    get_renderer = getattr(fig.canvas, "get_renderer")
+    assert get_renderer is not None
+    renderer = get_renderer()
     text_object = ax.text(0.5, 0.5, text)
     bb = text_object.get_window_extent(renderer=renderer).transformed(
         ax.transData.inverted()
@@ -78,8 +79,9 @@ def _draw_line_from_text_to_position(
     """Draw a line between text and (x, y) but with the end at (x, y) slightly shortened."""
     # First, get the coordinates at which the line will intersect with the bounding-box
     # of the text.
-    assert hasattr(fig.canvas, "get_renderer")
-    renderer = fig.canvas.get_renderer()
+    get_renderer = getattr(fig.canvas, "get_renderer")
+    assert get_renderer is not None
+    renderer = get_renderer()
     bl, tr = ax.transData.inverted().transform(text.get_window_extent(renderer))
     cx, cy = (tr + bl) / 2
     slope = (cy - y) / (cx - x)
@@ -254,7 +256,7 @@ def plot_error_budget(
             target_x=nft_bar_centres,
             target_y=[bar_top for _ in range(len(nft_bar_centres))],
             avoid_self=False,
-            only_move={step: "x" for step in ("explode", "pull", "text", "static")},
+            only_move=dict.fromkeys(("explode", "pull", "text", "static"), "x"),
             ax=ax,
         )
     # Draw lines

@@ -1,11 +1,9 @@
 import math
 import warnings
-from pathlib import Path
-from typing import Iterator, Mapping, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 
 import numpy
 import numpy.typing as npt
-import pandas
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
 from deltakit_explorer.analysis.budget.discretisation import (
@@ -59,7 +57,6 @@ def _approximate_derivative_at_point_from_values(
     stddevs: npt.NDArray[numpy.floating],
     gradient_approximation_point: float,
     degree: int = 3,
-    noise_name: str | None = None,
 ) -> tuple[float, float]:
     # Perform the approximation using the provided standard deviations
     coefficients, cov = numpy.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
@@ -111,7 +108,7 @@ def _get_variance_of_gradient_estimation_at_point(
     # Its derivative is then given by
     #       sum(a[i+1] * (i+1) * x**i for i in range(0, n))
     # Removing a[0] from a (and so shifting its indexing by 1, which is what we just did
-    # with the covariance matrix above) we have the derivative given by
+    # with the covariance matrix above) we have the derivative given by
     #       sum(a[i] * (i+1) * x**i for i in range(0, n))
     # When evaluating the gradient at the point c, the degree i coefficient of the
     # derivative (that is ``a[i]`` above or equivalently the degree (i+1) coefficient of
@@ -140,7 +137,6 @@ def compute_1_over_lambda_gradient_at(
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
-    data_path: Path | None = None,
 ) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     """The gradient of 1 / Λ at the provided ``noise_model_parameters``.
 
@@ -196,8 +192,6 @@ def compute_1_over_lambda_gradient_at(
             accuracy and resulting standard deviation.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
-        data_file (Path | None): if provided, a valid path to which simulation data will
-            be saved. Default to not provided, which means nothing is saved on disk.
 
     Returns:
         the error-budgeting result, which consists of an array of contributions for each
@@ -217,12 +211,13 @@ def compute_1_over_lambda_gradient_at(
         num_points_per_parameters -= 1
 
     if num_points_per_parameters + 1 < fitting_degree + 2:
-        raise ValueError(
+        msg = (
             f"Estimation of the standard deviation requires at least "
             f"fitting_degree + 2 = {fitting_degree + 2} discretisation points, but "
             f"only {num_points_per_parameters} + 1 are provided. Please increase "
             f"num_points_per_parameters to at least {fitting_degree + 1}."
         )
+        raise ValueError(msg)
 
     # Make sure that noise_model_parameters is a numpy array, even if a generic Sequence
     # is provided, as this is simpler for later.
@@ -245,34 +240,30 @@ def compute_1_over_lambda_gradient_at(
     # Note that noise_parameters[:, 0] is always ``central_point``.
     noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
 
-    if data_path is not None and data_path.exists():
-        report = pandas.read_csv(data_path)
-    else:
-        # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
-        # Prepare the computation by building the decoder managers.
-        decoder_managers = generate_decoder_managers_for_lambda(
-            noise_parameters,
-            noise_model_type,
-            num_rounds_by_distances,
-            max_workers,
-            memory_generator=memory_generator,
-        )
+    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
+    # Prepare the computation by building the decoder managers.
+    decoder_managers = generate_decoder_managers_for_lambda(
+        noise_parameters,
+        noise_model_type,
+        num_rounds_by_distances,
+        max_workers,
+        memory_generator=memory_generator,
+    )
 
-        # Start the computation
-        num_points = noise_model_type.num_noise_parameters * num_points_per_parameters
-        engine = RunAllAnalysisEngine(
-            experiment_name=f"Estimating Λ on {num_points} points",
-            decoder_managers=decoder_managers,
-            max_shots=num_shots,
-            batch_size=batch_size,
-            # Early stopping when we have a low-enough standard deviation
-            loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
-                lep_target_rse, lep_computation_min_fails
-            ),
-            num_parallel_processes=max_workers,
-        )
-        report = engine.run()
-        report.to_csv(data_path)
+    # Start the computation
+    num_points = noise_model_type.num_noise_parameters * num_points_per_parameters
+    engine = RunAllAnalysisEngine(
+        experiment_name=f"Estimating Λ on {num_points} points",
+        decoder_managers=decoder_managers,
+        max_shots=num_shots,
+        batch_size=batch_size,
+        # Early stopping when we have a low-enough standard deviation
+        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
+            lep_target_rse, lep_computation_min_fails
+        ),
+        num_parallel_processes=max_workers,
+    )
+    report = engine.run()
 
     # Post-process the results to get all the estimations for 1 / Λ
     lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
@@ -302,12 +293,7 @@ def compute_1_over_lambda_gradient_at(
         y = lambda_reciprocals[0, column_indices]
         stddevs = lambda_reciprocal_stddevs[0, column_indices]
         derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
-            x,
-            y,
-            stddevs,
-            noise_parameter,
-            degree=fitting_degree,
-            noise_name=noise_model_type.parameter_names[npi],
+            x, y, stddevs, noise_parameter, degree=fitting_degree
         )
         gradient.append(derivative)
         gradient_stddev.append(derivative_stddev)

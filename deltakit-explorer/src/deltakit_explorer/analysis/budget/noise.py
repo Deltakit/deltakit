@@ -76,10 +76,10 @@ def physical_noise_model_to_noise_parameters_and_native_gate_set_and_times(
     )
 
     native_gates = NativeGateSetAndTimes(
-        one_qubit_gates={g: noise_data.time_1_qubit_gate for g in ONE_QUBIT_GATES},
-        two_qubit_gates={g: noise_data.time_2_qubit_gate for g in TWO_QUBIT_GATES},
-        reset_gates={r: noise_data.time_reset for r in RESET_GATES},
-        measurement_gates={m: noise_data.time_measurement for m in MEASUREMENT_GATES},
+        one_qubit_gates=dict.fromkeys(ONE_QUBIT_GATES, noise_data.time_1_qubit_gate),
+        two_qubit_gates=dict.fromkeys(TWO_QUBIT_GATES, noise_data.time_2_qubit_gate),
+        reset_gates=dict.fromkeys(RESET_GATES, noise_data.time_reset),
+        measurement_gates=dict.fromkeys(MEASUREMENT_GATES, noise_data.time_measurement),
     )
     return noise_parameters, native_gates
 
@@ -156,7 +156,8 @@ class DeltakitNoise(NoiseInterface[Circuit]):
         for noise_name, noise_strength in noise_attributes.items():
             assert isinstance(noise_strength, Number), type(noise_strength).__name__
             if index := DeltakitNoise.parameter_names.index(noise_name) == -1:
-                raise ValueError(f"Invalid parameter name '{noise_name}'.")
+                msg = f"Invalid parameter name '{noise_name}'."
+                raise ValueError(msg)
             strengths[index] = noise_strength
         return DeltakitNoise(strengths, name)
 
@@ -188,18 +189,18 @@ class DeltakitNoise(NoiseInterface[Circuit]):
     @staticmethod
     def _check_is_positive(v: float, name: str) -> None:
         if v < 0:
-            raise ValueError(
-                f"{name.capitalize()} is expected to be positive but got {v}."
-            )
+            msg = f"{name.capitalize()} is expected to be positive but got {v}."
+            raise ValueError(msg)
 
     @staticmethod
     def _check_is_probability(v: float, name: str) -> None:
         if v < 0 or v > 1:
-            raise ValueError(f"Expected 0 <= {name.capitalize()} <= 1 but got {v}.")
+            msg = f"Expected 0 <= {name.capitalize()} <= 1 but got {v}."
+            raise ValueError(msg)
 
     @override
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
+    def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
         t1, t2 = parameters[0], parameters[1]
         if t2 > 2 * t1:
             return f"Expected t2 ({t2:.3g}) <= 2 * t1 (2 * {t1:.3g} = {2 * t1:.3g})."
@@ -265,11 +266,12 @@ class SimplerNoise(NoiseInterface):
     @staticmethod
     def _check_is_probability(v: float, name: str) -> None:
         if v < 0 or v > 1:
-            raise ValueError(f"Expected 0 <= {name.capitalize()} <= 1 but got {v}.")
+            msg = f"Expected 0 <= {name.capitalize()} <= 1 but got {v}."
+            raise ValueError(msg)
 
     @override
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
+    def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
         for i in range(2):
             SimplerNoise._check_is_probability(
                 parameters[i], SimplerNoise.parameter_names[i]
@@ -309,11 +311,12 @@ class SimplestNoise(NoiseInterface):
     @staticmethod
     def _check_is_probability(v: float, name: str) -> None:
         if v < 0 or v > 1:
-            raise ValueError(f"Expected 0 <= {name.capitalize()} <= 1 but got {v}.")
+            msg = f"Expected 0 <= {name.capitalize()} <= 1 but got {v}."
+            raise ValueError(msg)
 
     @override
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[numpy.float64]) -> str | None:
+    def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
         SimplerNoise._check_is_probability(
             parameters[0], SimplerNoise.parameter_names[0]
         )

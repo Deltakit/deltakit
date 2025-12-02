@@ -1,7 +1,6 @@
 import itertools
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from typing import Mapping, Type
 
 import numpy
 import numpy.typing as npt
@@ -63,7 +62,7 @@ def _generate_surface_code_memory_decoder_manager_wrapper(
 
 def generate_decoder_managers_for_lambda(
     xi: npt.NDArray[numpy.floating],
-    noise_model_type: Type[NoiseInterface],
+    noise_model_type: type[NoiseInterface],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     max_workers: int = 1,
     memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
@@ -111,14 +110,14 @@ def generate_decoder_managers_for_lambda(
     for x in xi:
         if (message := noise_model_type.is_valid(x)) is not None:
             parameters = "[" + ", ".join(f"{float(v):.3g}" for v in x) + "]"
-            raise ValueError(
+            msg = (
                 f"The provided parameters {parameters} are invalid for noise model "
                 f"{noise_model_type.__name__}. Reason is: '{message}'."
             )
+            raise ValueError(msg)
     if max_workers <= 0:
-        raise ValueError(
-            f"Cannot have less than one worker. Asked for {max_workers} workers."
-        )
+        msg = f"Cannot have less than one worker. Asked for {max_workers} workers."
+        raise ValueError(msg)
     # 2. Generate the decoder managers
     decoder_managers: list[StimDecoderManager] = []
     total_circuits = (
