@@ -7,7 +7,7 @@ References
 - https://doi.org/10.48550/arXiv.2408.13687
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 
 def _equal_or_less_brute_force_search(
@@ -72,10 +72,11 @@ def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> 
         The distance at which to calculate the number of QuOps.
     """
     if distance % 2 == 0:
-        raise ValueError(
+        msg = (
             "This method gives correct estimation only at odd distances. "
             f"Distance provided: {distance}"
         )
+        raise ValueError(msg)
     return 1. / _calculate_lep(lambda0, lambda_, distance, distance)
 
 def predict_distance_for_quops(
@@ -112,10 +113,12 @@ def predict_distance_for_quops(
     """
 
     if num_quops < 2:
-        raise ValueError("Number of QuOps should be at least 2")
+        msg = "Number of QuOps should be at least 2"
+        raise ValueError(msg)
 
     if lambda_ <= 1.0:
-        raise ValueError("Lambda should be greater than 1 to ensure error suppression")
+        msg = "Lambda should be greater than 1 to ensure error suppression"
+        raise ValueError(msg)
 
     required_lep = 1. / num_quops
     distance = _equal_or_less_brute_force_search(
@@ -125,11 +128,10 @@ def predict_distance_for_quops(
         maximum=max_distance,
         step=2,  # seek for odd solutions
     )
-    if distance is not None:
-        return distance
-    else:
+    if distance is None:
         text = (
             f"Could not find a solution between [1, {max_distance}] "
             "for LEP(distance) < 1 / QuOps. Increase max_distance."
         )
         raise ValueError(text)
+    return distance

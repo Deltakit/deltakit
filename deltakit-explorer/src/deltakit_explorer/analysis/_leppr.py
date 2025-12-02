@@ -2,7 +2,7 @@ import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass
 from math import floor
-from typing import Callable
+from collections.abc import Callable
 
 import numpy
 import numpy.typing as npt
@@ -108,11 +108,12 @@ def compute_logical_error_per_round(
     non_unique_entries_mask = unique_counts.counts > 1
     if numpy.any(non_unique_entries_mask):
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
-        raise RuntimeError(
+        msg = (
             "Multiple entries were provided for the following number of rounds: "
             f"{non_unique_values}. This is not supported. Please make sure you only "
             "provide one entry per number of rounds."
         )
+        raise RuntimeError(msg)
 
     # Check that we do not have any num_rounds <= 0 entry.
     while num_rounds[0] <= 0:
@@ -147,11 +148,12 @@ def compute_logical_error_per_round(
 
     # Checking the validity of the filtered data.
     if num_rounds.size == 0:
-        raise ValueError(
+        msg = (
             "No valid data was provided. Please ensure that the data provided is "
             "correct. If you provided data, look at the warnings to understand why it "
             "was considered invalid and ignored by this function."
         )
+        raise ValueError(msg)
 
     # If the user only provided one data point, we can use a direct approximate formula
     # without having to call a fitting function.
@@ -361,8 +363,8 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
     # ``heuristic_logical_error_lower_bound`` but under
     # ``heuristic_logical_error_upper_bound``.
     maximum_number_of_backward_steps: int = 5
-    backward_arithmetic_factor: int = int(
-        floor((nrounds[-1] - nrounds[-2]) / (maximum_number_of_backward_steps + 1))
+    backward_arithmetic_factor: int = floor(
+        (nrounds[-1] - nrounds[-2]) / (maximum_number_of_backward_steps + 1)
     )
     while (nfails[-1] / nshots[-1]) > heuristic_logical_error_upper_bound:
         out_of_bound_round_value = nrounds[-1]

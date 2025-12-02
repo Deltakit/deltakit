@@ -58,7 +58,16 @@ indent-width = 4
 target-version = "py310"
 
 [lint]
-select = ["A", "B", "E", "F", "N", "PL", "RUF100", "W", "NPY"]
+select = [
+    "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "N", "NPY", "PD", "PGH",
+    "PIE", "PL", "PYI", "RET", "RUF", "SIM", "T", "UP", "W", "YTT"
+]
+ignore = [
+    # Having an explicit argument to open() for the open mode is nice.
+    "UP015",
+    # Rule is removed in ruff 0.13.0
+    "UP038"
+]
 
 # Specific per-file ignores
 [lint.per-file-ignores]

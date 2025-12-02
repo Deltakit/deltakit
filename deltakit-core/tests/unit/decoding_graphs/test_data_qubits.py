@@ -2,7 +2,7 @@
 """Tests for data qubits datastrucutres."""
 
 import math
-from typing import AbstractSet, Iterable, List, Tuple
+from collections.abc import Iterable, Set as AbstractSet
 
 import pytest
 from deltakit_core.decoding_graphs import (
@@ -177,9 +177,7 @@ class TestEdgeRecord:
             ValueError,
             match=rf"Edge weight undefined for error probability {invalid_perr}",
         ):
-            print(
-                f"invalid per {invalid_perr}, weight {EdgeRecord(p_err=invalid_perr).weight}"
-            )
+            EdgeRecord(p_err=invalid_perr).weight  # noqa: B018
 
     @pytest.mark.parametrize(
         "perr, expected_weight",
@@ -346,8 +344,8 @@ class TestOrderedDecodingEdges:
     def test_as_bitstring(
         self,
         ordered_decoding_edges: OrderedDecodingEdges,
-        edges: List[DecodingEdge],
-        expected_bitstring: List[Bit],
+        edges: list[DecodingEdge],
+        expected_bitstring: list[Bit],
     ):
         assert ordered_decoding_edges.as_bitstring(edges) == expected_bitstring
 
@@ -368,7 +366,7 @@ class TestOrderedDecodingEdges:
     )
     def test_construct_decoding_edges_from_syndrome_indices(
         self,
-        indices: Iterable[Tuple[int, int]],
+        indices: Iterable[tuple[int, int]],
         expected_decoding_edges: OrderedDecodingEdges,
     ):
         assert (
@@ -431,7 +429,7 @@ class TestOrderedDecodingEdges:
     "errors, boundaries, expected_syndrome",
     [
         ([], set(), OrderedSyndrome()),
-        ([], set([1]), OrderedSyndrome()),
+        ([], {1}, OrderedSyndrome()),
         ([DecodingEdge(2, 0)], set(), OrderedSyndrome([0, 2])),
         (
             [
@@ -467,14 +465,14 @@ class TestOrderedDecodingEdges:
         ),
         (
             [DecodingEdge(9, 0), DecodingEdge(1, 3), DecodingEdge(1, 2)],
-            set([0]),
+            {0},
             OrderedSyndrome([9, 3, 2]),
         ),
         (
             OrderedDecodingEdges(
                 [DecodingEdge(1, 0), DecodingEdge(3, 9), DecodingEdge(1, 2)]
             ),
-            set([1, 9]),
+            {1, 9},
             OrderedSyndrome([0, 3, 2]),
         ),
         (
@@ -493,14 +491,14 @@ class TestOrderedDecodingEdges:
             OrderedDecodingEdges(
                 [DecodingHyperEdge([1, 0, 2]), DecodingHyperEdge([1, 2, 3])]
             ),
-            set([1]),
+            {1},
             OrderedSyndrome([0, 3]),
         ),
         (
             OrderedDecodingEdges(
                 [DecodingHyperEdge([0, 1, 2]), DecodingEdge(3, 9), DecodingEdge(1, 2)]
             ),
-            set([2, 9]),
+            {2, 9},
             OrderedSyndrome([0, 3]),
         ),
     ],

@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional, cast, TYPE_CHECKING
+from typing import Any, cast, TYPE_CHECKING
 from typing_extensions import override
 from urllib.parse import urljoin
 
@@ -45,7 +45,7 @@ class Job:
     status: str
     request_id: str
     type: APIEndpoints
-    error: Optional[str] = None
+    error: str | None = None
     workload: dict = field(default_factory=dict)
     result: dict = field(default_factory=dict)
 
@@ -122,8 +122,8 @@ class APIv2Client(APIClient):
         )
         if resp.ok:
             return Job(**resp.json())
-        else:
-            raise ServerException(f"[{resp.status_code}] Job not submitted: {resp.text}")
+        msg = f"[{resp.status_code}] Job not submitted: {resp.text}"
+        raise ServerException(msg)
 
     def _get_job_status(self, request_id: str) -> Job:
         headers = self.auth_headers.copy()
@@ -136,9 +136,11 @@ class APIv2Client(APIClient):
             verify=not https_verification_disabled(),
         )
         if resp.status_code == 404:
-            raise KeyError(f"Request {request_id} not found.")
+            msg = f"Request {request_id} not found."
+            raise KeyError(msg)
         if not resp.ok:
-            raise ServerException(f"[{resp.status_code}] {resp.text}")
+            msg = f"[{resp.status_code}] {resp.text}"
+            raise ServerException(msg)
         return Job(**resp.json())
 
     @override
@@ -209,9 +211,8 @@ class APIv2Client(APIClient):
             return job.result
         except KeyboardInterrupt:
             count = self.kill(job.request_id)
-            raise InterruptedError(
-                f"Cancelled job {job.request_id} ({count} worker(s))."
-            )
+            msg = f"Cancelled job {job.request_id} ({count} worker(s))."
+            raise InterruptedError(msg)
 
     @override
     def kill(self, request_id: str) -> int:
@@ -260,7 +261,8 @@ class APIv2Client(APIClient):
     @override
     def add_noise(self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str) -> str:
         if noise_model.ENDPOINT is None:
-            raise NotImplementedError(f"Noise addition for {type(noise_model)} is not implemented.")
+            msg = f"Noise addition for {type(noise_model)} is not implemented."
+            raise NotImplementedError(msg)
         result = self.execute(
             query_name=noise_model.ENDPOINT,
             variable_values={

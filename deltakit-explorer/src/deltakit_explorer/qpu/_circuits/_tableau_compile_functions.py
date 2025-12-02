@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, Sequence, Set, Tuple
+from collections.abc import Callable, Sequence
 
 from deltakit_circuit import Circuit, Qubit
 from deltakit_circuit.gates import (CXSWAP, CZSWAP, ISWAP, ISWAP_DAG,
@@ -25,18 +25,18 @@ from ._tableau_functions import (
 
 
 def _compile_to_native_gates_plus_unitaries(
-    gate_info: Tuple[int, Qubit, str],
-    preceding_ub: List[OneQubitCliffordGate],
-    succeeding_ub: List[OneQubitCliffordGate],
-    available_native_gates: Set[Gate],
-    available_single_qubit_gates: Set[OneQubitCliffordGate],
-    compilation_lookup_dict: Dict[
-        Gate, Dict[Gate, Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate]]]
+    gate_info: tuple[int, Qubit, str],
+    preceding_ub: list[OneQubitCliffordGate],
+    succeeding_ub: list[OneQubitCliffordGate],
+    available_native_gates: set[Gate],
+    available_single_qubit_gates: set[OneQubitCliffordGate],
+    compilation_lookup_dict: dict[
+        Gate, dict[Gate, tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate]]]
     ],
-    special_gate_mapping: Dict[str, Gate],
+    special_gate_mapping: dict[str, Gate],
     comp_dict: TableauDict,
     up_to_paulis: bool,
-) -> Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate], str]:
+) -> tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate], str]:
     """
     Given a reset or measurement gate and its surrounding unitaries, attempt to compile it
     to the native gate set, by trying each available reset/measurement gate and trying to
@@ -79,10 +79,11 @@ def _compile_to_native_gates_plus_unitaries(
         try:
             target_gate = available_native_gates.pop()
         except KeyError as ke:
-            raise ValueError(
+            msg = (
                 "Unable to compile to provided native reset and measurement gates,"
                 " please try changing the native gate set."
-            ) from ke
+            )
+            raise ValueError(msg) from ke
 
         # look up the compilation from current gate to target native gate.
         # if the entry is not in the dictionary, the compilation is not
@@ -124,13 +125,13 @@ def _compile_to_native_gates_plus_unitaries(
 
 
 def _compile_reset_to_native_gates_plus_unitaries(
-    gate_info: Tuple[int, Qubit, str],
-    preceding_ub: List[OneQubitCliffordGate],
-    succeeding_ub: List[OneQubitCliffordGate],
+    gate_info: tuple[int, Qubit, str],
+    preceding_ub: list[OneQubitCliffordGate],
+    succeeding_ub: list[OneQubitCliffordGate],
     native_gate_set: NativeGateSetAndTimes,
     comp_dict: TableauDict,
     up_to_paulis: bool,
-) -> Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate], str]:
+) -> tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate], str]:
     return _compile_to_native_gates_plus_unitaries(
         gate_info,
         preceding_ub,
@@ -145,13 +146,13 @@ def _compile_reset_to_native_gates_plus_unitaries(
 
 
 def _compile_measurement_to_native_gates_plus_unitaries(
-    gate_info: Tuple[int, Qubit, str],
-    preceding_ub: List[OneQubitCliffordGate],
-    succeeding_ub: List[OneQubitCliffordGate],
+    gate_info: tuple[int, Qubit, str],
+    preceding_ub: list[OneQubitCliffordGate],
+    succeeding_ub: list[OneQubitCliffordGate],
     native_gate_set: NativeGateSetAndTimes,
     comp_dict: TableauDict,
     up_to_paulis: bool,
-) -> Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate], str]:
+) -> tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate], str]:
     return _compile_to_native_gates_plus_unitaries(
         gate_info,
         preceding_ub,
@@ -166,10 +167,10 @@ def _compile_measurement_to_native_gates_plus_unitaries(
 
 
 def _compile_or_exchange_unitary_block(
-    unitary_block: List[OneQubitCliffordGate],
+    unitary_block: list[OneQubitCliffordGate],
     comp_dict: TableauDict,
     up_to_paulis: bool,
-) -> List[OneQubitCliffordGate]:
+) -> list[OneQubitCliffordGate]:
     """
     Given a unitary block in the form of a list of one qubit gates that are possibly not
     native gates, attempt to compile the unitary block to a shorter set of gates, so
@@ -210,8 +211,8 @@ def _compile_reset_and_meas_to_native_gates(
     native_gate_set: NativeGateSetAndTimes,
     comp_dict: TableauDict,
     up_to_paulis: bool,
-    layer_index_lookup: Dict[int, int],
-) -> Tuple[CompilationData, Dict[int, int]]:
+    layer_index_lookup: dict[int, int],
+) -> tuple[CompilationData, dict[int, int]]:
     """
     Given a circuit in the form of CompilationData, attempt to compile the
     reset and measurement gates into native gates, possibly with extra unitary
@@ -331,12 +332,12 @@ def _compile_two_qubit_gate_to_target(
     qubit2_entry: TwoQubitGateDictEntry,
     gate_to_intermediate_rep_dict: TwoQubitGateCompilationLookupDict,
     int_rep_to_target_dict: TwoQubitGateCompilationLookupDict,
-    unitary_blocks: Dict[int, List],
-) -> Tuple[
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
+    unitary_blocks: dict[int, list],
+) -> tuple[
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
 ]:
     r"""
     Given a two-qubit gate, and a target two-qubit gate, compute the updated
@@ -401,9 +402,8 @@ def _compile_two_qubit_gate_to_target(
     try:
         ubs = gate_to_intermediate_rep_dict[current_gate]
     except KeyError as ke:
-        raise ValueError(
-            "Current gate not present in gate_to_intermediate_rep_dict dictionary"
-        ) from ke
+        msg = "Current gate not present in gate_to_intermediate_rep_dict dictionary"
+        raise ValueError(msg) from ke
     ub0 = ub0 + [g(qubit1_info[1]) for g in ubs[0]]
     ub1 = [g(qubit1_info[1]) for g in ubs[1]] + ub1
     ub2 = ub2 + [g(qubit2_info[1]) for g in ubs[2]]
@@ -415,10 +415,11 @@ def _compile_two_qubit_gate_to_target(
     try:
         ubs_target = int_rep_to_target_dict[target_gate]
     except KeyError as ke:
-        raise ValueError(
+        msg = (
             "Cannot compile between groups -"
             f" {current_gate.stim_string} to {target_gate.stim_string} not supported"
-        ) from ke
+        )
+        raise ValueError(msg) from ke
 
     ub0 = ub0 + [g(qubit1_info[1]) for g in ubs_target[0]]
     ub1 = [g(qubit1_info[1]) for g in ubs_target[1]] + ub1
@@ -432,8 +433,8 @@ def _compile_two_qubit_gates_to_native_gates(
     native_gate_set: NativeGateSetAndTimes,
     comp_dict: TableauDict,
     up_to_paulis: bool,
-    layer_index_lookup: Dict[int, int],
-) -> Tuple[CompilationData, Dict[int, int]]:
+    layer_index_lookup: dict[int, int],
+) -> tuple[CompilationData, dict[int, int]]:
     """
     Given a circuit in the form of CompilationData, attempt to compile the
     two-qubit gates into native gates, possibly with extra unitary
@@ -495,10 +496,11 @@ def _compile_two_qubit_gates_to_native_gates(
             try:
                 target_gate = set_of_possible_gates.pop()
             except KeyError as ke:
-                raise ValueError(
+                msg = (
                     "Unable to compile to provided native two-qubit gates,"
                     " please try changing the native gate set."
-                ) from ke
+                )
+                raise ValueError(msg) from ke
 
             # compile the two qubit gate, by getting the new unitary blocks
             updated_unitaries = _compile_two_qubit_gate_to_target(
@@ -597,7 +599,7 @@ def _compile_two_qubit_gates_to_native_gates(
 
 def _compile_comp_data(
     comp_data: CompilationData,
-    layer_index_lookup: Dict[int, int],
+    layer_index_lookup: dict[int, int],
     native_gate_set: NativeGateSetAndTimes,
     comp_dict: TableauDict,
     gate_exchange_dict: EquivalentTableauDict,
@@ -722,7 +724,7 @@ def _compile_comp_data(
     # define a convenience lambda for compiling the unitaries to natives,
     # for use in flipping in the two-qubit gates
     unitary_blocks_to_native: Callable[  # noqa: E731
-        [Sequence[OneQubitCliffordGate]], List[OneQubitCliffordGate]
+        [Sequence[OneQubitCliffordGate]], list[OneQubitCliffordGate]
     ] = lambda ub: [
         ONE_QUBIT_GATE_MAPPING[g]
         for g in comp_dict[

@@ -6,8 +6,7 @@ CSSCode class derives from StabiliserCode.
 
 import itertools
 from abc import ABC, abstractmethod
-from typing import (Collection, FrozenSet, Iterable, Optional, Sequence, Set,
-                    Tuple)
+from collections.abc import Collection, Iterable, Sequence
 
 from deltakit_circuit import Qubit
 from deltakit_circuit._basic_types import PauliBasis
@@ -29,8 +28,8 @@ class StabiliserCode(ABC):
     def __init__(
         self,
         stabilisers: Sequence[Iterable[Stabiliser]],
-        x_logical_operators: Optional[Sequence[Collection[PauliGate]]] = None,
-        z_logical_operators: Optional[Sequence[Collection[PauliGate]]] = None,
+        x_logical_operators: Sequence[Collection[PauliGate]] | None = None,
+        z_logical_operators: Sequence[Collection[PauliGate]] | None = None,
         use_ancilla_qubits: bool = True,
         check_logical_operators_are_independent: bool = False,
     ):
@@ -46,9 +45,8 @@ class StabiliserCode(ABC):
         self._ancilla_qubits = self._calculate_ancilla_qubits()
 
         if (x_logical_operators is None) != (z_logical_operators is None):
-            raise ValueError(
-                "Either both or neither of the logical operators should be provided."
-            )
+            msg = "Either both or neither of the logical operators should be provided."
+            raise ValueError(msg)
 
         self._x_logical_operators = (
             tuple(frozenset(x_logical) for x_logical in x_logical_operators)
@@ -87,7 +85,7 @@ class StabiliserCode(ABC):
             :math:`\ket{+}\dots\ket{+}`.
         """
 
-    def _calculate_data_qubits(self) -> Set[Qubit]:
+    def _calculate_data_qubits(self) -> set[Qubit]:
         """
         Calculate all data qubits and return a set of them.
 
@@ -102,7 +100,7 @@ class StabiliserCode(ABC):
                 data_qubits.update(stab.data_qubits)
         return data_qubits
 
-    def _calculate_ancilla_qubits(self) -> Set[Qubit]:
+    def _calculate_ancilla_qubits(self) -> set[Qubit]:
         """
         Calculate ancilla qubits.
 
@@ -121,10 +119,11 @@ class StabiliserCode(ABC):
             )
         )
         if None in ancilla_attrs:
-            raise ValueError(
+            msg = (
                 "In order to perform syndrome extraction using ancilla qubits, all "
                 "the Stabilisers must have ancilla qubits defined."
             )
+            raise ValueError(msg)
         return ancilla_attrs
 
     def measure_stabilisers(self, num_rounds: int) -> CSSStage:
@@ -174,7 +173,7 @@ class StabiliserCode(ABC):
         """
 
     @property
-    def stabilisers(self) -> Tuple[Tuple[Stabiliser, ...], ...]:
+    def stabilisers(self) -> tuple[tuple[Stabiliser, ...], ...]:
         """
         Code stabilisers.
 
@@ -186,7 +185,7 @@ class StabiliserCode(ABC):
         return self._stabilisers
 
     @property
-    def qubits(self) -> Set[Qubit]:
+    def qubits(self) -> set[Qubit]:
         """
         All code qubits, both ancilla and data.
 
@@ -198,7 +197,7 @@ class StabiliserCode(ABC):
         return self._ancilla_qubits.union(self._data_qubits)
 
     @property
-    def data_qubits(self) -> Set[Qubit]:
+    def data_qubits(self) -> set[Qubit]:
         """
         All code data qubits.
 
@@ -210,7 +209,7 @@ class StabiliserCode(ABC):
         return self._data_qubits
 
     @property
-    def ancilla_qubits(self) -> Set[Qubit]:
+    def ancilla_qubits(self) -> set[Qubit]:
         """
         All code ancilla qubits.
 
@@ -234,7 +233,7 @@ class StabiliserCode(ABC):
         return self._use_ancilla_qubits
 
     @property
-    def x_logical_operators(self) -> Tuple[FrozenSet[PauliGate], ...]:
+    def x_logical_operators(self) -> tuple[frozenset[PauliGate], ...]:
         """
         All X logical operators for the code.
 
@@ -247,7 +246,7 @@ class StabiliserCode(ABC):
         return (
             self._x_logical_operators
             if self._x_logical_operators is not None
-            else tuple()
+            else ()
         )
 
     @x_logical_operators.setter
@@ -277,7 +276,7 @@ class StabiliserCode(ABC):
         self._x_logical_operators = tuple(frozenset(log) for log in new_x_logicals)
 
     @property
-    def z_logical_operators(self) -> Tuple[FrozenSet[PauliGate], ...]:
+    def z_logical_operators(self) -> tuple[frozenset[PauliGate], ...]:
         """
         All Z logical operators for the code.
 
@@ -290,7 +289,7 @@ class StabiliserCode(ABC):
         return (
             self._z_logical_operators
             if self._z_logical_operators is not None
-            else tuple()
+            else ()
         )
 
     @z_logical_operators.setter
@@ -388,13 +387,15 @@ class StabiliserCode(ABC):
         if len(opposite_type_logicals) > 0 and len(new_logicals) != len(
             opposite_type_logicals
         ):
-            raise ValueError(
+            msg = (
                 "There must be as many new logicals as existing logicals,"
                 f" but there are {len(new_logicals)}"
                 f" while there should be {len(opposite_type_logicals)}"
             )
+            raise ValueError(msg)
         if any(len(log) == 0 for log in new_logicals):
-            raise ValueError("Logicals cannot be weight 0")
+            msg = "Logicals cannot be weight 0"
+            raise ValueError(msg)
 
         # Convert stabilisers and logicals to stim.PauliString for commutation checks
         stabilisers_as_pauli_strings = [
@@ -416,18 +417,16 @@ class StabiliserCode(ABC):
                 new_log_as_pauli_string.commutes(other_new_logical)
                 for other_new_logical in new_logs_as_pauli_string[i + 1 :]
             ):
-                raise ValueError(
-                    f"New logical at index {i} anti-commutes with other new logicals"
-                )
+                msg = f"New logical at index {i} anti-commutes with other new logicals"
+                raise ValueError(msg)
 
             # Check logical commutes with all stabilisers
             if not all(
                 new_log_as_pauli_string.commutes(stab)
                 for stab in stabilisers_as_pauli_strings
             ):
-                raise ValueError(
-                    f"New logical at index {i} anti-commutes with stabilisers"
-                )
+                msg = f"New logical at index {i} anti-commutes with stabilisers"
+                raise ValueError(msg)
 
             # Check for anti-commutation if this isn't the first time setting logicals
             if (
@@ -437,10 +436,11 @@ class StabiliserCode(ABC):
                 # Check new logical at index i anti-commutes with opposite-type logical
                 # at index i
                 if new_log_as_pauli_string.commutes(opposite_logs_as_pauli_string[i]):
-                    raise ValueError(
+                    msg = (
                         f"New logical at index {i} must anti-commute with opposite type"
                         f" logical at index {i}"
                     )
+                    raise ValueError(msg)
 
                 # Check new logical at index i commutes with all the other opposite-type
                 # logical operators
@@ -449,7 +449,8 @@ class StabiliserCode(ABC):
                     for log in opposite_logs_as_pauli_string[:i]
                     + opposite_logs_as_pauli_string[(i + 1) :]
                 ):
-                    raise ValueError(
+                    msg = (
                         f"New logical at index {i} anti-commutes with opposite-type"
                         f" logicals other than at index {i}"
                     )
+                    raise ValueError(msg)

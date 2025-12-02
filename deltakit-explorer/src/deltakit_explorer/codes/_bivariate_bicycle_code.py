@@ -8,10 +8,8 @@ other than those listed in the paper.
 """
 from __future__ import annotations
 
-import warnings
 from functools import reduce
 from itertools import product
-from typing import Dict, List, Tuple
 
 import galois
 import numpy as np
@@ -21,14 +19,12 @@ from deltakit_circuit._basic_types import Coord2D
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=SyntaxWarning)
-    from bposd.css import css_code  # type: ignore
+from bposd.css import css_code
 
 
 def _find_anticommuting_pairs(
-    x_logs_as_vecs: List[List[int]], z_logs_as_vecs: List[List[int]], k: int, n: int
-) -> Tuple[List[List[int]], List[List[int]]]:
+    x_logs_as_vecs: list[list[int]], z_logs_as_vecs: list[list[int]], k: int, n: int
+) -> tuple[list[list[int]], list[list[int]]]:
     """
     Given a set of logical X and Z operators, find k anti-commuting pairs of
     logical operators that are also independent.
@@ -66,19 +62,18 @@ def _find_anticommuting_pairs(
     x_logs = [int("".join("01"[i] for i in vec), 2) for vec in x_logs_as_vecs]
     z_logs = [int("".join("01"[i] for i in vec), 2) for vec in z_logs_as_vecs]
 
-    chosen_x_logs: List[int] = []
-    chosen_z_logs: List[int] = []
+    chosen_x_logs: list[int] = []
+    chosen_z_logs: list[int] = []
     while len(chosen_x_logs) < k:
         if len(x_logs) == 0 or len(z_logs) == 0:
-            raise ValueError(
-                f"Unable to construct {k} logical operators, could only find {len(chosen_x_logs)}"
-            )
+            msg = f"Unable to construct {k} logical operators, could only find {len(chosen_x_logs)}"
+            raise ValueError(msg)
         # get which x anti-commutes with which z and vice-versa
         # use dictionaries for constant-time lookup
-        x_ac_with_z: Dict[int, Dict] = {x: {} for x in x_logs}
-        z_ac_with_x: Dict[int, Dict] = {z: {} for z in z_logs}
+        x_ac_with_z: dict[int, dict] = {x: {} for x in x_logs}
+        z_ac_with_x: dict[int, dict] = {z: {} for z in z_logs}
         for x_log, z_log in product(x_logs, z_logs):
-            if bin(x_log & z_log).count("1") % 2 == 1:
+            if (x_log & z_log).bit_count() % 2 == 1:
                 x_ac_with_z[x_log][z_log] = {}
                 z_ac_with_x[z_log][x_log] = {}
 
@@ -86,7 +81,7 @@ def _find_anticommuting_pairs(
         # anti-commutes with that x
         chosen_x = x_logs[0]
         try:
-            chosen_z = list(x_ac_with_z[chosen_x].keys())[0]
+            chosen_z = next(iter(x_ac_with_z[chosen_x].keys()))
         except IndexError:
             # this logical X doesnt have any anticommuting Zs, so
             # try a different X
@@ -154,20 +149,21 @@ class Monomial:
             self.l = l
             self.m = m
         else:
-            raise ValueError("l and m must be >= 0")
+            msg = "l and m must be >= 0"
+            raise ValueError(msg)
         self.x_pow = x_pow % l
         self.y_pow = y_pow % m
 
     def __mul__(self, other: object) -> Monomial:
         if not isinstance(other, Monomial):
-            raise NotImplementedError(
-                f"Can only multiply Monomials by other Monomials, not {type(other)}"
-            )
+            msg = f"Can only multiply Monomials by other Monomials, not {type(other)}"
+            raise NotImplementedError(msg)
         if self.l != other.l or self.m != other.m:
-            raise ValueError(
+            msg = (
                 "Cannot multiply monomials of differing max degree."
                 f" lhs: l={self.l}, m={self.m} | rhs: l={other.l}, m={other.m}"
             )
+            raise ValueError(msg)
         return Monomial(
             (other.x_pow + self.x_pow) % self.l,
             (other.y_pow + self.y_pow) % self.m,
@@ -213,11 +209,11 @@ class Polynomial:
     the IBM paper.
     """
 
-    def __init__(self, monomials: List[Monomial]):
+    def __init__(self, monomials: list[Monomial]):
         self.monomials = monomials
 
     @staticmethod
-    def from_vec(vec: List[int], l, m) -> Polynomial:  # noqa: E741
+    def from_vec(vec: list[int], l, m) -> Polynomial:  # noqa: E741
         """
         Create a Polynomial from a binary vector.
 
@@ -248,7 +244,7 @@ class Polynomial:
                 vec_of_monomials.append(Monomial(a_i, b_i, l, m))
         return Polynomial(vec_of_monomials)
 
-    def to_vec(self) -> List[int]:
+    def to_vec(self) -> list[int]:
         """
         Convert a Polynomial back to a binary vector.
 
@@ -375,8 +371,8 @@ class BivariateBicycleCode(CSSCode):
         self,
         param_l: int,
         param_m: int,
-        m_A_powers: List[int],
-        m_B_powers: List[int],
+        m_A_powers: list[int],
+        m_B_powers: list[int],
         validate: bool = True,
         check_logical_operators_are_independent: bool = False,
     ):
@@ -422,8 +418,8 @@ class BivariateBicycleCode(CSSCode):
         if validate:
             # assert properties of A and B:
             self._assert_matrix_ma_mb_properties(m_A, m_B)
-        self.m_A_submatrices = tuple((m_A1, m_A2, m_A3))
-        self.m_B_submatrices = tuple((m_B1, m_B2, m_B3))
+        self.m_A_submatrices = (m_A1, m_A2, m_A3)
+        self.m_B_submatrices = (m_B1, m_B2, m_B3)
 
         # create Hx and Hz check matrices. Note that since A and B
         # commute, these are valid check matrices
@@ -464,8 +460,8 @@ class BivariateBicycleCode(CSSCode):
     def _validate_input_parameters(
         ell: int,
         m: int,
-        m_A_powers: List[int],
-        m_B_powers: List[int],
+        m_A_powers: list[int],
+        m_B_powers: list[int],
     ):
         """
         Validate that the input parameters are valid as specified by
@@ -483,25 +479,34 @@ class BivariateBicycleCode(CSSCode):
             Powers for the individual B_i matrices to be raised to.
         """
         if ell < 1:
-            raise ValueError("param_l should be greater than or equal to 1.")
+            msg = "param_l should be greater than or equal to 1."
+            raise ValueError(msg)
         if m < 1:
-            raise ValueError("param_m should be greater than or equal to 1.")
+            msg = "param_m should be greater than or equal to 1."
+            raise ValueError(msg)
         if len(m_A_powers) != 3:
-            raise ValueError("m_A_powers should contain 3 integers.")
+            msg = "m_A_powers should contain 3 integers."
+            raise ValueError(msg)
         if len(m_B_powers) != 3:
-            raise ValueError("m_B_powers should contain 3 integers.")
+            msg = "m_B_powers should contain 3 integers."
+            raise ValueError(msg)
         if [n == 0 for n in m_A_powers + m_B_powers].count(True) > 1:
-            raise ValueError("Should only be at most one power of 0 in A and B powers")
+            msg = "Should only be at most one power of 0 in A and B powers"
+            raise ValueError(msg)
         for n in [m_A_powers[0], *m_B_powers[1:]]:
             if not 0 <= n < ell:
-                raise ValueError("Powers of x must be in between 0 and l-1 inclusive")
+                msg = "Powers of x must be in between 0 and l-1 inclusive"
+                raise ValueError(msg)
             if (m_B_powers[1] - m_B_powers[2]) % ell == 0:
-                raise ValueError("Powers of x in the same polynomial must be distinct")
+                msg = "Powers of x in the same polynomial must be distinct"
+                raise ValueError(msg)
         for n in [m_B_powers[0], *m_A_powers[1:]]:
             if not 0 <= n < m:
-                raise ValueError("Powers of y must be in between 0 and m-1 inclusive")
+                msg = "Powers of y must be in between 0 and m-1 inclusive"
+                raise ValueError(msg)
             if (m_A_powers[1] - m_A_powers[2]) % m == 0:
-                raise ValueError("Powers of y in the same polynomial must be distinct")
+                msg = "Powers of y in the same polynomial must be distinct"
+                raise ValueError(msg)
 
     @staticmethod
     def _assert_x_y_properties(
@@ -509,47 +514,47 @@ class BivariateBicycleCode(CSSCode):
     ):
         # (1) xy = yx
         if not np.allclose(m_x @ m_y, m_y @ m_x):
-            raise ValueError("y*x should equal x*y")
+            msg = "y*x should equal x*y"
+            raise ValueError(msg)
 
         # (2) x^l = y^m = I_lm
         if not np.allclose(
             np.linalg.matrix_power(m_x, param_l),
             np.identity(param_l * param_m, dtype=np.int_),
         ):
-            raise ValueError("x^l should equal the identity matrix of shape (l*m, l*m)")
+            msg = "x^l should equal the identity matrix of shape (l*m, l*m)"
+            raise ValueError(msg)
         if not np.allclose(
             np.linalg.matrix_power(m_y, param_m),
             np.identity(param_l * param_m, dtype=np.int_),
         ):
-            raise ValueError("y^m should equal the identity matrix of shape (l*m, l*m)")
+            msg = "y^m should equal the identity matrix of shape (l*m, l*m)"
+            raise ValueError(msg)
 
     @staticmethod
     def _assert_matrix_ma_mb_properties(m_A: npt.NDArray, m_B: npt.NDArray):
         # (1) exactly 3 non-zero entries in any row or column
         if not (np.count_nonzero(m_A, axis=0) == 3).all():
-            raise ValueError(
-                "Matrix A should have exactly 3 non-zero entries in each column"
-            )
+            msg = "Matrix A should have exactly 3 non-zero entries in each column"
+            raise ValueError(msg)
         if not (np.count_nonzero(m_A, axis=1) == 3).all():
-            raise ValueError(
-                "Matrix A should have exactly 3 non-zero entries in each row"
-            )
+            msg = "Matrix A should have exactly 3 non-zero entries in each row"
+            raise ValueError(msg)
         if not (np.count_nonzero(m_B, axis=0) == 3).all():
-            raise ValueError(
-                "Matrix B should have exactly 3 non-zero entries in each column"
-            )
+            msg = "Matrix B should have exactly 3 non-zero entries in each column"
+            raise ValueError(msg)
         if not (np.count_nonzero(m_B, axis=1) == 3).all():
-            raise ValueError(
-                "Matrix B should have exactly 3 non-zero entries in each row"
-            )
+            msg = "Matrix B should have exactly 3 non-zero entries in each row"
+            raise ValueError(msg)
 
         # (2) AB = BA
         if not np.allclose(m_A @ m_B, m_B @ m_A):
-            raise ValueError("A*B should equal B*A")
+            msg = "A*B should equal B*A"
+            raise ValueError(msg)
 
     def _get_qubit_coords(
         self,
-    ) -> Tuple[Dict[int, Qubit], Dict[int, Qubit], Dict[int, Qubit], Dict[int, Qubit]]:
+    ) -> tuple[dict[int, Qubit], dict[int, Qubit], dict[int, Qubit], dict[int, Qubit]]:
         """
         Attempt to lay out the qubits on a square-ish grid, the size of which is dictated
         by the periodic boundary conditions of the torus the code may or may not
@@ -584,10 +589,10 @@ class BivariateBicycleCode(CSSCode):
         """
         # assign the first row of the Hx matrix to be the bottom-left-most qubit
         x_coord, y_coord, matrix_index_of_next_qubit = 0, 0, 0
-        x_lookup: Dict[int, Qubit] = {}
-        z_lookup: Dict[int, Qubit] = {}
-        dl_lookup: Dict[int, Qubit] = {}
-        dr_lookup: Dict[int, Qubit] = {}
+        x_lookup: dict[int, Qubit] = {}
+        z_lookup: dict[int, Qubit] = {}
+        dl_lookup: dict[int, Qubit] = {}
+        dr_lookup: dict[int, Qubit] = {}
 
         # when scanning over qubit connections, the bottom row alternates Z-anc to L-data
         # and alternate rows between R-data and X-anc, so use the qubit coord mod 2 to
@@ -649,14 +654,15 @@ class BivariateBicycleCode(CSSCode):
                     break
             current_iter_index += 1
         else:
-            raise ValueError(
+            msg = (
                 "Max iteration limit exceeded for coord placement; consider"
                 " changing code parameters"
             )
+            raise ValueError(msg)
 
         return dl_lookup, dr_lookup, x_lookup, z_lookup
 
-    def _get_stabilisers(self) -> List[Stabiliser]:
+    def _get_stabilisers(self) -> list[Stabiliser]:
         """
         Given the appropriate matrices describing the code, construct
         the stabilisers with valid scheduling.
@@ -734,7 +740,7 @@ class BivariateBicycleCode(CSSCode):
 
     def _get_logicals(
         self,
-    ) -> Tuple[List[List[PauliX[Coord2D]]], List[List[PauliZ[Coord2D]]]]:
+    ) -> tuple[list[list[PauliX[Coord2D]]], list[list[PauliZ[Coord2D]]]]:
         """
         Will return a tuple of lists of the X and Z logicals, respectively.
         They are paired up in order, that is, they anticommute when the

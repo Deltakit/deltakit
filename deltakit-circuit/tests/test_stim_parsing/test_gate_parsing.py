@@ -13,7 +13,7 @@ def test_probability_is_added_on_measurement_gates():
     layer = parse_stim_gate_instruction(
         sp.gates.MZ, [stim.GateTarget(0)], [probability], "", qubit_mapping={}
     )
-    assert list(layer.gates)[0].probability == probability
+    assert next(iter(layer.gates)).probability == probability
 
 
 @pytest.mark.parametrize("non_pauli_target", [stim.GateTarget(0)])

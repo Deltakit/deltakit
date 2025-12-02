@@ -1,10 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 
+from collections.abc import Iterator
 import math
 from collections import defaultdict
 from itertools import chain, combinations, islice, product
-from typing import (Collection, Counter, DefaultDict, Dict, FrozenSet,
-                    Generator, Iterable, List, Sequence, Tuple)
+from collections import Counter
+from collections.abc import Collection, Generator, Iterable, Sequence
 from warnings import warn
 
 import numpy as np
@@ -12,7 +13,7 @@ import numpy.typing as npt
 import pathos
 from deltakit_core.decoding_graphs import NXDecodingGraph
 
-PijData = Dict[FrozenSet[int], float]
+PijData = dict[frozenset[int], float]
 
 
 def _compute_combinations_of_detectors(
@@ -86,20 +87,23 @@ def _generate_expectation_data_multiprocess(
 
 
 def _generate_expectation_data_singleprocess(
-    samples: Generator,
+    samples: Generator | Iterator,
     only_even: bool = False,
     only_odd: bool = False,
     max_degree: int = 2,
     num_processes: int = 1,
 ):
     if num_processes != 1:
-        raise NotImplementedError("Generators may only be passed in single-threaded"
-                                  " mode. Please set num_processes=1")
+        msg = (
+            "Generators may only be passed in single-threaded mode. Please set "
+            "num_processes=1"
+        )
+        raise NotImplementedError(msg)
 
     if only_even and not only_odd:
-        samples = islice(samples, 0, None, 2)  # type: ignore
+        samples = islice(samples, 0, None, 2)
     if only_odd and not only_even:
-        samples = islice(samples, 1, None, 2)  # type: ignore
+        samples = islice(samples, 1, None, 2)
     elif only_even and only_odd:
         warn("Both only_odd and only_even are True. Selecting whole batch.",
              stacklevel=3)
@@ -178,8 +182,11 @@ def generate_expectation_data(
                                                        only_odd,
                                                        max_degree,
                                                        num_processes)
-    raise NotImplementedError(f"Unrecognised argument type: {type(samples)},"
-                              " argument must be a Generator or Collection.")
+    msg = (
+        f"Unrecognised argument type: {type(samples)}, argument must be a Generator or "
+        "Collection."
+    )
+    raise NotImplementedError(msg)
 
 
 def _calculate_g_value(p: float, q: float) -> float:
@@ -188,7 +195,7 @@ def _calculate_g_value(p: float, q: float) -> float:
     return p + q - (2 * p * q)
 
 
-def _calculate_p_i_sigma(nodes: List[float]) -> List[float]:
+def _calculate_p_i_sigma(nodes: list[float]) -> list[float]:
     """Recursively collapse list of Pij values into PiSigma value,
     equation (S14) in https://arxiv.org/pdf/2102.06132.pdf
 
@@ -209,11 +216,11 @@ def _calculate_p_i_sigma(nodes: List[float]) -> List[float]:
         return nodes
     if len(nodes) == 2:
         return [_calculate_g_value(nodes[0], nodes[1])]
-    return _calculate_p_i_sigma([nodes[0]] + _calculate_p_i_sigma(nodes[1:]))
+    return _calculate_p_i_sigma([nodes[0], *_calculate_p_i_sigma(nodes[1:])])
 
 
 def _calculate_edge_prob_with_higher_degrees(
-    edge: FrozenSet[int],
+    edge: frozenset[int],
     pij_data: PijData,
     min_prob: float,
 ) -> float:
@@ -246,7 +253,7 @@ def _calculate_edge_prob_with_higher_degrees(
     # collect all edges our current edge is a subset of -
     # thereby all edges that can turn on our edge
     connected_edges = [pij_data[k]
-                       for k in pij_data.keys() if edge < k]
+                       for k in pij_data if edge < k]
     if len(connected_edges) == 0:
         return pij_data.get(edge, 0.0)
     pi_sigma = _calculate_p_i_sigma(connected_edges)[0]
@@ -259,7 +266,7 @@ def _calculate_edge_prob_with_higher_degrees(
 
 def _n1_formula(
     exp_values: PijData,
-    keys: Sequence[FrozenSet[int]]
+    keys: Sequence[frozenset[int]]
 ) -> float:
     """Formula for parameter n1 in hyperedge calculations.
 
@@ -276,12 +283,12 @@ def _n1_formula(
     float
         The value of the calculation.
     """
-    return math.prod(((1 - (2 * exp_values.get(n, 0.0))) for n in keys))
+    return math.prod((1 - (2 * exp_values.get(n, 0.0))) for n in keys)
 
 
 def _d1_formula(
     exp_values: PijData,
-    keys: Sequence[FrozenSet[int]]
+    keys: Sequence[frozenset[int]]
 ) -> float:
     """Formula for parameter d1 in hyperedge calculations.
 
@@ -306,8 +313,8 @@ def _d1_formula(
 
 
 def _n2_formula(exp_values: PijData,
-                key: FrozenSet[int],
-                keys: Sequence[FrozenSet[int]]
+                key: frozenset[int],
+                keys: Sequence[frozenset[int]]
                 ) -> float:
     """Formula for parameter n2 in hyperedge calculations.
 
@@ -328,8 +335,8 @@ def _n2_formula(exp_values: PijData,
     float
         The value of the calculation.
     """
-    return 1 - (2 * math.fsum((exp_values.get(frozenset((n,)), 0.0) for n in key))) \
-        + (4 * math.fsum((exp_values.get(x, 0.0) for x in keys))) \
+    return 1 - (2 * math.fsum(exp_values.get(frozenset((n,)), 0.0) for n in key)) \
+        + (4 * math.fsum(exp_values.get(x, 0.0) for x in keys)) \
         - (8 * exp_values.get(key, 0.0))
 
 
@@ -337,7 +344,7 @@ def create_correlation_matrix(
     pij_data: PijData,
     graph: NXDecodingGraph,
     plot_boundary_edges: bool = False,
-) -> Tuple[npt.NDArray[np.float64], Dict[Tuple[float, ...], List[int]]]:
+) -> tuple[npt.NDArray[np.float64], dict[tuple[float, ...], list[int]]]:
     """Generate a correlation matrix for a given Pij matrix.
     Will plot qubit labels as major ticks, minor ticks
     within the major ticks are rounds (time). Matrix will be
@@ -367,8 +374,8 @@ def create_correlation_matrix(
 
     # create a mapping - each major tick is an ancilla qubit,
     # and each minor tick inside a major corresponds to a round
-    major_minor_mapping: DefaultDict[Tuple[float, ...],
-                                     List[int]] = defaultdict(list)
+    major_minor_mapping: defaultdict[tuple[float, ...],
+                                     list[int]] = defaultdict(list)
     for k, v in graph.detector_records.items():
         if k not in graph.boundaries:
             major_minor_mapping[v.spatial_coord].append(k)
@@ -379,17 +386,15 @@ def create_correlation_matrix(
 
     # if there are not a consistent number of rounds for each qubit,
     # throw an error, since we can only plot NxN matrices
-    if not all((len(x) == len(next(iter(major_minor_mapping.values())))
-                for x in major_minor_mapping.values())):
-        raise ValueError("Inconsistent qubit time mapping")
+    if not all(len(x) == len(next(iter(major_minor_mapping.values())))
+                for x in major_minor_mapping.values()):
+        msg = "Inconsistent qubit time mapping"
+        raise ValueError(msg)
 
     # helper function for converting coordinates into their Pij value
     # as per the Pij matrix
     def coord_to_pij(x):
-        if x[0] == x[1]:
-            xf = frozenset((x[0],))
-        else:
-            xf = frozenset(x)
+        xf = frozenset((x[0],)) if x[0] == x[1] else frozenset(x)
         if xf in pij_data:
             return pij_data[xf]
         return 0.0

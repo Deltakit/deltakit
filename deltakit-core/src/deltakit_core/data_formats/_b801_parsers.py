@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterator, Tuple
+from collections.abc import Iterator
 
 import numpy as np
 from deltakit_core.decoding_graphs import Bitstring, OrderedSyndrome
@@ -62,7 +62,7 @@ def b8_to_measurements(b8_input: Path, measurement_num: int) -> Iterator[Bitstri
 
 def b8_to_logical_flip(
     b8_input: Path | bytes, num_logicals: int = 1
-) -> Iterator[Tuple[bool, ...]]:
+) -> Iterator[tuple[bool, ...]]:
     """Given a b8 input (either a file path containing b8 data or bytes),
     and the number of detectors that should be in each syndrome, return a
     generator of logical flips.
@@ -89,16 +89,14 @@ def syndromes_to_b8_file(
     Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
     """
     with open(syndrome_b8_out, "wb") as b8_out_handle:
-        for syndrome in syndromes:
-            b8_out_handle.write(
-                bytes(
-                    np.packbits(syndrome.as_bitstring(detector_num), bitorder="little")
-                )
-            )
+        b8_out_handle.writelines(
+            bytes(np.packbits(syndrome.as_bitstring(detector_num), bitorder="little"))
+            for syndrome in syndromes
+        )
 
 
 def logical_flips_to_b8_file(
-    logical_flips_b8_out: Path, logical_flips: Iterator[Tuple[bool, ...]]
+    logical_flips_b8_out: Path, logical_flips: Iterator[tuple[bool, ...]]
 ):
     """Given a logical flip generator, this will output them to file in the b8 format.
     b8 is a byte-padded bitstring representation for logical flips. This is more
@@ -106,13 +104,15 @@ def logical_flips_to_b8_file(
     Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
     """
     with open(logical_flips_b8_out, "wb") as data_b8:
-        for logical_flip in logical_flips:
-            data_b8.write(bytes(np.packbits(logical_flip, bitorder="little")))
+        data_b8.writelines(
+            bytes(np.packbits(logical_flip, bitorder="little"))
+            for logical_flip in logical_flips
+        )
 
 
 def parse_01_to_logical_flips(
     logical_flips_01_file: Path,
-) -> Iterator[Tuple[bool, ...]]:
+) -> Iterator[tuple[bool, ...]]:
     """Given a filepath for a 01 file containing target logical flips, return a
     generator of logical flips as booleans.
 

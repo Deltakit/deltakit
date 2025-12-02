@@ -1,5 +1,4 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import Type
 
 import pytest
 
@@ -22,7 +21,7 @@ def test_leakage_noise_stim_string_matches_expected_string(
 
 
 @pytest.fixture(params=[Leakage, Relax])
-def channel_type(request) -> Type[OneQubitOneProbabilityNoiseChannel[T]]:
+def channel_type(request) -> type[OneQubitOneProbabilityNoiseChannel[T]]:
     return request.param
 
 

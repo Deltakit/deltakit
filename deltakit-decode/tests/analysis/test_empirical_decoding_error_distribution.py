@@ -1,7 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import random
 from itertools import product
-from typing import Dict, Tuple
 
 import numpy as np
 import pytest
@@ -59,7 +58,7 @@ class TestEmpiricalDecodingErrorDistribution:
 
         distr_dict = empirical_decoding_error_distribution.to_dict()
 
-        expected_dict = {parity: 0 for parity in product((False, True), repeat=3)}
+        expected_dict = dict.fromkeys(product((False, True), repeat=3), 0)
         expected_dict[(True, True, False)] = 5
         expected_dict[(False, True, False)] = 1
         assert distr_dict == expected_dict
@@ -108,7 +107,7 @@ class TestEmpiricalDecodingErrorDistribution:
             {(False,): 0})
     ])
     def test_from_dict_gives_expected_frequency_from_bool_tuple(self,
-                                                                error_distribution_dict: Dict[Tuple[bool, ...], int]):
+                                                                error_distribution_dict: dict[tuple[bool, ...], int]):
         distr = EmpiricalDecodingErrorDistribution.from_dict(error_distribution_dict)
         for key, val in error_distribution_dict.items():
             assert distr[key] == val
@@ -212,7 +211,6 @@ class TestEmpiricalDecodingErrorDistribution:
         distr = EmpiricalDecodingErrorDistribution(3)
 
         distr.batch_record_errors(corrections, target)
-        print(distr.to_dict())
 
         assert distr[4] == 1
         assert distr[(True, True, False)] == 2

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import Iterable, Tuple
+from collections.abc import Iterable
 
 import networkx as nx
 import numpy as np
@@ -62,7 +62,7 @@ class PyMatchingDecoder(GraphDecoder):
     def _full_matcher(self) -> pymatching.Matching:
         return self._make_matcher([[edge] for edge in self.decoding_graph.edges])
 
-    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> Tuple[bool, ...]:
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
         py_matching_syndrome = syndrome.as_bitstring(max(self.decoding_graph.nodes) + 1)
         corrections = self._logical_flip_matcher.decode(py_matching_syndrome)
         return tuple(bool(corr) for corr in corrections)
@@ -91,7 +91,7 @@ class PyMatchingDecoder(GraphDecoder):
     @classmethod
     def construct_decoder_and_stim_circuit(
         cls, circuit: Circuit
-    ) -> Tuple[PyMatchingDecoder, stim.Circuit]:
+    ) -> tuple[PyMatchingDecoder, stim.Circuit]:
         """Helper factory to create a MWPM decoder and the Stim circuit used
         during its construction.
 

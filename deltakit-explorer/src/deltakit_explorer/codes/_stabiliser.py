@@ -6,7 +6,7 @@ This module contains a class representing a stabiliser of a stabiliser code.
 
 from __future__ import annotations
 
-from typing import Collection, Optional, Set, Tuple
+from collections.abc import Collection
 
 from deltakit_circuit import Qubit
 from deltakit_circuit._qubit_identifiers import PauliGate, T
@@ -48,7 +48,7 @@ class Stabiliser:
     def __init__(
         self,
         paulis: Collection[PauliGate | None],
-        ancilla_qubit: Optional[Qubit[T] | T] = None,
+        ancilla_qubit: Qubit[T] | T | None = None,
     ):
         """
         Raises
@@ -73,9 +73,10 @@ class Stabiliser:
             # For now we accept the ancilla being the data_qubit, if we have only
             # one pauli in paulis. This is useful when putting together stages into
             # an experiment.
-            raise ValueError("Ancilla qubit should be different from the data qubits.")
+            msg = "Ancilla qubit should be different from the data qubits."
+            raise ValueError(msg)
 
-        self.paulis: Tuple[PauliGate | None, ...] = tuple(paulis)
+        self.paulis: tuple[PauliGate | None, ...] = tuple(paulis)
 
     @staticmethod
     def _check_data_qubits(qubits: Collection[Qubit]) -> None:
@@ -90,12 +91,14 @@ class Stabiliser:
             If qubits is empty.
         """
         if len(set(qubits)) == 0:
-            raise ValueError("Stabiliser was initialised without Pauli terms.")
+            msg = "Stabiliser was initialised without Pauli terms."
+            raise ValueError(msg)
         if len(set(qubits)) != len(qubits):
-            raise ValueError("Data qubits given in paulis should be unique.")
+            msg = "Data qubits given in paulis should be unique."
+            raise ValueError(msg)
 
     @property
-    def operator_repr(self) -> Set[PauliGate]:
+    def operator_repr(self) -> set[PauliGate]:
         """
         A set of PauliX/Y/Z's representing the Pauli operator. Useful
         when comparing Stabilisers.
@@ -105,7 +108,7 @@ class Stabiliser:
         Set[PauliGate]
             Pauli operator representation.
         """
-        return set(pauli for pauli in self.paulis if pauli is not None)
+        return {pauli for pauli in self.paulis if pauli is not None}
 
     def __eq__(self, other: object) -> bool:
         """

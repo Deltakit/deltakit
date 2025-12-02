@@ -7,7 +7,6 @@ circuit for a quantum memory experiment with a Calderbank-Shor-Steane
 
 from __future__ import annotations
 
-from typing import Optional
 
 import deltakit_explorer
 import stim
@@ -31,7 +30,7 @@ def css_code_memory_circuit(
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """
@@ -66,15 +65,14 @@ def css_code_memory_circuit(
         If logical_basis is neither PauliBasis.X nor PauliBasis.Z.
     """
     if num_rounds < 1:
-        raise ValueError("Invalid num_rounds, it has to be positive.")
+        msg = "Invalid num_rounds, it has to be positive."
+        raise ValueError(msg)
     if logical_basis not in [PauliBasis.X, PauliBasis.Z]:
-        raise ValueError(
-            "Invalid logical_basis, it has to be PauliBasis.X or PauliBasis.Z"
-        )
+        msg = "Invalid logical_basis, it has to be PauliBasis.X or PauliBasis.Z"
+        raise ValueError(msg)
     if use_iswap_gates and client is None:
-        raise NotImplementedError(
-            "`use_iswap_gates == True` is only supported when a `client` object is provided."
-        )
+        msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
+        raise NotImplementedError(msg)
     if client is not None:
         return _cloud_css_code_experiment_circuit(deltakit_explorer.enums.QECExperimentType.QUANTUM_MEMORY,
                                               css_code, num_rounds, logical_basis, client, use_iswap_gates)
@@ -99,7 +97,7 @@ def _cloud_css_code_experiment_circuit(
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """
@@ -137,11 +135,11 @@ def _cloud_css_code_experiment_circuit(
         If `use_iswap_gates` is used without `client`.
     """
     if use_iswap_gates and client is None:
-        raise NotImplementedError(
-            "`use_iswap_gates == True` is only supported when a `client` object is provided."
-        )
+        msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
+        raise NotImplementedError(msg)
     if client is None:
-        raise NotImplementedError("A `client` is required to obtain a stability circuit.")
+        msg = "A `client` is required to obtain a stability circuit."
+        raise NotImplementedError(msg)
 
     code_types = {
         RotatedPlanarCode: deltakit_explorer.enums.QECECodeType.ROTATED_PLANAR,
@@ -168,8 +166,9 @@ def _cloud_css_code_experiment_circuit(
             m_B_powers=css_code.m_B_powers,
         )
     else:
-        raise ValueError("Unrecognised `css_code` type.")
-    basis_gates: Optional[list[str]] = None
+        msg = "Unrecognised `css_code` type."
+        raise ValueError(msg)
+    basis_gates: list[str] | None = None
     if use_iswap_gates:
         basis_gates = [
             "ISWAP",
@@ -196,7 +195,7 @@ def css_code_stability_circuit(
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """

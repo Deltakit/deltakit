@@ -3,7 +3,7 @@
 This module contains standalone functions which help extract information from
 stabilisers.
 """
-from typing import Iterable, Optional, Sequence, Tuple
+from collections.abc import Iterable, Sequence
 
 from deltakit_circuit import GateLayer, PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._basic_maps import PAULI_TO_CP
@@ -44,7 +44,7 @@ def get_entangling_layer(
 
 def _transform_stabiliser(
     stabiliser: Stabiliser,
-    tableau_qubits: Tuple[Qubit],
+    tableau_qubits: tuple[Qubit],
     transform_tableau: Tableau,
 ) -> Stabiliser:
     """
@@ -101,19 +101,19 @@ def _get_data_qubits_from_stabilisers(
     """
     return tuple(
         sorted(
-            set(
+            {
                 qubit
                 for simultaneous_stabilisers in stabilisers
                 for stabiliser in simultaneous_stabilisers
                 for qubit in stabiliser.data_qubits
-            ),
+            },
             key=lambda qubit: qubit.unique_identifier,
         )
     )
 
 
 def pauli_gates_to_stim_pauli_string(
-    pauli_gates: Iterable[Optional[PauliGate]],
+    pauli_gates: Iterable[PauliGate | None],
     data_qubit_to_index_lookup: dict[Qubit, int],
 ) -> PauliString:
     r"""
@@ -144,13 +144,14 @@ def pauli_gates_to_stim_pauli_string(
         for pauli in pauli_gates
         if pauli is not None
     ):
-        missing_qubits = set(
+        missing_qubits = {
             pauli.qubit for pauli in pauli_gates if pauli is not None
-        ).difference(set(data_qubit_to_index_lookup.keys()))
-        raise ValueError(
+        }.difference(set(data_qubit_to_index_lookup.keys()))
+        msg = (
             "data_qubit_to_index_lookup does not contain entries for"
             f" {missing_qubits} in pauli_gates"
         )
+        raise ValueError(msg)
     paulistr = "*".join(
         pauli.stim_identifier + str(data_qubit_to_index_lookup[pauli.qubit])
         for pauli in pauli_gates

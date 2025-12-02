@@ -6,11 +6,10 @@ from functools import reduce
 from itertools import chain, count, islice, product, repeat
 from math import prod
 from operator import itemgetter, mul
-from typing import (Any, Callable, Dict, Generic, Iterable, Iterator, List,
-                    Optional, Tuple, TypeVar, Union)
+from typing import Any, Generic, TypeVar, TypeAlias
+from collections.abc import Callable, Iterable, Iterator
 
 import numpy.random as npr
-from typing_extensions import TypeAlias
 
 ErrorT = TypeVar('ErrorT')
 CodeT = TypeVar('CodeT')
@@ -45,7 +44,7 @@ class _NoiseModel(ABC, Generic[CodeT, ErrorT]):
     that number generator being created via some seed.
     """
     @staticmethod
-    def get_rng(seed: Optional[int]) -> npr.Generator:
+    def get_rng(seed: int | None) -> npr.Generator:
         """Return a numpy random number generator, using the member data seed.
         """
         return npr.default_rng(seed)
@@ -54,18 +53,19 @@ class _NoiseModel(ABC, Generic[CodeT, ErrorT]):
         self,
         code_data: CodeT,
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[Iterator[ErrorT], int], ...]:
+        seed: int | None = None
+    ) -> tuple[tuple[Iterator[ErrorT], int], ...]:
         """Given some representation of a code, return `num_splits` number of generators
         of errors for that code and the respective sizes for those generators.
         """
-        raise NotImplementedError(f"Noise model {self} is currently not splittable.")
+        msg = f"Noise model {self} is currently not splittable."
+        raise NotImplementedError(msg)
 
     @abstractmethod
     def error_generator(
         self,
         code_data: CodeT,
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> Iterator[ErrorT]:
         """Given some representation of a code, return a generator of errors for that
         code.
@@ -74,7 +74,7 @@ class _NoiseModel(ABC, Generic[CodeT, ErrorT]):
     def build_batch_error_generator(
         self,
         code_data: CodeT,
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> BatchErrorGenerator:
         """Given some representation of a code, return a generator of batches of errors
         for that code.
@@ -86,15 +86,16 @@ class _NoiseModel(ABC, Generic[CodeT, ErrorT]):
     def build_split_batch_error_generators(self,
                                            code_data: CodeT,
                                            num_splits: int,
-                                           seed: Optional[int] = None
-                                           ) -> Tuple[
-                                               Tuple[BatchErrorGenerator, int], ...]:
+                                           seed: int | None = None
+                                           ) -> tuple[
+                                               tuple[BatchErrorGenerator, int], ...]:
         """Given some representation of a code, return `num_splits` number of batch
         generators of errors for that code and the respective sizes for those generators.
         """
-        raise NotImplementedError(f"Noise model {self} is currently not splittable.")
+        msg = f"Noise model {self} is currently not splittable."
+        raise NotImplementedError(msg)
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         """Return the values of data that characterises this noise model.
         """
         return {"noise_name": str(self)}
@@ -105,8 +106,8 @@ class SequentialNoise(_NoiseModel[CodeT, ErrorT]):
     noise generators.
     """
 
-    def error_list(self, code_data: CodeT, seed: Optional[int] = None
-                   ) -> List[ErrorT]:
+    def error_list(self, code_data: CodeT, seed: int | None = None
+                   ) -> list[ErrorT]:
         """Given some representation of a code, return a list of errors for that code.
         These will match the errors returned by `error_generator`.
         """
@@ -137,7 +138,7 @@ class MonteCarloNoise(_NoiseModel[CodeT, ErrorT]):
         self,
         code_data: CodeT,
         coefficient_limit: float = 1e-20
-    ) -> List[Tuple[MonteCarloNoise, float]]:
+    ) -> list[tuple[MonteCarloNoise, float]]:
         """Expresses the independent error distribution as a statistical mixture of other
         error distributions.  This decomposition can be used for importance sampling.
 
@@ -155,7 +156,8 @@ class MonteCarloNoise(_NoiseModel[CodeT, ErrorT]):
             List of component noise sources, with normalised weightings.
         """
 
-        raise NotImplementedError(f"Noise model {self} is currently not decomposable.")
+        msg = f"Noise model {self} is currently not decomposable."
+        raise NotImplementedError(msg)
 
     def as_exhaustive_sequential_model(self) -> SequentialNoise[CodeT, ErrorT]:
         """Return the equivalent exhaustive model for this noise model. The exhaustive
@@ -167,14 +169,15 @@ class MonteCarloNoise(_NoiseModel[CodeT, ErrorT]):
         SequentialNoise[CodeT, ErrorT]
             Corresponding sequential exhaustive version of this noise model.
         """
-        raise NotImplementedError(f"Noise model {self} currently has no exhaustion.")
+        msg = f"Noise model {self} currently has no exhaustion."
+        raise NotImplementedError(msg)
 
     def split_error_generator(
         self,
         code_data: CodeT,
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[Iterator[ErrorT], int], ...]:
+        seed: int | None = None
+    ) -> tuple[tuple[Iterator[ErrorT], int], ...]:
         return tuple((self.error_generator(code_data, seed),
                       self.infinite_generator_size)
                      for seed in islice(offset_seed(seed), num_splits))
@@ -183,8 +186,8 @@ class MonteCarloNoise(_NoiseModel[CodeT, ErrorT]):
         self,
         code_data: CodeT,
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[BatchErrorGenerator, int], ...]:
+        seed: int | None = None
+    ) -> tuple[tuple[BatchErrorGenerator, int], ...]:
         return tuple((self.build_batch_error_generator(code_data, seed),
                       self.infinite_generator_size)
                      for seed in islice(offset_seed(seed), num_splits))
@@ -197,45 +200,43 @@ class MonteCarloNoise(_NoiseModel[CodeT, ErrorT]):
         """
 
 
-NoiseModel: TypeAlias = Union[SequentialNoise[CodeT, ErrorT],
-                              MonteCarloNoise[CodeT, ErrorT]]
+NoiseModel: TypeAlias = SequentialNoise[CodeT, ErrorT] | MonteCarloNoise[CodeT, ErrorT]
 
 
-class CombinedIndependent(MonteCarloNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
+class CombinedIndependent(MonteCarloNoise[tuple[CodeT, ...], tuple[ErrorT, ...]],
                           Generic[CodeT, ErrorT]):
     """Class to combine several independent noise sources into one combined model, where
     each error returned from one of the internal sources becomes an element in a tuple.
     """
 
-    def __init__(self, internal_sources: Tuple[MonteCarloNoise[CodeT, ErrorT], ...]):
+    def __init__(self, internal_sources: tuple[MonteCarloNoise[CodeT, ErrorT], ...]):
         self.internal_sources = internal_sources
 
     def error_generator(
         self,
-        code_data: Tuple[CodeT, ...],
-        seed: Optional[int] = None
-    ) -> Iterator[Tuple[ErrorT, ...]]:
+        code_data: tuple[CodeT, ...],
+        seed: int | None = None
+    ) -> Iterator[tuple[ErrorT, ...]]:
         internal_generators = (
             model.error_generator(inner_code_data, seed)
             for seed, model, inner_code_data in zip(offset_seed(seed),
                                                     self.internal_sources, code_data))
-        for error in zip(*internal_generators):
-            yield error
+        yield from zip(*internal_generators)
 
-    def as_exhaustive_sequential_model(self) -> SequentialNoise[Tuple[CodeT, ...],
-                                                                Tuple[ErrorT, ...]]:
+    def as_exhaustive_sequential_model(self) -> SequentialNoise[tuple[CodeT, ...],
+                                                                tuple[ErrorT, ...]]:
         return CombinedSequences(tuple(model.as_exhaustive_sequential_model()
                                        for model in self.internal_sources))
 
     def importance_sampling_decomposition(
         self,
-        code_data: Tuple[CodeT, ...],
+        code_data: tuple[CodeT, ...],
         coefficient_limit: float = 1e-20
-    ) -> List[Tuple[MonteCarloNoise, float]]:
+    ) -> list[tuple[MonteCarloNoise, float]]:
         internal_decompositions = (
             model.importance_sampling_decomposition(inner_code_data, coefficient_limit)
             for model, inner_code_data in zip(self.internal_sources, code_data))
-        combined_decomposition: List[Tuple[MonteCarloNoise, float]] = []
+        combined_decomposition: list[tuple[MonteCarloNoise, float]] = []
         for decomposition_product in product(*internal_decompositions):
             sources, coefficients = zip(*decomposition_product)
             if (prod_coeff := prod(coefficients)) > coefficient_limit:
@@ -244,16 +245,16 @@ class CombinedIndependent(MonteCarloNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]]
 
         return combined_decomposition
 
-    def __eq__(self, __o: object) -> bool:
-        return (isinstance(__o, CombinedIndependent) and
-                self.internal_sources == __o.internal_sources)
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, CombinedIndependent) and
+                self.internal_sources == other.internal_sources)
 
     def __hash__(self):
         return hash(self.internal_sources)
 
-    def __add__(self: CombinedIndependent[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
-                other: CombinedIndependent[Tuple[CodeT, ...], Tuple[ErrorT, ...]]
-                ) -> CombinedIndependent[Tuple[CodeT, ...], Tuple[ErrorT, ...]]:
+    def __add__(self: CombinedIndependent[tuple[CodeT, ...], tuple[ErrorT, ...]],
+                other: CombinedIndependent[tuple[CodeT, ...], tuple[ErrorT, ...]]
+                ) -> CombinedIndependent[tuple[CodeT, ...], tuple[ErrorT, ...]]:
         return CombinedIndependent(tuple(
             model_1 + model_2
             for model_1, model_2 in zip(self.internal_sources, other.internal_sources)))
@@ -261,7 +262,7 @@ class CombinedIndependent(MonteCarloNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]]
     def __repr__(self) -> str:
         return f"({', '.join(map(str, self.internal_sources))})"
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         for model_i, inner_model in enumerate(self.internal_sources):
             inner_dict = {f"{key}_{model_i}": value
@@ -271,26 +272,26 @@ class CombinedIndependent(MonteCarloNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]]
         return base_dict
 
 
-class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
+class CombinedSequences(SequentialNoise[tuple[CodeT, ...], tuple[ErrorT, ...]],
                         Generic[CodeT, ErrorT]):
     """Class to combine several sequential noise sources into one combined model, where
     each error returned from one of the internal sources becomes an element in a tuple.
     This is the product of all the internal sources.
     """
 
-    def __init__(self, internal_sources: Tuple[SequentialNoise[CodeT, ErrorT], ...]):
+    def __init__(self, internal_sources: tuple[SequentialNoise[CodeT, ErrorT], ...]):
         self.internal_sources = internal_sources
 
     def split_error_generator(
         self,
-        code_data: Tuple[CodeT, ...],
+        code_data: tuple[CodeT, ...],
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[Iterator[Tuple[ErrorT, ...]], int], ...]:
+        seed: int | None = None
+    ) -> tuple[tuple[Iterator[tuple[ErrorT, ...]], int], ...]:
         inner_data = list(zip(offset_seed(seed), self.internal_sources, code_data))
 
         def _get_gen(
-                inner_id: int, split_id: int) -> Tuple[Iterator[ErrorT], int]:
+                inner_id: int, split_id: int) -> tuple[Iterator[ErrorT], int]:
             inner_seed, inner_model, inner_code_data = inner_data[inner_id]
             return inner_model.split_error_generator(
                 inner_code_data, num_splits, inner_seed)[split_id]
@@ -318,8 +319,8 @@ class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
 
     @staticmethod
     def _lazy_product(
-            _get_gen: Callable[[int, int], Tuple[Iterator[ErrorT], int]],
-            split_ids: Tuple[int, ...]):
+            _get_gen: Callable[[int, int], tuple[Iterator[ErrorT], int]],
+            split_ids: tuple[int, ...]):
         """Itertools product forcefully evaluates entire inputs given. This version
         is lazy, but requires re-creation of inner generators.
 
@@ -356,17 +357,16 @@ class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
 
     def error_generator(
         self,
-        code_data: Tuple[CodeT, ...],
-        seed: Optional[int] = None
-    ) -> Iterator[Tuple[ErrorT, ...]]:
-        for errors in product(
+        code_data: tuple[CodeT, ...],
+        seed: int | None = None
+    ) -> Iterator[tuple[ErrorT, ...]]:
+        yield from product(
             *(model.error_generator(inner_code_data, seed)
               for seed, model, inner_code_data in zip(
                 offset_seed(seed),
-                self.internal_sources, code_data))):
-            yield errors
+                self.internal_sources, code_data)))
 
-    def sequence_size(self, code_data: Tuple[CodeT, ...]) -> int:
+    def sequence_size(self, code_data: tuple[CodeT, ...]) -> int:
         return prod(model.sequence_size(inner_code_data)
                     for model, inner_code_data in zip(self.internal_sources,
                                                       code_data))
@@ -374,7 +374,7 @@ class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
     def __repr__(self) -> str:
         return f"({', '.join(map(str, self.internal_sources))})"
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         for model_i, inner_model in enumerate(self.internal_sources):
             inner_dict = {f"{key}_{model_i}": value
@@ -384,7 +384,7 @@ class CombinedSequences(SequentialNoise[Tuple[CodeT, ...], Tuple[ErrorT, ...]],
         return base_dict
 
 
-def offset_seed(seed: Optional[int]) -> Iterable[Optional[int]]:
+def offset_seed(seed: int | None) -> Iterable[int | None]:
     """Given a starting seed, produce an iterator of distinct offset seeds.
     """
     if seed is None:

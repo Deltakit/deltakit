@@ -11,6 +11,7 @@ from deltakit_explorer._api import _auth
 from deltakit_explorer._utils._logging import LOG_FILENAME, Logging
 from deltakit_explorer._utils._utils import get_log_directory
 from deltakit_explorer.types import QECExperimentDefinition
+import contextlib
 
 
 class TestLogging:
@@ -18,7 +19,7 @@ class TestLogging:
     def setup_class(self):
         """Redirect logging to a temporary file"""
 
-        self.logfile = NamedTemporaryFile("w+")
+        self.logfile = NamedTemporaryFile("w+")  # noqa: SIM115
         handler = logging.StreamHandler(self.logfile)
         handler.setFormatter(
             logging.Formatter(
@@ -29,6 +30,7 @@ class TestLogging:
         Logging.set_log_level(logging.INFO)
 
     def teardown_class(self):
+        self.logfile.close()
         del self.logfile
 
     def test_info_and_generate_uid_logs(self):
@@ -162,10 +164,8 @@ class TestLogging:
         # cleanup
         for file in files:
             assert os.path.getsize(file) <= 256 * 1024 * 1024
-            try:
+            with contextlib.suppress(PermissionError):
                 os.remove(file)
-            except PermissionError:
-                pass
 
     def test_string_shortening(self, log_path):
         local1 = "12345" * 1000

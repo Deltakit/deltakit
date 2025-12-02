@@ -148,7 +148,8 @@ def calculate_lep_and_lep_stddev(
     fails, shots = np.asarray(fails), np.asarray(shots)
     lep = fails / shots
     if np.any(lep <= 0):
-        raise ValueError("Must have > 0 fails to calculate logical error probability.")
+        msg = "Must have > 0 fails to calculate logical error probability."
+        raise ValueError(msg)
     lep_stddev = np.sqrt(lep * (1 - lep) / shots)
 
     return lep, lep_stddev

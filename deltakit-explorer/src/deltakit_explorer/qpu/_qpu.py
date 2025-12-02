@@ -5,9 +5,9 @@ The class provides native gate compilation, noise addition and
 execution time computation features. This is a fully-functional class.
 """
 # pylint: disable=too-many-branches
-from collections import namedtuple
 from copy import deepcopy
-from typing import Dict, Iterable
+from typing import NamedTuple
+from collections.abc import Iterable
 
 from deltakit_circuit import Circuit, GateLayer, NoiseLayer, Qubit
 from deltakit_circuit.gates import I
@@ -17,9 +17,10 @@ from deltakit_explorer.qpu._native_gate_set import (ExhaustiveGateSet,
                                                     NativeGateSetAndTimes)
 from deltakit_explorer.qpu._noise import NoiseParameters, PhenomenologicalNoise
 
-CircuitSchedule = namedtuple(
-    "CircuitSchedule", ["active_times_list", "previous_layer_times"]
-)
+class CircuitSchedule(NamedTuple):
+    active_times_list: list[dict[Qubit, float]]
+    previous_layer_times: list[float]
+
 
 
 class QPU:
@@ -67,14 +68,13 @@ class QPU:
 
     def _get_circuit_schedule(self, circuit: Circuit) -> CircuitSchedule:
         if not circuit.qubits.issubset(self.qubits):
-            qubit_ids = set(q.unique_identifier for q in circuit.qubits - self.qubits)
-            raise ValueError(
-                f"Qubits {qubit_ids} in the circuit are not present on the QPU."
-            )
+            qubit_ids = {q.unique_identifier for q in circuit.qubits - self.qubits}
+            msg = f"Qubits {qubit_ids} in the circuit are not present on the QPU."
+            raise ValueError(msg)
 
         nonnative_gateset = set()
         active_times_list, previous_layer_times = [], []
-        active_times = {qubit: 0.0 for qubit in self.qubits}
+        active_times = dict.fromkeys(self.qubits, 0.0)
         previous_layer_time = 0.0
 
         for layer in circuit.layers:
@@ -137,10 +137,11 @@ class QPU:
         active_times_list.append(active_times.copy())
 
         if nonnative_gateset:
-            raise ValueError(
+            msg = (
                 f"Gate(s) {nonnative_gateset} present in the circuit "
                 "do not belong to the native gate set."
             )
+            raise ValueError(msg)
         return CircuitSchedule(active_times_list, previous_layer_times)
 
     def _apply_idle_noise(self, circuit: Circuit) -> Circuit:
@@ -159,7 +160,7 @@ class QPU:
         """
 
         def _get_idle_noise_channels(
-            previous_layer_time: float, active_times: Dict[Qubit, float]
+            previous_layer_time: float, active_times: dict[Qubit, float]
         ):
             if (
                 previous_layer_time > 0.0
@@ -278,7 +279,7 @@ class QPU:
 
         return noisy_circuit
 
-    def _get_valid_qubit_mapping(self, circuit: Circuit) -> Dict[Qubit, Qubit]:
+    def _get_valid_qubit_mapping(self, circuit: Circuit) -> dict[Qubit, Qubit]:
         """
         Get a mapping from qubits in the supplied circuit to qubits in the QPU.
         Currently, this can return only the trivial mapping and thus will raise
@@ -299,10 +300,11 @@ class QPU:
         mapping = {}
         for qubit in circuit.qubits:
             if qubit not in self.qubits:
-                raise ValueError(
+                msg = (
                     "A valid circuit-to-QPU qubit mapping could not be found "
                     f"because qubit {qubit} is not present in the QPU."
                 )
+                raise ValueError(msg)
             mapping[qubit] = qubit
 
         return mapping
@@ -403,8 +405,7 @@ class QPU:
             noise_model=noise_model,
             maximise_parallelism=maximise_parallelism,
         )
-        compiled_noisy_circuit = qpu.compile_and_add_noise_to_circuit(
+        return qpu.compile_and_add_noise_to_circuit(
             circuit=circuit,
             remove_paulis=remove_paulis,
         )
-        return compiled_noisy_circuit

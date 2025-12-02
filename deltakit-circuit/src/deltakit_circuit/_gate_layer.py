@@ -5,20 +5,8 @@ from __future__ import annotations
 
 from collections import defaultdict
 from itertools import chain
-from typing import (
-    Callable,
-    DefaultDict,
-    FrozenSet,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Set,
-    Tuple,
-    Type,
-    Union,
-    no_type_check,
-)
+from typing import Generic, no_type_check
+from collections.abc import Callable, Iterable, Mapping
 
 import stim
 
@@ -38,7 +26,7 @@ from deltakit_circuit.gates._one_qubit_gates import _OneQubitCliffordGate
 from deltakit_circuit.gates._reset_gates import _ResetGate
 from deltakit_circuit.gates._two_qubit_gates import _TwoQubitGate
 
-_NonMeasurementGate = Union[_OneQubitCliffordGate, _ResetGate, _TwoQubitGate]
+_NonMeasurementGate = _OneQubitCliffordGate | _ResetGate | _TwoQubitGate
 
 
 class DuplicateQubitError(ValueError):
@@ -56,24 +44,24 @@ class GateLayer(Generic[T]):
     single qubit can be acted on at most one time in each layer."""
 
     def __init__(self, gates: _Gate | Iterable[_Gate] | None = None):
-        self._qubits: Set[Qubit] = set()
-        self._non_measurement_gates: List[_NonMeasurementGate] = []
-        self._measurement_gates: List[_MeasurementGate] = []
+        self._qubits: set[Qubit] = set()
+        self._non_measurement_gates: list[_NonMeasurementGate] = []
+        self._measurement_gates: list[_MeasurementGate] = []
         if gates is not None:
             self.add_gates(gates)
 
     @property
-    def gates(self) -> Tuple[_Gate, ...]:
+    def gates(self) -> tuple[_Gate, ...]:
         """Get the set of gates in this layer."""
         return tuple(self._non_measurement_gates) + tuple(self._measurement_gates)
 
     @property
-    def qubits(self) -> FrozenSet[Qubit[T]]:
+    def qubits(self) -> frozenset[Qubit[T]]:
         """Get all of the qubits in this gate layer."""
         return frozenset(self._qubits)
 
     @property
-    def measurement_gates(self) -> Tuple[_MeasurementGate, ...]:
+    def measurement_gates(self) -> tuple[_MeasurementGate, ...]:
         """Get only the measurement gates in this layer."""
         return tuple(self._measurement_gates)
 
@@ -112,7 +100,7 @@ class GateLayer(Generic[T]):
         id_mapping : Mapping[T, U]
             A mapping of qubit types to other qubit types
         """
-        new_qubits: Set[Qubit] = set()
+        new_qubits: set[Qubit] = set()
         for gate in chain(self._non_measurement_gates, self._measurement_gates):
             # Is maybe dangerous because the mutation happens regardless of
             # whether the error is raised or not
@@ -140,7 +128,7 @@ class GateLayer(Generic[T]):
 
     def _replace_all_measurement_types(
         self,
-        gate_type: Type[_MeasurementGate],
+        gate_type: type[_MeasurementGate],
         gate_generator: Callable[[_MeasurementGate], _MeasurementGate],
     ):
         for index, gate in enumerate(self._measurement_gates):
@@ -154,7 +142,7 @@ class GateLayer(Generic[T]):
 
     def _replace_all_non_measurement_types(
         self,
-        gate_type: Type[_NonMeasurementGate],
+        gate_type: type[_NonMeasurementGate],
         gate_generator: Callable[[_NonMeasurementGate], _NonMeasurementGate],
     ):
         new_gates = []
@@ -204,11 +192,11 @@ class GateLayer(Generic[T]):
 
     def _collect_gates(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> List[AppendArguments]:
+    ) -> list[AppendArguments]:
         """Collect all of the same gate types together."""
         gate_args = []
-        unordered_gates: DefaultDict[
-            tuple[Type[_NonMeasurementGate], str | None], List[stim.GateTarget]
+        unordered_gates: defaultdict[
+            tuple[type[_NonMeasurementGate], str | None], list[stim.GateTarget]
         ] = defaultdict(list)
         for non_measurement_gate in self._non_measurement_gates:
             key = (non_measurement_gate.__class__, non_measurement_gate.tag)
@@ -257,7 +245,7 @@ class GateLayer(Generic[T]):
         for gate_string, targets, error_probability, tag in self._collect_gates(
             qubit_mapping
         ):
-            args = tuple() if error_probability == (0,) else error_probability
+            args = () if error_probability == (0,) else error_probability
             stim_circuit.append(
                 gate_string, targets, args, tag=tag if tag is not None else ""
             )
@@ -326,6 +314,6 @@ class GateLayer(Generic[T]):
     def __repr__(self) -> str:
         indent = 4 * " "
         gate_layer_lines = ["GateLayer(["]
-        gate_layer_lines.extend(f"{indent}{repr(gate)}" for gate in self.gates)
+        gate_layer_lines.extend(f"{indent}{gate!r}" for gate in self.gates)
         gate_layer_lines.append("])")
         return "\n".join(gate_layer_lines)

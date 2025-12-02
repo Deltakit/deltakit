@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from typing import List, Literal, Union
+from typing import Literal
 
 import pytest
 import stim
@@ -22,7 +22,7 @@ from pytest_mock.plugin import MockerFixture
 
 PauliNoiseT = Literal["X_ERROR", "Y_ERROR", "Z_ERROR"]
 DepolariseNoiseT = Literal["DEPOLARIZE1", "DEPOLARIZE2"]
-NoiseChannelT = Union[PauliNoiseT, DepolariseNoiseT]
+NoiseChannelT = PauliNoiseT | DepolariseNoiseT
 
 
 def _get_stim_target(
@@ -194,7 +194,7 @@ class TestExplainedDemParsing:
 
     @pytest.mark.parametrize("logicals_affected", [[0], [0, 1]])
     def test_logical_information_is_correctly_preserved_in_the_edge_records(
-        self, logicals_affected: List[int]
+        self, logicals_affected: list[int]
     ):
         mock_error_location = _get_error_location("X_ERROR", 0.01)
         error = stim.ExplainedError(

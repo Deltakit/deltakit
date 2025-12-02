@@ -3,7 +3,7 @@
 using a Detector Error Model's detector indices as input"""
 
 from collections import defaultdict
-from typing import Iterable, List, Tuple
+from collections.abc import Iterable
 from warnings import warn
 
 import stim
@@ -68,11 +68,11 @@ def trim_detectors(
     return deltakit_circuit_circuit.as_stim_circuit()
 
 
-def _get_ordered_detector_calls(deltakit_circuit_circuit: Circuit) -> List[Detector]:
+def _get_ordered_detector_calls(deltakit_circuit_circuit: Circuit) -> list[Detector]:
     """Unravels a deltakit_circuit circuit to put each Detector in a
     list each time it would be called at execution time
     """
-    ordered_detector_calls: List[Detector] = []
+    ordered_detector_calls: list[Detector] = []
     for _ in range(deltakit_circuit_circuit.iterations):
         for layer in deltakit_circuit_circuit.layers:
             if isinstance(layer, Circuit):
@@ -84,7 +84,7 @@ def _get_ordered_detector_calls(deltakit_circuit_circuit: Circuit) -> List[Detec
 
 def _condense_detector_calls(
     ordered_detector_calls: Iterable[Detector],
-) -> List[List[int]]:
+) -> list[list[int]]:
     """Takes a list of deltakit_circuit detector objects and associates
     each detector call with the complete set of corresponding DEM indices
     """
@@ -97,7 +97,7 @@ def _condense_detector_calls(
 def _get_detectors_to_remove(
     detectors_to_eliminate: Iterable[int],
     condensed_detector_calls: Iterable[Iterable[int]],
-) -> List[int]:
+) -> list[int]:
     indices = []
     for stim_index, call_indices in enumerate(condensed_detector_calls):
         if all(x in detectors_to_eliminate for x in call_indices):
@@ -117,8 +117,8 @@ def _trim_detectors(
     deltakit_circuit_circuit: Circuit,
     detectors_to_eliminate: Iterable[int],
     detector_count: int = 0,
-) -> Tuple[Circuit, int]:
-    layers: List[Layer] = []
+) -> tuple[Circuit, int]:
+    layers: list[Layer] = []
 
     for layer in deltakit_circuit_circuit.layers:
         if isinstance(layer, Circuit):

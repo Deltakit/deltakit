@@ -4,6 +4,7 @@ from itertools import combinations
 import deltakit_circuit as sp
 import pytest
 import stim
+import contextlib
 
 
 @pytest.fixture
@@ -42,7 +43,7 @@ def noisy_circuit(empty_circuit: sp.Circuit) -> sp.Circuit:
 
 
 @pytest.fixture
-def nested_circuit_with_noise(empty_circuit: sp.Circuit) -> sp.Circuit:
+def nested_circuit_with_noise() -> sp.Circuit:
     return sp.Circuit(
         sp.Circuit(
             [
@@ -80,9 +81,9 @@ def noisy_measurement_circuit(empty_circuit: sp.Circuit) -> sp.Circuit:
             sp.NoiseLayer(sp.noise_channels.Depolarise1(sp.Qubit(1), 0.02)),
         ),
         (
-            sp.GateLayer(sp.gates.X(sp.Qubit(i)) for i in range(0, 1)),
+            sp.GateLayer(sp.gates.X(sp.Qubit(i)) for i in range(1)),
             sp.NoiseLayer(sp.noise_channels.Depolarise2(sp.Qubit(0), sp.Qubit(1), 0.2)),
-            sp.GateLayer(sp.gates.MZ(sp.Qubit(i)) for i in range(0, 1)),
+            sp.GateLayer(sp.gates.MZ(sp.Qubit(i)) for i in range(1)),
         ),
     ],
 )
@@ -658,7 +659,7 @@ class TestApplyingGateNoise:
     ):
         empty_circuit.append_layers(sp.GateLayer(sp.gates.X(0)))
         empty_circuit.apply_gate_noise(
-            lambda noise_context: sp.noise_channels.PauliZError(0, 0.01), adjacency
+            lambda _: sp.noise_channels.PauliZError(0, 0.01), adjacency
         )
         assert empty_circuit.is_noisy
 
@@ -1012,7 +1013,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2), sp.Coordinate(0, 1)),
             sp.Detector(sp.MeasurementRecord(-3), sp.Coordinate(1, 1)),
         ]
-        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         deltakit_circuit_circuit = sp.Circuit(layers)
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.layers == layers
@@ -1020,8 +1021,9 @@ class TestReorderingDetectors:
     def test_other_layers_between_blocks_are_not_modified_when_reordering_detectors(
         self,
     ):
-        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(2))] + [
-            sp.GateLayer(sp.gates.I(i) for i in range(2))
+        layers = [
+            sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+            sp.GateLayer(sp.gates.I(i) for i in range(2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(layers)
         deltakit_circuit_circuit.reorder_detectors()
@@ -1035,7 +1037,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(2)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == detectors
@@ -1049,7 +1051,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-3), sp.Coordinate(0, 0, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1068,10 +1070,12 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2), coordinate=sp.Coordinate(0, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[0:2]
-            + [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[2:4]
+            [
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[0:2],
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[2:4],
+            ]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1090,7 +1094,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), coordinate=sp.Coordinate(1, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors(reverse=True)
         assert deltakit_circuit_circuit.detectors() == [
@@ -1107,7 +1111,7 @@ class TestReorderingDetectors:
         ]
         deltakit_circuit_circuit = sp.Circuit(
             sp.Circuit(
-                [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors,
+                [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors],
                 iterations=5,
             )
         )
@@ -1128,13 +1132,13 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), sp.Coordinate(0, 2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[0:2]
-            + [
+            [
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[0:2],
                 sp.Circuit(
-                    [sp.GateLayer(sp.gates.MX(i) for i in range(2))] + detectors[2:],
+                    [sp.GateLayer(sp.gates.MX(i) for i in range(2)), *detectors[2:]],
                     iterations=5,
-                )
+                ),
             ]
         )
         deltakit_circuit_circuit.reorder_detectors()
@@ -1155,7 +1159,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), sp.Coordinate(0, 1)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            detectors[0:2] + [sp.ShiftCoordinates((0, 1))] + detectors[2:4]
+            [*detectors[0:2], sp.ShiftCoordinates((0, 1)), *detectors[2:4]]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1478,10 +1482,8 @@ class TestStimCircuit:
             for index, stim_id in reversed(list(enumerate(stim_identifiers)))
             if stim_id in sp.gates.GATE_MAPPING
         )
-        try:
+        with contextlib.suppress(IndexError):
             assert stim_lines[last_gate_line_index + 1] != "TICK"
-        except IndexError:
-            pass
 
     def test_stim_circuit_preserves_ordering_of_measurement_gates(
         self, empty_circuit: sp.Circuit
@@ -2132,7 +2134,7 @@ class TestDetectorsGates:
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(sp.GateLayer(sp.gates.X(0)), iterations=2),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         (det_a := sp.Detector([sp.MeasurementRecord(-1)])),
                     ],
                 ),
@@ -2145,7 +2147,7 @@ class TestDetectorsGates:
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
-                                sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                                sp.GateLayer(gate_a := sp.gates.MZ(0)),
                                 sp.GateLayer(sp.gates.X(0)),
                             ],
                             iterations=2,
@@ -2159,7 +2161,7 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(sp.GateLayer(sp.gates.X(0)), iterations=2),
@@ -2173,11 +2175,11 @@ class TestDetectorsGates:
                     [
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.X(0)),
                         (det_a := sp.Detector([sp.MeasurementRecord(-1)])),
                         sp.GateLayer(sp.gates.X(0)),
-                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
                         (det_b := sp.Detector([sp.MeasurementRecord(-1)])),
                     ]
                 ),
@@ -2188,11 +2190,11 @@ class TestDetectorsGates:
                     [
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.MX(0)),
                         sp.GateLayer(sp.gates.X(0)),
                         sp.GateLayer(sp.gates.X(0)),
-                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
                         (
                             det_a := sp.Detector(
                                 [sp.MeasurementRecord(-1), sp.MeasurementRecord(-3)]
@@ -2206,13 +2208,13 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
-                                    sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                                    sp.GateLayer(gate_b := sp.gates.MZ(0)),
                                     iterations=1,
                                 ),
                                 (
@@ -2234,13 +2236,13 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
-                                    sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                                    sp.GateLayer(gate_b := sp.gates.MZ(0)),
                                     iterations=3,
                                 ),
                                 (
@@ -2262,15 +2264,15 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
                                     [
-                                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
-                                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
+                                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                                     ],
                                     iterations=3,
                                 ),
@@ -2293,15 +2295,15 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
                                     [
-                                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
-                                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
+                                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                                         (
                                             det_a := sp.Detector(
                                                 [
@@ -2324,7 +2326,7 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MPP(sp.PauliX(sp.Qubit(2))))),
+                        sp.GateLayer(gate_a := sp.gates.MPP(sp.PauliX(sp.Qubit(2)))),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [sp.GateLayer(sp.gates.MX(0)), sp.GateLayer(sp.gates.X(0))],
@@ -2343,7 +2345,7 @@ class TestDetectorsGates:
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
-                                sp.GateLayer((gate_a := sp.gates.MRZ(0))),
+                                sp.GateLayer(gate_a := sp.gates.MRZ(0)),
                                 sp.GateLayer(sp.gates.X(0)),
                             ],
                             iterations=2,

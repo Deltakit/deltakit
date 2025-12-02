@@ -4,16 +4,8 @@
 import decimal
 import json
 import math
-from typing import (
-    AbstractSet,
-    FrozenSet,
-    Iterable,
-    List,
-    Set,
-    Tuple,
-    Union,
-    no_type_check,
-)
+from typing import no_type_check
+from collections.abc import Iterable, Set as AbstractSet
 
 import networkx as nx
 import numpy as np
@@ -32,14 +24,14 @@ from deltakit_core.decoding_graphs import (
 )
 
 
-def filter_to_data_edges(graph: NXDecodingGraph) -> List[DecodingEdge]:
+def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
     """Given some decoding edges, filter to those that directly correspond to a data
     qubit.
     """
     return [edge for edge in graph.edges if edge.is_spacelike(graph.detector_records)]
 
 
-def filter_to_measure_edges(graph: NXDecodingGraph) -> List[DecodingEdge]:
+def filter_to_measure_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
     """Given some decoding edges, filter to those that directly correspond to a
     measurement event, i.e. they only move in the time axis.
     """
@@ -48,7 +40,7 @@ def filter_to_measure_edges(graph: NXDecodingGraph) -> List[DecodingEdge]:
 
 def hypergraph_to_weighted_edge_list(
     hypergraph: DecodingHyperGraph,
-) -> List[Tuple[FrozenSet[int], float]]:
+) -> list[tuple[frozenset[int], float]]:
     """Return a weighted edge list representation of a decoding hypergraph.
 
     A format that is useful for integration with other libraries for example in
@@ -125,7 +117,7 @@ def is_single_connected_component(graph: NXDecodingGraph) -> bool:
 @no_type_check
 def graph_to_json(
     decoding_graph: HyperMultiGraph[AnyEdgeT],
-    logicals: Iterable[Set[AnyEdgeT]],
+    logicals: Iterable[set[AnyEdgeT]],
     full: bool = False,
 ) -> str:
     """Represent some graph as an edge list in JSON. Logicals are also included.
@@ -157,7 +149,8 @@ def graph_to_json(
         JSON formatted string representing the essential graph and logical info
     """
     if len(decoding_graph.boundaries) > 1:
-        raise ValueError("JSON graph representation supports maximum one boundary")
+        msg = "JSON graph representation supports maximum one boundary"
+        raise ValueError(msg)
 
     if isinstance(decoding_graph, (DecodingHyperMultiGraph, NXDecodingMultiGraph)):
         edges = [(sorted(edge), edge_id) for edge, edge_id in decoding_graph.edges]
@@ -199,7 +192,7 @@ def graph_to_json(
 
 def nx_graph_from_json(
     json_str: str,
-) -> Tuple[NXDecodingGraph, List[FrozenSet[DecodingEdge]]]:
+) -> tuple[NXDecodingGraph, list[frozenset[DecodingEdge]]]:
     """Loads the graph from json string given by graph_to_json.
 
     Parameters
@@ -225,7 +218,7 @@ def nx_graph_from_json(
             for key, value in detector_records_dict.items()
         }
     # collect edge data if defined
-    edge_data: Iterable[Union[DecodingEdge, Tuple[DecodingEdge, EdgeRecord]]]
+    edge_data: Iterable[DecodingEdge | tuple[DecodingEdge, EdgeRecord]]
     if (edge_records_dict := graph_as_dict.get("edge_records")) is not None:
         edge_records = [EdgeRecord.from_dict(record) for record in edge_records_dict]
         edge_data = [
@@ -243,8 +236,8 @@ def nx_graph_from_json(
 
 
 def inverse_logical_at_boundary(
-    decoding_graph: NXDecodingGraph, logical: Set[DecodingEdge]
-) -> Set[DecodingEdge]:
+    decoding_graph: NXDecodingGraph, logical: set[DecodingEdge]
+) -> set[DecodingEdge]:
     """Given a decoding graph and a logical, that is assumed to be along the
     boundary, return another logical constructed of all the edges incident to the
     boundary that are not in the given logical.
@@ -273,7 +266,7 @@ def inverse_logical_at_boundary(
         Exception raised if the the logical is not entirely along the boundary of the
         graph. This includes if the logical has an edge not in the graph.
     """
-    all_edges_to_boundaries: Set[DecodingEdge] = set()
+    all_edges_to_boundaries: set[DecodingEdge] = set()
     for boundary in decoding_graph.boundaries:
         all_edges_to_boundaries.update(decoding_graph.incident_edges(boundary))
 
@@ -281,10 +274,11 @@ def inverse_logical_at_boundary(
         edge for edge in all_edges_to_boundaries if edge not in logical
     }
     if len(inverse_logical_edges | logical) != len(all_edges_to_boundaries):
-        raise ValueError(
+        msg = (
             "The logical given was not entirely along the boundary, "
             "so the inverse logical is undefined."
         )
+        raise ValueError(msg)
     return inverse_logical_edges
 
 
@@ -306,14 +300,12 @@ def is_logical_along_boundary(
         True if the logicals are along the boundary.
     """
     return all(
-        (
-            any(
-                incident_syndrome_bit in decoding_graph.boundaries
-                for incident_syndrome_bit in tuple(edge.vertices)
-            )
-            for logical in logicals
-            for edge in logical
+        any(
+            incident_syndrome_bit in decoding_graph.boundaries
+            for incident_syndrome_bit in tuple(edge.vertices)
         )
+        for logical in logicals
+        for edge in logical
     )
 
 
@@ -365,7 +357,7 @@ def compute_graph_distance_for_logical(
     decoding_graph: NXDecodingGraph,
     logical: AbstractSet[DecodingEdge],
     weighted: bool = False,
-) -> Union[int, float]:
+) -> int | float:
     """Computes the distance of the decoding graph given a logical.
     This is done by calculating the shortest path
     between nodes of the logical edges in the graph where all edges of
@@ -422,7 +414,7 @@ def compute_graph_distance_for_logical(
 
 def compute_graph_distance(
     decoding_graph: NXDecodingGraph, logicals: NXLogicals, weighted: bool = False
-) -> Union[int, float]:
+) -> int | float:
     """Calculates the minimum distance for all logicals.
     See `compute_graph_distance_for_logical`.
     Decoding graph to calculate the distance on.

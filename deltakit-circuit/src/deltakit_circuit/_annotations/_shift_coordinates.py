@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import stim
 from deltakit_circuit._qubit_identifiers import Coordinate

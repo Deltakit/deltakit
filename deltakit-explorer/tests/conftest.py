@@ -6,5 +6,5 @@ import os
 from deltakit_explorer._utils._utils import DELTAKIT_SERVER_URL_ENV
 
 
-def pytest_sessionstart(session):
+def pytest_sessionstart(session):  # noqa: ARG001
     os.environ[DELTAKIT_SERVER_URL_ENV] = "http://deltakit-explorer:8000"

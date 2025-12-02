@@ -1,5 +1,4 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import List, Set, Tuple
 from unittest.mock import Mock
 
 import pytest
@@ -23,7 +22,7 @@ class TestGraphDecoderManager:
         return decoder
 
     @pytest.fixture()
-    def mock_noise_model(self, mocker, logicals) -> Mock:
+    def mock_noise_model(self, mocker) -> Mock:
         noise_model: Mock = mocker.Mock()
         return noise_model
 
@@ -66,9 +65,9 @@ class TestGraphDecoderManager:
         self,
         mock_noise_model: Mock,
         mock_graph_decoder: Mock,
-        logicals: List[Set[int]],
-        error: Set[int],
-        expected_logical_flip: Tuple[bool, ...]
+        logicals: list[set[int]],
+        error: set[int],
+        expected_logical_flip: tuple[bool, ...]
     ):
         decoder_manager: GraphDecoderManager = GraphDecoderManager(
             mock_noise_model, mock_graph_decoder, logicals=logicals)

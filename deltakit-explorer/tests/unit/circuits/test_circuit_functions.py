@@ -1,5 +1,4 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import Tuple
 
 import pytest
 from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
@@ -12,7 +11,7 @@ from deltakit_explorer.qpu._circuits import (merge_layers,
                                              remove_identities)
 
 
-def single_stabiliser(circuit_spec: Tuple[PauliBasis, str]):
+def single_stabiliser(circuit_spec: tuple[PauliBasis, str]):
     if circuit_spec[1] == "":
         gate = CX if circuit_spec[0] == PauliBasis.X else CZ
 
@@ -38,7 +37,8 @@ def single_stabiliser(circuit_spec: Tuple[PauliBasis, str]):
             ]
         )
     else:
-        raise ValueError(f"Unknown circuit spec {circuit_spec} supplied.")
+        msg = f"Unknown circuit spec {circuit_spec} supplied."
+        raise ValueError(msg)
 
     return circuit
 
@@ -563,7 +563,7 @@ class TestRemoveIdentities:
                     [
                         GateLayer(I(1)),
                         GateLayer([H(0), S(2)]),
-                        GateLayer([MZ((0)), I(1)]),
+                        GateLayer([MZ(0), I(1)]),
                         Detector([MeasurementRecord(-1)]),
                         GateLayer(MZ(2)),
                         Observable(0, MeasurementRecord(-1)),
@@ -577,7 +577,7 @@ class TestRemoveIdentities:
                 Circuit(
                     [
                         GateLayer([H(0), S(2)]),
-                        GateLayer([MZ((0))]),
+                        GateLayer([MZ(0)]),
                         Detector([MeasurementRecord(-1)]),
                         GateLayer(MZ(2)),
                         Observable(0, MeasurementRecord(-1)),
@@ -596,7 +596,7 @@ class TestRemoveIdentities:
                         Circuit(
                             [
                                 GateLayer([H(0), S(2)]),
-                                GateLayer([MZ((0)), I(1)]),
+                                GateLayer([MZ(0), I(1)]),
                                 Detector([MeasurementRecord(-1)]),
                                 GateLayer(MZ(2)),
                             ],
@@ -631,7 +631,7 @@ class TestRemoveIdentities:
                         Circuit(
                             [
                                 GateLayer([H(0), S(2)]),
-                                GateLayer(MZ((0))),
+                                GateLayer(MZ(0)),
                                 Detector([MeasurementRecord(-1)]),
                                 GateLayer(MZ(2)),
                             ],

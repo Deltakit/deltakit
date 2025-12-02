@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import ClassVar, FrozenSet, Type, Union, get_args
+from typing import ClassVar, get_args
 
 from deltakit_circuit.noise_channels._abstract_noise_channels import PauliProductNoise
 from deltakit_circuit._qubit_identifiers import T
@@ -44,7 +44,7 @@ class ElseCorrelatedError(PauliProductNoise[T]):
     stim_string: ClassVar[str] = "ELSE_CORRELATED_ERROR"
 
 
-_CorrelatedNoise = Union[CorrelatedError[T], ElseCorrelatedError[T]]
-ALL_CORRELATED_NOISE: FrozenSet[Type[_CorrelatedNoise]] = frozenset(
+_CorrelatedNoise = CorrelatedError[T] | ElseCorrelatedError[T]
+ALL_CORRELATED_NOISE: frozenset[type[_CorrelatedNoise]] = frozenset(
     get_args(_CorrelatedNoise)
 )

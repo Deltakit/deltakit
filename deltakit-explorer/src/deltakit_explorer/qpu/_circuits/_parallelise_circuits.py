@@ -4,7 +4,6 @@ This module includes functions merging multiple circuits into a
 single circuit to be executed on a single QPU in parallel.
 """
 
-from typing import List, Set
 
 import numpy as np
 from deltakit_circuit import (Circuit, Detector, GateLayer, Observable, Qubit,
@@ -17,7 +16,7 @@ from deltakit_circuit import (Circuit, Detector, GateLayer, Observable, Qubit,
 # pylint: disable=too-many-return-statements,too-many-boolean-expressions
 
 
-def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
+def parallelise_disjoint_circuits(circuits: list[Circuit]) -> Circuit:
     """
     Parallelise a list of circuits, each of which must act on distinct qubits.
     We assume it is preferable to perform gates of the same type in the same
@@ -61,9 +60,8 @@ def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
     # Check for unequal numbers of iterations
     iterations = circuits[0].iterations
     if any(circuit.iterations != iterations for circuit in circuits):
-        raise ValueError(
-            "Circuits to be parallelised must have the same number of iterations."
-        )
+        msg = "Circuits to be parallelised must have the same number of iterations."
+        raise ValueError(msg)
 
     def _any_annotations(circuit: Circuit) -> bool:
         for layer in circuit.layers:
@@ -87,7 +85,8 @@ def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
 
     # Check if any circuit contains NoiseLayers
     if any(circuit.is_noisy for circuit in circuits):
-        raise ValueError("Circuits to be parallelised may not contain NoiseLayers.")
+        msg = "Circuits to be parallelised may not contain NoiseLayers."
+        raise ValueError(msg)
 
     # Check which circuits contain annotations
     any_annotations = [_any_annotations(circuit) for circuit in circuits]
@@ -99,18 +98,19 @@ def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
             for circuit in circuits
             if circuit != circuits[annotations_circ]
         ):
-            raise ValueError(
+            msg = (
                 "If one circuit to be parallelised contains annotations, "
                 "no other circuit can contain measurements."
             )
+            raise ValueError(msg)
     elif sum(any_annotations) > 1:
-        raise ValueError("Only one circuit to be parallelised can contain annotations.")
+        msg = "Only one circuit to be parallelised can contain annotations."
+        raise ValueError(msg)
 
     # Check how many circuits contain a nested circuit
     if sum(_any_circuit_layers(circuit) for circuit in circuits) > 1:
-        raise ValueError(
-            "Only one circuit to be parallelised can contain a nested Circuit."
-        )
+        msg = "Only one circuit to be parallelised can contain a nested Circuit."
+        raise ValueError(msg)
 
     # In future, this can be simplified to the length of non-recursive gate_layers
     circuit_lengths = [
@@ -133,23 +133,22 @@ def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
         if isinstance(layer, GateLayer):
             parallelised_layers.append(GateLayer())
             parallelised_layers_gate_types.append(
-                set(type(gate) for gate in layer.gates)
+                {type(gate) for gate in layer.gates}
             )
         else:
             parallelised_layers.append(layer)
             parallelised_layers_gate_types.append(set())
 
     # Initialise set to record qubits
-    qubits: Set[Qubit] = set()
+    qubits: set[Qubit] = set()
 
     # Loop over circuits
     for icirc, (circuit, new_length) in enumerate(zip(circuits, circuit_lengths)):
         # update qubits
         new_qubits = circuit.qubits
         if len(qubits.union(new_qubits)) != len(qubits) + len(new_qubits):
-            raise ValueError(
-                "Circuits to be parallelised do not act on distinct qubits."
-            )
+            msg = "Circuits to be parallelised do not act on distinct qubits."
+            raise ValueError(msg)
         qubits = qubits.union(new_qubits)
 
         # set variable to record previous layer in parallelised circuit into which
@@ -201,7 +200,7 @@ def parallelise_disjoint_circuits(circuits: List[Circuit]) -> Circuit:
     return Circuit(parallelised_layers)
 
 
-def parallelise_same_length_circuits(circuits: List[Circuit]) -> Circuit:
+def parallelise_same_length_circuits(circuits: list[Circuit]) -> Circuit:
     """
     Parallelise a list of circuits, each of which must be the same length and
     act on distinct qubits in a particular layer. The circuits must also consist
@@ -223,22 +222,21 @@ def parallelise_same_length_circuits(circuits: List[Circuit]) -> Circuit:
     # Check for unequal numbers of iterations
     iterations = circuits[0].iterations
     if any(circuit.iterations != iterations for circuit in circuits):
-        raise ValueError(
-            "Circuits to be parallelised must have the same number of iterations."
-        )
+        msg = "Circuits to be parallelised must have the same number of iterations."
+        raise ValueError(msg)
 
     if any(
         not all(isinstance(layer, GateLayer) for layer in circuit.layers)
         for circuit in circuits
     ):
-        raise ValueError(
-            "Circuits can only be parallelised if they contain only GateLayers."
-        )
+        msg = "Circuits can only be parallelised if they contain only GateLayers."
+        raise ValueError(msg)
 
     circuit_lengths = [len(circuit.layers) for circuit in circuits]
     num_layers = circuit_lengths[0]
     if not np.all(np.array(circuit_lengths) == num_layers):
-        raise ValueError("Circuits must all be the same length.")
+        msg = "Circuits must all be the same length."
+        raise ValueError(msg)
 
     # Begin parallelised circuit construction with first circuit
     parallelised_circuit = Circuit(

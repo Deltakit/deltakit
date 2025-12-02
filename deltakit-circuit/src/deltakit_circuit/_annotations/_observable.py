@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import FrozenSet, Iterable
+from collections.abc import Iterable
 
 import stim
 from deltakit_circuit._annotations._detector import MeasurementRecord
@@ -32,7 +32,8 @@ class Observable:
         tag: str | None = None,
     ):
         if observable_index < 0:
-            raise ValueError("Observable index cannot be negative.")
+            msg = "Observable index cannot be negative."
+            raise ValueError(msg)
         self._observable_index = observable_index
         self._measurements = (
             frozenset((measurements,))
@@ -46,7 +47,7 @@ class Observable:
         return self._tag
 
     @property
-    def measurements(self) -> FrozenSet[MeasurementRecord]:
+    def measurements(self) -> frozenset[MeasurementRecord]:
         return self._measurements
 
     def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):

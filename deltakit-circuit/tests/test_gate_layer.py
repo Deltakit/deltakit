@@ -1,7 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
-from typing import Type
 
 import pytest
 import stim
@@ -69,7 +68,7 @@ def test_gate_layer_can_be_initialised_with_a_list_of_gates(gates):
 
 @pytest.mark.parametrize("gate_class", gates.ONE_QUBIT_GATES)
 def test_adding_a_single_qubit_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._OneQubitCliffordGate], empty_layer
+    gate_class: type[gates._OneQubitCliffordGate], empty_layer
 ):
     gate = gate_class(Qubit(0))
     empty_layer.add_gates(gate)
@@ -78,7 +77,7 @@ def test_adding_a_single_qubit_gate_to_a_layer_puts_it_in_the_layer(
 
 @pytest.mark.parametrize("gate_class", gates.TWO_QUBIT_GATES)
 def test_adding_two_qubit_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._TwoQubitGate], empty_layer
+    gate_class: type[gates._TwoQubitGate], empty_layer
 ):
     gate = gate_class(Qubit(0), Qubit(1))
     empty_layer.add_gates(gate)
@@ -87,7 +86,7 @@ def test_adding_two_qubit_gate_to_a_layer_puts_it_in_the_layer(
 
 @pytest.mark.parametrize("gate_class", gates.RESET_GATES)
 def test_adding_reset_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._ResetGate], empty_layer
+    gate_class: type[gates._ResetGate], empty_layer
 ):
     gate = gate_class(Qubit(0))
     empty_layer.add_gates(gate)
@@ -97,7 +96,7 @@ def test_adding_reset_gate_to_a_layer_puts_it_in_the_layer(
 @pytest.mark.parametrize("gate_class", gates.MEASUREMENT_GATES - {gates.MPP})
 @pytest.mark.parametrize("invert", (True, False))
 def test_adding_measurement_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._MeasurementGate], invert, empty_layer
+    gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
     gate = gate_class(Qubit(0), invert=invert)
     empty_layer.add_gates(gate)
@@ -153,7 +152,7 @@ def test_adding_a_gate_increases_the_number_of_gates_in_the_layer(empty_layer):
 
 @pytest.mark.parametrize("single_qubit_gate_class", gates.ONE_QUBIT_GATES)
 def test_error_is_raised_when_adding_two_single_qubit_gates_on_the_same_qubit(
-    single_qubit_gate_class: Type[gates._OneQubitCliffordGate], empty_layer
+    single_qubit_gate_class: type[gates._OneQubitCliffordGate], empty_layer
 ):
     qubit = Qubit(0)
     empty_layer.add_gates(gates.H(qubit))
@@ -171,7 +170,7 @@ def test_error_is_raised_when_adding_two_single_qubit_gates_on_the_same_qubit(
 
 @pytest.mark.parametrize("two_qubit_gate_class", gates.TWO_QUBIT_GATES)
 def test_error_is_raised_when_adding_two_qubit_gate_with_one_of_qubits_is_in_layer(
-    two_qubit_gate_class: Type[gates._TwoQubitGate], empty_layer
+    two_qubit_gate_class: type[gates._TwoQubitGate], empty_layer
 ):
     qubit = Qubit(4)
     empty_layer.add_gates(gates.H(qubit))
@@ -189,7 +188,7 @@ def test_error_is_raised_when_adding_two_qubit_gate_with_one_of_qubits_is_in_lay
 
 @pytest.mark.parametrize("reset_gate_class", gates.RESET_GATES)
 def test_error_is_raised_when_adding_reset_gate_to_a_layer_which_already_uses_that_qubit(
-    reset_gate_class: Type[gates._ResetGate], empty_layer
+    reset_gate_class: type[gates._ResetGate], empty_layer
 ):
     qubit = Qubit(2)
     empty_layer.add_gates(gates.H(qubit))
@@ -210,7 +209,7 @@ def test_error_is_raised_when_adding_reset_gate_to_a_layer_which_already_uses_th
 )
 @pytest.mark.parametrize("invert", (True, False))
 def test_error_is_raised_when_adding_a_measurement_gate_to_a_layer_which_already_uses_that_qubit(
-    measurement_gate_class: Type[gates._MeasurementGate], invert, empty_layer
+    measurement_gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
     qubit = Qubit(0)
     empty_layer.add_gates(gates.H(qubit))

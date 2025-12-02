@@ -1,8 +1,6 @@
-# @mdhaber will be the default owner for everything in
-# the repo. Unless a later match takes precedence,
-# @mdhaber will be requested for review when someone opens
-# a pull request.
-*                   @nelimee
+# Default owners for everything in the repo unless
+# a later match takes precedence.
+*                   @nelimee @rolandriver
 
 # @KentonRL owns any file in deltakit-decode
 # directory anywhere in the repository.
@@ -11,9 +9,9 @@ deltakit-decode/    @KentonRL
 
 # @nelimee, @AndrewPattersonRL and @oc251
 # co-own any file in deltakit-explorer
-deltakit-explorer/    @nelimee @AndrewPattersonRL @oc251
+deltakit-explorer/  @nelimee @AndrewPattersonRL @oc251
 
 
 # @KentonRL and @theinsanetramp co-own any file in deltakit-core
 # directory anywhere in the repository.
-deltakit-core/    @KentonRL @theinsanetramp
+deltakit-core/      @KentonRL @theinsanetramp

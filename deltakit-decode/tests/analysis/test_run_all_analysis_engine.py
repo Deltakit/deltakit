@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import pathlib
 from functools import partial
-from typing import List, Protocol
+from typing import Protocol
 from unittest.mock import MagicMock
 
 import numpy as np
@@ -42,20 +42,20 @@ mock_half_fails_run_batch_shots_typed: MockRunBatchShots = mock_half_fails_run_b
 
 
 @pytest.fixture
-def all_fail_decoder_managers(mocker, num_decoder_managers) -> List[DecoderManager]:
+def all_fail_decoder_managers(mocker, num_decoder_managers) -> list[DecoderManager]:
     return mock_decoder_managers(mocker, num_decoder_managers, mock_all_fails_run_batch_shots_typed)
 
 
 @pytest.fixture
-def half_fail_decoder_managers(mocker, num_decoder_managers) -> List[DecoderManager]:
+def half_fail_decoder_managers(mocker, num_decoder_managers) -> list[DecoderManager]:
     return mock_decoder_managers(mocker, num_decoder_managers, mock_half_fails_run_batch_shots_typed)
 
 
 def mock_decoder_managers(mocker,
                           num_decoder_managers,
                           mock_run_batch_shots: MockRunBatchShots,
-                          ) -> List[DecoderManager]:
-    mock_decoder_managers: List[DecoderManager] = []
+                          ) -> list[DecoderManager]:
+    mock_decoder_managers: list[DecoderManager] = []
     for _ in range(num_decoder_managers):
         get_reporter_results: MagicMock = mocker.MagicMock(return_value={
             "test_field_name": "test_field_value"

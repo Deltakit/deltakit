@@ -1,10 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 import logging
-from typing import Dict
 
 # Global dictionary with all QEC loggers and handlers
-QECLoggers: Dict[str, logging.Logger] = {}
-QECHandlers: Dict[str, logging.Handler] = {}
+QECLoggers: dict[str, logging.Logger] = {}
+QECHandlers: dict[str, logging.Handler] = {}
 
 
 def make_logger(lvl: int, name: str) -> logging.Logger:

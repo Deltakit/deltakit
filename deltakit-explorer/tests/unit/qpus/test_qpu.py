@@ -32,10 +32,7 @@ def qpu_with_times(request):
     depolarise2_generator = Depolarise2.generator_from_prob(0.01)
 
     if hasattr(request, "param"):
-        if "num_qubits" in request.param:
-            num_qubits = request.param["num_qubits"]
-        else:
-            num_qubits = 6
+        num_qubits = request.param.get("num_qubits", 6)
         maximise_parallelism = request.param["maximise_parallelism"]
     else:
         num_qubits = 6

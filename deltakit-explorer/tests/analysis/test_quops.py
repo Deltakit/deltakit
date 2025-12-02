@@ -1,15 +1,20 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-from collections import namedtuple
 from math import exp, log
+from typing import NamedTuple
 
 import pytest
-from deltakit_explorer.analysis import \
-    predict_distance_for_quops, predict_quops_at_distance
+
+from deltakit_explorer.analysis import (
+    predict_distance_for_quops,
+    predict_quops_at_distance,
+)
 
 
-Parameters = namedtuple("Parameters", ["lambda0", "lambda_"])
+class Parameters(NamedTuple):
+    lambda0: float
+    lambda_: float
 
 def alternative_lep_per_round(p_0: float, lambda_: float, d: int) -> float:
     return p_0 * exp(-log(lambda_) * (d + 1) / 2)

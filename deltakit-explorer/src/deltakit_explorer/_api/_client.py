@@ -66,7 +66,8 @@ class Client:
         elif api_version == 2:
             self._api = APIv2Client(base_url, timeout)
         else:
-            raise NotImplementedError(f"API version {api_version} is not implemented.")
+            msg = f"API version {api_version} is not implemented."
+            raise NotImplementedError(msg)
         self._api_version = api_version
 
     @staticmethod

@@ -5,23 +5,13 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import (
-    Callable,
-    ClassVar,
-    Generator,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-)
+from typing import ClassVar, Generic, TypeVar
+from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 
 import stim
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit._qubit_identifiers import PauliProduct, Qubit, T, U, _PauliGate
+from typing_extensions import Self
 
 
 class ProbabilityError(ValueError):
@@ -43,7 +33,7 @@ class NoiseChannel(ABC, Generic[T]):
 
     stim_string: ClassVar[str]
 
-    def __init__(self, *args, tag: str | None = None, **kwargs) -> None:
+    def __init__(self, *_args, tag: str | None = None, **_kwargs) -> None:
         super().__init__()
         self._tag = tag
 
@@ -53,7 +43,7 @@ class NoiseChannel(ABC, Generic[T]):
 
     @property
     @abstractmethod
-    def qubits(self) -> Tuple[Qubit[T], ...]:
+    def qubits(self) -> tuple[Qubit[T], ...]:
         """Get all the qubits for this noise channel."""
 
     @property
@@ -66,13 +56,13 @@ class NoiseChannel(ABC, Generic[T]):
 
     @property
     @abstractmethod
-    def probabilities(self) -> Tuple[float, ...]:
+    def probabilities(self) -> tuple[float, ...]:
         """Get all the probabilities for this noise channel"""
 
     @abstractmethod
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         """Return all the stim targets which specifies this noise channel."""
 
     @abstractmethod
@@ -166,7 +156,7 @@ class OneProbabilityNoiseChannel(NoiseChannel[T]):
         return self._probability
 
     @property
-    def probabilities(self) -> Tuple[float]:
+    def probabilities(self) -> tuple[float]:
         return (self._probability,)
 
     @property
@@ -186,17 +176,18 @@ class MultiProbabilityNoiseChannel(NoiseChannel[T]):
     """
 
     def __init__(
-        self, probabilities: Tuple[float, ...], *args, tag: str | None = None, **kwargs
+        self, probabilities: tuple[float, ...], *args, tag: str | None = None, **kwargs
     ):
         super().__init__(*args, tag=tag, **kwargs)
         if not all(0 <= probability <= 1 for probability in probabilities):
             raise ProbabilityError()
         if sum(probabilities) > 1:
-            raise ValueError("The sum of probabilities cannot be greater than one.")
+            msg = "The sum of probabilities cannot be greater than one."
+            raise ValueError(msg)
         self._probabilities = probabilities
 
     @property
-    def probabilities(self) -> Tuple[float, ...]:
+    def probabilities(self) -> tuple[float, ...]:
         """Get all the probabilities which define this noise channel."""
         return self._probabilities
 
@@ -234,7 +225,7 @@ class OneQubitNoiseChannel(NoiseChannel[T]):
         return self._qubit
 
     @property
-    def qubits(self) -> Tuple[Qubit[T]]:
+    def qubits(self) -> tuple[Qubit[T]]:
         return (self.qubit,)
 
     def transform_qubits(self, id_mapping: Mapping[T, U]):
@@ -243,20 +234,17 @@ class OneQubitNoiseChannel(NoiseChannel[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget]:
+    ) -> tuple[stim.GateTarget]:
         return (qubit_mapping[self._qubit],)
 
     @classmethod
     def generator_from_prob(
-        cls: Type[OneQubitNoiseChannelT],
-        *gate_args,
-        tag: str | None = None,
-        **gate_kwargs,
-    ) -> Callable[[Iterable[Qubit[T]] | T], List[OneQubitNoiseChannelT]]:
+        cls, *gate_args, tag: str | None = None, **gate_kwargs
+    ) -> Callable[[Iterable[Qubit[T]] | T], list[Self]]:
         """Return a classmethod that can be used to create a noise channel
         with a predetermined probability"""
 
-        def inner_gen(qubits) -> List[OneQubitNoiseChannelT]:
+        def inner_gen(qubits) -> list[Self]:
             return [cls(qubit, *gate_args, tag=tag, **gate_kwargs) for qubit in qubits]
 
         return inner_gen
@@ -293,11 +281,12 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
         qubit1 = Qubit(qubit1) if not isinstance(qubit1, Qubit) else qubit1
         qubit2 = Qubit(qubit2) if not isinstance(qubit2, Qubit) else qubit2
         if qubit1 == qubit2:
-            raise ValueError("Qubits in two qubit noise channels must be different.")
+            msg = "Qubits in two qubit noise channels must be different."
+            raise ValueError(msg)
         self._qubit1, self._qubit2 = qubit1, qubit2
 
     @property
-    def qubits(self) -> Tuple[Qubit[T], Qubit[T]]:
+    def qubits(self) -> tuple[Qubit[T], Qubit[T]]:
         """Get all the qubits this noise channel acts on."""
         return (self._qubit1, self._qubit2)
 
@@ -319,7 +308,7 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, stim.GateTarget]:
+    ) -> tuple[stim.GateTarget, stim.GateTarget]:
         """Get all stim gate targets for this noise channel in a tuple."""
         return (
             self._qubit1.stim_targets(qubit_mapping)[0],
@@ -328,15 +317,12 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
 
     @classmethod
     def generator_from_prob(
-        cls: Type[TwoQubitNoiseChannelT],
-        *gate_args,
-        tag: str | None = None,
-        **gate_kwargs,
-    ) -> Callable[[Sequence[Qubit[T] | T]], List[TwoQubitNoiseChannelT]]:
+        cls, *gate_args, tag: str | None = None, **gate_kwargs
+    ) -> Callable[[Sequence[Qubit[T] | T]], list[Self]]:
         """Return a classmethod that can be used to create a noise channel
         with a predetermined probability"""
 
-        def inner_gen(qubits: Sequence[Qubit[T] | T]) -> List[TwoQubitNoiseChannelT]:
+        def inner_gen(qubits: Sequence[Qubit[T] | T]) -> list[Self]:
             return list(
                 cls.from_consecutive(qubits, *gate_args, tag=tag, **gate_kwargs)
             )
@@ -345,12 +331,12 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
 
     @classmethod
     def from_consecutive(
-        cls: Type[TwoQubitNoiseChannelT],
+        cls,
         pairs: Sequence[Qubit[T] | T],
         *gate_args,
         tag: str | None = None,
         **gate_kwargs,
-    ) -> Generator[TwoQubitNoiseChannelT, None, None]:
+    ) -> Generator[Self, None, None]:
         """Yield a class instance for each pair in a flattened sequence of
         data.
 
@@ -367,10 +353,11 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
             Qubit pair from neighbouring elements in the sequence.
         """
         if len(pairs) % 2 != 0:
-            raise ValueError(
+            msg = (
                 "Two qubit noise channels can only be "
                 "constructed from an even number of qubits"
             )
+            raise ValueError(msg)
         for qubit1, qubit2 in zip(pairs[::2], pairs[1::2], strict=True):
             yield cls(qubit1, qubit2, *gate_args, tag=tag, **gate_kwargs)
 
@@ -429,9 +416,6 @@ class OneQubitOneProbabilityNoiseChannel(
         )
 
 
-PPN = TypeVar("PPN", bound="PauliProductNoise")
-
-
 class PauliProductNoise(OneProbabilityNoiseChannel[T]):
     """Abstract noise channel which takes a Pauli product as argument.
 
@@ -465,15 +449,12 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
 
     @classmethod
     def generator_from_prob(
-        cls: Type[PPN],
-        pauli_gate_t: Type[_PauliGate],
-        probability: float,
-        tag: str | None = None,
-    ) -> Callable[[Sequence[Qubit[T] | T]], Sequence[PPN]]:
+        cls, pauli_gate_t: type[_PauliGate], probability: float, tag: str | None = None
+    ) -> Callable[[Sequence[Qubit[T] | T]], Sequence[Self]]:
         """Return a classmethod that can be used to create a noise channel
         with a predetermined probability"""
 
-        def inner_gen(qubits: Sequence[Qubit[T] | T]) -> List[PPN]:
+        def inner_gen(qubits: Sequence[Qubit[T] | T]) -> list[Self]:
             return [
                 cls(
                     PauliProduct([pauli_gate_t(qubit) for qubit in qubits]),
@@ -490,7 +471,7 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
         return self._pauli_product
 
     @property
-    def qubits(self) -> Tuple[Qubit[T], ...]:
+    def qubits(self) -> tuple[Qubit[T], ...]:
         return self.pauli_product.qubits
 
     def transform_qubits(self, id_mapping: Mapping[T, U]):
@@ -498,7 +479,7 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         return self.pauli_product.stim_targets(qubit_mapping)
 
     def approx_equals(

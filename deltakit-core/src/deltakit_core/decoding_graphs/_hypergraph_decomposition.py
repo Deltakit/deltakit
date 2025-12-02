@@ -1,12 +1,12 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import FrozenSet, Iterator, List, Sequence
+from collections.abc import Iterator, Sequence
 
 from deltakit_core.decoding_graphs import DecodingHyperEdge
 
 
 def decompositions(
     target_edge: DecodingHyperEdge, edges: Sequence[DecodingHyperEdge]
-) -> Iterator[FrozenSet[DecodingHyperEdge]]:
+) -> Iterator[frozenset[DecodingHyperEdge]]:
     """Generate decompositions of the given edge into the parts from edges.
     The union of all vertices in the parts must equal the vertices in the
     original edges for it to be considered a valid decomposition.
@@ -28,10 +28,10 @@ def decompositions(
     # explore tree of possible decompositions
 
     def _decompositions(
-        vertices: FrozenSet[int],
-        legal_edges: List[DecodingHyperEdge],
-        chosen_edges: FrozenSet[DecodingHyperEdge],
-    ) -> Iterator[FrozenSet[DecodingHyperEdge]]:
+        vertices: frozenset[int],
+        legal_edges: list[DecodingHyperEdge],
+        chosen_edges: frozenset[DecodingHyperEdge],
+    ) -> Iterator[frozenset[DecodingHyperEdge]]:
         if len(vertices) == 0:  # done on this branch
             yield chosen_edges
             return

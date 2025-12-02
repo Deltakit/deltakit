@@ -138,7 +138,7 @@ class TestCalculateDetectorCoordinates:
                 [
                     Stabiliser([PauliX(7)], Qubit(1.2)),
                     Stabiliser([PauliX(0), PauliY(3)]),
-                    Stabiliser([PauliX(1), PauliZ(("test"))]),
+                    Stabiliser([PauliX(1), PauliZ("test")]),
                 ],
                 (Coordinate(0, 0), Coordinate(1, 0)),
             ),
@@ -330,7 +330,7 @@ class TestCSSStageWithAllParameters:
                 stabilisers=example_simultaneous_stabilisers,
             )
 
-    @pytest.mark.parametrize("stabilisers", [[[]], None, [[], []]], tuple(tuple()))
+    @pytest.mark.parametrize("stabilisers", [[[]], None, [[], []]], ())
     def test_raises_error_when_stabilisers_is_empty_but_num_rounds_is_positive(
         self, stabilisers
     ):
@@ -528,7 +528,7 @@ class TestCSSStageWithAllParameters:
                     observable_definitions={0: [Qubit(0)]},
                     final_round_resets={RZ(1)},
                 ),
-                tuple(),
+                (),
             ),
             (full_stage_1_round.stage, full_stage_1_round.expected_ordered_stabilisers),
         ],
@@ -611,8 +611,7 @@ class TestTransversalHStage:
             final_round_resets=stage._final_round_resets,
         )
         assert stage.first_round == Circuit(
-            [GateLayer(stage._first_round_gates)]
-            + stage_without_trv_h.first_round.layers
+            [GateLayer(stage._first_round_gates), *stage_without_trv_h.first_round.layers]
         )
 
 
@@ -680,8 +679,7 @@ class TestTransversalSWAPStage:
             final_round_resets=stage._final_round_resets,
         )
         assert stage.first_round == Circuit(
-            [GateLayer(stage._first_round_gates)]
-            + stage_without_trv_h.first_round.layers
+            [GateLayer(stage._first_round_gates), *stage_without_trv_h.first_round.layers]
         )
 
 

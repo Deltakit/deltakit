@@ -134,7 +134,7 @@ class TestToyNoise:
         stim_circuit = stim_noise_model.permute_stim_circuit(stim_circuit)
         circuit = sp.Circuit.from_stim_circuit(stim_circuit)
         # Should be different if noise layers was inspecting inner circuits
-        assert 24 == len(circuit.noise_layers())
+        assert len(circuit.noise_layers()) == 24
 
     def test_noise_channels_target_the_correct_qubits(self):
         stim_noise_model = ToyNoise(0.1)

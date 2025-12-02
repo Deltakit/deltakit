@@ -5,20 +5,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-    no_type_check,
-)
+from typing import TYPE_CHECKING, no_type_check
+from collections.abc import Callable, Iterable, Mapping, Sequence
 
 from deltakit_circuit.gates import Gate, OneQubitCliffordGate, TwoOperandGate, _Gate
 from deltakit_circuit.gates._measurement_gates import (
@@ -54,13 +42,13 @@ class NoiseContext:
     access to the circuit's state and are able to formulate noise
     profiles for circuits that are not yet in scope"""
 
-    circuit: "Circuit"
+    circuit: Circuit
     gate_layer: GateLayer
 
     def gate_layer_qubits(
         self,
-        gate_t: Type[Gate] | Tuple[Type[Gate], ...] | None,
-        gate_qubit_count: Optional[int] = None,
+        gate_t: type[Gate] | tuple[type[Gate], ...] | None,
+        gate_qubit_count: int | None = None,
     ) -> Sequence[Qubit]:
         """Returns all the qubits that belong to gates of type gate_t in
         self.gate_layer's gates with optional gate qubit count
@@ -104,9 +92,9 @@ class NoiseContext:
 
 
 def noise_profile_with_inverted_noise(
-    target_gate_t: Optional[Type[Gate]] = None,
-    target_noise_generator: Optional[NoiseChannelGen] = None,
-    inverse_noise_generator: Optional[NoiseChannelGen] = None,
+    target_gate_t: type[Gate] | None = None,
+    target_noise_generator: NoiseChannelGen | None = None,
+    inverse_noise_generator: NoiseChannelGen | None = None,
 ) -> Callable[[NoiseContext], Sequence[_NoiseChannel]]:
     """Generate a noise profile for a given gate, with additional
     noise across all other qubits in the circuit that are not
@@ -142,7 +130,7 @@ def noise_profile_with_inverted_noise(
     """
 
     def noise_channel_generator(noise_context: NoiseContext) -> Sequence[_NoiseChannel]:
-        noise_channels: List[_NoiseChannel] = []
+        noise_channels: list[_NoiseChannel] = []
         if target_gate_t is None or target_gate_t in [
             type(gate) for gate in noise_context.gate_layer.gates
         ]:
@@ -161,7 +149,7 @@ def noise_profile_with_inverted_noise(
     return noise_channel_generator
 
 
-def after_clifford_depolarisation(probability: float) -> List[NoiseProfile]:
+def after_clifford_depolarisation(probability: float) -> list[NoiseProfile]:
     """Returns a set of callables that can be passed to
     deltakit_circuit.Circuit.apply_gate_noise to apply DEPOLARIZE1(probability)
     operations after every single-qubit Clifford gate and
@@ -184,7 +172,7 @@ def after_clifford_depolarisation(probability: float) -> List[NoiseProfile]:
     ]
 
 
-def before_measure_flip_probability(probability: float) -> List[NoiseProfile]:
+def before_measure_flip_probability(probability: float) -> list[NoiseProfile]:
     """Returns a set of callables that can be passed to
     deltakit_circuit.Circuit.apply_gate_noise to apply X_ERROR(probability)
     operations before every measurement gate that is not in the X basis
@@ -203,7 +191,7 @@ def before_measure_flip_probability(probability: float) -> List[NoiseProfile]:
     ]
 
 
-def after_reset_flip_probability(probability: float) -> List[NoiseProfile]:
+def after_reset_flip_probability(probability: float) -> list[NoiseProfile]:
     """Returns a set of callables that can be passed to
     deltakit_circuit.Circuit.apply_gate_noise to apply X_ERROR(probability)
     operations before every reset gate that is not in the X basis
@@ -225,7 +213,7 @@ def after_reset_flip_probability(probability: float) -> List[NoiseProfile]:
 @no_type_check
 def measurement_noise_profile(
     error_probability: float,
-) -> Dict[Type[_MeasurementGate], Callable[[_MeasurementGate], _MeasurementGate]]:
+) -> dict[type[_MeasurementGate], Callable[[_MeasurementGate], _MeasurementGate]]:
     """Return a mapping from deltakit_circuit measurement types to the callables
     that can construct a gate of that type with a error probability as
     specified
@@ -264,6 +252,6 @@ def measurement_noise_profile(
     }
 
 
-NoiseProfile = Callable[[NoiseContext], Union[_NoiseChannel, Iterable[_NoiseChannel]]]
-NoiseChannelGen = Callable[[Sequence[Union[Qubit, T]]], Sequence[_NoiseChannel]]
-GateReplacementPolicy = Mapping[Union[Type[_Gate], _Gate], Callable[[_Gate], _Gate]]
+NoiseProfile = Callable[[NoiseContext], _NoiseChannel | Iterable[_NoiseChannel]]
+NoiseChannelGen = Callable[[Sequence[Qubit | T]], Sequence[_NoiseChannel]]
+GateReplacementPolicy = Mapping[type[_Gate] | _Gate, Callable[[_Gate], _Gate]]

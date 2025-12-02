@@ -22,3 +22,6 @@ unfixable = []
 
 [lint.per-file-ignores]
 "__init__.py" = ["F401"]
+# Comments are using unicode symbol for sigma for better readability, but it looks like
+# "o" and this rule raises a warning due to that.
+"src/deltakit_explorer/analysis/_lambda.py" = ["RUF003"]

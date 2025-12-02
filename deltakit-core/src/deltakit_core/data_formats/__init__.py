@@ -20,14 +20,14 @@ from deltakit_core.data_formats._measurements import (
 
 # List only public members in `__all__`.
 __all__ = [
-    "to_bytearray",
-    "b8_to_syndromes",
-    "b8_to_measurements",
     "b8_to_logical_flip",
-    "syndromes_to_b8_file",
+    "b8_to_measurements",
+    "b8_to_syndromes",
+    "c64_to_addressed_input_words",
     "logical_flips_to_b8_file",
     "parse_01_to_logical_flips",
     "parse_01_to_syndromes",
     "split_input_data_to_c64",
-    "c64_to_addressed_input_words",
+    "syndromes_to_b8_file",
+    "to_bytearray",
 ]

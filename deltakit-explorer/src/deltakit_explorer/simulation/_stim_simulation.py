@@ -5,7 +5,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import deltakit_explorer
 import numpy as np
@@ -18,7 +17,7 @@ def simulate_with_stim(
     stim_circuit: str | stim.Circuit,
     shots: int,
     result_file: str | Path | None = None,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
 ) -> tuple[Measurements, LeakageFlags | None]:
     """This method simulates the circuit using
     a Clifford STIM simulator. Clifford simulation is fast,
@@ -70,7 +69,8 @@ def simulate_with_stim(
     if client is not None:
         circuit = str(stim_circuit.as_stim_circuit()) if not isinstance(stim_circuit, str) else stim_circuit
         if result_file is not None:
-            raise NotImplementedError("Use of `client` is currently incompatible with `result_file`.")
+            msg = "Use of `client` is currently incompatible with `result_file`."
+            raise NotImplementedError(msg)
         measurements, leakage_flags = client.simulate_stim_circuit(circuit, shots=shots)
         return measurements, leakage_flags
 

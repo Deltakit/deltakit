@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import FrozenSet, Iterable, Mapping
+from collections.abc import Iterable, Mapping
 
 import stim
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
@@ -50,7 +50,7 @@ class Detector:
         return self._coordinate
 
     @property
-    def measurements(self) -> FrozenSet[MeasurementRecord]:
+    def measurements(self) -> frozenset[MeasurementRecord]:
         return self._measurements
 
     def transform_coordinates(
@@ -90,7 +90,7 @@ class Detector:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        stim_arguments = self.coordinate if self.coordinate is not None else tuple()
+        stim_arguments = self.coordinate if self.coordinate is not None else ()
         stim_tag = self._tag if self._tag is not None else ""
         stim_circuit.append(
             self.stim_string, stim_targets, stim_arguments, tag=stim_tag

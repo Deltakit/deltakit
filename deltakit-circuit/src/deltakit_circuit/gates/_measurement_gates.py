@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import math
-from typing import ClassVar, FrozenSet, Iterable, Mapping, Tuple, Type, Union, get_args
+from typing import ClassVar, get_args
+from collections.abc import Iterable, Mapping
 
 import stim
 from deltakit_circuit.gates._abstract_gates import (
@@ -337,18 +338,19 @@ class MPP(Gate[T]):
 
     def __init__(
         self,
-        pauli_product: Union[
-            _PauliGate,
-            _InvertiblePauliGate,
-            Iterable[_PauliGate | _InvertiblePauliGate],
-            MeasurementPauliProduct[T],
-        ],
+        pauli_product: (
+            _PauliGate
+            | _InvertiblePauliGate
+            | Iterable[_PauliGate | _InvertiblePauliGate]
+            | MeasurementPauliProduct[T]
+        ),
         probability: float = 0.0,
         tag: str | None = None,
     ):
         super().__init__(tag)
         if not 0 <= probability <= 1:
-            raise ValueError("Probability must be between zero and one.")
+            msg = "Probability must be between zero and one."
+            raise ValueError(msg)
         self._probability = probability
         self._pauli_product = (
             pauli_product
@@ -362,7 +364,7 @@ class MPP(Gate[T]):
         return self._pauli_product
 
     @property
-    def qubits(self) -> Tuple[Qubit[T], ...]:
+    def qubits(self) -> tuple[Qubit[T], ...]:
         """Get all qubits for this gate in a tuple."""
         return self.pauli_product.qubits
 
@@ -371,7 +373,7 @@ class MPP(Gate[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         """Get all qubits for this gate in a tuple."""
         return self.pauli_product.stim_targets(qubit_mapping)
 
@@ -432,10 +434,10 @@ class MPP(Gate[T]):
         )
 
 
-_OneQubitMeasurementGate = Union[MX, MY, MZ, MRX, MRY, MRZ, HERALD_LEAKAGE_EVENT]
-_MeasurementGate = Union[_OneQubitMeasurementGate, MPP]
+_OneQubitMeasurementGate = MX | MY | MZ | MRX | MRY | MRZ | HERALD_LEAKAGE_EVENT
+_MeasurementGate = _OneQubitMeasurementGate | MPP
 
-MEASUREMENT_GATES: FrozenSet[Type[_MeasurementGate]] = frozenset(
+MEASUREMENT_GATES: frozenset[type[_MeasurementGate]] = frozenset(
     get_args(_MeasurementGate)
 )
 ONE_QUBIT_MEASUREMENT_GATES = set(MEASUREMENT_GATES) - {MPP}

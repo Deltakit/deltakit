@@ -174,21 +174,13 @@ class TestExhaustiveGateSet:
         return ExhaustiveGateSet()
 
     def test_1q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.one_qubit_gates == {
-            gate: 1 for gate in ONE_QUBIT_GATES
-        }
+        assert default_exhaustive_gateset.one_qubit_gates == dict.fromkeys(ONE_QUBIT_GATES, 1)
 
     def test_2q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.two_qubit_gates == {
-            gate: 1 for gate in TWO_QUBIT_GATES
-        }
+        assert default_exhaustive_gateset.two_qubit_gates == dict.fromkeys(TWO_QUBIT_GATES, 1)
 
     def test_reset_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.reset_gates == {
-            gate: 1 for gate in RESET_GATES
-        }
+        assert default_exhaustive_gateset.reset_gates == dict.fromkeys(RESET_GATES, 1)
 
     def test_measurement_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.measurement_gates == {
-            gate: 1 for gate in MEASUREMENT_GATES
-        }
+        assert default_exhaustive_gateset.measurement_gates == dict.fromkeys(MEASUREMENT_GATES, 1)

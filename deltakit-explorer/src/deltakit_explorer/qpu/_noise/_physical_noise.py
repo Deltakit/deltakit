@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from collections.abc import Callable
 
 from deltakit_circuit import measurement_noise_profile
 from deltakit_circuit.gates import (I, OneQubitCliffordGate,

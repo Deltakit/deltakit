@@ -138,8 +138,7 @@ class TestSD6NoiseModel:
                 ),
                 GateLayer([CX(1, 2), Y(3), RZ(0)]),
                 NoiseLayer(
-                    [Depolarise1(3, 0.1), Depolarise2(1, 2, 0.1)]
-                    + [PauliXError(0, 0.1)]
+                    [Depolarise1(3, 0.1), Depolarise2(1, 2, 0.1), PauliXError(0, 0.1)]
                 ),
                 NoiseLayer([Depolarise1(4, 0.1), Depolarise1(5, 0.1)]),
                 GateLayer([CX(0, 1), CX(4, 5)]),
