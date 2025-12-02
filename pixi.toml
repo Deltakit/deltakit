@@ -160,6 +160,7 @@ deltakit-circuit = { path = "./deltakit-circuit/", editable = true }
 deltakit-explorer = { path = "./deltakit-explorer/", editable = true }
 deltakit-circuit = { path = "./deltakit-circuit/", editable = true }
 deltakit-core = { path = "./deltakit-core/", editable = true }
+deltakit-decode = { path = "./deltakit-decode/", editable = true }
 
 [feature.monorepo.pypi-dependencies]
 deltakit-core = { path = "./deltakit-core/", editable = true }
