@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """Description of ``deltakit.explorer.analysis.budget`` namespace here."""
 
-from .budget import get_error_budget, ErrorBudgetingResults
+from .budget import get_error_budget
 from .discretisation import GradientFitDiscretisationGenerator, get_linear_points, get_logarithmic_points
 from .generation import generate_decoder_managers_for_lambda
 from .gradient import compute_1_over_lambda_gradient_at

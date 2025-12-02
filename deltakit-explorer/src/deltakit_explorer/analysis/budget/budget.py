@@ -1,8 +1,10 @@
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
 from pathlib import Path
 
-from deltakit_explorer.analysis.budget.discretisation import GradientFitDiscretisationGenerator, get_logarithmic_points
+from deltakit_explorer.analysis.budget.discretisation import (
+    GradientFitDiscretisationGenerator,
+    get_logarithmic_points,
+)
 import numpy
 import numpy.typing as npt
 
@@ -12,12 +14,6 @@ from deltakit_explorer.analysis.budget.memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
-
-
-@dataclass
-class ErrorBudgetingResults:
-    contributions: npt.NDArray[numpy.floating]
-    contribution_stddevs: npt.NDArray[numpy.floating]
 
 
 def get_error_budget(
@@ -35,7 +31,7 @@ def get_error_budget(
     fitting_degree: int = 3,
     max_workers: int = 1,
     data_path: Path | None = None,
-) -> ErrorBudgetingResults:
+) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
     """Compute the error budget of the provided ``noise_model``.
 
     Args:
@@ -125,4 +121,4 @@ def get_error_budget(
     contributions = numpy.abs(gradient * noise_model_parameters)
     stddevs = numpy.abs(gradient_stddev * noise_model_parameters)
 
-    return ErrorBudgetingResults(contributions, stddevs)
+    return contributions, stddevs
