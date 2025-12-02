@@ -14,5 +14,6 @@ from deltakit_explorer.analysis._leppr import (
 from deltakit_explorer.analysis._quops import \
     predict_distance_for_quops, predict_quops_at_distance
 
+from . import budget
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]
