@@ -19,7 +19,7 @@ def get_error_budget(
     noise_model_type: type[NoiseInterface],
     noise_model_parameters: npt.NDArray[numpy.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
-    noise_parameters_exploration_bounds: list[tuple[float, float]] | None = None,
+    noise_parameters_exploration_bounds: list[tuple[float, float]],
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
@@ -50,13 +50,12 @@ def get_error_budget(
             following is true:
             ``noise_parameters_exploration_bounds[i][0] <
             noise_model.noise_parameters[i] <
-            noise_parameters_exploration_bounds[i][1]``). If ``None``, default value is
-            ``p / 10`` (resp. ``20 * p``) for the lower (resp. upper) bound of the noise
-            parameter ``p``. Ideally, the lower (resp. upper) bound provided must be
-            such that the logical error probability when replacing the parameter with
-            its lower (resp. upper) bound is above ``100 / num_shots`` to ensure enough
-            fails are observed with ``num_shots`` shots (resp. below ``1 / 2`` to ensure
-            that we can compute the logical error probability per round).
+            noise_parameters_exploration_bounds[i][1]``). Ideally, the lower (resp.
+            upper) bound provided must be such that the logical error probability when
+            replacing the parameter with its lower (resp. upper) bound is above
+            ``100 / num_shots`` to ensure enough fails are observed with ``num_shots``
+            shots (resp. below ``1 / 2`` to ensure that we can compute the logical error
+            probability per round).
         num_points_per_parameters (int): number of different values to try for each
             noise parameter. Corresponds to the number of points that will be used to
             fit a degree ``fitting_degree`` polynomial. As such, should be greater than
@@ -94,9 +93,6 @@ def get_error_budget(
     # We will compute the gradient at the half point following the methodology outlined
     # in "Exponential suppression of bit or phase errors with cyclic error correction".
     point = numpy.asarray(noise_model_parameters) / 2
-    # Set heuristic default value for the bounds if not provided.
-    if noise_parameters_exploration_bounds is None:
-        noise_parameters_exploration_bounds = [(p / 10, 20 * p) for p in point]
     # Evaluate the gradient.
     gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
         noise_model_type,
