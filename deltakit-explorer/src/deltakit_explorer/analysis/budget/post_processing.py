@@ -62,7 +62,7 @@ def compute_lambda_and_stddev_from_results(
         msg = f"Expected a 2-dimensional array but got shape {xi.shape}."
         raise ValueError(msg)
     _, n = xi.shape
-    ret: npt.NDArray[numpy.floating] = numpy.zeros((1, n), dtype=numpy.floating)
+    ret: npt.NDArray[numpy.floating] = numpy.zeros((1, n), dtype=numpy.float64)
     stddev: npt.NDArray[numpy.floating] = numpy.zeros_like(ret)
     for i in range(n):
         filtered_data = _filter_non_close_noise_parameters(

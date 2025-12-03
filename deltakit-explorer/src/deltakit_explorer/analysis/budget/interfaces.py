@@ -30,7 +30,7 @@ class NoiseInterface(ABC, Generic[Computation]):
         noise_parameters: Sequence[float] | npt.NDArray[numpy.floating],
         name: str | None = None,
     ) -> None:
-        self._noise_parameters = numpy.asarray(noise_parameters, dtype=numpy.floating)
+        self._noise_parameters = numpy.asarray(noise_parameters)
         self._name = name if name is not None else "_".join(self.parameter_names)
 
     @abstractmethod

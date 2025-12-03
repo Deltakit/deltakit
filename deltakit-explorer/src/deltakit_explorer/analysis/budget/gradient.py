@@ -256,7 +256,7 @@ def compute_1_over_lambda_gradient_at(
         xis.extend(_variate_ith_parameter_by(central_point, variations, i))
 
     # Note: noise_parameters[:, 0] is always ``central_point``.
-    noise_parameters = numpy.asarray(xis, dtype=numpy.floating).T
+    noise_parameters = numpy.asarray(xis).T
 
     # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
     # Prepare the computation by building the decoder managers.

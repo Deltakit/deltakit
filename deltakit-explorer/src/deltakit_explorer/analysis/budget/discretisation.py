@@ -56,7 +56,7 @@ def get_linear_points(
 ) -> npt.NDArray[numpy.floating]:
     """Returns ``num_points`` linearly spaced between ``a`` and ``b``."""
     _check_interval(a, b, c)
-    return numpy.linspace(a, b, num_points, dtype=numpy.floating)
+    return numpy.linspace(a, b, num_points)
 
 
 def get_logarithmic_points(
@@ -64,6 +64,4 @@ def get_logarithmic_points(
 ) -> npt.NDArray[numpy.floating]:
     """Returns ``num_points`` logarithmically spaced between ``a`` and ``b``."""
     _check_interval(a, b, c)
-    return numpy.logspace(
-        numpy.log10(a), numpy.log10(b), num_points, dtype=numpy.floating
-    )
+    return numpy.logspace(numpy.log10(a), numpy.log10(b), num_points)
