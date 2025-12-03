@@ -3,13 +3,13 @@ from collections.abc import Mapping, Sequence
 import numpy
 import numpy.typing as npt
 
-from deltakit_explorer.analysis.budget.discretisation import (
+from deltakit_explorer.analysis.budget._discretisation import (
     GradientFitDiscretisationGenerator,
     get_logarithmic_points,
 )
-from deltakit_explorer.analysis.budget.gradient import compute_1_over_lambda_gradient_at
-from deltakit_explorer.analysis.budget.interfaces import NoiseInterface
-from deltakit_explorer.analysis.budget.memory import (
+from deltakit_explorer.analysis.budget._gradient import compute_1_over_lambda_gradient_at
+from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
+from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
