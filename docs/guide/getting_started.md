@@ -263,3 +263,4 @@ adding_noise
 simulation
 decoding
 analysis
+error_budgeting
