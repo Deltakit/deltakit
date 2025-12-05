@@ -1,4 +1,10 @@
-# Deltakit
+<p align="center">
+  <picture>
+    <img alt="Deltakit logo" src="./docs/logo/Deltakit_Blue_SecondaryLogo_RGB.png" width="75%">
+  </picture>
+</p>
+
+---
 
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
@@ -44,12 +50,9 @@
 [doi-badge]: https://zenodo.org/badge/DOI/10.5281/zenodo.17145113.svg
 [doi-link]: https://doi.org/10.5281/zenodo.17145113
 
-Deltakit allows you to create and run quantum error correction (QEC) experiments with features
-including circuit generation, simulation, decoding and results analysis.
+---
 
-Whether you're a seasoned QEC researcher or just starting out, Deltakit supports you
-in exploring new ways to implement QEC logic all the way to running complex
-QEC circuits on QPU hardware.
+**Deltakit** is a Python package providing a user-friendly toolkit to create and run quantum error correction (QEC) experiments. Deltakit is designed to facilitate exploration of high-level QEC logic down to executing complex QEC circuits on simulators or quantum processing unit (QPU) hardware.
 
 <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a><br>
 <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
@@ -57,18 +60,35 @@ QEC circuits on QPU hardware.
 </tr>
 </table>
 
-## Quick Start
+For more detailed information, check out the [Deltakit documentation](https://deltakit.readthedocs.io/).
 
-### Installation
-Install Deltakit with `pip`.
+For any usage questions or comments, visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
+
+## Feature highlights
+
+* Circuit generation:
+* Simulation:
+* Decoding:
+* Results analysis:
+
+## Installation guide
+
+The `deltakit` package is publicly available on [PyPI](https://pypi.org/project/deltakit/) and can be installed with `pip`:
 
 ```bash
 pip install deltakit
 ```
 
-### Performing a QEC experiment
+`deltakit` is composed of four main sub-packages:
 
-`deltakit` provides a full pipeline to help you run quantum error correction experiments.
+* `deltakit-core`:
+* `deltakit-circuit`:
+* `deltakit-decode`:
+* `deltakit-explorer`:
+
+## Quick Start - Performing a QEC experiment on a local machine
+
+`deltakit` provides convenience functionalities to help designing and executing complete QEC pipelines. Typical QEC experiments start by defining an encoding process from a quantum circuit and a code chosen from a standard family, parametrised in a logical basis. For instance, here we use the [toric code](https://en.wikipedia.org/wiki/Toric_code#Generalizations) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model to compile the circuit to. This produces a QPU compliant noisy circuit that we can finally apply the decoding process onto. This last step uses [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory)) based decoder available in the [PyMatching](https://github.com/oscarhiggott/PyMatching) library.
 
 ```python
 from deltakit.circuit.gates import PauliBasis
@@ -78,14 +98,17 @@ from deltakit.explorer.analysis import calculate_lep_and_lep_stddev
 from deltakit.explorer.codes import RotatedPlanarCode, css_code_memory_circuit
 from deltakit.explorer.qpu import QPU, ToyNoise
 
-# Creating a noisy memory circuit with the rotated planar code
+# Step 1. Encoding
+# Create a noisy memory circuit with the rotated planar code
 d = 3
 rplanar = RotatedPlanarCode(width=d, height=d)
 circuit = css_code_memory_circuit(rplanar, num_rounds=d, logical_basis=PauliBasis.Z)
+
+# Step 2. Declare a noisy QPU instance
 qpu = QPU(circuit.qubits, noise_model=ToyNoise(p=0.01))
 noisy_circuit = qpu.compile_and_add_noise_to_circuit(circuit)
 
-# Perform simulation and correct the measured observable flips with a decoder
+# Step 3. Perform simulation and correct the measured observable flips with a decoder
 num_shots, batch_size = 100_000, 10_000
 decoder, noisy_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(noisy_circuit)
 result = run_decoding_on_circuit(
@@ -98,35 +121,29 @@ lep, lep_stddev = calculate_lep_and_lep_stddev(fails, num_shots)
 print(f"LEP = {lep:.5g} ± {lep_stddev:.5g}")
 ```
 
-### Performing a QEC experiment (online)
+## Performing an online QEC experiment
 
-#### Authentication
-
-The `deltakit` library also allows you to access advanced simulation capabilities that
-are not yet available in the open-source local code.
-
-To access them, you need to obtain an authentication token on the
-[Deltakit website](https://deltakit.riverlane.com/dashboard/token).
-
-You can register your token by executing the following code once. You do not have to call
-`set_token` again, except if you need to change your token.
+`deltakit` allows access to advanced simulation capabilities on the cloud platform via token authentication. To generate a personal access token, please follow the steps described on the [Deltakit website](https://deltakit.riverlane.com/dashboard/token). The generated token can be registered locally by executing the following code *once*.
 
 ```python
 from deltakit.explorer import Client
 
-Client.set_token("<your token>")
+Client.set_token("<your-token>")
 ```
 
-#### Experimentation
-Generate a QEC experiment by calling the cloud API:
+_N.B._`set_token` does not need to be called again, except in case of token revocation.
+
+An instance of the cloud API is required to execute a remote experiment:
 
 ```python
 from deltakit.explorer.codes import css_code_stability_circuit, RotatedPlanarCode
 from deltakit.circuit.gates import PauliBasis
 from deltakit.explorer import Client
 
-# Get a client instance. You need to register your token first.
+# Instantiate a cloud client.
+# A token needs to be registered first.
 client = Client.get_instance()
+
 # Generate a stability experiment with the rotated planar code.
 circuit = css_code_stability_circuit(
     RotatedPlanarCode(3, 3),
@@ -134,22 +151,25 @@ circuit = css_code_stability_circuit(
     logical_basis=PauliBasis.X,
     client=client
 )
+
 # Display the resulting circuit
 print(circuit)
 ```
 
-Learn more by reading the [Deltakit docs](https://deltakit.readthedocs.io/)!
+## Contributing
 
-## Support
+Before making a contribution, please review our [code of conduct](CODE_OF_CONDUCT.md).
 
-- Found a bug? Need a feature? File an [issue](https://github.com/Deltakit/deltakit/issues).
-- Usage questions? Visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
-- Have a security concern? See our [security policy](SECURITY.md).
+- **Submitting issues:** To submit bug reports or feature requests, please use our [issue tracker](https://github.com/Deltakit/deltakit/issues).
+- **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](CONTRIBUTING.md).
+- **Security:** For any security concern, please see our [security policy](SECURITY.md).
 
-## Development
-Help us make Deltakit better! Check out [Contributor guide](CONTRIBUTING.md)
+### Setting up `deltakit` in development mode
+
+Help us make Deltakit better! 
 
 ## License
+
 This project is distributed under the [Apache 2.0 License](LICENSE).
 
 ## Citation
