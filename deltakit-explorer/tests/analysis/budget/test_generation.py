@@ -7,12 +7,12 @@ from typing import ClassVar
 import numpy
 import numpy.typing as npt
 import pytest
-from deltakit.explorer.analysis.budget import NoiseInterface
 from deltakit_circuit import Circuit
 from deltakit_circuit._noise_factory import NoiseProfile
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1
 from typing_extensions import override
 
+from deltakit_explorer.analysis.budget import NoiseInterface
 from deltakit_explorer.analysis.budget._generation import (
     _generate_surface_code_memory_decoder_manager,
     generate_decoder_managers_for_lambda,
@@ -100,7 +100,9 @@ class TestGenerateDecoderManagerForLambda:
         self, xis: npt.NDArray[numpy.floating], noise_model: NoiseInterface
     ) -> None:
         n, m = xis.shape
-        dms = generate_decoder_managers_for_lambda(xis, type(noise_model), {3: [6], 5: [6]})
+        dms = generate_decoder_managers_for_lambda(
+            xis, type(noise_model), {3: [6], 5: [6]}
+        )
         assert len(dms) == 2 * m
         for dm in dms:
             assert "distance" in dm.metadata
