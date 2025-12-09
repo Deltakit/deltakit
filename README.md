@@ -66,14 +66,16 @@ For any usage questions or comments, visit our [Q&A forum](https://github.com/De
 
 ## Feature highlights
 
-* Circuit generation:
-* Simulation:
-* Decoding:
-* Results analysis:
+A typical QEC experiment consists of four essential steps:
+
+* A **circuit generation** builder to generate noisy circuits for the experiment of choice.
+* **Simulation:**
+* **Decoding:**
+* **Results analysis:**
 
 ## Installation guide
 
-The `deltakit` package is publicly available on [PyPI](https://pypi.org/project/deltakit/) and can be installed with `pip`:
+The `deltakit` package is publicly available on [PyPI](https://pypi.org/project/deltakit/) and can be locally installed with `pip`:
 
 ```bash
 pip install deltakit
@@ -115,7 +117,7 @@ result = run_decoding_on_circuit(
     noisy_circuit, num_shots, decoder, batch_size, min_fails=100
 )
 
-# Print the results
+# Step 4. Print relevant results
 fails = result["fails"]
 lep, lep_stddev = calculate_lep_and_lep_stddev(fails, num_shots)
 print(f"LEP = {lep:.5g} ± {lep_stddev:.5g}")
