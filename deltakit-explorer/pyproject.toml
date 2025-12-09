@@ -29,6 +29,9 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
+    "deltakit-core",
+    "deltakit-circuit",
+    "deltakit-decode",
     "gql >=3.5.0",
     "graphql_core >=3.2.0",
     "numpy >=1.26",
