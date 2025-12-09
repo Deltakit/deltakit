@@ -68,6 +68,23 @@ def _approximate_derivative_at_point_from_values(
     and to avoid non-linear behaviour at the extremities of the interval containing all
     values in ``x`` to affect too much the gradient.
 
+    Warning:
+        This function will work better if ``gradient_approximation_point`` is close to
+        the "center" of the interval formed by ``x``.
+
+        This is due to the fact that the gradient at ``gradient_approximation_point`` is
+        estimated through a polynomial of degree ``degree`` fitted on the provided
+        ``x``, ``y`` and ``stddevs``, which inherently suffer from the Runge's
+        phenomenon (even with the optimal fitting points for ``x``, see
+        https://en.wikipedia.org/wiki/Runge%27s_phenomenon). In this case, Runge's
+        phenomenon means that the furthest ``gradient_approximation_point`` will be from
+        the "center" of the discretisation interval provided by ``x``, the more likely
+        our gradient estimation is impacted significantly by the oscillations.
+
+        It is considered to be the responsibility of the caller to check that the
+        provided ``x`` and ``gradient_approximation_point`` are picked such that Runge's
+        phenomenon will not impact our estimation too much.
+
     Args:
         x (npt.NDArray[numpy.floating]): exact values on which we evaluated a noisy
             function. Should be a 1-dimensional array.

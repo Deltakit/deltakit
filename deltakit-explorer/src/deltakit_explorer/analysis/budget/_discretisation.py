@@ -64,4 +64,10 @@ def get_logarithmic_points(
 ) -> npt.NDArray[numpy.floating]:
     """Returns ``num_points`` logarithmically spaced between ``a`` and ``b``."""
     _check_interval(a, b, c)
-    return numpy.logspace(numpy.log10(a), numpy.log10(b), num_points)
+    if a <= 0:
+        msg = (
+            "Cannot get logarithmically-spaced points for negative values. "
+            f"Got [{a}, {b}]."
+        )
+        raise ValueError(msg)
+    return numpy.logspace(numpy.log10(a), numpy.log10(b), num_points, base=10)

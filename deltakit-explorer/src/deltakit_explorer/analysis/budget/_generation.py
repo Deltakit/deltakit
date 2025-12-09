@@ -118,15 +118,17 @@ def generate_decoder_managers_for_lambda(
     if max_workers <= 0:
         msg = f"Cannot have less than one worker. Asked for {max_workers} workers."
         raise ValueError(msg)
-    # 2. Generate the decoder managers
-    decoder_managers: list[StimDecoderManager] = []
+    # 2. Build an iterator on all the parameters we need to provide to the generation
+    # method.
     total_circuits = (
         sum(len(nrounds) for nrounds in num_rounds_by_distances.values()) * xi.shape[0]
     )
+    # (distance: int, num_rounds: int)
     distance_and_rounds_iterator = itertools.chain.from_iterable(
         zip(itertools.repeat(d, len(rounds)), rounds, strict=True)
         for d, rounds in num_rounds_by_distances.items()
     )
+    # (distance: int, num_rounds: int, noise_model: noise_model_type, memory_generator)
     parameters_iterator = (
         (d, nr, nm, memgen)
         for ((d, nr), nm), memgen in zip(
@@ -137,6 +139,8 @@ def generate_decoder_managers_for_lambda(
             strict=False,
         )
     )
+    # 3. Generate the decoder managers
+    decoder_managers: list[StimDecoderManager] = []
     if max_workers == 1:
         for distance, nrounds, noise_model, memgen in tqdm(
             parameters_iterator,
