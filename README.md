@@ -52,7 +52,7 @@
 
 ---
 
-**Deltakit** is a Python package providing a user-friendly toolkit to create, execute and analyze quantum error correction (QEC) experiments. Deltakit is designed to facilitate exploration of high-level QEC logic down to executing complex QEC circuits on simulators or quantum processing unit (QPU) hardware.
+**Deltakit** is a Python package providing a user-friendly toolkit to create, execute and analyse quantum error correction (QEC) experiments. Deltakit is designed to facilitate exploration of high-level QEC logic down to executing complex QEC circuits on simulators or quantum processing unit (QPU) hardware.
 
 <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a><br>
 <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
