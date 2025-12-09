@@ -1,11 +1,3 @@
-<p align="center">
-  <picture>
-    <img alt="Deltakit logo" src="./docs/logo/Deltakit_Blue_SecondaryLogo_RGB.png" width="75%">
-  </picture>
-</p>
-
----
-
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Python versions][python-badge]][pypi-link]
@@ -49,6 +41,14 @@
 
 [doi-badge]: https://zenodo.org/badge/DOI/10.5281/zenodo.17145113.svg
 [doi-link]: https://doi.org/10.5281/zenodo.17145113
+
+---
+
+<p align="center">
+  <picture>
+    <img alt="Deltakit logo" src="./docs/logo/Deltakit_Blue_SecondaryLogo_RGB.png" width="75%">
+  </picture>
+</p>
 
 ---
 
