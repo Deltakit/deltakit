@@ -34,7 +34,7 @@ dependencies = [
     "deltakit-decode",
     "gql >=3.5.0",
     "graphql_core >=3.2.0",
-    "numpy >=1.26",
+    "numpy >=2.0",
     "stim >=1.9.0",
     "matplotlib >=3.5.2",
     "requests >=2.32.0",
