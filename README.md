@@ -82,10 +82,10 @@ pip install deltakit
 
 `deltakit` is composed of four main sub-packages installed as dependencies for the main `deltakit` metapackage:
 
-* `deltakit-core`: 
-* `deltakit-circuit`:
-* `deltakit-decode`:
-* `deltakit-explorer`:
+* `deltakit-core`: contains `deltakit` main functionality.
+* `deltakit-circuit`: for circuit and error correcting code building.
+* `deltakit-decode`: for the decoding process execution.
+* `deltakit-explorer`: provides analysis tools.
 
 ## Quick Start - Performing a QEC memory experiment on a local machine
 
