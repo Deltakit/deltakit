@@ -42,7 +42,7 @@
 
 <p align="center">
   <picture>
-    <img alt="Deltakit-core logo" src="./docs/logo/deltakit-core.png" width="75%">
+    <img alt="Deltakit-core logo" src="./docs/logo/deltakit_core.png" width="75%">
   </picture>
 </p>
 
