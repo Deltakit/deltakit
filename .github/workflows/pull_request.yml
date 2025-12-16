@@ -70,7 +70,6 @@ jobs:
         python-version: ['3.10', '3.11', '3.12', '3.13']
         dependency-resolution: ['highest', 'lowest-direct']
         project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
-    continue-on-error: ${{ matrix.python-version == 3.14 }}
     name: tests (${{ matrix.project }}, ${{ matrix.python-version }}, ${{matrix.dependency-resolution}})
     runs-on: ubuntu-latest
     steps:
