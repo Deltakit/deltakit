@@ -1,5 +1,12 @@
 # Contributing
 
+```{toctree}
+:hidden:
+
+CODE_OF_CONDUCT
+release
+```
+
 Thank you for considering a contribution to Deltakit!
 We accept many types of contributions (most of which don't even require
 writing code!) from anyone.
@@ -88,18 +95,41 @@ the root directory of the repository in a terminal and install dependencies with
 packages so you can make changes and interact with the modified code.
 To deactivate the environment, run `exit`.
 
+
+```{only} not html
 > [!NOTE] Linux/macOS users
 > Depending on system settings, you may experience a `Too many open files (os error 24) at path...`
 > error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be
 > resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`.
+```
 
+```{dropdown} Linux/macOS users
+Depending on system settings, you may experience a `Too many open files (os error 24) at path...`
+error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be
+resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`.
+```
+
+```{only} not html
 > [!NOTE] Conda users
 > We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`.
+```
 
+```{dropdown} Conda users
+We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`.
+```
+
+```{only} not html
 > [!NOTE] IDE users
 > This environment is also available in [several popular IDEs](https://pixi.sh/dev/integration/editor/vscode/).
 > For instance, to set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
 > variable to `"${workspaceFolder}/.pixi/envs/default/bin/python"` in `settings.json`.
+```
+
+```{dropdown} IDE users
+This environment is also available in [several popular IDEs](https://pixi.sh/dev/integration/editor/vscode/).
+For instance, to set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
+variable to `"${workspaceFolder}/.pixi/envs/default/bin/python"` in `settings.json`.
+```
 
 You can also perform important tasks with `pixi run`. For instance:
 
