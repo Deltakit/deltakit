@@ -97,6 +97,7 @@ files = "src/**/*.py"
 # for ruff configuration, see `ruff.toml`
 
 [tool.pytest.ini_options]
+testpaths = ["./tests/"]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 filterwarnings = ["error"]

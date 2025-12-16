@@ -93,3 +93,6 @@ disable_error_code = "arg-type,assignment,attr-defined,name-defined,index,misc"
 [[tool.mypy.overrides]]
 module = ["stim", "pathos", "pathos.pools", "pymatching"]
 follow_untyped_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["./tests/"]
