@@ -30,17 +30,17 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "stim>=1.9.0",
-  "stim>=1.10; python_version >= '3.11'",
-  "stim>=1.13; python_version >= '3.12'",
-  "stim>=1.15; python_version >= '3.13'",
-  "typing-extensions>=4"
+  "stim~=1.9",
+  "stim~=1.10; python_version >= '3.11'",
+  "stim~=1.13; python_version >= '3.12'",
+  "stim~=1.15; python_version >= '3.13'",
+  "typing-extensions~=4.0"
 ]
 
 [dependency-groups]
-test = ["pytest>=9", "pytest-cov>=7", "pytest-skip-slow>=0.0.5"]
-lint = ["mypy>=1.17", "ruff>=0.14", "typos>=1.34", "deptry>=0.23"]
-security = ["bandit>=1.8.6", "ochrona>=2.0.2", "pip-audit>=2.7.3"]
+test = ["pytest>=9.0", "pytest-cov>=7.0", "pytest-skip-slow>=0.0.5"]
+lint = ["mypy~=1.17", "ruff~=0.14", "typos~=1.34", "deptry~=0.23"]
+security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },

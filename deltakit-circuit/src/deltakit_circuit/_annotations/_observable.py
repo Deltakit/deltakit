@@ -67,9 +67,9 @@ class Observable:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        stim_tag = self._tag if self._tag is not None else ""
+        kwargs = {"tag": self._tag} if self._tag else {}
         stim_circuit.append(
-            self.stim_string, stim_targets, self._observable_index, tag=stim_tag
+            self.stim_string, stim_targets, self._observable_index, **kwargs
         )
 
     def __eq__(self, other: object) -> bool:

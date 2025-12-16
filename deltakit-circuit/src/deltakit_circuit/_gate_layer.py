@@ -246,9 +246,8 @@ class GateLayer(Generic[T]):
             qubit_mapping
         ):
             args = () if error_probability == (0,) else error_probability
-            stim_circuit.append(
-                gate_string, targets, args, tag=tag if tag is not None else ""
-            )
+            kwargs = {"tag": tag} if tag is not None else {}
+            stim_circuit.append(gate_string, targets, args, **kwargs)
 
     def approx_equals(
         self,

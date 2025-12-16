@@ -166,9 +166,8 @@ class NoiseLayer(Generic[T]):
         for stim_string, targets, probabilities, tag in self._collect_noise_channels(
             qubit_mapping
         ):
-            stim_circuit.append(
-                stim_string, targets, probabilities, tag=tag if tag is not None else ""
-            )
+            kwargs = {"tag": tag} if tag is not None else {}
+            stim_circuit.append(stim_string, targets, probabilities, **kwargs)
 
     def approx_equals(  # noqa: PLR0911
         self,
