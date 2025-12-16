@@ -44,6 +44,8 @@ dependencies = [
   "stim>=1.12.1",
   "pathos>=0.3.4",
   "pandas>=2.0",
+  "pandas>=2.2; python_version >= '3.12'",
+  "pandas>=2.3; python_version >= '3.13'",
   "typing-extensions>=4.0",
   "tqdm>=4.66.2",
 ]

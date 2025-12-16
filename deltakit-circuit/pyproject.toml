@@ -29,7 +29,13 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
-dependencies = ["stim>=1.9.0", "typing-extensions>=4"]
+dependencies = [
+  "stim>=1.9.0",
+  "stim>=1.10; python_version >= '3.11'",
+  "stim>=1.13; python_version >= '3.12'",
+  "stim>=1.15; python_version >= '3.13'",
+  "typing-extensions>=4"
+]
 
 [dependency-groups]
 test = ["pytest>=9", "pytest-cov>=7", "pytest-skip-slow>=0.0.5"]
