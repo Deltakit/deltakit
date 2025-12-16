@@ -52,10 +52,23 @@
 
 ---
 
-**Deltakit** is a Python package providing a user-friendly toolkit to create, execute, analyse and benchmark quantum error correction (QEC) experiments. Deltakit is designed to facilitate exploration of high-level QEC logic down to executing complex QEC circuits on simulators or quantum processing unit (QPU) hardware.
+**Deltakit** is a Python package providing a toolkit to create, execute, analyse and benchmark quantum error correction (QEC) experiments. You can use Deltakit to design new high-level QEC logic, and to compile and run it on real hardware and simulators.
 
-<a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes"><img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu"><img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;"></a><br>
-<a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer"><img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;"></a><a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode"><img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;"></a>
+<p align="center">
+  <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-codes">
+	<img src="https://i.imgur.com/bK3T7RM.png" width="250" style="background-color: white;">
+  </a>
+  <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer-qpu">
+	<img src="https://i.imgur.com/1GN8eRg.png" width="250" style="background-color: white;">
+  </a>
+<br>
+  <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-explorer">
+	<img src="https://i.imgur.com/YIVuaGr.png" width="250" style="background-color: white;">
+  </a>
+  <a href="https://deltakit.readthedocs.io/en/docs/api.html#deltakit-decode">
+	<img src="https://i.imgur.com/ngXPlgF.png" width="250" style="background-color: white;">
+  </a>
+</p>
 
 </tr>
 </table>
@@ -80,16 +93,9 @@ Standard QEC experiments proceed through several fundamental stages, each of whi
 pip install deltakit
 ```
 
-`deltakit` is composed of four main sub-packages installed as dependencies for the main `deltakit` metapackage:
-
-* `deltakit-core`: contains `deltakit` main functionality.
-* `deltakit-circuit`: for circuit and error correcting code building.
-* `deltakit-decode`: for the decoding process execution.
-* `deltakit-explorer`: provides analysis tools.
-
 ## Quick Start - Performing a QEC memory experiment on a local machine
 
-`deltakit` provides convenience functionalities to help the design and execution of complete QEC pipelines. QEC experiments start by defining an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
+`deltakit` helps the design and execution of complete QEC experiments. The first step is to define an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
 
 ```python
 from deltakit.circuit.gates import PauliBasis
@@ -122,7 +128,7 @@ lep, lep_stddev = calculate_lep_and_lep_stddev(fails, num_shots)
 print(f"LEP = {lep:.5g} ± {lep_stddev:.5g}")
 ```
 
-## Performing an online QEC experiment
+## Performing an online and remote QEC experiment
 
 `deltakit` allows access to advanced simulation capabilities on the cloud platform via token authentication. To generate a personal access token, please follow the steps described on the [Deltakit website](https://deltakit.riverlane.com/dashboard/token). The generated token can be registered locally by executing the following code *once*.
 
@@ -159,11 +165,13 @@ print(circuit)
 
 ## Contributing
 
-Before making a contribution, please review our [code of conduct](CODE_OF_CONDUCT.md).
+There are various ways to contribute to `deltakit`:
 
 - **Submitting issues:** To submit bug reports or feature requests, please use our [issue tracker](https://github.com/Deltakit/deltakit/issues).
 - **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](CONTRIBUTING.md).
 - **Security:** For any security concern, please see our [security policy](SECURITY.md).
+
+Before making a contribution, please review our [code of conduct](CODE_OF_CONDUCT.md).
 
 ## License
 
