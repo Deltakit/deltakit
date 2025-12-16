@@ -19,7 +19,9 @@ DEFAULT_PACKAGES: Final[frozenset[str]] = frozenset(
 
 
 def transform(labels_str: str) -> str:
-    labels = {label.strip() for label in labels_str.split(",")} & DEFAULT_PACKAGES
+    labels = sorted(
+        {label.strip() for label in labels_str.split(",")} & DEFAULT_PACKAGES
+    )
     return json.dumps(labels) if labels else json.dumps(DEFAULT_PACKAGES)
 
 
