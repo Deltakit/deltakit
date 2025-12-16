@@ -44,7 +44,7 @@ jobs:
     needs: define-project-matrix
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -52,12 +52,12 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Build deltakit
-        run: uv build --no-sources --package ${{ matrix.project }}
+        run: uv build --no-sources --package ${{ matrix.projects.project }}
 
-      - name: Upload ${{ matrix.project }} wheels
+      - name: Upload ${{ matrix.projects.project }} wheels
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.project }}-wheel
+          name: ${{ matrix.projects.project }}-wheel
           path: ./dist/*.whl
           retention-days: 7
 
@@ -78,8 +78,8 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
         dependency-resolution: ['highest', 'lowest-direct']
-        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
-    name: tests (${{ matrix.project }}, ${{ matrix.python-version }}, ${{matrix.dependency-resolution}})
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    name: tests (${{ matrix.projects.project }}, ${{ matrix.python-version }}, ${{matrix.dependency-resolution}})
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,21 +95,17 @@ jobs:
 
       - name: Setup venv
         run: |
-          uv sync --package ${{ matrix.project }} \
+          uv sync --package ${{ matrix.projects.project }} \
             --python ${{ matrix.python-version }} \
             --resolution ${{matrix.dependency-resolution}} \
             --group=test \
             --find-links ./dist/
           # Small hack to replace '-' to '_' in project name.
-          _PROJECT=${{ matrix.project }} uv pip install ./dist/${_PROJECT//-/_}*.whl
-
-      - name: Go to ${{ matrix.project }} directory
-        if: ${{ matrix.project != 'deltakit' }}
-        run: cd ${{ matrix.project }}
+          _PROJECT=${{ matrix.projects.project }} uv pip install ./dist/${_PROJECT//-/_}*.whl
 
       - name: Run pytest
-        run: |
-          uv run --python ${{ matrix.python-version }} --no-sync pytest .
+        run: uv run --python ${{ matrix.python-version }} --no-sync pytest
+        working-directory: ./${{ matrix.projects.path }}
 
   # Perform static check on each deltakit project package.
   static-checks:
@@ -117,47 +113,51 @@ jobs:
     needs: define-project-matrix
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Go to ${{ matrix.project }} directory
-        if: ${{ matrix.project != 'deltakit' }}
-        run: cd ${{ matrix.project }}
-
       - name: Setup venv
-        run: uv sync --group=lint --group=security
+        run: uv sync --group=lint --group=security --package ${{ matrix.projects.project }}
 
       - name: typos
         run: uv run typos
+        working-directory: ./${{ matrix.projects.path }}
 
       - name: ruff check
         run: uv run ruff check
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: ruff format
         run: uv run ruff format --check
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: mypy
         run: uv run mypy
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: deptry
         run: uv run deptry .
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: bandit
         run: uv run bandit .
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: ochrona
         run: uv run ochrona
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
 
       - name: pip_audit
         run: uv run pip_audit
+        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
