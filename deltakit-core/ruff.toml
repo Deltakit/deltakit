@@ -17,7 +17,9 @@ include = ["src/deltakit_core/**/*.py", "tests/**/*.py"]
     # to be descriptive. That is fine, so ignoring the respective errors.
     # This ignore is only about naming and so should not introduce any bug in the future
     # by ignoring warnings that could prevent those bugs.
-    "E501"
+    "E501",
+    # Temporary ignore.
+    "RUF043",
 ]
 # Some test names/arguments are not strictly using camel_case as they contain some
 # capitalised letters. This is not an issue as most of the time this casing helps

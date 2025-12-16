@@ -46,9 +46,9 @@ exclude = [
     "_version.py",
 ]
 
-# Only include the deltakit folders, not the docs/, tools/ or
+# Only include the deltakit folder, not the docs/, tools/ or
 # other utility folder.
-include = ["deltakit-*/**/*.py", "src/deltakit/**/*.py", "tools/**/*.py", "tests/**/*.py"]
+include = ["src/deltakit/**/*.py", "tests/**/*.py"]
 
 # Same as Black.
 line-length = 88
@@ -64,9 +64,7 @@ select = [
 ]
 ignore = [
     # Having an explicit argument to open() for the open mode is nice.
-    "UP015",
-    # Rule is removed in ruff 0.13.0
-    "UP038"
+    "UP015"
 ]
 
 # Specific per-file ignores

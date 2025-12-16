@@ -219,7 +219,7 @@ class DecodingEdge(DecodingHyperEdge):
 EdgeT = TypeVar("EdgeT", bound=DecodingHyperEdge)
 
 
-class OrderedDecodingEdges(Generic[EdgeT], Sequence[EdgeT], AbstractSet[EdgeT]):
+class OrderedDecodingEdges(Sequence[EdgeT], AbstractSet[EdgeT], Generic[EdgeT]):
     """Immutable ordered mod 2 set of decoding edges.
 
     All decoding edges are thought to be on the same decoding graph.

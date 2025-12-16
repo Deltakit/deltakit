@@ -1,19 +1,15 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import TYPE_CHECKING
 
 import numpy as np
 import stim
 from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 from tqdm import tqdm
 
-if TYPE_CHECKING:
-    from deltakit_explorer._cloud_decoders import _CloudDecoder
-
 
 def run_decoding_on_circuit(
     circuit: stim.Circuit,
     max_shots: int,
-    decoder: 'DecoderProtocol | _CloudDecoder',
+    decoder: DecoderProtocol,
     max_batch_size: int = 10_000,
     target_rse: float | None = None,
     min_fails: int = 10

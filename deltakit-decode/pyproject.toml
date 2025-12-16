@@ -7,7 +7,7 @@ name = "deltakit-decode"
 version = "0.5.1"
 description = "Deltakit (component deltakit-decode)"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 
@@ -26,29 +26,48 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
 dependencies = [
-  "deltakit-core",
   "deltakit-circuit",
-  "numpy>=1.26, <3.0",
-  "networkx>=3.1, <4.0",
-  "seaborn>=0.12.0, <1.0",
-  "matplotlib>=3.5.2, <4.0",
-  "nbformat>=4.2, <6.0",
-  "plotly>=5.10, <7.0",
-  "pymatching>=2.0, <3.0",
-  "stim>=1.12.1, <2.0",
-  "pathos >= 0.3.4",
-  "pandas >= 2.0",
-  "typing_extensions>=4.0, <5.0",
+  "deltakit-core",
+  "numpy",
+  "networkx",
+  "seaborn",
+  "matplotlib",
+  "nbformat",
+  "plotly",
+  "pymatching",
+  "stim",
+  "pathos>=0.3.4",
+  "pandas>=2.0",
+  "typing-extensions",
+  "tqdm",
+]
+
+[dependency-groups]
+test = [
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+  "pytest-skip-slow",
+  "pytest-lazy-fixtures",
+]
+stubs = [
   "types-networkx",
   "types-requests",
   "types-tqdm",
-  "typing-extensions",
-  "tqdm >=4.66.2",
   "pandas-stubs",
   "plotly-stubs",
+  "types-seaborn",
+]
+lint = ["mypy", "ruff>=0.14", "typos", "deptry", { include-group = "stubs" }]
+security = ["bandit", "ochrona", "pip-audit"]
+dev = [
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "security" },
 ]
 
 [project.urls]
@@ -56,5 +75,14 @@ Homepage = "https://github.com/Deltakit/deltakit"
 "Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
 Changelog = "https://github.com/Deltakit/deltakit/releases"
 
-[tool.deptry.per_rule_ignores]
-DEP002 = ['types-networkx', 'types-requests', 'types-seaborn', 'types-tqdm']  # needed to appease mypy
+[tool.deptry]
+known_first_party = ["deltakit_decode"]
+
+[tool.mypy]
+files = "src/**/*.py"
+# The below list of disabled checks should eventually be empty.
+disable_error_code = "arg-type,assignment,attr-defined,name-defined,index,misc"
+
+[[tool.mypy.overrides]]
+module = ["stim", "pathos", "pathos.pools", "pymatching"]
+follow_untyped_imports = true

@@ -1,0 +1,149 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      publish_dev_version:
+        description: "Publish the generated dev version to riv-pypi"
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  # Define the matrix of deltakit subprojects that have been modified in the PR and
+  # should be tested. This is done by looking at tags, so label_pr.yml should have done
+  # its job before.
+  # Because there is no easy way to ensure that label_pr.yml runs before this workflow,
+  # this job returns all the packages when no tags are set.
+  define-project-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.json_labels.outputs.projects }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Outputs modified packages that needs to be tested.
+        id: json_labels
+        run: python tools/transform_labels.py
+        env:
+          projects: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+
+  # Build deltakit wheels.
+  build:
+    runs-on: ubuntu-latest
+    needs: define-project-matrix
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build deltakit
+        run: uv build --no-sources --package ${{ matrix.project }}
+
+      - name: Upload ${{ matrix.project }} wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.project }}-wheel
+          path: |
+            ./dist/*.whl
+          retention-days: 7
+
+  # Test the built wheels.
+  tests:
+    needs: [build, define-project-matrix]
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        dependency-resolution: ['highest', 'lowest-direct']
+        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    continue-on-error: ${{ matrix.python-version == 3.14 }}
+    name: tests (${{ matrix.project }}, ${{ matrix.python-version }}, ${{matrix.dependency-resolution}})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Download ${{ matrix.project }} wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.project }}-wheel
+          path: ./dist
+
+      - name: Setup venv
+        run: |
+          uv sync --python ${{ matrix.python-version }} \
+            --resolution ${{matrix.dependency-resolution}} \
+            --group=test
+          uv pip install dist/*.whl
+
+      - name: Go to ${{ matrix.project }} directory
+        if: ${{ matrix.project != 'deltakit' }}
+        run: cd ${{ matrix.project }}
+
+      - name: Run pytest
+        run: |
+          uv run --python ${{ matrix.python-version }} --no-sync pytest .
+
+  # Perform static check on each deltakit project package.
+  static-checks:
+    runs-on: ubuntu-latest
+    needs: define-project-matrix
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Go to ${{ matrix.project }} directory
+        if: ${{ matrix.project != 'deltakit' }}
+        run: cd ${{ matrix.project }}
+
+      - name: Setup venv
+        run: uv sync --group=lint --group=security
+
+      - name: typos
+        run: uv run typos
+
+      - name: ruff check
+        run: uv run ruff check
+        if: ${{ always() }}
+
+      - name: ruff format
+        run: uv run ruff format --check
+        if: ${{ always() }}
+
+      - name: mypy
+        run: uv run mypy
+        if: ${{ always() }}
+
+      - name: deptry
+        run: uv run deptry .
+        if: ${{ always() }}
+
+      - name: bandit
+        run: uv run bandit .
+        if: ${{ always() }}
+
+      - name: ochrona
+        run: uv run ochrona
+        if: ${{ always() }}
+
+      - name: pip_audit
+        run: uv run pip_audit
+        if: ${{ always() }}

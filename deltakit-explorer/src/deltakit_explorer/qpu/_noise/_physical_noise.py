@@ -61,7 +61,7 @@ class PhysicalNoise(NoiseParameters):
     p_meas_qubit_error: float = 0
     p_readout_flip: float = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         idle_noise = _idle_noise_from_t1_t2(self.t1, self.t2)
 
         def _gate_noise(noise_context):

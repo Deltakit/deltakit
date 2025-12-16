@@ -107,10 +107,10 @@ def _find_anticommuting_pairs(
 
     # convert from int back to binary array
     chosen_x_logs_as_vec = [
-        [int(bit) for bit in bin(op_as_int)[2:].zfill(n)] for op_as_int in chosen_x_logs
+        [int(bit) for bit in f"{op_as_int:b}".zfill(n)] for op_as_int in chosen_x_logs
     ]
     chosen_z_logs_as_vec = [
-        [int(bit) for bit in bin(op_as_int)[2:].zfill(n)] for op_as_int in chosen_z_logs
+        [int(bit) for bit in f"{op_as_int:b}".zfill(n)] for op_as_int in chosen_z_logs
     ]
     return chosen_x_logs_as_vec, chosen_z_logs_as_vec
 
