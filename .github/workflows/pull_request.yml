@@ -58,13 +58,22 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project }}-wheel
-          path: |
-            ./dist/*.whl
+          path: ./dist/*.whl
           retention-days: 7
+
+  merge_upload_artefacts:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge Artefacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: all-deltakit-wheels
+          pattern: deltakit*-wheel
 
   # Test the built wheels.
   tests:
-    needs: [build, define-project-matrix]
+    needs: [merge_upload_artefacts, define-project-matrix]
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
@@ -81,15 +90,16 @@ jobs:
       - name: Download ${{ matrix.project }} wheel
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.project }}-wheel
+          name: all-deltakit-wheels
           path: ./dist
 
       - name: Setup venv
         run: |
           uv sync --python ${{ matrix.python-version }} \
             --resolution ${{matrix.dependency-resolution}} \
-            --group=test
-          uv pip install dist/*.whl
+            --group=test \
+            --find-links ./dist/
+          uv pip install --find-links ./dist/ ${{ matrix.project }}
 
       - name: Go to ${{ matrix.project }} directory
         if: ${{ matrix.project != 'deltakit' }}
