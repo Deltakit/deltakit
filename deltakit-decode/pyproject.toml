@@ -30,40 +30,46 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "deltakit-circuit",
-  "deltakit-core",
-  "numpy",
-  "networkx",
-  "seaborn",
-  "matplotlib",
-  "nbformat",
-  "plotly",
-  "pymatching",
-  "stim",
+  "deltakit-circuit~=0.5",
+  "deltakit-core~=0.5",
+  "numpy>=1.26",
+  "networkx>=3.1",
+  "seaborn>=0.12.0",
+  "matplotlib>=3.5.2",
+  "nbformat>=4.2",
+  "plotly>=5.10",
+  "pymatching>=2.0",
+  "pymatching>=2.2; python_version >= '3.12'",
+  "pymatching>=2.2.2; python_version >= '3.13'",
+  "stim>=1.12.1",
   "pathos>=0.3.4",
   "pandas>=2.0",
-  "typing-extensions",
-  "tqdm",
+  "typing-extensions>=4.0",
+  "tqdm>=4.66.2",
 ]
 
 [dependency-groups]
 test = [
-  "pytest",
-  "pytest-cov",
-  "pytest-mock",
-  "pytest-skip-slow",
-  "pytest-lazy-fixtures",
+  "pytest>=8.4",
+  "pytest-cov>=7",
+  "pytest-mock>=3.14",
+  "pytest-skip-slow>=0.0.5",
+  "pytest-lazy-fixtures>=1.0",
 ]
 stubs = [
-  "types-networkx",
-  "types-requests",
-  "types-tqdm",
-  "pandas-stubs",
-  "plotly-stubs",
-  "types-seaborn",
+  "types-networkx>=3.1",
+  "types-tqdm>=4.66.2",
+  "pandas-stubs>=2.0",
+  "types-seaborn>=0.12.0",
 ]
-lint = ["mypy", "ruff>=0.14", "typos", "deptry", { include-group = "stubs" }]
-security = ["bandit", "ochrona", "pip-audit"]
+lint = [
+  "mypy>=1.17",
+  "ruff>=0.14",
+  "typos>=1.34",
+  "deptry>=0.23",
+  { include-group = "stubs" },
+]
+security = ["bandit>=1.8.6", "ochrona>=2.0.2", "pip-audit>=2.7.3"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
