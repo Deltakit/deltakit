@@ -22,7 +22,7 @@ def transform(labels_str: str) -> str:
     labels = sorted(
         {label.strip() for label in labels_str.split(",")} & DEFAULT_PACKAGES
     )
-    return json.dumps(labels) if labels else json.dumps(DEFAULT_PACKAGES)
+    return json.dumps(labels) if labels else json.dumps(list(DEFAULT_PACKAGES))
 
 
 def main():
