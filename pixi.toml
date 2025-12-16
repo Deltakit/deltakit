@@ -37,7 +37,7 @@ cmd = "sphinx-autobuild -b html docs docs/_build/html --open-browser"
 
 [tasks.build_docs]
 description = "Build documentation, treating warnings as errors"
-cmd = "sphinx-build -W -b html docs docs/_build/html"
+cmd = "sphinx-build -v -W -b html docs docs/_build/html"
 
 [tasks.serve_docs]
 description = "Serve documentation"
