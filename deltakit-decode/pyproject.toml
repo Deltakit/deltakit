@@ -33,45 +33,44 @@ dependencies = [
   "deltakit-circuit~=0.5",
   "deltakit-core~=0.5",
   "numpy>=1.26",
-  "networkx>=3.1",
-  "seaborn>=0.12.0",
-  "matplotlib>=3.5.2",
-  "nbformat>=4.2",
-  "plotly>=5.10",
-  "pymatching>=2.0",
-  "pymatching>=2.2; python_version >= '3.12'",
-  "pymatching>=2.2.2; python_version >= '3.13'",
-  "stim>=1.12.1",
-  "pathos>=0.3.4",
-  "pandas>=2.0",
-  "pandas>=2.2; python_version >= '3.12'",
-  "pandas>=2.3; python_version >= '3.13'",
-  "typing-extensions>=4.0",
-  "tqdm>=4.66.2",
+  "networkx~=3.1",
+  "seaborn~=0.12",
+  "matplotlib~=3.5",
+  "plotly~=5.10",
+  "pymatching~=2.2",
+  "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
+  "stim~=1.12",
+  "pathos~=0.3",
+  # This is the first version to be compatible with numpy>=2.0 according to
+  # https://pandas.pydata.org/pandas-docs/stable/whatsnew/v2.2.2.html
+  "pandas>=2.2.2",
+  "pandas~=2.3; python_version >= '3.13'",
+  "typing-extensions~=4.0",
+  "tqdm~=4.66",
 ]
 
 [dependency-groups]
 test = [
   "pytest>=8.4",
-  "pytest-cov>=7",
+  "pytest-cov>=7.0",
   "pytest-mock>=3.14",
   "pytest-skip-slow>=0.0.5",
   "pytest-lazy-fixtures>=1.0",
 ]
 stubs = [
-  "types-networkx>=3.1",
-  "types-tqdm>=4.66.2",
-  "pandas-stubs>=2.0",
-  "types-seaborn>=0.12.0",
+  "types-networkx~=3.1",
+  "types-tqdm~=4.66",
+  "pandas-stubs~=2.0",
+  "types-seaborn~=0.12",
 ]
 lint = [
-  "mypy>=1.17",
-  "ruff>=0.14",
-  "typos>=1.34",
-  "deptry>=0.23",
+  "mypy~=1.17",
+  "ruff~=0.14",
+  "typos~=1.34",
+  "deptry~=0.23",
   { include-group = "stubs" },
 ]
-security = ["bandit>=1.8.6", "ochrona>=2.0.2", "pip-audit>=2.7.3"]
+security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
