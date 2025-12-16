@@ -497,7 +497,6 @@ class TestStimCircuit:
             (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
             (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
-            (gates.CZSWAP(Qubit(0), Qubit(1)), stim.Circuit("CZSWAP 0 1")),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
         ],

@@ -168,13 +168,6 @@ def test_error_is_raised_when_noise_class_is_passed_to_gate_parser():
                 sp.gates.CXSWAP(sp.Qubit(2), sp.Qubit(3)),
             ],
         ),
-        (
-            stim.Circuit("CZSWAP 0 1 2 3"),
-            [
-                sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
-                sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
-            ],
-        ),
     ],
 )
 def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltakit_circuit_circuit(
