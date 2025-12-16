@@ -87,7 +87,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Download ${{ matrix.project }} wheel
+      - name: Download wheels
         uses: actions/download-artifact@v4
         with:
           name: all-deltakit-wheels
@@ -95,11 +95,13 @@ jobs:
 
       - name: Setup venv
         run: |
-          uv sync --python ${{ matrix.python-version }} \
+          uv sync --package ${{ matrix.project }} \
+            --python ${{ matrix.python-version }} \
             --resolution ${{matrix.dependency-resolution}} \
             --group=test \
             --find-links ./dist/
-          uv pip install --find-links ./dist/ ${{ matrix.project }}
+          # Small hack to replace '-' to '_' in project name.
+          _PROJECT=${{ matrix.project }} uv pip install ./dist/${_PROJECT//-/_}*.whl
 
       - name: Go to ${{ matrix.project }} directory
         if: ${{ matrix.project != 'deltakit' }}
