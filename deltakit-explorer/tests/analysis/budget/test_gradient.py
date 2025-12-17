@@ -71,7 +71,3 @@ def test_approximate_derivative_at_point_from_values(
     )
     assert pytest.approx(expected_derivative) == derivative
     assert pytest.approx(0, abs=1e-7) == stddev
-
-
-def test_get_variance_of_gradient_estimation_at_point() -> None:
-    pass
