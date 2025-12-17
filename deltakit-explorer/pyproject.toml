@@ -46,6 +46,7 @@ dependencies = [
   # Needed for the moment to have the changes from https://github.com/quantumgizmos/bp_osd/pull/20
   # until a new release including these changes lands on PyPI (https://pypi.org/project/bposd/).
   "bposd @ git+https://github.com/quantumgizmos/bp_osd.git@8894ec654b24ae875c07e5a361dcae9a77d748ce",
+  "typing_extensions~=4.0",
   "semver~=3.0",
 ]
 
