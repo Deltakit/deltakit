@@ -1,0 +1,41 @@
+name: Static analysis
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+concurrency:
+  group: fast-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  static_analysis:
+    name: Run static analysis tools (Ubuntu)
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout deltakit
+      uses: actions/checkout@v6
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Hatch
+      run: |
+        pip install hatch
+    - name: Run linter (ruff)
+      run: |
+        hatch -v run static:lint
+    - name: Run type checker (mypy)
+      run: |
+        hatch -v run static:type

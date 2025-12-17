@@ -1,20 +1,21 @@
 [build-system]
-requires = ["setuptools>=80"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "deltakit"
 version = "0.5.1"
-description = "Deltakit SDK"
+description = "A Python toolkit to help users design and execute quantum error correction (QEC) experiments."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
+# keywords = {"quantum"}
 
 authors = [{ name = "Deltakit Team", email = "deltakit@riverlane.com" }]
 
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -25,9 +26,12 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Scientific/Engineering",
   "Typing :: Typed",
 ]
+
 dependencies = [
     "deltakit_circuit",
     "deltakit_core",
@@ -37,101 +41,112 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/Deltakit/deltakit"
-"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
+Source = "https://github.com/Deltakit/deltakit"
+Documentation = "https://deltakit.riverlane.com/"
+Issues = "https://github.com/Deltakit/deltakit/issues"
 Changelog = "https://github.com/Deltakit/deltakit/releases"
 
-[project.optional-dependencies]
-# any changes here should be duplicated to dev dependency list
-# AND feature.pytest.dependencies in pixi.toml
-tests = [
-    "pytest>=8.4.1,<9",
-    "pytest-cov>=6.2.1,<7",
-    "pytest-mock>=3.14.1,<4",
-    "pytest-asyncio>=1.0.0,<2",
-    "pytest-skip-slow>=0.0.5",
-    "pytest-testmon>=2.0, <3",
-    "pytest-lazy-fixtures>=1.0, <2",
-]
-# any changes here should be duplicated to dev dependency list
-lint = [
-    "mypy>=1.17,<2",
-    "ruff>=0.12.2,<0.13",
-    "typos>=1.34.0,<2",
-    "isort>=6.0",
-]
-# any changes here should be duplicated to dev dependency list
-docs = [
-    "myst_nb>=1.0,<2.0",
-    "sphinxawesome-theme>=5.3.2,<6",
-    "sphinx-autodoc-typehints>=3.0.0,<4",
-    "sphinx-copybutton>=0.5.2,<0.6",
-    "pip-licenses>=5.0",
-    "sphinx-design>0.6, <1.0",
-    "sphinx-autobuild>=2024.10.3",
-    "myst-parser>=4.0, <5",
-    "vale>=3.12.0.0",
-    "jupytext>=1.17.0,<2",
-    "jupyter>=1.1.1,<2",
-    "ipykernel >=6.29.5,<7"
-]
-# any changes here should be duplicated to dev dependency list
-build = [
-    "build>=1.2.0",
-]
-# any changes here should be duplicated to dev dependency list
-security = [
-    "bandit>=1.8.6,<2",
-    "ochrona>=2.0.2,<3.0",
-    "pip-audit >=2.7.3",
-]
-dev = [
-    # poetry seems to be having trouble with elements of
-    # deltakit being "listed as a dependency of itself".
-    # this list needs to contain all dependencies in other groups
-    # (tests, lint, docs, build, security) + dev
-    # "deltakit[tests]",
-    "pytest>=8.4.1,<9",
-    "pytest-cov>=6.2.1,<7",
-    "pytest-mock>=3.14.1,<4",
-    "pytest-asyncio>=1.0.0,<2",
-    "pytest-skip-slow>=0.0.5",
-    "pytest-testmon>=2.0, <3",
-    "pytest-lazy-fixtures>=1.0, <2",
-    # "deltakit[lint]",
-    "mypy>=1.17,<2",
-    "ruff>=0.12.2,<0.13",
-    "typos>=1.34.0,<2",
-    "isort>=6.0",
-    # "deltakit[docs]",
-    "myst_nb>=1.0,<2.0",
-    "sphinxawesome-theme>=5.3.2,<6",
-    "sphinx-autodoc-typehints>=3.0.0,<4",
-    "sphinx-copybutton>=0.5.2,<0.6",
-    "pip-licenses>=5.0",
-    "sphinx-design>0.6, <1.0",
-    "sphinx-autobuild>=2024.10.3",
-    "myst-parser>=4.0, <5",
-    "vale>=3.12.0.0",
-    "jupytext>=1.17.0,<2",
-    "jupyter>=1.1.1,<2",
-    # "deltakit[build]",
-    "build>=1.2.0",
-    # "deltakit[security]",
-    "bandit>=1.8.6,<2",
-    "ochrona>=2.0.2,<3.0",
-    "pip-audit >=2.7.3",
-    # other
-    "pre-commit>=4.2.0,<5",
-    "ipykernel>=6.29.5,<7",
-    "validate-pyproject>=0.24.1",
-    "python-semantic-release>=10.2.0",
-    "tomlkit>=0.13,<1",
-    "deptry>=0.23, <1",
-    "ipykernel >=6.29.5,<7",
-]
+# [project.optional-dependencies]
+# # any changes here should be duplicated to dev dependency list
+# # AND feature.pytest.dependencies in pixi.toml
+# tests = [
+#     "pytest>=8.4.1,<9",
+#     "pytest-cov>=6.2.1,<7",
+#     "pytest-mock>=3.14.1,<4",
+#     "pytest-asyncio>=1.0.0,<2",
+#     "pytest-skip-slow>=0.0.5",
+#     "pytest-testmon>=2.0, <3",
+#     "pytest-lazy-fixtures>=1.0, <2",
+# ]
+# # any changes here should be duplicated to dev dependency list
+# lint = [
+#     "mypy>=1.17,<2",
+#     "ruff>=0.12.2,<0.13",
+#     "typos>=1.34.0,<2",
+#     "isort>=6.0",
+# ]
+# # any changes here should be duplicated to dev dependency list
+# docs = [
+#     "myst_nb>=1.0,<2.0",
+#     "sphinxawesome-theme>=5.3.2,<6",
+#     "sphinx-autodoc-typehints>=3.0.0,<4",
+#     "sphinx-copybutton>=0.5.2,<0.6",
+#     "pip-licenses>=5.0",
+#     "sphinx-design>0.6, <1.0",
+#     "sphinx-autobuild>=2024.10.3",
+#     "myst-parser>=4.0, <5",
+#     "vale>=3.12.0.0",
+#     "jupytext>=1.17.0,<2",
+#     "jupyter>=1.1.1,<2",
+#     "ipykernel >=6.29.5,<7"
+# ]
+# # any changes here should be duplicated to dev dependency list
+# build = [
+#     "build>=1.2.0",
+# ]
+# # any changes here should be duplicated to dev dependency list
+# security = [
+#     "bandit>=1.8.6,<2",
+#     "ochrona>=2.0.2,<3.0",
+#     "pip-audit >=2.7.3",
+# ]
+# dev = [
+#     # poetry seems to be having trouble with elements of
+#     # deltakit being "listed as a dependency of itself".
+#     # this list needs to contain all dependencies in other groups
+#     # (tests, lint, docs, build, security) + dev
+#     # "deltakit[tests]",
+#     "sphinxawesome-theme>=5.3.2,<6",
+#     "sphinx-autodoc-typehints>=3.0.0,<4",
+#     "sphinx-copybutton>=0.5.2,<0.6",
+#     "pip-licenses>=5.0",
+#     "sphinx-design>0.6, <1.0",
+#     "sphinx-autobuild>=2024.10.3",
+#     "myst-parser>=4.0, <5",
+#     "vale>=3.12.0.0",
+#     "jupytext>=1.17.0,<2",
+#     "jupyter>=1.1.1,<2",
+#     # "deltakit[build]",
+#     "build>=1.2.0",
+#     # "deltakit[security]",
+#     "bandit>=1.8.6,<2",
+#     "ochrona>=2.0.2,<3.0",
+#     "pip-audit >=2.7.3",
+#     # other
+#     "pre-commit>=4.2.0,<5",
+#     "ipykernel>=6.29.5,<7",
+#     "validate-pyproject>=0.24.1",
+#     "python-semantic-release>=10.2.0",
+#     "tomlkit>=0.13,<1",
+#     "deptry>=0.23, <1",
+#     "ipykernel >=6.29.5,<7",
+# ]
 
 # for mypy configuration, see `mypy.ini`.
 # for ruff configuration, see `ruff.toml`
+
+[tool.hatch.envs.default]
+installer = "uv"
+dependencies = [
+  "pytest>=8.4.1,<9",
+  "pytest-cov>=6.2.1,<7",
+  "pytest-mock>=3.14.1,<4",
+  "pytest-xdist",
+  "pytest-markdown-docs",
+  "pytest-asyncio>=1.0.0,<2",
+  "pytest-skip-slow>=0.0.5",
+  "pytest-testmon>=2.0, <3",
+  "pytest-lazy-fixtures>=1.0, <2",
+  # "deltakit[lint]",
+  # "mypy>=1.17,<2",
+  # "ruff>=0.12.2,<0.13",
+  # "typos>=1.34.0,<2",
+  # "isort>=6.0",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest -n auto --cov-report=xml --cov-config=pyproject.toml --cov=mis --cov=tests --markdown-docs {args}"
+test_readme = "pytest --markdown-docs README.md"
 
 [tool.pytest.ini_options]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -143,6 +158,43 @@ filterwarnings = [
   # fix.
   "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks in the child.:DeprecationWarning"
 ]
+
+[tool.hatch.envs.static]
+description = "Static analysis for the monorepo."
+installer = "uv"
+dependencies = [
+  "mypy>=1.17,<2",
+  "ruff>=0.12.2,<0.13",
+  "typos>=1.34.0,<2",
+  "isort>=6.0",
+]
+
+[tool.hatch.envs.static.scripts]
+lint = "ruff check ."
+type = "mypy ."
+
+[tool.hatch.envs.docs]
+description = "Build and serve docs using Sphinx."
+installer = "uv"
+dependencies = [
+  "myst_nb>=1.0,<2.0",
+  "sphinxawesome-theme>=5.3.2,<6",
+  "sphinx-autodoc-typehints>=3.0.0,<4",
+  "sphinx-copybutton>=0.5.2,<0.6",
+  "pip-licenses>=5.0",
+  "sphinx-design>0.6, <1.0",
+  "sphinx-autobuild>=2024.10.3",
+  "myst-parser>=4.0, <5",
+  "vale>=3.12.0.0",
+  "jupytext>=1.17.0,<2",
+  "jupyter>=1.1.1,<2",
+  "ipykernel >=6.29.5,<7"
+]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -v -W -b html docs docs/_build/html"
+serve = "python -m http.server --directory docs/_build/html"
+
 
 [tool.isort]
 skip = [".pixi", ".tox", ".venv"]
@@ -238,14 +290,14 @@ deltakit-circuit = { path = "./deltakit-circuit/", develop = true }
 deltakit-decode = { path = "./deltakit-decode/", develop = true }
 deltakit-explorer = { path = "./deltakit-explorer/", develop = true }
 
-[tool.hatch.envs.default]
-pre-install-commands = [
-  "pip install -e ./deltakit-core",
-  "pip install -e ./deltakit-circuit",
-  "pip install -e ./deltakit-decode",
-  "pip install -e ./deltakit-explorer",
-]
-features = ["dev"]
+# [tool.hatch.envs.default]
+# pre-install-commands = [
+#   "pip install -e ./deltakit-core",
+#   "pip install -e ./deltakit-circuit",
+#   "pip install -e ./deltakit-decode",
+#   "pip install -e ./deltakit-explorer",
+# ]
+# features = ["dev"]
 
 [tool.uv.workspace]
 members = [
