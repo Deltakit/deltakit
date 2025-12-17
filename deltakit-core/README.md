@@ -1,5 +1,3 @@
-# Deltakit (component `deltakit-core`)
-
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Python versions][python-badge]][pypi-link]
@@ -39,6 +37,16 @@
 
 [discussions-badge]: https://img.shields.io/badge/discussions-join-blue?logo=github
 [discussions-link]: https://github.com/Deltakit/deltakit/discussions
+
+--
+
+<p align="center">
+  <picture>
+    <img alt="Deltakit-core logo" src="./docs/logo/deltakit_core.png" width="75%">
+  </picture>
+</p>
+
+---
 
 Deltakit allows you to create and run quantum error correction (QEC) experiments with features
 including circuit generation, simulation, decoding and results analysis.

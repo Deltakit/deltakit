@@ -105,6 +105,14 @@ class TestLEPPerRoundComputation:
                 [2, 4, 6], [0.2, 0.4, 0.6], [1e-12, 1e-12, 1e-12]
             )
 
+    def test_raise_on_empty_input(self):
+        msg = "No valid data was provided\\..+"
+        with pytest.raises(ValueError, match=msg):
+            compute_logical_error_per_round([], [], [])
+
+        with pytest.raises(ValueError, match=msg), pytest.warns(UserWarning):
+            compute_logical_error_per_round([0], [0.1], [0.001])
+
     def test_warn_when_linear_fit_is_bad(self):
         f_0 = 1 - 0.01
         rounds = numpy.arange(2, 61, 5)

@@ -116,7 +116,7 @@ def compute_logical_error_per_round(
         raise RuntimeError(msg)
 
     # Check that we do not have any num_rounds <= 0 entry.
-    while num_rounds[0] <= 0:
+    while num_rounds.size > 0 and num_rounds[0] <= 0:
         warnings.warn(
             f"Found an invalid number of rounds: {num_rounds[0]}. Number of rounds "
             "should be >= 1."
@@ -126,7 +126,7 @@ def compute_logical_error_per_round(
         logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
 
     # Filter out the r == 1 input if not forced to include it by the user.
-    if num_rounds[0] == 1 and not force_include_single_round:
+    if num_rounds.size > 0 and num_rounds[0] == 1 and not force_include_single_round:
         num_rounds = num_rounds[1:]
         logical_error_probabilities = logical_error_probabilities[1:]
         logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
