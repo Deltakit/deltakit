@@ -158,6 +158,6 @@ jobs:
         if: ${{ always() }}
 
       - name: pip_audit
-        run: uv run pip_audit
+        run: uv run pip-audit
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
