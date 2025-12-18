@@ -86,6 +86,9 @@ Changelog = "https://github.com/Deltakit/deltakit/releases"
 [tool.deptry]
 known_first_party = ["deltakit_decode"]
 
+[tool.deptry.per_rule_ignores]
+DEP002 = ["plotly-stubs"]
+
 [tool.mypy]
 files = "src/**/*.py"
 # The below list of disabled checks should eventually be empty.
