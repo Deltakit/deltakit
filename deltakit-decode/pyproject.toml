@@ -37,6 +37,7 @@ dependencies = [
   "seaborn~=0.12",
   "matplotlib~=3.5",
   "plotly~=6.5",
+  "plotly-stubs",
   "pymatching~=2.2",
   "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
   "stim~=1.12",
