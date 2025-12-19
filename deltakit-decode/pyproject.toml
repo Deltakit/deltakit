@@ -37,7 +37,6 @@ dependencies = [
   "seaborn~=0.12",
   "matplotlib~=3.5",
   "plotly~=6.5",
-  "plotly-stubs",
   "pymatching~=2.2",
   "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
   "stim~=1.12",
@@ -63,6 +62,7 @@ stubs = [
   "types-tqdm~=4.66",
   "pandas-stubs~=2.0",
   "types-seaborn~=0.12",
+  "plotly-stubs~=0.0",
 ]
 lint = [
   "mypy~=1.17",
