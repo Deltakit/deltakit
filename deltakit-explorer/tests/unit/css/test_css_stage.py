@@ -61,19 +61,26 @@ class TestCalculateDetectorCoordinates:
         "stabilisers, expected_coordinates",
         [
             (
+                
                 [
                     Stabiliser([PauliX(0)], Qubit(1)),
                     Stabiliser([PauliX(2)], Qubit(3)),
                     Stabiliser([PauliX(10)], Qubit(5)),
                 ],
-                (Coordinate(1, 0), Coordinate(3, 0), Coordinate(5, 0)),
+                (
+                    (1, 0),
+                    (3, 0),
+                    (5, 0)),
             ),
             (
                 [
                     Stabiliser([PauliX(0)], Qubit((1, 1, 7))),
                     Stabiliser([PauliX(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(1.0, 1.0, 7.0, 0.0), Coordinate(3.0, 0.0, 2.0, 0.0)),
+                (
+                    (1.0, 1.0, 7.0, 0.0),
+                    (3.0, 0.0, 2.0, 0.0)
+                ),
             ),
             (
                 [
@@ -81,42 +88,60 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(2)], Qubit((3, 0, 2))),
                     Stabiliser([PauliX((2, 2))], Qubit((3, 0))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)),
+                (
+                    (0, 0),
+                    (1, 0),
+                    (2, 0)),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliY(1)]),
                     Stabiliser([PauliX(2), PauliZ(3)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(0.5, 0), Coordinate(2.5, 0)),
+                (
+                   (0.5, 0),
+                   (2.5, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit((1, 1, 7))),
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                 ],
-                (Coordinate(1.0, 1.0, 7.0, 0.0), Coordinate(1.0, 2.0, 2.5, 0.0)),
+                (
+                   (1.0, 1.0, 7.0, 0.0),
+                   (1.0, 2.0, 2.5, 0.0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit((1, 1, 7))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                   (0, 0),
+                   (1, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit(("apple", 0))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(1.2, 0), Coordinate(1.8, 0)),
+                (
+                    (1.2, 0),
+                    (1.8, 0)
+                ),
             ),
             (
                 [
@@ -124,7 +149,11 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)),
+                (
+                    (0, 0),
+                    (1, 0),
+                    (2, 0)
+                ),
             ),
             (
                 [
@@ -132,7 +161,10 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ((2, 1))]),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
             (
                 [
@@ -140,7 +172,10 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ("test")]),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
         ],
     )
