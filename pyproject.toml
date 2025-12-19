@@ -7,7 +7,7 @@ name = "deltakit"
 version = "0.5.1"
 description = "A Python toolkit to help users design and execute quantum error correction (QEC) experiments."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 
@@ -51,10 +51,10 @@ tests_extras = [
   "matplotlib~=3.10",
   "numpy~=2.0",
   "pandas~=2.2,>=2.2.2",
-  "stim~=1.9"
+  "stim~=1.15"
 ]
 test = [
-  "pytest>=8.4",
+  "pytest>=9.0",
   "pytest-cov>=7.0",
   "pytest-skip-slow>=0.0.5",
   { include-group = "tests_extras" },

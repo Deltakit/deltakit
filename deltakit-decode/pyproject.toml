@@ -14,7 +14,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Deltakit Team", email = "deltakit@riverlane.com" }]
 
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -25,10 +25,13 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
+
 dependencies = [
   "deltakit-circuit~=0.5",
   "deltakit-core~=0.5",
@@ -39,7 +42,7 @@ dependencies = [
   "plotly~=6.5",
   "pymatching~=2.2",
   "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
-  "stim~=1.12",
+  "stim~=1.15",
   "pathos~=0.3",
   # This is the first version to be compatible with numpy>=2.0 according to
   # https://pandas.pydata.org/pandas-docs/stable/whatsnew/v2.2.2.html
@@ -49,9 +52,16 @@ dependencies = [
   "tqdm~=4.66",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Deltakit/deltakit"
+Source = "https://github.com/Deltakit/deltakit"
+Documentation = "https://deltakit.riverlane.com/"
+Issues = "https://github.com/Deltakit/deltakit/issues"
+Changelog = "https://github.com/Deltakit/deltakit/releases"
+
 [dependency-groups]
 test = [
-  "pytest>=8.4",
+  "pytest>=9.0",
   "pytest-cov>=7.0",
   "pytest-mock>=3.14",
   "pytest-skip-slow>=0.0.5",
@@ -71,17 +81,16 @@ lint = [
   "deptry~=0.23",
   { include-group = "stubs" },
 ]
-security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
+security = [
+  "bandit~=1.8",
+  "ochrona~=2.0",
+  "pip-audit~=2.7"
+]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
   { include-group = "security" },
 ]
-
-[project.urls]
-Homepage = "https://github.com/Deltakit/deltakit"
-"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
-Changelog = "https://github.com/Deltakit/deltakit/releases"
 
 [tool.deptry]
 known_first_party = ["deltakit_decode"]
