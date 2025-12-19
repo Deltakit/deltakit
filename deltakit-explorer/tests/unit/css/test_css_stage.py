@@ -2,7 +2,7 @@
 import itertools
 
 import pytest
-from deltakit_circuit import (Circuit, Coordinate, GateLayer,
+from deltakit_circuit import (Circuit, GateLayer,
                               MeasurementRecord, Observable, PauliX, PauliY,
                               PauliZ, Qubit)
 from deltakit_circuit._basic_types import Coord2D
