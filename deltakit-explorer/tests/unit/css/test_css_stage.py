@@ -61,7 +61,7 @@ class TestCalculateDetectorCoordinates:
         "stabilisers, expected_coordinates",
         [
             (
-                
+
                 [
                     Stabiliser([PauliX(0)], Qubit(1)),
                     Stabiliser([PauliX(2)], Qubit(3)),
