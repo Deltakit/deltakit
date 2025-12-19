@@ -14,7 +14,13 @@ from deltakit_circuit.gates._reset_gates import RESET_GATES
 from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
 from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOISE
 
+from packaging.version import Version
 
+
+@pytest.mark.skipif(
+    Version(stim.__version__) < Version("1.15"),
+    reason="Feature added in Stim v1.15",
+)
 @pytest.mark.parametrize(
     "instr_template,tag",
     itertools.product(
