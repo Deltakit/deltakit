@@ -14,7 +14,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Deltakit Team", email = "deltakit@riverlane.com" }]
 
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -29,6 +29,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
+
 dependencies = [
   "deltakit-core~=0.5",
   "deltakit-circuit~=0.5",
@@ -38,7 +39,7 @@ dependencies = [
   "numpy~=2.0",
   "scipy~=1.15",
   "stim~=1.9",
-  "matplotlib~=3.5",
+  "matplotlib~=3.10",
   "requests~=2.32",
   "seaborn~=0.12",
   "tqdm~=4.66",
@@ -49,6 +50,13 @@ dependencies = [
   "typing_extensions~=4.0",
   "semver~=3.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Deltakit/deltakit"
+Source = "https://github.com/Deltakit/deltakit"
+Documentation = "https://deltakit.riverlane.com/"
+Issues = "https://github.com/Deltakit/deltakit/issues"
+Changelog = "https://github.com/Deltakit/deltakit/releases"
 
 [dependency-groups]
 test = [
@@ -72,17 +80,16 @@ lint = [
   "deptry~=0.23",
   { include-group = "stubs" },
 ]
-security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
+security = [
+  "bandit~=1.8",
+  "ochrona~=2.0",
+  "pip-audit~=2.7"
+]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
   { include-group = "security" },
 ]
-
-[project.urls]
-Homepage = "https://github.com/Deltakit/deltakit"
-"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
-Changelog = "https://github.com/Deltakit/deltakit/releases"
 
 [tool.deptry]
 known_first_party = ["deltakit_explorer"]
