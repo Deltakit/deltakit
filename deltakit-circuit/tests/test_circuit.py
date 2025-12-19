@@ -621,6 +621,12 @@ def test_hash(empty_circuit: sp.Circuit):
         hash(empty_circuit)
 
 
+def test_circuit_with_tag_exports() -> None:
+    circuit_with_tags: sp.Circuit[int] = sp.Circuit()
+    circuit_with_tags.append_layers([sp.GateLayer([sp.gates.X(0, tag="tag")])])
+    circuit_with_tags.as_stim_circuit()
+
+
 class TestApplyingGateNoise:
     @pytest.mark.parametrize("adjacency", sp.Circuit.LayerAdjacency)
     def test_applying_empty_gate_noise_profile_doesnt_add_noise_layer(

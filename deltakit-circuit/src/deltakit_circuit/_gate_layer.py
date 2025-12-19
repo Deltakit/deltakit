@@ -4,9 +4,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Callable, Iterable, Mapping
 from itertools import chain
 from typing import Generic, no_type_check
-from collections.abc import Callable, Iterable, Mapping
 
 import stim
 
@@ -14,6 +14,7 @@ from deltakit_circuit._noise_factory import GateReplacementPolicy
 from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
 from deltakit_circuit._stim_identifiers import AppendArguments
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 from deltakit_circuit.gates import MPP, _Gate, _MeasurementGate
 from deltakit_circuit.gates._abstract_gates import (
     Gate,
@@ -246,9 +247,12 @@ class GateLayer(Generic[T]):
             qubit_mapping
         ):
             args = () if error_probability == (0,) else error_probability
-            stim_circuit.append(
-                gate_string, targets, args, tag=tag if tag is not None else ""
+            kwargs = (
+                {"tag": tag}
+                if tag is not None and is_stim_tag_feature_available()
+                else {}
             )
+            stim_circuit.append(gate_string, targets, args, **kwargs)
 
     def approx_equals(
         self,
