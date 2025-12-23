@@ -100,8 +100,9 @@ jobs:
             --resolution ${{matrix.dependency-resolution}} \
             --group=test \
             --find-links ./dist/
-          # Small hack to replace '-' to '_' in project name.
-          _PROJECT=${{ matrix.projects.project }} uv pip install ./dist/${_PROJECT//-/_}*.whl
+          # "${_PROJECT//-/_}" is a bash string replacement operation. 
+          # See https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+          _PROJECT=${{ matrix.projects.project }} uv pip install ./dist/${_PROJECT/-/_}*.whl
 
       - name: Run pytest
         run: uv run --python ${{ matrix.python-version }} --no-sync pytest
