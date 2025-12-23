@@ -29,7 +29,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "stim>=1.9.0, <2.0", "semver ~= 3.0"
+  "stim>=1.9.0, <2.0", "packaging >= 25.0"
 ]
 
 [project.urls]
