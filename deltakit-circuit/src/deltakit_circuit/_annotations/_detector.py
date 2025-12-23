@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
-from itertools import chain
 from collections.abc import Iterable, Mapping
+from itertools import chain
 
 import stim
+
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class Detector:
@@ -91,10 +93,12 @@ class Detector:
             record.stim_targets() for record in self.measurements
         )
         stim_arguments = self.coordinate if self.coordinate is not None else ()
-        stim_tag = self._tag if self._tag is not None else ""
-        stim_circuit.append(
-            self.stim_string, stim_targets, stim_arguments, tag=stim_tag
+        kwargs = (
+            {"tag": self.tag}
+            if self.tag is not None and is_stim_tag_feature_available()
+            else {}
         )
+        stim_circuit.append(self.stim_string, stim_targets, stim_arguments, **kwargs)
 
     def __eq__(self, other: object) -> bool:
         return (

@@ -621,9 +621,19 @@ def test_hash(empty_circuit: sp.Circuit):
         hash(empty_circuit)
 
 
-def test_circuit_with_tag_exports() -> None:
+@pytest.mark.parametrize(
+    "body",
+    [
+        sp.GateLayer([sp.gates.X(0, tag="tag")]),
+        sp.NoiseLayer([sp.noise_channels.Depolarise1(0, 0.1, tag="tag")]),
+        sp.Detector(sp.MeasurementRecord(-1), tag="tag"),
+        sp.Observable(0, sp.MeasurementRecord(-1), tag="tag"),
+        sp.ShiftCoordinates((1, 1, 1), tag="tag"),
+    ],
+)
+def test_circuit_with_tag_exports(body) -> None:
     circuit_with_tags: sp.Circuit[int] = sp.Circuit()
-    circuit_with_tags.append_layers([sp.GateLayer([sp.gates.X(0, tag="tag")])])
+    circuit_with_tags.append_layers([body])
     circuit_with_tags.as_stim_circuit()
 
 
