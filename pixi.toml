@@ -58,6 +58,7 @@ cmd = """pip freeze | grep -v -e "parso" -e "tornado" -e "jupyterlab" | ochrona"
 description = "Run pip-audit"
 # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
 # `nbconvert` is only used for documentation building on Linux.
+# Remove when https://github.com/jupyter/nbconvert/issues/2258 is fixed.
 cmd = """pip freeze | pip-audit --ignore-vuln CVE-2025-53000"""
 
 [tasks.bandit]
