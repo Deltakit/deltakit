@@ -26,14 +26,12 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
 
 dependencies = [
-  # "stim~=1.15",
   "stim~=1.10; python_version >= '3.11'",
   "stim~=1.13; python_version >= '3.12'",
   "stim~=1.15; python_version >= '3.13'",
