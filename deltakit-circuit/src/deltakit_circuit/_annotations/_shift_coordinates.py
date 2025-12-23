@@ -6,7 +6,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 import stim
+
 from deltakit_circuit._qubit_identifiers import Coordinate
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class ShiftCoordinates:
@@ -46,7 +48,11 @@ class ShiftCoordinates:
         _qubit_mapping : None
             Unused argument to keep interface with other layer classes clean.
         """
-        kwargs = {"tag": self._tag} if self._tag else {}
+        kwargs = (
+            {"tag": self.tag}
+            if self.tag is not None and is_stim_tag_feature_available()
+            else {}
+        )
         stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift, **kwargs)
 
     def __eq__(self, other: object) -> bool:
