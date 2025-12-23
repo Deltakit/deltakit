@@ -3,6 +3,7 @@ import re
 from copy import deepcopy
 from functools import reduce
 from operator import add, mul
+import semver
 
 import numpy as np
 import pytest
@@ -8958,6 +8959,14 @@ class TestTwoQubitGateCompilationDicts:
         )
         assert stim.Tableau.from_named_gate("CZ") == cz_with_unitaries_tableau
 
+    @pytest.mark.skipif(
+        semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0),
+        reason=(
+            "CZSWAP gate has been introduced in Stim v1.13.0."
+            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+            f"Current Stim version is {stim.__version__}."
+        )
+    )
     @pytest.mark.parametrize("gate", list(GATE_TO_CZSWAP_DICT.keys()))
     def test_cpswap_to_czswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = GATE_TO_CZSWAP_DICT[gate]
@@ -8991,6 +9000,14 @@ class TestTwoQubitGateCompilationDicts:
             == czswap_with_unitaries_tableau
         )
 
+    @pytest.mark.skipif(
+        semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0),
+        reason=(
+            "CZSWAP gate has been introduced in Stim v1.13.0."
+            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+            f"Current Stim version is {stim.__version__}."
+        )
+    )
     @pytest.mark.parametrize("gate", list(CZSWAP_TO_GATE_DICT.keys()))
     def test_czswap_to_cpswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = CZSWAP_TO_GATE_DICT[gate]
