@@ -604,7 +604,11 @@ class TestStimCircuit:
     def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
     ) -> None:
-        if stim_version := semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0) and gate_class == gates.CZSWAP:
+        if (
+            stim_version := semver.Version.parse(stim.__version__)
+            < semver.Version(1, 13, 0)
+            and gate_class == gates.CZSWAP
+        ):
             pytest.skip(
                 "CZSWAP gate has been introduced in Stim v1.13.0."
                 "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
