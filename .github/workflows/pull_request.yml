@@ -100,7 +100,7 @@ jobs:
             --resolution ${{matrix.dependency-resolution}} \
             --group=test \
             --find-links ./dist/
-          # "${_PROJECT//-/_}" is a bash string replacement operation. 
+          # "${_PROJECT//-/_}" is a bash string replacement operation.
           # See https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
           _PROJECT=${{ matrix.projects.project }} uv pip install ./dist/${_PROJECT/-/_}*.whl
 
