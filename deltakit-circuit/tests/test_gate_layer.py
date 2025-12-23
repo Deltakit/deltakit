@@ -4,7 +4,8 @@ from copy import copy, deepcopy
 
 import pytest
 import stim
-import semver
+from packaging.version import Version
+from importlib.metadata import version
 
 from deltakit_circuit import (
     Circuit,
@@ -26,6 +27,24 @@ from deltakit_circuit import (
 )
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
+
+
+CURRENT_STIM_VERSION = Version(version("stim"))
+STIM_VERSION_V1_13_0 = Version("1.13.0")
+
+
+def czswap_param():
+    return pytest.param(
+        lambda: gates.CZSWAP(Qubit(0), Qubit(1)),
+        lambda: stim.Circuit("CZSWAP 0 1"),
+        marks=pytest.mark.skipif(
+            CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
+            reason=(
+                "CZSWAP gate requires Stim >= 1.13.0. "
+                f"Current Stim version: {CURRENT_STIM_VERSION}."
+            ),
+        ),
+    )
 
 
 @pytest.fixture
@@ -498,6 +517,7 @@ class TestStimCircuit:
             (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
             (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
+            czswap_param(),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
         ],
@@ -604,15 +624,11 @@ class TestStimCircuit:
     def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
     ) -> None:
-        if (
-            stim_version := semver.Version.parse(stim.__version__)
-            < semver.Version(1, 13, 0)
-            and gate_class == gates.CZSWAP
-        ):
+        if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0 and gate_class == gates.CZSWAP:
             pytest.skip(
-                "CZSWAP gate has been introduced in Stim v1.13.0."
-                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-                f"Current Stim version is {stim_version}."
+                "CZSWAP gate has been introduced in Stim v1.13.0. "
+                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0. "
+                f"Current Stim version is {CURRENT_STIM_VERSION}."
             )
         empty_layer.add_gates(
             [gate_class(Qubit(0), Qubit(1)), gate_class(Qubit(2), Qubit(3))]
