@@ -4,6 +4,7 @@ from copy import copy, deepcopy
 
 import pytest
 import stim
+import semver
 
 from deltakit_circuit import (
     Circuit,
@@ -602,7 +603,13 @@ class TestStimCircuit:
     @pytest.mark.parametrize("gate_class", gates.TWO_QUBIT_GATES)
     def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
-    ):
+    ) -> None:
+        if stim_version := semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0) and gate_class == gates.CZSWAP:
+            pytest.skip(
+                "CZSWAP gate has been introduced in Stim b1.13.0."
+                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+                f"Current Stim version is {stim_version}."
+            )
         empty_layer.add_gates(
             [gate_class(Qubit(0), Qubit(1)), gate_class(Qubit(2), Qubit(3))]
         )
