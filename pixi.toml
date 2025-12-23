@@ -56,7 +56,10 @@ cmd = """pip freeze | grep -v -e "parso" -e "tornado" -e "jupyterlab" | ochrona"
 
 [tasks.pip_audit]
 description = "Run pip-audit"
-cmd = """pip freeze | pip-audit"""
+# CVE-2025-53000 ignored because it only affects nbconvert on Windows, the only moment
+# we use nbconvert is during documentation building, and documentation building is done
+# on Linux.
+cmd = """pip freeze | pip-audit --ignore-vuln CVE-2025-53000"""
 
 [tasks.bandit]
 description = "Run bandit"
