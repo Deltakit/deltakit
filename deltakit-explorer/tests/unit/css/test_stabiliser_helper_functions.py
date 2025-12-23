@@ -6,6 +6,9 @@ from deltakit_explorer.codes._css._stabiliser_helper_functions import \
     pauli_gates_to_stim_pauli_string
 from stim import PauliString
 
+import semver
+import stim
+
 
 class TestPauliGatesToStimPauliString:
     @pytest.mark.parametrize("iterable", [[], ()])
@@ -44,6 +47,14 @@ class TestPauliGatesToStimPauliString:
         ):
             pauli_gates_to_stim_pauli_string(pauli_gates, data_qubit_to_index_lookup)
 
+    @pytest.mark.skipif(
+        semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0),
+        reason=(
+            "Parsing Pauli strings with indices has been introduced in Stim v1.13.0."
+            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+            f"Current Stim version is {stim.__version__}."
+        )
+    )
     @pytest.mark.parametrize(
         "pauli_gates, data_qubit_to_index_lookup, expected_pauli_string",
         [
@@ -149,7 +160,7 @@ class TestPauliGatesToStimPauliString:
     )
     def test_gives_valid_pauli_string(
         self, pauli_gates, data_qubit_to_index_lookup, expected_pauli_string
-    ):
+    ) -> None:
         assert (
             pauli_gates_to_stim_pauli_string(pauli_gates, data_qubit_to_index_lookup)
             == expected_pauli_string
