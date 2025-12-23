@@ -606,7 +606,7 @@ class TestStimCircuit:
     ) -> None:
         if stim_version := semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0) and gate_class == gates.CZSWAP:
             pytest.skip(
-                "CZSWAP gate has been introduced in Stim b1.13.0."
+                "CZSWAP gate has been introduced in Stim v1.13.0."
                 "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
                 f"Current Stim version is {stim_version}."
             )
