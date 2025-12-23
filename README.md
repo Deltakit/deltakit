@@ -109,7 +109,7 @@ from deltakit.explorer.qpu import QPU, ToyNoise
 # Create a noisy memory circuit with the rotated planar code
 d = 3  # Code distance.
 rplanar = RotatedPlanarCode(width=d, height=d)
-circuit = css_code_memory_circuit(rplanar, num_rounds=d, logical_basis=PauliBasis.Z)  #
+circuit = css_code_memory_circuit(rplanar, num_rounds=d, logical_basis=PauliBasis.Z)
 
 # Step 2. Declare a noisy QPU instance
 qpu = QPU(circuit.qubits, noise_model=ToyNoise(p=0.01))
