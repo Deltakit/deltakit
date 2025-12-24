@@ -3,7 +3,7 @@ import warnings
 from typing import ParamSpec, TypeVar, overload
 from collections.abc import Callable
 
-import semver
+from packaging.version import Version
 
 P = ParamSpec("P")
 RetType = TypeVar("RetType")
@@ -19,7 +19,7 @@ def deprecated(
     *,
     reason: str | None = None,
     replaced_by: str | None = None,
-    removed_in_version: semver.Version | None = None,
+    removed_in_version: Version | None = None,
 ) -> Callable[[Callable[P, RetType]], Callable[P, RetType]]:
     pass  # pragma: no cover
 
@@ -30,7 +30,7 @@ def deprecated(
     *,
     reason: str | None = None,
     replaced_by: str | None = None,
-    removed_in_version: semver.Version | None = None,
+    removed_in_version: Version | None = None,
 ) -> Callable[[Callable[P, RetType]], Callable[P, RetType]] | Callable[P, RetType]:
     """Deprecation decorator.
 
