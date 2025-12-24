@@ -14,23 +14,6 @@ CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
-# def czswap_param():
-#     return pytest.param(
-#         lambda: stim.Circuit("CZSWAP 0 1 2 3"),
-#         lambda: [
-#             sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
-#             sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
-#         ],
-#         marks=pytest.mark.skipif(
-#             CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
-#             reason=(
-#                 "CZSWAP gate requires Stim >= 1.13.0. "
-#                 f"Current Stim version: {CURRENT_STIM_VERSION}."
-#             ),
-#         ),
-#     )
-
-
 def test_probability_is_added_on_measurement_gates():
     probability = 0.001
     layer = parse_stim_gate_instruction(

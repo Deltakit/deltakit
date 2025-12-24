@@ -33,17 +33,6 @@ CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
-# def czswap_param():
-#     if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0:
-#         czswap_param = pytest.param()
-#     else:
-#         czswap_param = pytest.param(
-#             lambda: gates.czswap(qubit(0), qubit(1)),
-#             lambda: stim.circuit("czswap 0 1"),
-#         )
-#     return czswap_param
-
-
 @pytest.fixture
 def empty_layer() -> GateLayer:
     return GateLayer()
