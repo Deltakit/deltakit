@@ -182,7 +182,10 @@ def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltaki
     expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
     assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
     # Enable CZSWAP test if Stim > 1.13.0.
-    if CURRENT_STIM_VERSION > STIM_VERSION_V1_13_0:
+    # TODO: If the condition is met, this part is
+    # executed for every test parameter. There should
+    # be a clause for executing once.
+    if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
         stim_circuit = stim.Circuit("CZSWAP 0 1 2 3")
         expected_gates = [
             sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
