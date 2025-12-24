@@ -527,7 +527,9 @@ class TestStimCircuit:
         # Enable CZSWAP test if Stim > 1.13.0.
         if CURRENT_STIM_VERSION > STIM_VERSION_V1_13_0:
             gate = gates.CZSWAP(Qubit(0), Qubit(1))
-            expected_circuit = stim.circuit("CZSWAP 0 1")
+            expected_circuit = stim.Circuit("CZSWAP 0 1")
+            empty_layer = GateLayer()
+            empty_circuit = stim.Circuit()
             empty_layer.add_gates(gate)
             empty_layer.permute_stim_circuit(empty_circuit)
             assert empty_circuit == expected_circuit
