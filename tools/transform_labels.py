@@ -8,7 +8,7 @@ import os
 from typing import Final
 
 DEFAULT_PACKAGES: Final[dict[str, str]] = {
-    # "deltakit": "./",
+    "deltakit": "./",
     "deltakit-circuit": "./deltakit-circuit",
     "deltakit-core": "./deltakit-core",
     "deltakit-decode": "./deltakit-decode",
