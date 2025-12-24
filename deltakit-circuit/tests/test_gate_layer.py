@@ -35,8 +35,8 @@ STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 def czswap_param():
     return pytest.param(
-        lambda: gates.CZSWAP(Qubit(0), Qubit(1)),
-        lambda: stim.Circuit("CZSWAP 0 1"),
+        gates.CZSWAP(Qubit(0), Qubit(1)),
+        stim.Circuit("CZSWAP 0 1"),
         marks=pytest.mark.skipif(
             CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
             reason=(

@@ -16,8 +16,8 @@ STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 def czswap_param():
     return pytest.param(
-        lambda: stim.Circuit("CZSWAP 0 1 2 3"),
-        lambda: [
+        stim.Circuit("CZSWAP 0 1 2 3"),
+        [
             sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
             sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
         ],
