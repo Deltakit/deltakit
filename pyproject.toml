@@ -224,3 +224,6 @@ allowed_tags = [
   "release",
   "dev",
 ]
+
+[tool.deptry]
+extend_exclude = ["deltakit_*", "docs/", "tools/"]
