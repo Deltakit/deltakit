@@ -57,7 +57,7 @@ class TestPauliGatesToStimPauliString:
         reason=(
             "Parsing Pauli strings with indices has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {stim.__version__}."
+            f"Current Stim version is {CURRENT_STIM_VERSION}."
         )
     )
     @pytest.mark.parametrize(

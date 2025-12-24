@@ -8970,7 +8970,7 @@ class TestTwoQubitGateCompilationDicts:
         reason=(
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {stim.__version__}."
+            f"Current Stim version is {CURRENT_STIM_VERSION}."
         )
     )
     @pytest.mark.parametrize("gate", list(GATE_TO_CZSWAP_DICT.keys()))
@@ -9011,7 +9011,7 @@ class TestTwoQubitGateCompilationDicts:
         reason=(
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {stim.__version__}."
+            f"Current Stim version is {CURRENT_STIM_VERSION}."
         )
     )
     @pytest.mark.parametrize("gate", list(CZSWAP_TO_GATE_DICT.keys()))
