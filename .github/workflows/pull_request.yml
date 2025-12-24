@@ -6,14 +6,7 @@ permissions:
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
-  workflow_dispatch:
-  workflow_call:
-    inputs:
-      publish_dev_version:
-        description: "Publish the generated dev version to riv-pypi"
-        default: false
-        required: false
-        type: boolean
+
 
 jobs:
   # Define the matrix of deltakit subprojects that have been modified in the PR and
