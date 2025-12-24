@@ -3,11 +3,12 @@ import re
 from copy import deepcopy
 from functools import reduce
 from operator import add, mul
-import semver
 
 import numpy as np
 import pytest
 import stim
+from packaging.version import Version
+from importlib.metadata import version
 from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
                               NoiseLayer, Observable, PauliX, Qubit,
                               ShiftCoordinates)
@@ -43,6 +44,11 @@ from deltakit_explorer.qpu._circuits._tableau_functions import (
     _get_compilation_with_projectors_before_unitaries,
     _get_compilation_with_two_qubit_gates, _is_identity_like)
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
+
+
+CURRENT_STIM_VERSION = Version(version("stim"))
+STIM_VERSION_V1_13_0 = Version("1.13.0")
+
 
 # define set of compilation dictionaries for testing
 compilation_dict0 = {("+X", "+Z"): ()}
@@ -8960,7 +8966,7 @@ class TestTwoQubitGateCompilationDicts:
         assert stim.Tableau.from_named_gate("CZ") == cz_with_unitaries_tableau
 
     @pytest.mark.skipif(
-        semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0),
+        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
         reason=(
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
@@ -9001,7 +9007,7 @@ class TestTwoQubitGateCompilationDicts:
         )
 
     @pytest.mark.skipif(
-        semver.Version.parse(stim.__version__) < semver.Version(1, 13, 0),
+        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
         reason=(
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
