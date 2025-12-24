@@ -33,18 +33,15 @@ CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
-def czswap_param():
-    return pytest.param(
-        lambda: gates.CZSWAP(Qubit(0), Qubit(1)),
-        lambda: stim.Circuit("CZSWAP 0 1"),
-        marks=pytest.mark.skipif(
-            CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
-            reason=(
-                "CZSWAP gate requires Stim >= 1.13.0. "
-                f"Current Stim version: {CURRENT_STIM_VERSION}."
-            ),
-        ),
-    )
+# def czswap_param():
+#     if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0:
+#         czswap_param = pytest.param()
+#     else:
+#         czswap_param = pytest.param(
+#             lambda: gates.czswap(qubit(0), qubit(1)),
+#             lambda: stim.circuit("czswap 0 1"),
+#         )
+#     return czswap_param
 
 
 @pytest.fixture
@@ -517,7 +514,6 @@ class TestStimCircuit:
             (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
             (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
-            czswap_param(),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
         ],
@@ -528,6 +524,13 @@ class TestStimCircuit:
         empty_layer.add_gates(gate)
         empty_layer.permute_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
+        # Enable CZSWAP test if Stim > 1.13.0.
+        if CURRENT_STIM_VERSION > STIM_VERSION_V1_13_0:
+            gate = gates.CZSWAP(Qubit(0), Qubit(1))
+            expected_circuit = stim.circuit("CZSWAP 0 1")
+            empty_layer.add_gates(gate)
+            empty_layer.permute_stim_circuit(empty_circuit)
+            assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
         "mpp_gate, expected_circuit",
