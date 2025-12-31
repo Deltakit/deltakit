@@ -7,15 +7,21 @@ from deltakit_core.constants import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis._analysis import get_lambda_fit
-from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stddev
+from deltakit_explorer.analysis._lambda import LambdaResults
+
+def _lambda_interpolated(
+    lambda0: float, lambda_: float, distances: npt.NDArray[numpy.int_]
+) -> npt.NDArray[numpy.floating]:
+    return lambda_**(-(distances + 1) / 2) / lambda0
 
 
-# next step: plot lambda
 def plot_lambda(
+    lambda_data: LambdaResults,
     distances: npt.NDArray[numpy.int_] | Sequence[int],
     lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
+    lep_per_round_stddev: npt.NDArray[numpy.float64] | Sequence[float] | None = None,
+    *,
+    num_sigmas: int = 3,
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
@@ -49,17 +55,65 @@ def plot_lambda(
     assert ax is not None
     assert fig is not None
 
-    res = calculate_lambda_and_lambda_stddev(
-        distances=distances,
-        lep_per_round=lep_per_round,
-        lep_stddev_per_round=lep_stddev_per_round,
-    )
-    lambda_val, lambda_val_stddev = res.lambda_, res.lambda_stddev
-    ax.errorbar(distances, lep_per_round, yerr=lep_stddev_per_round, fmt="o", color=RIVERLANE_PLOT_COLOURS[0])
+    lens = {len(distances), len(lep_per_round)}
+    if lep_per_round_stddev is not None:
+        lens.add(len(lep_per_round_stddev))
+    if len(lens) > 1:
+        msg = (
+            "The lengths of 'distances', 'lep_per_round' and 'lep_per_round_stddev' "
+            f"must be the same. Got the following lengths: {lens}."
+        )
+        raise ValueError(msg)
 
-    y_vals = get_lambda_fit(distances, lep_per_round, lep_stddev_per_round)
-    ax.plot(distances,y_vals,label=f"Fit, λ={lambda_val:.4f}" + r"$\pm$" + f"{lambda_val_stddev:.4f}", color=RIVERLANE_PLOT_COLOURS[0])
-    ax.set_xlabel("Distance")
-    ax.set_ylabel("Logical error probability per round")
+    isort = numpy.argsort(distances)
+    distances = numpy.asarray(distances)[isort]
+    lep_per_round = numpy.asarray(lep_per_round)[isort]
+    if lep_per_round_stddev is not None:
+        lep_per_round_stddev = num_sigmas * numpy.asarray(lep_per_round_stddev)[isort]
+
+    # Plot the logical error probabilities per round
+    ax.errorbar(
+        distances,
+        lep_per_round,
+        yerr=lep_per_round_stddev,
+        fmt=".",
+        color=RIVERLANE_PLOT_COLOURS[1],
+        label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
+    )
+
+    # Plot the fitted lambda curve
+    lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
+    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
+    distances_interpolated = numpy.linspace(distances[0], distances[-1], 200)
+    lambda_interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
+    ax.plot(
+        distances_interpolated,
+        lambda_interpolated,
+        label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
+        color=RIVERLANE_PLOT_COLOURS[1]
+    )
+
+    # Add error band to lambda curve
+    lambda_interpolated_low = _lambda_interpolated(
+        lambda0 - num_sigmas * lambda0_stddev,
+        lambda_ - num_sigmas * lambda_stddev,
+        distances_interpolated
+    )
+    lambda_interpolated_high = _lambda_interpolated(
+        lambda0 + num_sigmas * lambda0_stddev,
+        lambda_ + num_sigmas * lambda_stddev,
+        distances_interpolated
+    )
+    ax.fill_between(
+        distances_interpolated,
+        lambda_interpolated_low,
+        lambda_interpolated_high,
+        color=RIVERLANE_PLOT_COLOURS[0],
+        alpha=0.2
+    )
+
+    ax.set_title("Logical Error Probability Per Round Fit")
+    ax.set_xlabel("Code distance")
+    ax.set_ylabel("Error suppression factor Λ")
     ax.legend()
     return fig, ax
