@@ -8,7 +8,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis._analysis import get_lambda_fit
-from deltakit_explorer.analysis.lambda_ import calculate_lambda_and_lambda_stddev
+from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stddev
 
 
 # next step: plot lambda
@@ -40,9 +40,14 @@ def plot_lambda(
         plt.show()
     """
     if (fig is None) ^ (ax is None):
-        raise ValueError("The 'fig' and 'ax' parameters should either both be set or unset. Got only one set, which is not handled.")
+        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
+        raise ValueError(msg)
+
     if fig is None and ax is None:
         fig, ax = plt.subplots()
+
+    assert ax is not None
+    assert fig is not None
 
     res = calculate_lambda_and_lambda_stddev(
         distances=distances,

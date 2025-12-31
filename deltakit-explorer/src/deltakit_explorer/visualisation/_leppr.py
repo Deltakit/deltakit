@@ -85,11 +85,12 @@ def plot_logical_error_probability_per_round(
     if logical_error_probability_stddev is not None:
         lens.add(len(logical_error_probability_stddev))
     if len(lens) > 1:
-        raise ValueError(
+        msg = (
             "The lengths of 'num_rounds', 'logical_error_probability' and "
             "'logical_error_probability_stddev' must be the same. Got the following "
             f"lengths {lens}."
         )
+        raise ValueError(msg)
 
     isort = numpy.argsort(num_rounds)
     num_rounds = numpy.asarray(num_rounds)[isort]
@@ -109,7 +110,7 @@ def plot_logical_error_probability_per_round(
         yerr=logical_error_probability_stddev,
         fmt="o",
         color=RIVERLANE_PLOT_COLOURS[0],
-        label="Logical error probabilities (±σ)"
+        label="Logical error probabilities (±σ)"  # noqa: RUF001
     )
     # Plot the fitted logical error probability per round curve
     interpolation_points = 200
@@ -144,23 +145,3 @@ def plot_logical_error_probability_per_round(
     ax.legend()
 
     return fig, ax
-
-
-if __name__ == "__main__":
-    from deltakit_explorer.analysis import (
-        calculate_lep_and_lep_stddev, compute_logical_error_per_round,
-    )
-    import matplotlib.pyplot as plt
-    num_rounds = [2, 4, 6]
-    num_shots = [500000] * 3
-    num_failed_shots = [34, 151, 356]
-
-    lep, lep_stddev = calculate_lep_and_lep_stddev(num_failed_shots, num_shots)
-    res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
-    fig, ax = plot_logical_error_probability_per_round(
-        res,
-        num_rounds=num_rounds,
-        logical_error_probability=lep,
-        logical_error_probability_stddev=lep_stddev,
-    )
-    plt.show()
