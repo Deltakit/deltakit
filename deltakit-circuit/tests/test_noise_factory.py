@@ -541,12 +541,8 @@ def test_after_clifford_depolarisation_adds_a_noise_channel_for_each_clifford_ga
     stim_circuit.apply_gate_noise(
         sp.after_clifford_depolarisation(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert (
-        len(stim_circuit.noise_layers()) == 1
-    )
-    assert (
-        len(stim_circuit.noise_layers()[0].noise_channels) == 2
-    )
+    assert len(stim_circuit.noise_layers()) == 1
+    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_after_clifford_depolarisation_adds_correct_noise_channels():
@@ -569,12 +565,8 @@ def test_before_measure_flip_probability_adds_an_error_for_each_measurement_oper
     stim_circuit.apply_gate_noise(
         sp.before_measure_flip_probability(0.1), sp.Circuit.LayerAdjacency.BEFORE
     )
-    assert (
-        len(stim_circuit.noise_layers()) == 1
-    )
-    assert (
-        len(stim_circuit.noise_layers()[0].noise_channels) == 2
-    )
+    assert len(stim_circuit.noise_layers()) == 1
+    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_before_measure_flip_probability_adds_correct_errors():
@@ -597,12 +589,8 @@ def test_after_reset_flip_probability_adds_an_error_for_each_reset_operation():
     stim_circuit.apply_gate_noise(
         sp.after_reset_flip_probability(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert (
-        len(stim_circuit.noise_layers()) == 1
-    )
-    assert (
-        len(stim_circuit.noise_layers()[0].noise_channels) == 2
-    )
+    assert len(stim_circuit.noise_layers()) == 1
+    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_after_reset_flip_probability_adds_correct_errors():

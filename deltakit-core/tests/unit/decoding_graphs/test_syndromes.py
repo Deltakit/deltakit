@@ -56,12 +56,8 @@ class TestOrderedSyndrome:
         syndrome_bit_a = 11
         syndrome_bit_b = 9
         syndrome_string = str(OrderedSyndrome([syndrome_bit_a, syndrome_bit_b]))
-        assert (
-            str(syndrome_bit_a) in syndrome_string
-        )
-        assert (
-            str(syndrome_bit_b) in syndrome_string
-        )
+        assert str(syndrome_bit_a) in syndrome_string
+        assert str(syndrome_bit_b) in syndrome_string
 
     @pytest.mark.parametrize(
         ("annotated_syndrome", "detector_records", "layer_num", "layers"),
@@ -220,7 +216,12 @@ class TestOrderedSyndrome:
         assert tuple(syndrome) == (1, 2, 3)
 
     @pytest.mark.parametrize(
-        ("syndrome", "max_detector_symptom", "expected_detector_events", "expected_herald_events"),
+        (
+            "syndrome",
+            "max_detector_symptom",
+            "expected_detector_events",
+            "expected_herald_events",
+        ),
         [
             (OrderedSyndrome([0, 6, 2, 1, 1, 11, 11, 19]), 6, [0, 2, 6], [12]),
             (OrderedSyndrome(), 5, [], []),

@@ -80,16 +80,13 @@ class TestDecodingEdge:
         assert len(decoding_edge) == 2
 
     def test_decoding_edge_membership(self, decoding_edge: DecodingEdge):
-        assert (
-            decoding_edge.first in decoding_edge
-        )
-        assert (
-            decoding_edge.second in decoding_edge
-        )
+        assert decoding_edge.first in decoding_edge
+        assert decoding_edge.second in decoding_edge
 
     def test_self_loop_decoding_edge_raises_value_error(self, random_generator):
         syndrome_a = random_generator.integers(100)
-        with pytest.raises(ValueError):
+        msg = "Invalid DecodingEdge between detectors [0-9][0-9] and [0-9][0-9]."
+        with pytest.raises(ValueError, match=msg):
             DecodingEdge(syndrome_a, syndrome_a)
 
     def test_example_decoding_edge_string(self):
@@ -280,12 +277,8 @@ class TestOrderedDecodingEdges:
         ordered_edges_string = str(
             OrderedDecodingEdges([decoding_edge_a, decoding_edge_b])
         )
-        assert (
-            str(decoding_edge_a) in ordered_edges_string
-        )
-        assert (
-            str(decoding_edge_b) in ordered_edges_string
-        )
+        assert str(decoding_edge_a) in ordered_edges_string
+        assert str(decoding_edge_b) in ordered_edges_string
 
     @pytest.mark.parametrize(
         "edges",

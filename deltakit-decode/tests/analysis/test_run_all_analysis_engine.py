@@ -236,8 +236,9 @@ def test_data_saved_until_failure(mocker, tmp_path, failed_shot):
     expr_name = "test_experiment"
     decoder_managers = mock_decoder_managers(mocker, 5, mock_all_fails_run_batch_shots)
 
+    msg = "Decoding interrupted"
     decoder_managers[failed_shot].run_batch_shots.side_effect = ValueError(
-        "Decoding interrupted")
+        msg)
 
     engine = RunAllAnalysisEngine(
         expr_name,
@@ -246,7 +247,7 @@ def test_data_saved_until_failure(mocker, tmp_path, failed_shot):
         num_parallel_processes=1,
         data_directory=tmp_path
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=msg):
         engine.run()
 
     saved_data = pd.read_csv(engine.file_paths[0])

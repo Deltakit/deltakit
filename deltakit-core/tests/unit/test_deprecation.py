@@ -38,15 +38,27 @@ def test_custom_deprecated() -> None:
 
 
 def test_direct_calling_no_argument() -> None:
-    with pytest.raises(ValueError):
+    msg = (
+        "Expected at least one of f, reason, replaced_by or removed_in_version to "
+        "be provided. All of them are None."
+    )
+    with pytest.raises(ValueError, match=msg):
         deprecated()
 
 
 def test_direct_calling_with_none_callable() -> None:
-    with pytest.raises(ValueError):
+    msg = (
+        "Expected at least one of f, reason, replaced_by or removed_in_version to "
+        "be provided. All of them are None."
+    )
+    with pytest.raises(ValueError, match=msg):
         deprecated(None)
 
 
 def test_direct_calling_all_kwargs_none() -> None:
-    with pytest.raises(ValueError):
-        deprecated(reason=None, removed_in_version=None)
+    msg = (
+        "Expected at least one of f, reason, replaced_by or removed_in_version to "
+        "be provided. All of them are None."
+    )
+    with pytest.raises(ValueError, match=msg):
+        deprecated(reason=None, replaced_by=None, removed_in_version=None)

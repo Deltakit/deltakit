@@ -62,7 +62,9 @@ def test_reset_gates_on_different_qubits_are_not_equal(reset_gate):
     assert reset_gate(Qubit(0)) != reset_gate(Qubit(1))
 
 
-@pytest.mark.parametrize(("reset_gate1", "reset_gate2"), permutations(gates.RESET_GATES, 2))
+@pytest.mark.parametrize(
+    ("reset_gate1", "reset_gate2"), permutations(gates.RESET_GATES, 2)
+)
 def test_different_reset_gates_on_same_qubit_are_not_equal(reset_gate1, reset_gate2):
     assert reset_gate1(Qubit(0)) != reset_gate2(Qubit(0))
 

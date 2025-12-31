@@ -12,6 +12,7 @@ from deltakit_circuit.noise_channels import (
     PauliYError,
     PauliZError,
 )
+from deltakit_circuit.noise_channels._abstract_noise_channels import ProbabilityError
 
 
 @pytest.mark.parametrize(
@@ -31,22 +32,38 @@ def test_pauli_noise_channels_string_matches_expected_string(
 
 
 @pytest.mark.parametrize(
-    ("noise_channel", "bad_arguments"),
+    ("noise_channel", "bad_arguments", "expected_exception"),
     [
-        (PauliXError, (4, 5)),
-        (PauliYError, [1, 2, 3, 4]),
-        (PauliZError, ()),
-        (PauliChannel1, ("A", "B", "C")),
-        (PauliChannel2, (4, 5, 6)),
+        (
+            PauliXError,
+            (4, 5),
+            TypeError(".*takes 3 positional arguments but 4 positional arguments.*"),
+        ),
+        (
+            PauliYError,
+            [1, 2, 3, 4],
+            TypeError(".*takes 3 positional arguments but 6 positional arguments.*"),
+        ),
+        (
+            PauliZError,
+            (),
+            TypeError(".*missing 1 required positional argument: 'probability'"),
+        ),
+        (
+            PauliChannel1,
+            ("A", "B", "C"),
+            TypeError("'<=' not supported between instances of 'int' and 'str'"),
+        ),
+        (PauliChannel2, (4, 5, 6), ProbabilityError()),
     ],
 )
 def test_channel_generator_from_prob_raises_error_with_wrong_args(
-    noise_channel, bad_arguments
+    noise_channel, bad_arguments, expected_exception: Exception
 ):
     # The ignore on the following line is needed because the exception raised in each
     # test cases may be different, and Exception is the only common parent class of all
     # of them.
-    with pytest.raises(Exception):  # noqa: B017
+    with pytest.raises(type(expected_exception), match=expected_exception.args[0]):
         noise_channel.generator_from_prob(*bad_arguments)([0, 1, 2, 4])
 
 

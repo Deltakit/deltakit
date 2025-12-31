@@ -703,7 +703,8 @@ class TestDemToNXGraph:
         ],
     )
     def test_warning_raised_for_degree_0_edge(self, dem):
-        with pytest.warns(UserWarning):
+        msg = "Degree 0 edge has been skipped over in graph creation."
+        with pytest.warns(UserWarning, match=msg):
             dem_to_decoding_graph_and_logicals(dem)
 
 

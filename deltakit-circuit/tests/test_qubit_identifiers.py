@@ -79,7 +79,10 @@ def test_two_equal_qubits_have_the_same_hash(qubit1, qubit2):
 
 
 def test_warning_is_raised_if_calling_pairs_from_consecutive_method():
-    with pytest.warns(DeprecationWarning):
+    msg = (
+        ".*Instead please use the `from_consecutive` method on the two qubit gate class"
+    )
+    with pytest.warns(DeprecationWarning, match=msg):
         list(Qubit.pairs_from_consecutive([0, 1]))
 
 

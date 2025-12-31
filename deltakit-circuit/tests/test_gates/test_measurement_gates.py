@@ -310,7 +310,8 @@ class TestMPPGate:
         assert gates.MPP(qubit_identifier, 0.1) != gates.MPP(qubit_identifier, 0.2)
 
     @pytest.mark.parametrize(
-        ("qubit_identifier1", "qubit_identifier2"), permutations(MPP_QUBIT_IDENTIFIERS, 2)
+        ("qubit_identifier1", "qubit_identifier2"),
+        permutations(MPP_QUBIT_IDENTIFIERS, 2),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -352,7 +353,8 @@ class TestMPPGate:
         )
 
     @pytest.mark.parametrize(
-        ("qubit_identifier1", "qubit_identifier2"), permutations(MPP_QUBIT_IDENTIFIERS, 2)
+        ("qubit_identifier1", "qubit_identifier2"),
+        permutations(MPP_QUBIT_IDENTIFIERS, 2),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_approx_equal(
         self, qubit_identifier1, qubit_identifier2

@@ -67,7 +67,9 @@ def test_converting_known_depolarising_probability_gives_expected_independent_pr
     )
 
 
-@pytest.mark.parametrize(("num_qubits", "mixing_probability"), [(1, 3 / 4), (2, 15 / 16)])
+@pytest.mark.parametrize(
+    ("num_qubits", "mixing_probability"), [(1, 3 / 4), (2, 15 / 16)]
+)
 def test_error_is_raised_if_depolarising_probability_is_above_mixing_probability(
     num_qubits: int, mixing_probability: float
 ):

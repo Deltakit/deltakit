@@ -590,7 +590,7 @@ class TestDerivationTools:
         graph, _ = dem_to_decoding_graph_and_logicals(dem)
         matrix, _ = create_correlation_matrix(
             pij_data, graph, plot_boundary_edges=True)
-        npt.assert_(np.all(np.diag(matrix) != 0))
+        assert np.all(np.diag(matrix) != 0)
 
     @pytest.mark.parametrize(
         ("pij_data", "stim_circuit"),

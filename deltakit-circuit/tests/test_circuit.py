@@ -693,12 +693,8 @@ class TestApplyingGateNoise:
             ],
             adjacency,
         )
-        assert (
-            empty_circuit.gate_layers() == [gate_layer]
-        )
-        assert (
-            not empty_circuit.is_noisy
-        )
+        assert empty_circuit.gate_layers() == [gate_layer]
+        assert not empty_circuit.is_noisy
 
     @pytest.mark.parametrize(
         ("adjacency", "expected_noise_index"),
