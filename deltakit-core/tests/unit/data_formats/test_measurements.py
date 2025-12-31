@@ -11,7 +11,7 @@ from deltakit_core.decoding_graphs import Bitstring
 
 class TestMeasurements:
     @pytest.mark.parametrize(
-        "bitstrings, c64_string",
+        ("bitstrings", "c64_string"),
         [
             ([[Bitstring(0b10000010)]], "130\n"),
             ([[Bitstring(0b10000010), Bitstring(0b111000111)]], "130,455\n"),
@@ -35,7 +35,7 @@ class TestMeasurements:
             assert c64_handle.read() == c64_string
 
     @pytest.mark.parametrize(
-        "c64_lines, round_width, expected_addressed_words",
+        ("c64_lines", "round_width", "expected_addressed_words"),
         [
             (
                 "0, 14, 13, 4, 1\n4",

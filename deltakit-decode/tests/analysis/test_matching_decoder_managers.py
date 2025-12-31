@@ -30,7 +30,7 @@ class TestGraphDecoderManager:
     def example_graph_decoder_manager(self, mock_noise_model, mock_graph_decoder):
         return GraphDecoderManager(mock_noise_model, mock_graph_decoder)
 
-    @pytest.mark.parametrize("error, expected_logical_flip", [
+    @pytest.mark.parametrize(("error", "expected_logical_flip"), [
         (set(), (False, False)),
         ({1}, (True, True)),
         ({1, 2}, (False, True)),
@@ -43,7 +43,7 @@ class TestGraphDecoderManager:
         assert not example_graph_decoder_manager._analyse_correction(
             error, expected_logical_flip)
 
-    @pytest.mark.parametrize("error, expected_logical_flip", [
+    @pytest.mark.parametrize(("error", "expected_logical_flip"), [
         (set(), (False, True)),
         ({1}, (True, False)),
         ({1, 2}, (True, True)),
@@ -56,7 +56,7 @@ class TestGraphDecoderManager:
         assert example_graph_decoder_manager._analyse_correction(
             error, expected_logical_flip)
 
-    @pytest.mark.parametrize("logicals, error, expected_logical_flip", [
+    @pytest.mark.parametrize(("logicals", "error", "expected_logical_flip"), [
         ([{0}], {0}, (True,)),
         ([{0}], {1}, (False,)),
         ([{0}, {1}], {1}, (False, True))

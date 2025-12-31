@@ -63,7 +63,7 @@ class TestB8ReadWriteMethods:
         )
 
     @pytest.mark.parametrize(
-        "bits,length",
+        ("bits", "length"),
         [
             *[(0, length) for length in (2, 4, 7, 8, 9, 41)],
             *[(1 << length - 1, length) for length in (2, 4, 7, 8, 9, 41)],
@@ -85,7 +85,7 @@ class TestB8ReadWriteMethods:
         assert res == [Bitstring(bits), Bitstring(bits)]
 
     @pytest.mark.parametrize(
-        "file_name, expected_logical_flips, num_logicals",
+        ("file_name", "expected_logical_flips", "num_logicals"),
         [
             (
                 "obs_flips_one_logical.b8",

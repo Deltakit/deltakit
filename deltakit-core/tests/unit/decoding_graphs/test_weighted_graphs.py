@@ -23,7 +23,7 @@ def approx_contains(container: Iterable[npt.ArrayLike], element: npt.ArrayLike) 
 
 class TestChangingGraphErrorProbabilities:
     @pytest.mark.parametrize(
-        "graph, p_errors",
+        ("graph", "p_errors"),
         [
             (
                 NXDecodingGraph.from_edge_list(

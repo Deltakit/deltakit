@@ -68,12 +68,12 @@ IDENTICAL_QUBIT_PAIRS = [
 ]
 
 
-@pytest.mark.parametrize("qubit1, qubit2", IDENTICAL_QUBIT_PAIRS)
+@pytest.mark.parametrize(("qubit1", "qubit2"), IDENTICAL_QUBIT_PAIRS)
 def test_two_identical_qubits_are_equal(qubit1, qubit2):
     assert qubit1 == qubit2
 
 
-@pytest.mark.parametrize("qubit1, qubit2", IDENTICAL_QUBIT_PAIRS)
+@pytest.mark.parametrize(("qubit1", "qubit2"), IDENTICAL_QUBIT_PAIRS)
 def test_two_equal_qubits_have_the_same_hash(qubit1, qubit2):
     assert hash(qubit1) == hash(qubit2)
 
@@ -110,7 +110,7 @@ def test_pairs_from_consecutive_returns_correct_qubit_pairs():
 
 
 @pytest.mark.parametrize(
-    "qubit1, qubit2",
+    ("qubit1", "qubit2"),
     [
         (Qubit(2), Qubit(3)),
         (Qubit(Coordinate(0, 1, 2)), Qubit((0, 1, 2))),
@@ -160,7 +160,7 @@ def test_different_qubits_are_not_equal(qubit1, qubit2):
 
 
 @pytest.mark.parametrize(
-    "qubit, expected_representation",
+    ("qubit", "expected_representation"),
     [
         (Qubit(4), "Qubit(4)"),
         (Qubit((0, 2)), "Qubit((0, 2))"),
@@ -210,7 +210,7 @@ def test_error_is_raised_if_sweep_bit_index_is_negative():
 
 class TestPauliProducts:
     @pytest.mark.parametrize(
-        "pauli_gate, expected_string",
+        ("pauli_gate", "expected_string"),
         [
             (PauliX, "X"),
             (PauliY, "Y"),

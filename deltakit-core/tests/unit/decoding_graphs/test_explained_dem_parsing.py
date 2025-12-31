@@ -55,7 +55,7 @@ def _get_error_location(noise_channel: NoiseChannelT, p_err: float):
 
 
 @pytest.mark.parametrize(
-    "depolarising_probability, num_qubits, independent_probability",
+    ("depolarising_probability", "num_qubits", "independent_probability"),
     [(0.5, 1, 0.21132486540518708), (0.1, 2, 0.00700025260754783)],
 )
 def test_converting_known_depolarising_probability_gives_expected_independent_probability(
@@ -67,7 +67,7 @@ def test_converting_known_depolarising_probability_gives_expected_independent_pr
     )
 
 
-@pytest.mark.parametrize("num_qubits, mixing_probability", [(1, 3 / 4), (2, 15 / 16)])
+@pytest.mark.parametrize(("num_qubits", "mixing_probability"), [(1, 3 / 4), (2, 15 / 16)])
 def test_error_is_raised_if_depolarising_probability_is_above_mixing_probability(
     num_qubits: int, mixing_probability: float
 ):

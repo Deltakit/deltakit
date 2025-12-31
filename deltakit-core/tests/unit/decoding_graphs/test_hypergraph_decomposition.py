@@ -8,7 +8,7 @@ from deltakit_core.decoding_graphs._hypergraph_decomposition import decompositio
 
 class TestDecompositions:
     @pytest.mark.parametrize(
-        "edge, edges",
+        ("edge", "edges"),
         [
             (DecodingHyperEdge((0, 1)), []),
             (
@@ -99,7 +99,7 @@ class TestDecompositions:
         ]
 
     @pytest.mark.parametrize(
-        "edge, edges, expected_decomposition",
+        ("edge", "edges", "expected_decomposition"),
         [
             (
                 DecodingHyperEdge({0, 1}),

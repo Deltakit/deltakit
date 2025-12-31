@@ -41,7 +41,7 @@ def test_error_is_raised_when_noise_class_is_passed_to_gate_parser():
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_gates",
+    ("stim_circuit", "expected_gates"),
     [
         (stim.Circuit("X 0 1 2 3 4"), [sp.gates.X(sp.Qubit(i)) for i in range(5)]),
         (
@@ -197,7 +197,7 @@ def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltaki
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_deltakit_circuit_circuit",
+    ("stim_circuit", "expected_deltakit_circuit_circuit"),
     [
         (
             stim.Circuit("CX rec[-1] 0"),
@@ -230,7 +230,7 @@ def test_parsing_controlled_gates_with_measurement_records_gives_expected_deltak
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_deltakit_circuit_circuit",
+    ("stim_circuit", "expected_deltakit_circuit_circuit"),
     [
         (
             stim.Circuit("CX sweep[1] 0"),
@@ -263,7 +263,7 @@ def test_parsing_controlled_gates_with_sweep_bits_gives_expected_deltakit_circui
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         (
             stim.Circuit("X 1\nY 0"),
@@ -316,7 +316,7 @@ def test_parsing_multiple_gate_stim_circuit_returns_correct_deltakit_circuit_cir
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         (
             stim.Circuit("X 0 1 2 1 2"),

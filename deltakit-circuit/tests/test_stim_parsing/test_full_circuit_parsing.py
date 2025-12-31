@@ -49,7 +49,7 @@ def test_multiple_gate_layers_are_created_for_gates_that_support_qubit_grouping(
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         # (
         #     stim.Circuit("X 0 1 2\nDEPOLARIZE1(0.02) 0 2\nLEAKAGE(0.001) 0"),

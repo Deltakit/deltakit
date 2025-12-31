@@ -67,7 +67,7 @@ class TestDecodingHyperMultiGraph:
     """Unit tests for DecodingHyperMultiGraph class."""
 
     @pytest.mark.parametrize(
-        "graph, expected_edges",
+        ("graph", "expected_edges"),
         [
             (decoding_hyper_multigraph_no_edges(), set()),
             (
@@ -142,7 +142,7 @@ class TestDecodingHyperMultiGraph:
         assert graph.edge_records == reference_graph.edge_records
 
     @pytest.mark.parametrize(
-        "graph, expected_nodes",
+        ("graph", "expected_nodes"),
         [
             (decoding_hyper_multigraph_with_edges(), {0, 1, 2, 3, 4}),
             (decoding_hyper_multigraph_with_hyperedges(), {0, 1, 2, 3, 4, 5, 6}),
@@ -154,7 +154,7 @@ class TestDecodingHyperMultiGraph:
         assert set(graph.nodes) == expected_nodes
 
     @pytest.mark.parametrize(
-        "edges, boundary_edges",
+        ("edges", "boundary_edges"),
         [
             (
                 [
@@ -200,7 +200,7 @@ class TestDecodingHyperMultiGraph:
             assert not hypergraph.detector_is_boundary(det)
 
     @pytest.mark.parametrize(
-        "graph, detectors, expected_edges",
+        ("graph", "detectors", "expected_edges"),
         [
             (
                 decoding_hyper_multigraph_with_multi_hyperedges(),
@@ -218,7 +218,7 @@ class TestDecodingHyperMultiGraph:
         assert set(graph.get_edges(*detectors)) == expected_edges
 
     @pytest.mark.parametrize(
-        "detector, expected_edges",
+        ("detector", "expected_edges"),
         [
             (
                 0,
@@ -238,7 +238,7 @@ class TestDecodingHyperMultiGraph:
         assert set(incident_edges) == expected_edges
 
     @pytest.mark.parametrize(
-        "detector, expected_nodes", [(0, {1, 2, 6}), (6, {0, 2, 3})]
+        ("detector", "expected_nodes"), [(0, {1, 2, 6}), (6, {0, 2, 3})]
     )
     def test_neighbours_returns_expected_edges(self, detector, expected_nodes):
         graph = decoding_hyper_multigraph_with_multi_hyperedges()

@@ -6,7 +6,7 @@ import deltakit_circuit as sp
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_annotation",
+    ("stim_circuit", "expected_annotation"),
     [
         (stim.Circuit("DETECTOR rec[-1]"), sp.Detector(sp.MeasurementRecord(-1))),
         (

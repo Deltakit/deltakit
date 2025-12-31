@@ -52,7 +52,7 @@ def decoding_hypergraph_without_hyperedges():
 
 
 @pytest.mark.parametrize(
-    "hypergraph, expected_repr",
+    ("hypergraph", "expected_repr"),
     [
         (
             decoding_hypergraph_with_hyperedges(),
@@ -86,7 +86,7 @@ def test_integer_hypergraph_repr_is_expected(hypergraph, expected_repr):
 
 
 @pytest.mark.parametrize(
-    "graph, start_index",
+    ("graph", "start_index"),
     [
         (DecodingHyperGraph(DecodingHyperEdge((i, i + 1)) for i in range(0, 10, 2)), 0),
         (DecodingHyperGraph([DecodingHyperEdge((2, 1)), DecodingHyperEdge((1, 0))]), 0),

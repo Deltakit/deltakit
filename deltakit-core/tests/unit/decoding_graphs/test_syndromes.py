@@ -49,7 +49,8 @@ class TestOrderedSyndrome:
         syndrome_bit_a = 3
         syndrome_bit_b = 4
         syndrome = OrderedSyndrome([syndrome_bit_a, syndrome_bit_b])
-        assert syndrome_bit_a in syndrome and syndrome_bit_b in syndrome
+        assert syndrome_bit_a in syndrome
+        assert syndrome_bit_b in syndrome
 
     def test_string_of_each_syndrome_bit_is_in_string_of_ordered_syndrome(self):
         syndrome_bit_a = 11
@@ -57,11 +58,13 @@ class TestOrderedSyndrome:
         syndrome_string = str(OrderedSyndrome([syndrome_bit_a, syndrome_bit_b]))
         assert (
             str(syndrome_bit_a) in syndrome_string
-            and str(syndrome_bit_b) in syndrome_string
+        )
+        assert (
+            str(syndrome_bit_b) in syndrome_string
         )
 
     @pytest.mark.parametrize(
-        "annotated_syndrome, detector_records, layer_num, layers",
+        ("annotated_syndrome", "detector_records", "layer_num", "layers"),
         [
             (
                 OrderedSyndrome([0, 1, 3]),
@@ -97,7 +100,7 @@ class TestOrderedSyndrome:
         )
 
     @pytest.mark.parametrize(
-        "layers, layer_size, expected_ordered_syndrome",
+        ("layers", "layer_size", "expected_ordered_syndrome"),
         [
             ([], 10, OrderedSyndrome([])),
             ([[4, 5], [0], [0], [1]], 6, OrderedSyndrome([4, 5, 6, 12, 19])),
@@ -114,7 +117,7 @@ class TestOrderedSyndrome:
         )
 
     @pytest.mark.parametrize(
-        "layers, layer_size, expected_ordered_syndrome",
+        ("layers", "layer_size", "expected_ordered_syndrome"),
         [
             ([], [1, 2], OrderedSyndrome([])),
             ([[4, 5], [0], [0], [1]], [6, 3, 4, 5], OrderedSyndrome([4, 5, 6, 9, 14])),
@@ -131,7 +134,7 @@ class TestOrderedSyndrome:
         )
 
     @pytest.mark.parametrize(
-        "syndrome, layer_size, expected_layers",
+        ("syndrome", "layer_size", "expected_layers"),
         [
             (OrderedSyndrome([0, 6, 2, 1, 1, 11, 19]), 4, [[0, 2], [2], [3], [], [3]]),
             (OrderedSyndrome(), 100, []),
@@ -145,7 +148,7 @@ class TestOrderedSyndrome:
         assert syndrome.as_layers(layer_size) == expected_layers
 
     @pytest.mark.parametrize(
-        "syndrome, layer_size, expected_layers",
+        ("syndrome", "layer_size", "expected_layers"),
         [
             (
                 OrderedSyndrome([0, 6, 2, 1, 1, 11, 19]),
@@ -167,7 +170,7 @@ class TestOrderedSyndrome:
         assert syndrome.as_layers(layer_size) == expected_layers
 
     @pytest.mark.parametrize(
-        "syndrome, layer_size",
+        ("syndrome", "layer_size"),
         [
             (OrderedSyndrome([0, 2, 6, 11, 19]), 3),
             (OrderedSyndrome([0, 2, 6, 11, 19]), 12),
@@ -217,7 +220,7 @@ class TestOrderedSyndrome:
         assert tuple(syndrome) == (1, 2, 3)
 
     @pytest.mark.parametrize(
-        "syndrome, max_detector_symptom, expected_detector_events, expected_herald_events",
+        ("syndrome", "max_detector_symptom", "expected_detector_events", "expected_herald_events"),
         [
             (OrderedSyndrome([0, 6, 2, 1, 1, 11, 11, 19]), 6, [0, 2, 6], [12]),
             (OrderedSyndrome(), 5, [], []),
@@ -243,7 +246,7 @@ class TestBitstringCreation:
             Bitstring(-1)
 
     @pytest.mark.parametrize(
-        "bitstring, expected_bits",
+        ("bitstring", "expected_bits"),
         [
             (Bitstring(0), [0]),
             (Bitstring(1), [1]),
@@ -257,7 +260,7 @@ class TestBitstringCreation:
         assert list(bitstring) == expected_bits
 
     @pytest.mark.parametrize(
-        "indices, expected_bitstring",
+        ("indices", "expected_bitstring"),
         [
             ([], Bitstring(0)),
             ([0], Bitstring(1)),
@@ -271,7 +274,7 @@ class TestBitstringCreation:
         assert Bitstring.from_indices(indices) == expected_bitstring
 
     @pytest.mark.parametrize(
-        "bits, expected_bitstring",
+        ("bits", "expected_bitstring"),
         [
             ([], Bitstring(0)),
             ([0], Bitstring(0)),
@@ -286,7 +289,7 @@ class TestBitstringCreation:
         assert Bitstring.from_bits(bits) == expected_bitstring
 
     @pytest.mark.parametrize(
-        "_bytes, expected_bitstring",
+        ("_bytes", "expected_bitstring"),
         [
             ([], Bitstring(0)),
             (np.array([0, 255], dtype=np.uint8), Bitstring(65280)),
@@ -361,7 +364,7 @@ class TestBitstringDunderMethods:
         assert list(reversed(Bitstring(0b1010011))) == [1, 0, 1, 0, 0, 1, 1]
 
     @pytest.mark.parametrize(
-        "bitstring, expected_length",
+        ("bitstring", "expected_length"),
         [
             (Bitstring(), 1),
             (Bitstring(1), 1),
@@ -409,7 +412,7 @@ class TestBitstringDunderMethods:
         assert bitstring == Bitstring(0b1010100101101)
 
     @pytest.mark.parametrize(
-        "bitstring, expected_binary_string",
+        ("bitstring", "expected_binary_string"),
         [
             (Bitstring(), "0b0"),
             (Bitstring(1), "0b1"),
@@ -421,7 +424,7 @@ class TestBitstringDunderMethods:
         assert repr(bitstring) == expected_binary_string
 
     @pytest.mark.parametrize(
-        "badarg, error_msg",
+        ("badarg", "error_msg"),
         [
             (
                 [0, 1],
@@ -442,7 +445,7 @@ class TestBitstringDunderMethods:
 
 class TestBitstringMethods:
     @pytest.mark.parametrize(
-        "bitstring, expected_bit_count",
+        ("bitstring", "expected_bit_count"),
         [
             (Bitstring(0), 0),
             (Bitstring(1), 1),
@@ -456,7 +459,7 @@ class TestBitstringMethods:
         assert bitstring.bit_count() == expected_bit_count
 
     @pytest.mark.parametrize(
-        "bitstring, expected_indices",
+        ("bitstring", "expected_indices"),
         [
             (Bitstring(0), []),
             (Bitstring(1), [0]),
@@ -478,7 +481,7 @@ class TestBitstringMethods:
         assert Bitstring.from_indices(bitstring.to_indices()) == bitstring
 
     @pytest.mark.parametrize(
-        "bitstring, num_bits_per_word, expected_words",
+        ("bitstring", "num_bits_per_word", "expected_words"),
         [
             (Bitstring(), 1, [Bitstring()]),
             (Bitstring(1), 1, [Bitstring(1)]),
@@ -507,7 +510,7 @@ class TestBitstringMethods:
 
 
 class TestFixedWidthBitstringCreation:
-    @pytest.mark.parametrize("bad_width", (0, -1))
+    @pytest.mark.parametrize("bad_width", [0, -1])
     def test_error_is_raised_if_width_is_less_than_one(self, bad_width: int):
         with pytest.raises(
             ValueError, match="Width of bitstring must be greater than zero."
@@ -553,7 +556,7 @@ class TestFixedWidthBitstringCreation:
 
 
 class TestFixedWidthBitstringDunderMethods:
-    @pytest.mark.parametrize("initial_value", (0, 0b1, 0b1111))
+    @pytest.mark.parametrize("initial_value", [0, 0b1, 0b1111])
     def test_length_of_bitstring_list_is_same_as_width_of_bitstring(
         self, initial_value: int
     ):
@@ -652,7 +655,7 @@ class TestFixedWidthBitstringMethods:
 
 class TestFixedWidthBitstringArithmetic:
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),
@@ -687,7 +690,7 @@ class TestFixedWidthBitstringArithmetic:
         assert len(actual) == len(left)
 
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),
@@ -723,7 +726,7 @@ class TestFixedWidthBitstringArithmetic:
         assert len(bitstring) == len(left)
 
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),
@@ -758,7 +761,7 @@ class TestFixedWidthBitstringArithmetic:
         assert len(actual) == len(left)
 
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),
@@ -794,7 +797,7 @@ class TestFixedWidthBitstringArithmetic:
         assert len(bitstring) == len(left)
 
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),
@@ -829,7 +832,7 @@ class TestFixedWidthBitstringArithmetic:
         assert len(actual) == len(left)
 
     @pytest.mark.parametrize(
-        "left, right, expected_bitstring",
+        ("left", "right", "expected_bitstring"),
         [
             (
                 FixedWidthBitstring(3, 0b001),

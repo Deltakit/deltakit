@@ -504,7 +504,7 @@ def test_there_are_no_multi_edges_in_the_logicals(dem, dem_to_graph_method):
 
 
 @pytest.mark.parametrize(
-    "dem, expected_weight",
+    ("dem", "expected_weight"),
     [
         (stim.DetectorErrorModel("error(0.1) D0 D1"), 2.1972245773362196),
         (
@@ -590,7 +590,7 @@ class TestDemToDecodingHyperGraph:
         assert DecodingHyperEdge({0, 1}, p_err=0) in graph.edges
 
     @pytest.mark.parametrize(
-        "dem, expected_logicals",
+        ("dem", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel(
@@ -670,7 +670,7 @@ class TestDemToNXGraph:
         assert DecodingEdge({0, 1}, p_err=0) in graph.edges
 
     @pytest.mark.parametrize(
-        "dem, expected_logicals",
+        ("dem", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel(

@@ -34,7 +34,7 @@ def test_noise_context_can_return_qubits_operated_on_by_a_two_qubit_gate_type_in
 
 
 @pytest.mark.parametrize(
-    "input_layer, gate_qubit_count, expected_output_layers",
+    ("input_layer", "gate_qubit_count", "expected_output_layers"),
     [
         (
             sp.GateLayer([sp.gates.CX(sp.SweepBit(0), 1), sp.gates.CX(2, 3)]),
@@ -71,7 +71,7 @@ def test_noise_context_can_return_qubits_selected_on_qubit_operand_count(
 
 
 @pytest.mark.parametrize(
-    "input_layer, gate_t, gate_qubit_count, expected_output_layers",
+    ("input_layer", "gate_t", "gate_qubit_count", "expected_output_layers"),
     [
         (
             sp.GateLayer(
@@ -471,7 +471,7 @@ def test_adding_noise_to_all_measurement_gate_via_predefined_noise_profile():
 
 
 @pytest.mark.parametrize(
-    "inherited_gate_class, init_data",
+    ("inherited_gate_class", "init_data"),
     [
         (sp.gates.MX, (sp.Qubit(0),)),
         (sp.gates.MY, (sp.Qubit(0),)),
@@ -543,7 +543,9 @@ def test_after_clifford_depolarisation_adds_a_noise_channel_for_each_clifford_ga
     )
     assert (
         len(stim_circuit.noise_layers()) == 1
-        and len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    )
+    assert (
+        len(stim_circuit.noise_layers()[0].noise_channels) == 2
     )
 
 
@@ -569,7 +571,9 @@ def test_before_measure_flip_probability_adds_an_error_for_each_measurement_oper
     )
     assert (
         len(stim_circuit.noise_layers()) == 1
-        and len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    )
+    assert (
+        len(stim_circuit.noise_layers()[0].noise_channels) == 2
     )
 
 
@@ -595,7 +599,9 @@ def test_after_reset_flip_probability_adds_an_error_for_each_reset_operation():
     )
     assert (
         len(stim_circuit.noise_layers()) == 1
-        and len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    )
+    assert (
+        len(stim_circuit.noise_layers()[0].noise_channels) == 2
     )
 
 
@@ -613,7 +619,7 @@ def test_after_reset_flip_probability_adds_correct_errors():
 
 
 @pytest.mark.parametrize(
-    "clean_stim_circuit, noisy_stim_circuit, deltakit_circuit_noise_profile",
+    ("clean_stim_circuit", "noisy_stim_circuit", "deltakit_circuit_noise_profile"),
     [
         (
             stim.Circuit.generated(
@@ -766,7 +772,7 @@ def test_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_stim(
 
 
 @pytest.mark.parametrize(
-    "clean_stim_circuit, noisy_stim_circuit, deltakit_circuit_noise_profile",
+    ("clean_stim_circuit", "noisy_stim_circuit", "deltakit_circuit_noise_profile"),
     [
         (
             stim.Circuit.generated(

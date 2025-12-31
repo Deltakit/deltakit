@@ -12,7 +12,7 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import (
 
 
 @pytest.mark.parametrize(
-    "depolarising_noise, expected_string", [(Leakage, "LEAKAGE"), (Relax, "RELAX")]
+    ("depolarising_noise", "expected_string"), [(Leakage, "LEAKAGE"), (Relax, "RELAX")]
 )
 def test_leakage_noise_stim_string_matches_expected_string(
     depolarising_noise, expected_string
@@ -82,7 +82,7 @@ def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
 
 
 @pytest.mark.parametrize(
-    "leakage_noise, expected_repr",
+    ("leakage_noise", "expected_repr"),
     [
         (Leakage(Qubit(0), 0.001), "LEAKAGE(Qubit(0), probability=0.001)"),
         (Relax(Qubit(0), 0.01), "RELAX(Qubit(0), probability=0.01)"),
