@@ -11,7 +11,7 @@ from typing import no_type_check
 import networkx as nx
 import numpy as np
 
-from deltakit_core.decoding_graphs import (
+from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,
     DecodingEdge,
     DecodingHyperGraph,

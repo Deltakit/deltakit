@@ -3,7 +3,7 @@ from collections import defaultdict
 
 import stim
 
-from deltakit_core.decoding_graphs import (
+from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,
     DecodingHyperEdge,
     DecodingHyperMultiGraph,
