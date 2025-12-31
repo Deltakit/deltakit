@@ -346,9 +346,10 @@ class MPP(Gate[T]):
             | MeasurementPauliProduct[T]
         ),
         probability: float = 0.0,
+        *,
         tag: str | None = None,
     ):
-        super().__init__(tag)
+        super().__init__(tag=tag)
         if not 0 <= probability <= 1:
             msg = "Probability must be between zero and one."
             raise ValueError(msg)

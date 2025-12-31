@@ -107,6 +107,7 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
         p_x: float = 0.0,
         p_y: float = 0.0,
         p_z: float = 0.0,
+        *,
         tag: str | None = None,
     ):
         super().__init__(qubit=qubit, probabilities=(p_x, p_y, p_z), tag=tag)
@@ -234,6 +235,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         p_zx: float = 0.0,
         p_zy: float = 0.0,
         p_zz: float = 0.0,
+        *,
         tag: str | None = None,
     ):
         probabilities = (

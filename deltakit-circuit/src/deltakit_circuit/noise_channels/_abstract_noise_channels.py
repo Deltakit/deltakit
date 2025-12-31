@@ -385,7 +385,9 @@ class OneQubitOneProbabilityNoiseChannel(
         The probability that this error occurs.
     """
 
-    def __init__(self, qubit: Qubit[T] | T, probability: float, tag: str | None = None):
+    def __init__(
+        self, qubit: Qubit[T] | T, probability: float, *, tag: str | None = None
+    ):
         super().__init__(qubit, probability, tag=tag)
 
     def approx_equals(
