@@ -164,7 +164,7 @@ def calculate_lep_and_lep_stddev(
     removed_in_version=Version("1.0.0"),
 )
 def get_lambda_fit(
-    distances: list[int], lep_per_round: list[float], lep_stddev_per_round: list[float]
+    distances: list[int], lep_per_round: list[float], lep_per_round_stddev: list[float]
 ) -> npt.NDArray[np.float64]:
     """
     Get the best fit line with gradient lambda for plotting purposes.
@@ -177,7 +177,7 @@ def get_lambda_fit(
             The distances of the code.
         lep_per_round (List[float]):
             The logical error probabilities per round.
-        lep_stddev_per_round (List[float]):
+        lep_per_round_stddev (List[float]):
             The standard deviation of the logical error probabilities per round.
 
     Returns:
@@ -192,7 +192,7 @@ def get_lambda_fit(
             lep_per_round_fit = Analysis.get_lambda_fit(
                 distances=[5, 7, 9],
                 lep_per_round=[1.992e-04, 4.314e-05, 7.556e-06],
-                lep_stddev_per_round=[1.2e-05, 9.3e-06, 3.9e-06],
+                lep_per_round_stddev=[1.2e-05, 9.3e-06, 3.9e-06],
             )
 
     """
@@ -202,7 +202,7 @@ def get_lambda_fit(
         deg=1,
         w=[
             lep_pr / lep_std_pr
-            for lep_pr, lep_std_pr in zip(lep_per_round, lep_stddev_per_round)
+            for lep_pr, lep_std_pr in zip(lep_per_round, lep_per_round_stddev)
         ],
         cov="unscaled",
     )
