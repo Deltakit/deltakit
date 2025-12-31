@@ -93,7 +93,7 @@ def plot_logical_error_probability_per_round(
         msg = (
             "The lengths of 'num_rounds', 'logical_error_probability' and "
             "'logical_error_probability_stddev' must be the same. Got the following "
-            f"lengths {lens}."
+            f"lengths: {lens}."
         )
         raise ValueError(msg)
 
@@ -105,9 +105,6 @@ def plot_logical_error_probability_per_round(
             num_sigmas * numpy.asarray(logical_error_probability_stddev)[isort]
         )
 
-    leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
-    spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
-
     # Plot the logical error probabilities
     ax.errorbar(
         num_rounds,
@@ -118,10 +115,9 @@ def plot_logical_error_probability_per_round(
         label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
     )
     # Plot the fitted logical error probability per round curve
-    interpolation_points = 200
-    rounds_interpolated = numpy.linspace(
-        num_rounds[0], num_rounds[-1], interpolation_points
-    )
+    leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
+    spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
+    rounds_interpolated = numpy.linspace(num_rounds[0], num_rounds[-1], 200)
     lep_interpolated = _lep_interpolated(spam, leppr, rounds_interpolated)
     ax.plot(
         rounds_interpolated,
