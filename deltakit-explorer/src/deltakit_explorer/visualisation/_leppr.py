@@ -10,13 +10,19 @@ from matplotlib.figure import Figure
 from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
 
 
+def _lep_interpolated(
+    spam: float, leppr: float, rounds_interpolated: npt.NDArray[numpy.floating]
+) -> npt.NDArray[numpy.floating]:
+    y_interpolated = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
+    return (1 - y_interpolated) / 2
+
+
 def plot_logical_error_probability_per_round(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[numpy.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[numpy.float64] | Sequence[float],
     logical_error_probability_stddev: npt.NDArray[numpy.float64] | Sequence[float] | None = None,
     *,
-    logy: bool = True,
     num_sigmas: int = 3,
     fig: Figure | None = None,
     ax: Axes | None = None,
@@ -36,7 +42,6 @@ def plot_logical_error_probability_per_round(
             a sequence of floats representing the standard deviation of the logical
             error probabilities corresponding to the number of rounds in ``num_rounds``.
             If None, no error bars will be plotted. Default is None.
-        logy (bool): if ``True``, the Y-axis uses a logarithmic scale.
         num_sigmas (int): number of sigmas to consider when plotting error bars.
         fig (Figure | None, optional):
             a matplotlib Figure object to plot on. If None, a new figure will be created.
@@ -108,40 +113,45 @@ def plot_logical_error_probability_per_round(
         num_rounds,
         logical_error_probability,
         yerr=logical_error_probability_stddev,
-        fmt="o",
+        fmt=".",
         color=RIVERLANE_PLOT_COLOURS[0],
-        label="Logical error probabilities (±σ)"  # noqa: RUF001
+        label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
     )
     # Plot the fitted logical error probability per round curve
     interpolation_points = 200
     rounds_interpolated = numpy.linspace(
         num_rounds[0], num_rounds[-1], interpolation_points
     )
-    y_interpolated = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
-
-    lep_interpolated = (1 - y_interpolated) /2
+    lep_interpolated = _lep_interpolated(spam, leppr, rounds_interpolated)
     ax.plot(
         rounds_interpolated,
         lep_interpolated,
-        label=f"Fit, ε={leppr:.4f} ± {leppr_stddev:.4f}",
-        color=RIVERLANE_PLOT_COLOURS[0]
+        label=f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
+        color=RIVERLANE_PLOT_COLOURS[1]
     )
 
     # Add error band to logical error probability per round curve
-    lep_interpolated_err = numpy.sqrt(
-        ((2 * spam_stddev) / (1 - 2 * spam_stddev))**2
-        + ((2 * rounds_interpolated * leppr_stddev) / (1 - 2 * leppr_stddev))**2
+    lep_interpolated_low = _lep_interpolated(
+        spam - num_sigmas * spam_stddev,
+        leppr - num_sigmas * leppr_stddev,
+        rounds_interpolated
     )
-    upper_error = lep_interpolated + lep_interpolated_err
-    lower_error = lep_interpolated - lep_interpolated_err
-    lower_error = numpy.clip(lower_error, 0, 1)  # ensure no negative values for log scale
-    ax.fill_between(rounds_interpolated, lower_error, upper_error, color=RIVERLANE_PLOT_COLOURS[0], alpha=0.2)
+    lep_interpolated_high = _lep_interpolated(
+        spam + num_sigmas * spam_stddev,
+        leppr + num_sigmas * leppr_stddev,
+        rounds_interpolated
+    )
+    ax.fill_between(
+        rounds_interpolated,
+        numpy.clip(lep_interpolated_low, 0, 1),
+        numpy.clip(lep_interpolated_high, 0, 1),
+        color=RIVERLANE_PLOT_COLOURS[0],
+        alpha=0.2
+    )
 
     ax.set_title("Logical Error Probability Per Round Fit")
     ax.set_xlabel("Rounds")
     ax.set_ylabel("Logical Error Probability")
-    if logy:
-        ax.set_yscale("log")
     ax.legend()
 
     return fig, ax
