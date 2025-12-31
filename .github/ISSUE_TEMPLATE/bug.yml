@@ -12,9 +12,9 @@ body:
 
         Thanks for helping improve the project! Please fill out the form below.
 
-        > 💡 **Note:** A bug is a disagreement between actual and documented behavior, or an inaccurate error message.
+        > 💡 **Note:** A bug is a disagreement between actual and documented behaviour, or an inaccurate error message.
         > Please file a [request](https://github.com/Deltakit/deltakit/issues/new?template=request.md) if the
-        > documentation does not define the expected behavior, if you disagree with the documented behavior, or if you
+        > documentation does not define the expected behaviour, if you disagree with the documented behaviour, or if you
         > are asking for a new feature or performance improvement.
         > Please use the [test failure form](https://github.com/Deltakit/deltakit/issues/new?template=test_failure.yml)
         > if you're a contributor seeing a test failure in main, either locally or on CI.
@@ -35,22 +35,22 @@ body:
       description: |
         Please provide a [MRE](https://en.wikipedia.org/wiki/Minimal_reproducible_example)
         as a copy-pastable code snippet if possible. If not, describe steps to
-        reproduce the behavior. Please enclose code blocks within triple backticks.
+        reproduce the behaviour. Please enclose code blocks within triple backticks.
       placeholder: |
         ```python
         # Copy-pastable, executable code here
         ```
 
   - type: textarea
-    id: actual-behavior
+    id: actual-behaviour
     attributes:
-      label: Actual behavior
+      label: Actual behaviour
       description: What actually happens. Please enclose code output / error messages within triple backticks.
 
   - type: textarea
-    id: expected-behavior
+    id: expected-behaviour
     attributes:
-      label: Expected behavior
+      label: Expected behaviour
       description: What you expected to happen. Please cite (with links) relevant documentation about what should happen.
 
   - type: textarea

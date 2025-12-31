@@ -4,8 +4,8 @@ import warnings
 from abc import ABC, abstractmethod
 from functools import cached_property
 from itertools import chain, islice
-from typing import (AbstractSet, FrozenSet, Generic, List, Protocol, Sequence,
-                    Set, Tuple, TypeVar)
+from typing import Generic, Protocol, TypeVar, TypeAlias
+from collections.abc import Sequence, Set as AbstractSet
 
 import networkx as nx
 import numpy as np
@@ -16,9 +16,8 @@ from deltakit_core.decoding_graphs import (DecodingEdge, DecodingHyperEdge,
                                            OrderedDecodingEdges,
                                            OrderedSyndrome)
 from deltakit_decode.utils import make_logger
-from typing_extensions import TypeAlias
 
-Matching: TypeAlias = List[Tuple[int, int]]
+Matching: TypeAlias = list[tuple[int, int]]
 
 GraphT = TypeVar("GraphT", bound=HyperMultiGraph)
 
@@ -48,7 +47,7 @@ class DecoderProtocol(Protocol):
         """
 
     @abstractmethod
-    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> Tuple[bool, ...]:
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
         """Decode a given syndrome and return a flip boolean for each logical.
 
         Parameters
@@ -133,19 +132,21 @@ class GraphDecoder(DecoderProtocol, ABC, Generic[GraphT]):
             warnings.warn("A logical was given with no activators.", stacklevel=2)
         if not all(logical_edge in decoding_graph.edges
                    for logical_edge in chain.from_iterable(logicals)):
-            raise ValueError(f"Logicals {logicals} are not entirely within "
-                             f"{decoding_graph.edges}.")
+            msg = (
+                f"Logicals {logicals} are not entirely within {decoding_graph.edges}."
+            )
+            raise ValueError(msg)
 
         self.decoding_graph = decoding_graph
         self.logicals = logicals
         self.log = make_logger(lvl, self.__class__.__name__)
 
-    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> Tuple[bool, ...]:
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
         result = self.decode_to_full_correction(syndrome)
         return tuple(len(result & logical) % 2 == 1 for logical in self.logicals)
 
     @cached_property
-    def logicals_edge_list(self) -> List[List[int]]:
+    def logicals_edge_list(self) -> list[list[int]]:
         "Get list of edges for each logical"
         return [
             [idx for idx, edge in enumerate(self.decoding_graph.edges) if edge in log]
@@ -213,7 +214,7 @@ class MatchingDecoder(GraphDecoder[NXDecodingGraph]):
     def decode_to_full_correction(self, syndrome: OrderedSyndrome
                                   ) -> OrderedDecodingEdges:
         matching = self.decode_to_matching(syndrome)
-        correction_paths: List[Sequence[DecodingEdge]] = []
+        correction_paths: list[Sequence[DecodingEdge]] = []
         for origin, destination in matching:
             if (self.decoding_graph.detector_is_boundary(origin) or
                     self.decoding_graph.detector_is_boundary(destination)):
@@ -237,7 +238,7 @@ class ClusteringDecoder(MatchingDecoder):
 
     @abstractmethod
     def decode_to_clustering(self, syndrome: OrderedSyndrome
-                             ) -> Set[FrozenSet[int]]:
+                             ) -> set[frozenset[int]]:
         """Decode a given syndrome and return a clustering.
 
         Parameters
@@ -285,5 +286,4 @@ class ClusteringDecoder(MatchingDecoder):
                 odds = islice(cluster, 1, len(cluster), 2)
                 matching.extend(zip(evens, odds))
             return matching
-        else:
-            raise NotImplementedError()
+        raise NotImplementedError()

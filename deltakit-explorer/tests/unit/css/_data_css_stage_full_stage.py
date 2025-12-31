@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Tuple
 
 from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
                               Observable, PauliX, PauliZ, Qubit,
@@ -22,9 +21,9 @@ class CSSStageTestComponents:
     stage: CSSStage
     expected_first_round: Circuit = MISSING_VALUE  # type: ignore [assignment]
     expected_remaining_rounds: Circuit = MISSING_VALUE  # type: ignore [assignment]
-    expected_measurements_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_resets_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_ordered_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_measurements_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_resets_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_ordered_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
 
 
 full_stage_1_round = CSSStageTestComponents(

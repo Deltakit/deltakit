@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from itertools import chain
-from typing import FrozenSet, Iterable
 
 import stim
+
 from deltakit_circuit._annotations._detector import MeasurementRecord
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class Observable:
@@ -32,7 +34,8 @@ class Observable:
         tag: str | None = None,
     ):
         if observable_index < 0:
-            raise ValueError("Observable index cannot be negative.")
+            msg = "Observable index cannot be negative."
+            raise ValueError(msg)
         self._observable_index = observable_index
         self._measurements = (
             frozenset((measurements,))
@@ -46,7 +49,7 @@ class Observable:
         return self._tag
 
     @property
-    def measurements(self) -> FrozenSet[MeasurementRecord]:
+    def measurements(self) -> frozenset[MeasurementRecord]:
         return self._measurements
 
     def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):
@@ -66,9 +69,13 @@ class Observable:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        stim_tag = self._tag if self._tag is not None else ""
+        kwargs = (
+            {"tag": self.tag}
+            if self.tag is not None and is_stim_tag_feature_available()
+            else {}
+        )
         stim_circuit.append(
-            self.stim_string, stim_targets, self._observable_index, tag=stim_tag
+            self.stim_string, stim_targets, self._observable_index, **kwargs
         )
 
     def __eq__(self, other: object) -> bool:

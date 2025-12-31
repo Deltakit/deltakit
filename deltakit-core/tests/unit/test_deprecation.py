@@ -1,6 +1,6 @@
 from deltakit_core.deprecation import deprecated
 import pytest
-import semver
+from packaging.version import Version
 
 
 def non_deprecated_add(a: float, b: float, ndigits: int | None = None) -> float:
@@ -15,7 +15,7 @@ def default_deprecated_add(a: float, b: float, ndigits: int | None = None) -> fl
 @deprecated(
     reason="Testing purposes",
     replaced_by="nothing",
-    removed_in_version=semver.Version(0, 2, 0),
+    removed_in_version=Version("0.2.0"),
 )
 def custom_deprecated_add(a: float, b: float, ndigits: int | None = None) -> float:
     return round(a + b, ndigits)

@@ -14,13 +14,13 @@ from deltakit_explorer._cloud_decoders import (ACDecoder,
 
 class TestCloudDecoder:
 
-    def setup_method(self, method):
+    def setup_method(self):
         # make sure we have a token specified. If there is not
         # token in the environment, client instance cannot be constructed.
         # This is by design.
         os.environ[_api._auth.TOKEN_VARIABLE] = "fake token"
 
-    def teardown_method(self, method):
+    def teardown_method(self):
         os.environ.pop(_api._auth.TOKEN_VARIABLE)
 
     @pytest.mark.parametrize(

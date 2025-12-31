@@ -182,9 +182,11 @@ class TestB8ReadWriteMethods:
         parsed_syndromes = b8_to_logical_flip(example_b8_file, 1)
         tmp_b8_out_file = tmp_path / "tmp_logical_flips_out.b8"
         logical_flips_to_b8_file(tmp_b8_out_file, parsed_syndromes)
-        with open(example_b8_file, "rb") as origin_handle:
-            with open(tmp_b8_out_file, "rb") as out_handle:
-                assert origin_handle.read() == out_handle.read()
+        with (
+            open(example_b8_file, "rb") as origin_handle,
+            open(tmp_b8_out_file, "rb") as out_handle,
+        ):
+            assert origin_handle.read() == out_handle.read()
 
     def test_example_b8_syndrome_read_write_equivalence(
         self, reference_data_dir, tmp_path
@@ -193,6 +195,8 @@ class TestB8ReadWriteMethods:
         parsed_syndromes = b8_to_syndromes(example_b8_file, 40)
         tmp_b8_out_file = tmp_path / "tmp_detection_events_out.b8"
         syndromes_to_b8_file(tmp_b8_out_file, 40, parsed_syndromes)
-        with open(example_b8_file, "rb") as origin_handle:
-            with open(tmp_b8_out_file, "rb") as out_handle:
-                assert origin_handle.read() == out_handle.read()
+        with (
+            open(example_b8_file, "rb") as origin_handle,
+            open(tmp_b8_out_file, "rb") as out_handle,
+        ):
+            assert origin_handle.read() == out_handle.read()

@@ -7,7 +7,7 @@ to be Depolarise1, and adds measurement flip noise.
 """
 
 from dataclasses import dataclass
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from deltakit_circuit import Qubit, measurement_noise_profile
 from deltakit_circuit.gates import I
@@ -27,7 +27,7 @@ class PhenomenologicalNoise(NoiseParameters):
         no noise.
     """
 
-    phenomenological_noise: Optional[Callable[[Qubit], OneQubitNoiseChannel]] = None
+    phenomenological_noise: Callable[[Qubit], OneQubitNoiseChannel] | None = None
 
     def __post_init__(self):
         if self.phenomenological_noise is not None:
@@ -54,7 +54,7 @@ class ToyPhenomenologicalNoise(PhenomenologicalNoise):
     """
 
     p: float = 0.0
-    p_measurement_flip: Optional[float] = None
+    p_measurement_flip: float | None = None
 
     def __post_init__(self):
         if self.p_measurement_flip is None:

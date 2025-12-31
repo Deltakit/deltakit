@@ -1,6 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
 import math
-from typing import List, Set
 
 import stim
 
@@ -464,7 +463,7 @@ def dem_to_graph_method(request):
 def test_there_are_no_multi_edges_in_the_graph(dem_to_graph_method):
     dem = stim.DetectorErrorModel("\n".join(["error(0.01) D0 D1", "error(0.02) D0 D1"]))
     graph, _ = dem_to_graph_method(dem)
-    assert len(graph.edges) == len(set(edge.vertices for edge in graph.edges))
+    assert len(graph.edges) == len({edge.vertices for edge in graph.edges})
 
 
 @pytest.mark.parametrize(
@@ -502,7 +501,7 @@ def test_there_are_no_multi_edges_in_the_graph(dem_to_graph_method):
 def test_there_are_no_multi_edges_in_the_logicals(dem, dem_to_graph_method):
     _, logicals = dem_to_graph_method(dem)
     for logical in logicals:
-        assert len(logical) == len(set(edge.vertices for edge in logical))
+        assert len(logical) == len({edge.vertices for edge in logical})
 
 
 @pytest.mark.parametrize(
@@ -609,7 +608,7 @@ class TestDemToDecodingHyperGraph:
     def test_dem_with_multiple_logicals_give_expected_logicals(
         self,
         dem: stim.DetectorErrorModel,
-        expected_logicals: List[Set[DecodingHyperEdge]],
+        expected_logicals: list[set[DecodingHyperEdge]],
     ):
         _, logicals = dem_to_hypergraph_and_logicals(dem)
         assert logicals == expected_logicals
@@ -643,9 +642,9 @@ class TestDemToNXGraph:
     def test_nx_graph_has_expected_edges(self, dem_nodes_edges_and_logicals):
         dem, _, expected_edges, _ = dem_nodes_edges_and_logicals
         nx_graph, _ = dem_to_decoding_graph_and_logicals(dem)
-        assert set(
+        assert {
             DecodingEdge(edge.first, edge.second) for edge in nx_graph.edges
-        ) == set(expected_edges)
+        } == set(expected_edges)
 
     @pytest.mark.parametrize(
         "nongraphlike_edge",
@@ -691,7 +690,7 @@ class TestDemToNXGraph:
         ],
     )
     def test_dem_with_multiple_logicals_give_expected_logicals(
-        self, dem: stim.DetectorErrorModel, expected_logicals: List[Set[DecodingEdge]]
+        self, dem: stim.DetectorErrorModel, expected_logicals: list[set[DecodingEdge]]
     ):
         _, logicals = dem_to_decoding_graph_and_logicals(dem)
         assert logicals == expected_logicals

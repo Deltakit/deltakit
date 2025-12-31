@@ -38,7 +38,7 @@ class TestGraphToJSON:
     )
     def stim_circuit(self, request):
         distance = 5
-        stim_circ = stim.Circuit.generated(
+        return stim.Circuit.generated(
             request.param,
             distance=distance,
             rounds=distance,
@@ -46,7 +46,6 @@ class TestGraphToJSON:
             before_measure_flip_probability=0.01,
             before_round_data_depolarization=0.01,
         )
-        return stim_circ
 
     def test_full_graph_to_json_on_code_tasks_matches_original_graph(
         self, stim_circuit

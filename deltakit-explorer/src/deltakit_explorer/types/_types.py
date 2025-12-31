@@ -42,9 +42,8 @@ class JSONable:
             return obj
         if obj is None:
             return None
-        raise ValueError(
-            f"Object of type {type(obj)} is not a dataclass or serialisable object."
-        )
+        msg = f"Object of type {type(obj)} is not a dataclass or serialisable object."
+        raise ValueError(msg)
 
     def to_json(self) -> dict:
         return JSONable._to_json(self)

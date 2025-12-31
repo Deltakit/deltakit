@@ -1,0 +1,156 @@
+name: Pull Request
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+
+jobs:
+  # Define the matrix of deltakit subprojects that have been modified in the PR and
+  # should be tested. This is done by looking at tags, so label_pr.yml should have done
+  # its job before.
+  # Because there is no easy way to ensure that label_pr.yml runs before this workflow,
+  # this job returns all the packages when no tags are set.
+  define-project-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.json_labels.outputs.projects }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+      - name: Outputs modified packages that needs to be tested.
+        id: json_labels
+        run: python tools/transform_labels.py
+        env:
+          projects: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+
+  # Build deltakit wheels.
+  build:
+    runs-on: ubuntu-latest
+    needs: define-project-matrix
+    strategy:
+      matrix:
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build deltakit
+        run: uv build --no-sources --package ${{ matrix.projects.project }}
+
+      - name: Upload ${{ matrix.projects.project }} wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.projects.project }}-wheel
+          path: ./dist/*.whl
+          retention-days: 7
+
+  merge_upload_artefacts:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge Artefacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: all-deltakit-wheels
+          pattern: deltakit*-wheel
+
+  # Test the built wheels.
+  tests:
+    needs: [merge_upload_artefacts, define-project-matrix]
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        dependency-resolution: ['highest', 'lowest-direct']
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    name: tests (${{ matrix.projects.project }}, ${{ matrix.python-version }}, ${{matrix.dependency-resolution}})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: all-deltakit-wheels
+          path: ./dist
+
+      - name: Setup venv
+        run: |
+          uv sync --package ${{ matrix.projects.project }} --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          # "${_PROJECT//-/_}" is a bash string replacement operation.
+          # See https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+          _PROJECT=${{ matrix.projects.project }} uv pip install ./dist/${_PROJECT/-/_}*.whl
+
+      - name: Run pytest
+        run: uv run --python ${{ matrix.python-version }} --no-sync pytest
+        working-directory: ./${{ matrix.projects.path }}
+
+  # Perform static check on each deltakit project package.
+  static-checks:
+    runs-on: ubuntu-latest
+    needs: define-project-matrix
+    strategy:
+      matrix:
+        projects: ${{ fromJSON(needs.define-project-matrix.outputs.projects) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Setup venv
+        run: uv sync --group=lint --group=security --package ${{ matrix.projects.project }}
+
+      - name: typos
+        run: uv run typos
+        working-directory: ./${{ matrix.projects.path }}
+
+      - name: ruff check
+        run: uv run ruff check
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: ruff format
+        run: uv run ruff format --check
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: mypy
+        run: uv run mypy
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: deptry
+        run: uv run deptry .
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: bandit
+        run: uv run bandit .
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: ochrona
+        run: uv run ochrona pyproject.toml
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
+
+      - name: pip_audit
+        # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
+        # `nbconvert` is only used for documentation building on Linux.
+        # Remove when https://github.com/jupyter/nbconvert/issues/2258 is fixed.
+        run: uv run pip-audit --ignore-vuln CVE-2025-53000
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}

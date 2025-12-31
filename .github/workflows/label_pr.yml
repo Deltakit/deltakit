@@ -1,3 +1,4 @@
+# Automatically add labels to PR according to the rules defined in ../labeler.yml.
 name: Label PRs
 
 on:
@@ -5,7 +6,6 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  # Get changed labels
   label-prs:
     runs-on: ubuntu-latest
     permissions:

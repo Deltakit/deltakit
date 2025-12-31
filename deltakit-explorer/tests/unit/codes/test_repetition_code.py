@@ -43,50 +43,42 @@ def test__check_stabiliser_type_is_valid(
         (
             5,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(8, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(8, 0)),
+            },
         ),
         (
             3,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+            },
         ),
         (
             5,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(7, 0)),
-                    Qubit(Coord2D(9, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(7, 0)),
+                Qubit(Coord2D(9, 0)),
+            },
         ),
         (
             3,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+            },
         ),
     ],
 )
@@ -118,46 +110,38 @@ def test__data_qubits_gives_correct_set_of_qubits(
         (
             5,
             False,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(7, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(7, 0)),
+            },
         ),
         (
             3,
             False,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+            },
         ),
         (
             5,
             True,
-            set(
-                [
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(8, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(8, 0)),
+            },
         ),
         (
             3,
             True,
-            set(
-                [
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+            },
         ),
     ],
 )
@@ -201,25 +185,21 @@ def test__stabiliser_ancilla_qubits_gives_correct_set_of_qubits(
             3,
             True,
             False,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+            },
         ),
         (
             5,
             True,
             False,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(7, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(7, 0)),
+            },
         ),
         (
             3,
@@ -237,25 +217,21 @@ def test__stabiliser_ancilla_qubits_gives_correct_set_of_qubits(
             3,
             True,
             True,
-            set(
-                [
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+            },
         ),
         (
             5,
             True,
             True,
-            set(
-                [
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(8, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(8, 0)),
+            },
         ),
         (
             3,
@@ -309,117 +285,101 @@ def test__ancilla_qubits_gives_correct_qubits(
             3,
             True,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(4, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(4, 0)),
+            },
         ),
         (
             3,
             False,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+            },
         ),
         (
             5,
             True,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(7, 0)),
-                    Qubit(Coord2D(8, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(7, 0)),
+                Qubit(Coord2D(8, 0)),
+            },
         ),
         (
             5,
             False,
             False,
-            set(
-                [
-                    Qubit(Coord2D(0, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(8, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(0, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(8, 0)),
+            },
         ),
         (
             3,
             True,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(5, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(5, 0)),
+            },
         ),
         (
             3,
             False,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+            },
         ),
         (
             5,
             True,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(2, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(4, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(6, 0)),
-                    Qubit(Coord2D(7, 0)),
-                    Qubit(Coord2D(8, 0)),
-                    Qubit(Coord2D(9, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(2, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(4, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(6, 0)),
+                Qubit(Coord2D(7, 0)),
+                Qubit(Coord2D(8, 0)),
+                Qubit(Coord2D(9, 0)),
+            },
         ),
         (
             5,
             False,
             True,
-            set(
-                [
-                    Qubit(Coord2D(1, 0)),
-                    Qubit(Coord2D(3, 0)),
-                    Qubit(Coord2D(5, 0)),
-                    Qubit(Coord2D(7, 0)),
-                    Qubit(Coord2D(9, 0)),
-                ]
-            ),
+            {
+                Qubit(Coord2D(1, 0)),
+                Qubit(Coord2D(3, 0)),
+                Qubit(Coord2D(5, 0)),
+                Qubit(Coord2D(7, 0)),
+                Qubit(Coord2D(9, 0)),
+            },
         ),
     ],
 )
@@ -462,22 +422,18 @@ def test_property_qubits_is_as_expected(
             PauliBasis.Z,
             False,
             (
-                set(
-                    [
-                        PauliX(Coord2D(0, 0)),
-                        PauliX(Coord2D(2, 0)),
-                        PauliX(Coord2D(4, 0)),
-                        PauliX(Coord2D(6, 0)),
-                        PauliX(Coord2D(8, 0)),
-                    ]
-                ),
+                {
+                    PauliX(Coord2D(0, 0)),
+                    PauliX(Coord2D(2, 0)),
+                    PauliX(Coord2D(4, 0)),
+                    PauliX(Coord2D(6, 0)),
+                    PauliX(Coord2D(8, 0)),
+                },
             ),
             (
-                set(
-                    [
-                        PauliZ(Coord2D(0, 0)),
-                    ]
-                ),
+                {
+                    PauliZ(Coord2D(0, 0)),
+                },
             ),
         ),
         (
@@ -485,20 +441,16 @@ def test_property_qubits_is_as_expected(
             PauliBasis.X,
             False,
             (
-                set(
-                    [
-                        PauliX(Coord2D(0, 0)),
-                    ]
-                ),
+                {
+                    PauliX(Coord2D(0, 0)),
+                },
             ),
             (
-                set(
-                    [
-                        PauliZ(Coord2D(0, 0)),
-                        PauliZ(Coord2D(2, 0)),
-                        PauliZ(Coord2D(4, 0)),
-                    ]
-                ),
+                {
+                    PauliZ(Coord2D(0, 0)),
+                    PauliZ(Coord2D(2, 0)),
+                    PauliZ(Coord2D(4, 0)),
+                },
             ),
         ),
         (
@@ -506,22 +458,18 @@ def test_property_qubits_is_as_expected(
             PauliBasis.Z,
             True,
             (
-                set(
-                    [
-                        PauliX(Coord2D(1, 0)),
-                        PauliX(Coord2D(3, 0)),
-                        PauliX(Coord2D(5, 0)),
-                        PauliX(Coord2D(7, 0)),
-                        PauliX(Coord2D(9, 0)),
-                    ]
-                ),
+                {
+                    PauliX(Coord2D(1, 0)),
+                    PauliX(Coord2D(3, 0)),
+                    PauliX(Coord2D(5, 0)),
+                    PauliX(Coord2D(7, 0)),
+                    PauliX(Coord2D(9, 0)),
+                },
             ),
             (
-                set(
-                    [
-                        PauliZ(Coord2D(1, 0)),
-                    ]
-                ),
+                {
+                    PauliZ(Coord2D(1, 0)),
+                },
             ),
         ),
         (
@@ -529,20 +477,16 @@ def test_property_qubits_is_as_expected(
             PauliBasis.X,
             True,
             (
-                set(
-                    [
-                        PauliX(Coord2D(1, 0)),
-                    ]
-                ),
+                {
+                    PauliX(Coord2D(1, 0)),
+                },
             ),
             (
-                set(
-                    [
-                        PauliZ(Coord2D(1, 0)),
-                        PauliZ(Coord2D(3, 0)),
-                        PauliZ(Coord2D(5, 0)),
-                    ]
-                ),
+                {
+                    PauliZ(Coord2D(1, 0)),
+                    PauliZ(Coord2D(3, 0)),
+                    PauliZ(Coord2D(5, 0)),
+                },
             ),
         ),
     ],

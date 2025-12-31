@@ -6,8 +6,7 @@ of stage generation for quantum memory experiment using CSS codes.
 
 import itertools
 from functools import cached_property
-from typing import (FrozenSet, Iterable, List, Mapping, Optional, Sequence,
-                    Tuple, Union)
+from collections.abc import Iterable, Mapping, Sequence
 
 import stim
 from deltakit_circuit import Circuit, Coordinate, GateLayer, Qubit
@@ -97,41 +96,34 @@ class CSSStage:
 
     def __init__(
         self,
-        stabilisers: Optional[Sequence[Sequence[Stabiliser]]] = None,
+        stabilisers: Sequence[Sequence[Stabiliser]] | None = None,
         num_rounds: int = 0,
-        first_round_measurements: Optional[
-            Sequence[Union[MPP, OneQubitMeasurementGate]]
-        ] = None,
-        first_round_gates: Optional[
-            Iterable[Union[OneQubitCliffordGate, TwoOperandGate]]
-        ] = None,
-        final_round_resets: Optional[Iterable[OneQubitResetGate]] = None,
-        observable_definitions: Optional[
-            Mapping[int, Iterable[Union[Qubit, MPP, OneQubitMeasurementGate]]]
-        ] = None,
-        use_ancilla_qubits: Optional[bool] = None,
+        first_round_measurements: Sequence[MPP | OneQubitMeasurementGate] | None = None,
+        first_round_gates: Iterable[OneQubitCliffordGate | TwoOperandGate] | None = None,
+        final_round_resets: Iterable[OneQubitResetGate] | None = None,
+        observable_definitions: Mapping[int, Iterable[Qubit | MPP | OneQubitMeasurementGate]] | None = None,
+        use_ancilla_qubits: bool | None = None,
     ):
-        self._stabilisers = tuple(tuple()) if stabilisers is None else stabilisers
+        self._stabilisers = () if stabilisers is None else stabilisers
         self._num_rounds = num_rounds
         self._use_ancilla_qubits = use_ancilla_qubits
 
         if self._num_rounds < 0:
-            raise ValueError("Number of rounds must be non-negative.")
+            msg = "Number of rounds must be non-negative."
+            raise ValueError(msg)
         if self._num_rounds > 0 and all(
             len(stabiliser_set) == 0 for stabiliser_set in self._stabilisers
         ):
-            raise ValueError(
-                "Non-zero number of rounds requires non-zero number of stabilisers."
-            )
+            msg = "Non-zero number of rounds requires non-zero number of stabilisers."
+            raise ValueError(msg)
         if self._num_rounds == 0 and any(
             len(stabiliser_set) > 0 for stabiliser_set in self._stabilisers
         ):
-            raise ValueError(
-                "Non-zero number of stabilisers requires non-zero number of rounds."
-            )
+            msg = "Non-zero number of stabilisers requires non-zero number of rounds."
+            raise ValueError(msg)
 
         self._first_round_measurements = (
-            tuple()
+            ()
             if first_round_measurements is None
             else tuple(first_round_measurements)
         )
@@ -172,8 +164,8 @@ class CSSStage:
 
     @staticmethod
     def _calculate_gate_qubits(
-        first_round_gates: FrozenSet[Union[OneQubitCliffordGate, TwoOperandGate]],
-    ) -> Tuple[Qubit]:
+        first_round_gates: frozenset[OneQubitCliffordGate | TwoOperandGate],
+    ) -> tuple[Qubit]:
         """
         Calculate the qubits on which the gates act.
         """
@@ -181,7 +173,8 @@ class CSSStage:
             itertools.chain.from_iterable(gate.qubits for gate in first_round_gates)
         )
         if len(gate_qubits) > len(set(gate_qubits)):
-            raise ValueError("Qubits in first_round_gates have to be unique.")
+            msg = "Qubits in first_round_gates have to be unique."
+            raise ValueError(msg)
         return gate_qubits
 
     @staticmethod
@@ -209,21 +202,21 @@ class CSSStage:
         reset_qubits = {gate.qubit for gate in resets}
 
         if not stabiliser_qubits.isdisjoint(measurement_qubits):
-            raise ValueError(
+            msg = (
                 "Initial measurement qubits and qubits in stabilisers "
                 "should be disjoint."
             )
+            raise ValueError(msg)
 
         if not stabiliser_qubits.isdisjoint(reset_qubits):
-            raise ValueError(
-                "Final reset qubits and qubits in stabilisers should be disjoint."
-            )
+            msg = "Final reset qubits and qubits in stabilisers should be disjoint."
+            raise ValueError(msg)
 
     @staticmethod
     def _check_first_round_gates(
         stabilisers: Sequence[Sequence[Stabiliser]],
         measurements: Sequence[OneQubitMeasurementGate],
-        gates: FrozenSet[Union[OneQubitCliffordGate, TwoOperandGate]],
+        gates: frozenset[OneQubitCliffordGate | TwoOperandGate],
         first_round_data_qubits: Sequence[Qubit],
     ) -> None:
         """
@@ -236,26 +229,29 @@ class CSSStage:
             return
         # Check 1)
         if len(measurements) != 0:
-            raise ValueError(
+            msg = (
                 "If first_round_gates is non-empty, then first_round_measurements has "
                 "to be empty."
             )
+            raise ValueError(msg)
         # Check 2).
         if all(
             len(simultaneous_stabilisers) == 0
             for simultaneous_stabilisers in stabilisers
         ):
-            raise ValueError(
+            msg = (
                 "The stabilisers parameter is empty, which is not allowed when "
                 "first_round_gates is not empty."
             )
+            raise ValueError(msg)
         # Check 3).
         for gate in gates:
             if len(set(gate.qubits).intersection(first_round_data_qubits)) == 0:
-                raise ValueError(
+                msg = (
                     f"The gate {gate} from first_round_gates is not supported on any "
                     "data qubits, which is not allowed."
                 )
+                raise ValueError(msg)
 
     @staticmethod
     def _determine_ancilla_uniqueness(
@@ -279,7 +275,7 @@ class CSSStage:
 
     @staticmethod
     def _determine_circuit_construction_method(
-        stabilisers: Tuple[Stabiliser, ...],
+        stabilisers: tuple[Stabiliser, ...],
     ) -> bool:
         """
         Check whether the stabilisers have ancilla qubits defined and thus determine
@@ -310,11 +306,10 @@ class CSSStage:
             return True
         if not any(ancillas_defined):
             return False
-        raise ValueError(
-            "Either all stabilisers or no stabilisers should have an ancilla defined."
-        )
+        msg = "Either all stabilisers or no stabilisers should have an ancilla defined."
+        raise ValueError(msg)
 
-    def _construct_mpp_syndrome_extraction_layers(self) -> List[GateLayer]:
+    def _construct_mpp_syndrome_extraction_layers(self) -> list[GateLayer]:
         """Construct the syndrome extraction circuit for the stabilisers using MPPs."""
         layers = []
         for stabilisers_set in self._stabilisers:
@@ -336,11 +331,11 @@ class CSSStage:
 
         return layers
 
-    def _construct_full_syndrome_extraction_layers(self) -> List[GateLayer]:
+    def _construct_full_syndrome_extraction_layers(self) -> list[GateLayer]:
         """
         Construct the syndrome extraction circuit for the stabilisers using gates.
         """
-        layers: List[GateLayer] = []
+        layers: list[GateLayer] = []
         for timestep, timestep_stabs in enumerate(self._stabilisers):
             ancilla_qubits = tuple(stab.ancilla_qubit for stab in timestep_stabs)
             layers.append(GateLayer(RX(q) for q in ancilla_qubits))
@@ -357,7 +352,7 @@ class CSSStage:
 
         return layers
 
-    def _construct_syndrome_extraction_layers(self) -> List[GateLayer]:
+    def _construct_syndrome_extraction_layers(self) -> list[GateLayer]:
         """
         Construct the layers for the syndrome extraction circuit.
         """
@@ -366,7 +361,7 @@ class CSSStage:
         return self._construct_mpp_syndrome_extraction_layers()
 
     @property
-    def detector_coordinates(self) -> Tuple[Coordinate, ...]:
+    def detector_coordinates(self) -> tuple[Coordinate, ...]:
         """
         Tuple of coordinates of detectors, computed with respect
         to stabilisers.
@@ -379,7 +374,7 @@ class CSSStage:
         return self._detector_coordinates
 
     @cached_property
-    def measurements_as_stabilisers(self) -> Tuple[Stabiliser, ...]:
+    def measurements_as_stabilisers(self) -> tuple[Stabiliser, ...]:
         """
         Tuple of stabiliser objects representing measurements.
 
@@ -402,7 +397,7 @@ class CSSStage:
         return tuple(stabs)
 
     @cached_property
-    def resets_as_stabilisers(self) -> Tuple[Stabiliser, ...]:
+    def resets_as_stabilisers(self) -> tuple[Stabiliser, ...]:
         """
         Tuple of stabiliser objects representing final round resets.
 
@@ -420,7 +415,7 @@ class CSSStage:
         )
 
     @cached_property
-    def ordered_stabilisers(self) -> Tuple[Stabiliser, ...]:
+    def ordered_stabilisers(self) -> tuple[Stabiliser, ...]:
         """
         Flattened version of the stabilisers we measure in the last round of the stage,
         in order of measurement. This is constructed straight from self._stabilisers.
@@ -432,9 +427,7 @@ class CSSStage:
         )
 
     @cached_property
-    def stabilisers_before(
-        self,
-    ) -> Tuple[Stabiliser, ...]:
+    def stabilisers_before(self) -> tuple[Stabiliser, ...]:
         """
         A transformed version of ordered_stabilisers with removed ancilla_qubits that
         correspond to the stabilisers before first_round_gates. As ancillas are changed
@@ -446,7 +439,7 @@ class CSSStage:
             The stabilisers before applying the gates in self.first_round_gates.
         """
         data_qubits = tuple(self._first_round_data_qubits)
-        tableau_qubits: Tuple[Qubit] = data_qubits + self._gate_qubits
+        tableau_qubits: tuple[Qubit] = data_qubits + self._gate_qubits
 
         # Create tableau that implements _first_round_gates
         tableau = stim.Tableau(len(tableau_qubits))
@@ -475,13 +468,11 @@ class CSSStage:
         bool
             True if resets only.
         """
-        if (
+        return not (
             len(self.ordered_stabilisers) > 0
             or len(self._first_round_measurements) > 0
             or len(self._observable_definitions) > 0
-        ):
-            return False
-        return True
+        )
 
     @cached_property
     def allowable_final_stage(self) -> bool:
@@ -498,11 +489,10 @@ class CSSStage:
         """
         if len(self._final_round_resets) > 0:
             return False
-        if len(self.ordered_stabilisers) > 0 and (
-            self._num_rounds > 1 or self._use_ancilla_qubits
-        ):
-            return False
-        return True
+        return not (
+            len(self.ordered_stabilisers) > 0
+            and (self._num_rounds > 1 or self._use_ancilla_qubits)
+        )
 
     @property
     def first_round(self) -> Circuit:
@@ -514,7 +504,7 @@ class CSSStage:
         Circuit
             A circuit with the first stage round.
         """
-        layers: List[GateLayer] = []
+        layers: list[GateLayer] = []
         current_layer = GateLayer()
         for gate in list(self._first_round_measurements) + list(
             self._first_round_gates

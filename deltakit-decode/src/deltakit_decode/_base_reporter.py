@@ -6,7 +6,8 @@ from abc import abstractmethod
 from contextlib import AbstractContextManager
 from math import sqrt
 from time import time_ns
-from typing import Any, Dict
+from typing import Any
+from typing_extensions import Self
 
 from deltakit_decode.utils import make_logger
 
@@ -32,17 +33,18 @@ class BaseReporter(AbstractContextManager):
         """
 
     @abstractmethod
-    def get_reported_results(self) -> Dict[str, Any]:
+    def get_reported_results(self) -> dict[str, Any]:
         """Return the usage log values this reporter has recorded.
         This is given as a dictionary where the key is some string describing the data.
         """
 
-    def __iadd__(self, other: BaseReporter) -> BaseReporter:
+    def __iadd__(self, other: BaseReporter) -> Self:
         """Add outcomes from another reporter of the same kind.
         This is necessary for collecting results from multiple reporters
         when using parallel processes.
         """
-        raise ValueError("Reporter concatenation not defined!")
+        msg = "Reporter concatenation not defined!"
+        raise ValueError(msg)
 
 
 class TimingReporter(BaseReporter):
@@ -105,13 +107,13 @@ class TimingReporter(BaseReporter):
             return sqrt(self._sum_of_square_deviations / (self._shots - 1))
         return 0
 
-    def get_reported_results(self) -> Dict[str, Any]:
+    def get_reported_results(self) -> dict[str, Any]:
         return {
             "avg_wall_ns": self.avg_wall_ns,
             "stderr_wall_ns": self.stderr_wall_ns
         }
 
-    def __iadd__(self, other: BaseReporter) -> TimingReporter:
+    def __iadd__(self, other: BaseReporter) -> Self:
         if isinstance(other, TimingReporter):
             # use parallel Welford's algorithm formula
             total_shots = self._shots + other._shots
@@ -123,5 +125,4 @@ class TimingReporter(BaseReporter):
             self._sum_wall_ns += other._sum_wall_ns
             self._shots = total_shots
             return self
-        else:
-            return NotImplemented
+        return NotImplemented

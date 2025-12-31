@@ -1,5 +1,4 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import Tuple
 
 import pytest
 import stim
@@ -64,12 +63,12 @@ class TestDetectorTrimming:
     def test_detectors_are_specified_for_removal_if_all_of_a_detectors_dem_ids_are_specified_for_removal(
         self,
     ):
-        assert [0] == _get_detectors_to_remove([2, 3], [[2, 3], [4, 5]])
+        assert _get_detectors_to_remove([2, 3], [[2, 3], [4, 5]]) == [0]
 
     def test_no_detectors_are_specified_for_removal_if_a_detectors_dem_ids_are_not_all_specified_for_removal(
         self,
     ):
-        assert [] == _get_detectors_to_remove([], [[2, 3], [4, 5]])
+        assert _get_detectors_to_remove([], [[2, 3], [4, 5]]) == []
 
     def test_warning_is_raised_if_a_subset_of_a_detectors_dem_ids_are_specified_for_removal(
         self,
@@ -84,7 +83,7 @@ class TestDetectorTrimming:
     @pytest.fixture
     def stim_circuit_with_and_without_detectors_0_4_5_10(
         self,
-    ) -> Tuple[stim.Circuit, stim.Circuit]:
+    ) -> tuple[stim.Circuit, stim.Circuit]:
         return (
             stim.Circuit.generated(
                 "repetition_code:memory",
@@ -175,7 +174,7 @@ class TestDetectorTrimming:
         )
         nested_detector_indices = list(range(4, 13, 4)) + list(range(5, 14, 4))
         stim_circuit = sp.trim_detectors(
-            stim_circuit, dem_detectors_to_eliminate=[0, 18] + nested_detector_indices
+            stim_circuit, dem_detectors_to_eliminate=[0, 18, *nested_detector_indices]
         )
         assert sp.Circuit.from_stim_circuit(
             stim_circuit

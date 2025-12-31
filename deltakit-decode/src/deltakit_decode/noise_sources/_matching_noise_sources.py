@@ -4,17 +4,16 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from decimal import Decimal
 from functools import partial
-from itertools import chain, combinations, product, repeat, starmap
+from itertools import chain, combinations, product, repeat
 from math import comb, floor, prod
-from typing import (Any, Callable, Dict, FrozenSet, Iterable, Iterator, List,
-                    Optional, Sequence, Tuple)
+from typing import Any, ClassVar, TypeAlias
+from collections.abc import Callable, Iterable, Iterator, Sequence
 
 import numpy as np
 from deltakit_core.decoding_graphs import (EdgeT, HyperMultiGraph,
                                            OrderedDecodingEdges)
 from deltakit_decode.noise_sources._generic_noise_sources import (
     CombinedSequences, MonteCarloNoise, SequentialNoise, offset_seed)
-from typing_extensions import TypeAlias
 
 
 def _empty_generator() -> Iterator[OrderedDecodingEdges]:
@@ -31,7 +30,7 @@ class NoNoiseMatchingSequence(SequentialNoise[HyperMultiGraph,
     """
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None  # noqa: ARG002
     ) -> Iterator[OrderedDecodingEdges]:
         yield OrderedDecodingEdges()
 
@@ -39,12 +38,11 @@ class NoNoiseMatchingSequence(SequentialNoise[HyperMultiGraph,
         self,
         code_data: HyperMultiGraph,
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[Iterator[OrderedDecodingEdges], int], ...]:
-        return ((self.error_generator(code_data, seed), 1),) + \
-            tuple((_empty_generator(), 0) for _ in range(num_splits-1))
+        seed: int | None = None
+    ) -> tuple[tuple[Iterator[OrderedDecodingEdges], int], ...]:
+        return ((self.error_generator(code_data, seed), 1), *tuple((_empty_generator(), 0) for _ in range(num_splits - 1)))
 
-    def sequence_size(self, code_data: HyperMultiGraph) -> int:
+    def sequence_size(self, code_data: HyperMultiGraph) -> int:  # noqa: ARG002
         return 1
 
     def __repr__(self) -> str:
@@ -88,7 +86,7 @@ class NoMatchingNoise(IndependentMatchingNoise):
     """
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None  # noqa: ARG002
     ) -> Iterator[OrderedDecodingEdges]:
         while True:
             yield OrderedDecodingEdges()
@@ -97,12 +95,12 @@ class NoMatchingNoise(IndependentMatchingNoise):
                                                                 OrderedDecodingEdges]:
         return NoNoiseMatchingSequence()
 
-    def __eq__(self, __o: object) -> bool:
-        if isinstance(__o, UniformMatchingNoise):
-            return __o.basic_error_prob == 0
-        if isinstance(__o, FixedWeightMatchingNoise):
-            return __o.weight == 0
-        return isinstance(__o, NoMatchingNoise)
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, UniformMatchingNoise):
+            return other.basic_error_prob == 0
+        if isinstance(other, FixedWeightMatchingNoise):
+            return other.weight == 0
+        return isinstance(other, NoMatchingNoise)
 
     def __hash__(self):
         return hash(NoMatchingNoise)
@@ -126,12 +124,12 @@ class FixedWeightMatchingNoise(IndependentMatchingNoise):
 
     def __init__(
             self, weight: int,
-            edge_filter: Optional[EdgeFilterT] = None):
+            edge_filter: EdgeFilterT | None = None):
         self.weight = weight
         self.edge_filter = edge_filter or self.empty_filter
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None
     ) -> Iterator[OrderedDecodingEdges]:
         filtered = list(self.edge_filter(code_data))
         num_edges = len(filtered)
@@ -139,8 +137,11 @@ class FixedWeightMatchingNoise(IndependentMatchingNoise):
         filtered_edges = np.empty(num_edges, dtype=object)
         filtered_edges[:] = filtered
         if num_edges < self.weight:
-            raise ValueError(f"Fixed weight {self.weight} generator cannot be created "
-                             f"as after filtering there are {num_edges} edges.")
+            msg = (
+                f"Fixed weight {self.weight} generator cannot be created "
+                             f"as after filtering there are {num_edges} edges."
+            )
+            raise ValueError(msg)
         rng = self.get_rng(seed)
 
         while True:
@@ -156,11 +157,11 @@ class FixedWeightMatchingNoise(IndependentMatchingNoise):
                                                                 OrderedDecodingEdges]:
         return ExhaustiveMatchingNoise(self.weight, self.edge_filter)
 
-    def __eq__(self, __o: object) -> bool:
-        if self.weight == 0 and __o == _ZERO:
+    def __eq__(self, other: object) -> bool:
+        if self.weight == 0 and other == _ZERO:
             return True
-        return (isinstance(__o, FixedWeightMatchingNoise) and
-                self.weight == __o.weight and self.edge_filter == __o.edge_filter)
+        return (isinstance(other, FixedWeightMatchingNoise) and
+                self.weight == other.weight and self.edge_filter == other.edge_filter)
 
     def __hash__(self):
         if self.weight == 0:
@@ -182,7 +183,7 @@ class FixedWeightMatchingNoise(IndependentMatchingNoise):
 
         return AdditiveMatchingNoise((self, other))
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["weight"] = self.weight
         return base_dict
@@ -196,12 +197,12 @@ class UniformMatchingNoise(IndependentMatchingNoise):
 
     def __init__(self,
                  basic_error_prob: float,
-                 edge_filter: Optional[EdgeFilterT] = None):
+                 edge_filter: EdgeFilterT | None = None):
         self.basic_error_prob = basic_error_prob
         self.edge_filter = edge_filter or self.empty_filter
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None
     ) -> Iterator[OrderedDecodingEdges]:
         filtered = list(self.edge_filter(code_data))
         num_edges = len(filtered)
@@ -219,19 +220,19 @@ class UniformMatchingNoise(IndependentMatchingNoise):
         self,
         code_data: HyperMultiGraph,
         coefficient_limit: float = 1e-20
-    ) -> List[Tuple[MonteCarloNoise, float]]:
+    ) -> list[tuple[MonteCarloNoise, float]]:
         coefficients = error_weight_probabilities(len(self.edge_filter(code_data)),
                                                   self.basic_error_prob,
                                                   coefficient_limit)
         return [(FixedWeightMatchingNoise(error_weight, self.edge_filter), coefficient)
                 for error_weight, coefficient in enumerate(coefficients)]
 
-    def __eq__(self, __o: object) -> bool:
-        if self.basic_error_prob == 0 and __o == _ZERO:
+    def __eq__(self, other: object) -> bool:
+        if self.basic_error_prob == 0 and other == _ZERO:
             return True
-        return (isinstance(__o, UniformMatchingNoise) and
-                self.basic_error_prob == __o.basic_error_prob and
-                self.edge_filter == __o.edge_filter)
+        return (isinstance(other, UniformMatchingNoise) and
+                self.basic_error_prob == other.basic_error_prob and
+                self.edge_filter == other.edge_filter)
 
     def __hash__(self):
         if self.basic_error_prob == 0:
@@ -257,7 +258,7 @@ class UniformMatchingNoise(IndependentMatchingNoise):
 
         return AdditiveMatchingNoise((self, other))
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["p"] = self.basic_error_prob
         return base_dict
@@ -271,13 +272,13 @@ class EdgeProbabilityMatchingNoise(IndependentMatchingNoise):
     selected.
     """
 
-    def __init__(self, edge_filter: Optional[EdgeFilterT] = None):
+    def __init__(self, edge_filter: EdgeFilterT | None = None):
         self.edge_filter = edge_filter or self.empty_filter
 
     def error_generator(
         self,
         code_data: HyperMultiGraph,
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> Iterator[OrderedDecodingEdges]:
         rng = self.get_rng(seed)
         filtered = list(self.edge_filter(code_data))
@@ -297,7 +298,7 @@ class EdgeProbabilityMatchingNoise(IndependentMatchingNoise):
         self,
         code_data: HyperMultiGraph,
         coefficient_limit: float = 1e-20
-    ) -> List[Tuple[MonteCarloNoise, float]]:
+    ) -> list[tuple[MonteCarloNoise, float]]:
         """Decompose this noise model to be used in importance sampling.
         Decomposition is done by creating a uniform matching noise model for
         each unique p_err in the graph. Then each of these matching noises is
@@ -363,12 +364,12 @@ class EdgeProbabilityMatchingNoise(IndependentMatchingNoise):
         return combined_edge_decomposition
 
     def __add__(self, other):
-        raise NotImplementedError("Cannot add edge probability noise to "
-                                  "any other noise.")
+        msg = "Cannot add edge probability noise to any other noise."
+        raise NotImplementedError(msg)
 
-    def __eq__(self, __o: object) -> bool:
-        if isinstance(__o, self.__class__):
-            return self.edge_filter == __o.edge_filter
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, self.__class__):
+            return self.edge_filter == other.edge_filter
         return NotImplemented
 
     def __hash__(self) -> int:
@@ -384,19 +385,21 @@ class AdditiveMatchingNoise(IndependentMatchingNoise):
 
     Use add operator to add noise sources, not the constructor for this class.
     """
-    _filter_cache: Dict[FrozenSet[Callable], Callable] = {}
+    _filter_cache: ClassVar[dict[frozenset[Callable], Callable]] = {}
 
     def __init__(self, internal_sources: Iterable[IndependentMatchingNoise]):
         self._internal_sources_multiset = Counter(internal_sources)
         self.internal_sources = list(self._internal_sources_multiset.elements())
 
         if len(self.internal_sources) < 2:
-            raise ValueError(
+            msg = (
                 "Additive noise is for two or more noise sources that do not reduce "
-                "to less sources when summed.")
+                "to less sources when summed."
+            )
+            raise ValueError(msg)
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None
     ) -> Iterator[OrderedDecodingEdges]:
         internal_generators = [
             model.error_generator(code_data, seed_)
@@ -415,9 +418,9 @@ class AdditiveMatchingNoise(IndependentMatchingNoise):
     def __hash__(self) -> int:
         return hash(frozenset(self._internal_sources_multiset.items()))
 
-    def __eq__(self, __o: object) -> bool:
-        return (isinstance(__o, AdditiveMatchingNoise) and
-                self._internal_sources_multiset == __o._internal_sources_multiset)
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, AdditiveMatchingNoise) and
+                self._internal_sources_multiset == other._internal_sources_multiset)
 
     def __add__(self, other: IndependentMatchingNoise) -> IndependentMatchingNoise:
         if other == _ZERO:
@@ -433,7 +436,7 @@ class AdditiveMatchingNoise(IndependentMatchingNoise):
                 inner_counter.subtract([model])
                 inner_counter.update([model_sum])
                 return AdditiveMatchingNoise(inner_counter.elements())
-        return AdditiveMatchingNoise(self.internal_sources + [other])
+        return AdditiveMatchingNoise([*self.internal_sources, other])
 
     @classmethod
     def _get_combined_filter(cls, filter_list):
@@ -448,8 +451,8 @@ class AdditiveMatchingNoise(IndependentMatchingNoise):
     def importance_sampling_decomposition(self,
                                           code_data: HyperMultiGraph[EdgeT],
                                           coefficient_limit: float = 1e-20
-                                          ) -> List[Tuple[MonteCarloNoise, float]]:
-        filtered_edges: List[EdgeT] = []
+                                          ) -> list[tuple[MonteCarloNoise, float]]:
+        filtered_edges: list[EdgeT] = []
         internal_filters = []
         internal_probs = set()
         for model in self.internal_sources:
@@ -499,16 +502,17 @@ class AdditiveSequentialMatchingNoise(
         return prod(model.sequence_size(code_data)
                     for model in self.internal_sources)
 
-    def __eq__(self, __o: object) -> bool:
-        if isinstance(__o, AdditiveSequentialMatchingNoise):
-            return self.internal_sources == __o.internal_sources
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, AdditiveSequentialMatchingNoise):
+            return self.internal_sources == other.internal_sources
         return NotImplemented
 
     def __hash__(self) -> int:
-        raise NotImplementedError(
+        msg = (
             "Implementation voluntarily not provided. If you think you need it, please "
             "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
+        raise NotImplementedError(msg)
 
 class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
                                               OrderedDecodingEdges]):
@@ -520,20 +524,20 @@ class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
 
     def __init__(
             self,
-            weight: Optional[int],
-            edge_filter: Optional[EdgeFilterT] = None):
+            weight: int | None,
+            edge_filter: EdgeFilterT | None = None):
         self.weight = weight
         self.edge_filter = edge_filter or IndependentMatchingNoise.empty_filter
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None  # noqa: ARG002
     ) -> Iterator[OrderedDecodingEdges]:
         filtered = list(self.edge_filter(code_data))
         # Need to copy into 1D array to avoid inner object conversion to array
         filtered_edges = np.empty(len(filtered), dtype=object)
         filtered_edges[:] = filtered
         if self.weight is None:
-            weights = list(range(0, len(filtered_edges)+1))
+            weights = list(range(len(filtered_edges)+1))
         else:
             weights = [self.weight]
 
@@ -544,22 +548,23 @@ class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
     def sequence_size(self, code_data: HyperMultiGraph) -> int:
         len_filtered_edges = len(self.edge_filter(code_data))
         if self.weight is None:
-            weights = list(range(0, len_filtered_edges+1))
+            weights = list(range(len_filtered_edges+1))
         else:
             weights = [self.weight]
 
         return sum(comb(len_filtered_edges, weight)
                    for weight in weights)
 
-    def __eq__(self, __o: object) -> bool:
-        return (isinstance(__o, ExhaustiveMatchingNoise) and
-                self.weight == __o.weight and self.edge_filter == __o.edge_filter)
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, ExhaustiveMatchingNoise) and
+                self.weight == other.weight and self.edge_filter == other.edge_filter)
 
     def __hash__(self) -> int:
-        raise NotImplementedError(
+        msg = (
             "Implementation voluntarily not provided. If you think you need it, please "
             "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
+        raise NotImplementedError(msg)
 
     def __repr__(self) -> str:
         if self.weight is None:
@@ -570,32 +575,32 @@ class ExhaustiveMatchingNoise(SequentialNoise[HyperMultiGraph,
         self,
         code_data: HyperMultiGraph,
         num_splits: int,
-        seed: Optional[int] = None
-    ) -> Tuple[Tuple[Iterator[OrderedDecodingEdges], int], ...]:
+        seed: int | None = None
+    ) -> tuple[tuple[Iterator[OrderedDecodingEdges], int], ...]:
         if self.weight is None:
-            raise NotImplementedError("Ascending exhaustive split generator is not "
-                                      "implemented.")
+            msg = "Ascending exhaustive split generator is not implemented."
+            raise NotImplementedError(msg)
         if self.weight == 0:
             return NoNoiseMatchingSequence().split_error_generator(code_data, num_splits,
                                                                    seed)
         edges = list(self.edge_filter(code_data))
         num_edges = len(edges)
         sizes = [0] * num_splits
-        iterators: List[Iterable[OrderedDecodingEdges]] = \
+        iterators: list[Iterable[OrderedDecodingEdges]] = \
             [_empty_generator() for _ in range(num_splits)]
         # split based on first element, bin greedily
         for edge_i in range(num_edges-self.weight+1):
-            iterator: Iterable[OrderedDecodingEdges] = starmap(
-                lambda x, y: OrderedDecodingEdges(x+y), zip(repeat(
+            iterator: Iterable[OrderedDecodingEdges] = map(
+                lambda x, y: OrderedDecodingEdges(x+y), repeat(
                     (edges[edge_i], )),
-                    combinations(edges[edge_i+1:], self.weight-1)))
+                    combinations(edges[edge_i+1:], self.weight-1))
             size = comb(num_edges - edge_i - 1, self.weight - 1)
             min_bucket_i = sizes.index(min(sizes))
             sizes[min_bucket_i] += size
             iterators[min_bucket_i] = chain(iterators[min_bucket_i], iterator)
         return tuple(zip(iterators, sizes))
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["weight"] = self.weight
         return base_dict
@@ -610,11 +615,11 @@ class ExhaustiveWeightedMatchingNoise(SequentialNoise[HyperMultiGraph,
     def __init__(
             self,
             exhaustion_ceiling: float,
-            edge_filter: Optional[EdgeFilterT] = None):
+            edge_filter: EdgeFilterT | None = None):
         self.exhaustion_ceiling = exhaustion_ceiling
         self.edge_filter = edge_filter or IndependentMatchingNoise.empty_filter
 
-    def prune_edges(self, code_data: HyperMultiGraph) -> Tuple[Any, ...]:
+    def prune_edges(self, code_data: HyperMultiGraph) -> tuple[Any, ...]:
         """From a set of weighted edges, get the subset of edges and their combinations
         that have weights that can be summed without exceeding a given target
         weight (exhaustion ceiling).
@@ -648,7 +653,7 @@ class ExhaustiveWeightedMatchingNoise(SequentialNoise[HyperMultiGraph,
         return pruned_edges, max_edges_within_ceiling
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
+        self, code_data: HyperMultiGraph, seed: int | None = None  # noqa: ARG002
     ) -> Iterator[OrderedDecodingEdges]:
         pruned_edges, max_edges_within_ceiling = self.prune_edges(code_data)
 
@@ -673,24 +678,25 @@ class ExhaustiveWeightedMatchingNoise(SequentialNoise[HyperMultiGraph,
     def __repr__(self) -> str:
         return f"EXHAUSTIVE_WEIGHTED_{self.exhaustion_ceiling}"
 
-    def __eq__(self, __o: object) -> bool:
-        return (isinstance(__o, ExhaustiveWeightedMatchingNoise) and
-                self.exhaustion_ceiling == __o.exhaustion_ceiling
-                and self.edge_filter == __o.edge_filter)
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, ExhaustiveWeightedMatchingNoise) and
+                self.exhaustion_ceiling == other.exhaustion_ceiling
+                and self.edge_filter == other.edge_filter)
 
     def __hash__(self) -> int:
-        raise NotImplementedError(
+        msg = (
             "Implementation voluntarily not provided. If you think you need it, please "
             "open an issue at https://github.com/Deltakit/deltakit/issues/new/choose"
         )
+        raise NotImplementedError(msg)
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["exhaustion_ceiling"] = self.exhaustion_ceiling
         return base_dict
 
 
-class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecodingEdges,
+class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, tuple[OrderedDecodingEdges,
                                                                  OrderedDecodingEdges]]):
     """Noise model that simulates a simple erasure channel. Edges are selected for
     erasure independently at random with given probability. Independently at random,
@@ -701,7 +707,7 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
     def __init__(self,
                  erasure_probability: float,
                  pauli_noise_model: IndependentMatchingNoise | None = None,
-                 edge_filter: Optional[EdgeFilterT] = None):
+                 edge_filter: EdgeFilterT | None = None):
         self.erasure_probability = erasure_probability
         self.edge_filter = edge_filter or IndependentMatchingNoise.empty_filter
         self.pauli_noise_model = (
@@ -709,8 +715,8 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
         )
 
     def error_generator(
-        self, code_data: HyperMultiGraph, seed: Optional[int] = None
-    ) -> Iterator[Tuple[OrderedDecodingEdges,
+        self, code_data: HyperMultiGraph, seed: int | None = None
+    ) -> Iterator[tuple[OrderedDecodingEdges,
                         OrderedDecodingEdges]]:
         filtered = list(self.edge_filter(code_data))
         num_edges = len(filtered)
@@ -734,11 +740,11 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
             yield (OrderedDecodingEdges(chain(pauli_errors, erased_errors)),
                    OrderedDecodingEdges(erased_edges, mod_2_filter=False))
 
-    def __eq__(self, __o: object) -> bool:
-        return (isinstance(__o, UniformErasureNoise) and
-                self.erasure_probability == __o.erasure_probability and
-                self.edge_filter == __o.edge_filter and
-                self.pauli_noise_model == __o.pauli_noise_model)
+    def __eq__(self, other: object) -> bool:
+        return (isinstance(other, UniformErasureNoise) and
+                self.erasure_probability == other.erasure_probability and
+                self.edge_filter == other.edge_filter and
+                self.pauli_noise_model == other.pauli_noise_model)
 
     def __hash__(self):
         return hash((self.erasure_probability, self.edge_filter, self.pauli_noise_model))
@@ -746,20 +752,21 @@ class UniformErasureNoise(MonteCarloNoise[HyperMultiGraph, Tuple[OrderedDecoding
     def __repr__(self) -> str:
         return f"UNIFORM_ERASURE_{self.erasure_probability}"
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["p"] = self.erasure_probability
         return base_dict
 
     def __add__(self, other):
-        raise NotImplementedError("Cannot add uniform erasure noise to any other noise.")
+        msg = "Cannot add uniform erasure noise to any other noise."
+        raise NotImplementedError(msg)
 
 
 def error_weight_probabilities(
     num_error_mechanisms: int,
     probability: float,
     coefficient_limit: float = 1e-20
-) -> List[float]:
+) -> list[float]:
     """The binomial distribution of error weights when each possible error mechanism
     experiences an error independently with the given probability. The following code
     can be achieved more simply by using the `scipy.stats.binom.pmf()` method but not

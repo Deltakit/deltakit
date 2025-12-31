@@ -9,7 +9,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from functools import cached_property
 from pathlib import Path
-from typing import Optional, Set, Tuple, Type
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -74,8 +73,8 @@ class PlanarCode(CSSCode, ABC):
         self,
         width: int,
         height: int,
-        untransformed_x_schedule: Tuple[Coord2DDelta, ...],
-        untransformed_z_schedule: Tuple[Coord2DDelta, ...],
+        untransformed_x_schedule: tuple[Coord2DDelta, ...],
+        untransformed_z_schedule: tuple[Coord2DDelta, ...],
         schedule_type: ScheduleType = ScheduleType.SIMULTANEOUS,
         use_ancilla_qubits: bool = True,
         shift: Coord2DDelta = Coord2DDelta(0, 0)
@@ -83,7 +82,8 @@ class PlanarCode(CSSCode, ABC):
         self._shift = shift
         self.linear_tr = np.array([[1, 0], [0, 1]])
         if np.linalg.det(self.linear_tr) == 0.0:
-            raise ValueError("Determinant of linear transformation matrix cannot be 0")
+            msg = "Determinant of linear transformation matrix cannot be 0"
+            raise ValueError(msg)
 
         self._dimensions_at_least_2(width, height)
 
@@ -145,12 +145,13 @@ class PlanarCode(CSSCode, ABC):
             Raises an error if either width or height is smaller than 2.
         """
         if width < 2 or height < 2:
-            raise ValueError("Width and height need to be greater than or equal to 2.")
+            msg = "Width and height need to be greater than or equal to 2."
+            raise ValueError(msg)
 
     @abstractmethod
     def _calculate_untransformed_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliGate], ...], Tuple[Set[PauliGate], ...]]:
+    ) -> tuple[tuple[set[PauliGate], ...], tuple[set[PauliGate], ...]]:
         """
         Calculate logical operators before the linear transformation and
         shift vector are applied.
@@ -165,7 +166,7 @@ class PlanarCode(CSSCode, ABC):
 
     def _calculate_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliGate], ...], Tuple[Set[PauliGate], ...]]:
+    ) -> tuple[tuple[set[PauliGate], ...], tuple[set[PauliGate], ...]]:
         """
         Calculate logical operators, applying a linear transformation
         and shift vector to each qubit coordinate.
@@ -202,7 +203,7 @@ class PlanarCode(CSSCode, ABC):
     @abstractmethod
     def _calculate_untransformed_all_qubits(
         self,
-    ) -> Tuple[Set[Qubit], Set[Qubit], Set[Qubit]]:
+    ) -> tuple[set[Qubit], set[Qubit], set[Qubit]]:
         """
         Calculate X and Z-type stabiliser ancilla qubits and data qubits before
         the linear transformation and shift vector are applied.
@@ -215,7 +216,7 @@ class PlanarCode(CSSCode, ABC):
 
         """
 
-    def _calculate_x_and_z_ancilla_qubits(self) -> Tuple[Set[Qubit], Set[Qubit]]:
+    def _calculate_x_and_z_ancilla_qubits(self) -> tuple[set[Qubit], set[Qubit]]:
         """
         Calculate X and Z-type stabiliser ancilla qubits, applying a linear transformation
         and shift vector to each qubit coordinate.
@@ -234,7 +235,7 @@ class PlanarCode(CSSCode, ABC):
             for z_anc in self._untransformed_z_ancilla_qubits
         }
 
-    def _calculate_data_qubits(self) -> Set[Qubit]:
+    def _calculate_data_qubits(self) -> set[Qubit]:
         """
         Calculate all data qubits and return a set of them, applying a
         linear transformation and shift vector to all the qubit coordinates.
@@ -265,12 +266,12 @@ class PlanarCode(CSSCode, ABC):
         )
         return Qubit(Coord2D(*(self.linear_tr @ qubit_coords_as_np)) + self._shift)
 
-    def _calculate_ancilla_qubits(self) -> Set[Qubit]:
+    def _calculate_ancilla_qubits(self) -> set[Qubit]:
         if self._use_ancilla_qubits:
             return self._x_ancilla_qubits.union(self._z_ancilla_qubits)
         return set()
 
-    def _calculate_stabilisers(self) -> Tuple[Tuple[Stabiliser, ...], ...]:
+    def _calculate_stabilisers(self) -> tuple[tuple[Stabiliser, ...], ...]:
         """
         Calculate stabilisers defining the code.
 
@@ -309,16 +310,17 @@ class PlanarCode(CSSCode, ABC):
         elif self.schedule_type == ScheduleType.X_ONLY:
             stabilisers.append(self._sort_stabilisers(x_stabilisers))
         else:
-            raise ValueError(f"Unknown schedule type {self.schedule_type} encountered.")
+            msg = f"Unknown schedule type {self.schedule_type} encountered."
+            raise ValueError(msg)
 
         return tuple(stabilisers)
 
     def _calculate_single_type_stabilisers(
         self,
-        ancilla_qubits: Set[Qubit],
-        schedule: Tuple[Coord2DDelta, ...],
-        gate: Type[PauliGate],
-    ) -> Tuple[Stabiliser, ...]:
+        ancilla_qubits: set[Qubit],
+        schedule: tuple[Coord2DDelta, ...],
+        gate: type[PauliGate],
+    ) -> tuple[Stabiliser, ...]:
         """
         Calculate stabilisers, which are products of a single type of gate.
 
@@ -353,8 +355,8 @@ class PlanarCode(CSSCode, ABC):
 
     @staticmethod
     def _sort_stabilisers(
-        stabilisers: Tuple[Stabiliser, ...],
-    ) -> Tuple[Stabiliser, ...]:
+        stabilisers: tuple[Stabiliser, ...],
+    ) -> tuple[Stabiliser, ...]:
         """
         Sort a tuple of Stabilisers starting with stabilisers whose measurements
         can be finished earliest.
@@ -398,7 +400,7 @@ class PlanarCode(CSSCode, ABC):
             )
         )
 
-    def draw_patch(self, filename: Optional[str] = None, unrotated_code: bool = False) -> None:
+    def draw_patch(self, filename: str | None = None, unrotated_code: bool = False) -> None:
         """
         Draw a picture of the planar code, optionally saving it to a .png file.
 
@@ -619,9 +621,8 @@ class PlanarCode(CSSCode, ABC):
             if type(self).__name__ != "UnrotatedToricCode":
                 for pauli in new_logical:
                     if pauli.qubit not in self.data_qubits:
-                        raise ValueError(
-                            f"Pauli operator on qubit {pauli.qubit} is not contained in the patch data qubits after shifting by {tuple(delta)}"
-                        )
+                        msg = f"Pauli operator on qubit {pauli.qubit} is not contained in the patch data qubits after shifting by {tuple(delta)}"
+                        raise ValueError(msg)
             else:
                 warnings.warn(
                     "Logical shifting validation is disabled for the UnrotatedToricCode; new logicals may be invalid"

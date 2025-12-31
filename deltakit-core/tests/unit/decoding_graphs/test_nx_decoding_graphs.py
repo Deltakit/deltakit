@@ -4,7 +4,6 @@
 import math
 import re
 from itertools import chain, combinations, permutations, repeat
-from typing import Tuple
 
 import networkx as nx
 import numpy as np
@@ -433,7 +432,7 @@ class TestAnyNXBasedGraph:
     def test_shortest_path_found(self, edges_nodes_graph, endpoints, expected_path):
         _, _, decoding_graph = edges_nodes_graph
         shortest_path = decoding_graph.shortest_path(endpoints[0], endpoints[1])
-        assert set(shortest_path) == set(DecodingEdge(u, v) for u, v in expected_path)
+        assert set(shortest_path) == {DecodingEdge(u, v) for u, v in expected_path}
 
     @pytest.mark.parametrize(
         "edges_nodes_graph, endpoints, expected_length",
@@ -492,7 +491,7 @@ class TestAnyNXBasedGraph:
         shortest_path = decoding_graph.shortest_path_no_boundaries(
             endpoints[0], endpoints[1]
         )
-        assert set(shortest_path) == set(DecodingEdge(u, v) for u, v in expected_path)
+        assert set(shortest_path) == {DecodingEdge(u, v) for u, v in expected_path}
 
     @pytest.mark.parametrize(
         "edges_nodes_graph, endpoints, expected_length",
@@ -708,9 +707,7 @@ class TestNXDecodingGraph:
     )
     def test_all_edges_present_in_graph(self, edges_nodes_graph):
         edge_list, _, decoding_graph = edges_nodes_graph
-        assert set(decoding_graph.edges) == set(
-            DecodingEdge(u, v) for u, v in edge_list
-        )
+        assert set(decoding_graph.edges) == {DecodingEdge(u, v) for u, v in edge_list}
 
     @pytest.mark.parametrize(
         "edge_data",
@@ -839,7 +836,7 @@ class TestNXDecodingGraph:
         ],
     )
     def test_get_edge_record_from_edge(
-        self, graph: NXDecodingGraph, edge_dets: Tuple[int], expected_record: EdgeRecord
+        self, graph: NXDecodingGraph, edge_dets: tuple[int], expected_record: EdgeRecord
     ):
         assert graph.get_edge_record(*edge_dets).data == expected_record.data
 
@@ -881,7 +878,7 @@ class TestNXDecodingGraph:
         )
         hypergraph = nx_graph.to_decoding_hypergraph()
         assert set(hypergraph.nodes) == {1, 2, 3}
-        assert set(frozenset(edge.vertices) for edge in hypergraph.edges) == {
+        assert {frozenset(edge.vertices) for edge in hypergraph.edges} == {
             frozenset({1, 2}),
             frozenset(
                 {

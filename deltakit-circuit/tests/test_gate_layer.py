@@ -1,10 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
-from typing import Type
 
 import pytest
 import stim
+from packaging.version import Version
+from importlib.metadata import version
 
 from deltakit_circuit import (
     Circuit,
@@ -26,6 +27,10 @@ from deltakit_circuit import (
 )
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
+
+
+CURRENT_STIM_VERSION = Version(version("stim"))
+STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 @pytest.fixture
@@ -69,7 +74,7 @@ def test_gate_layer_can_be_initialised_with_a_list_of_gates(gates):
 
 @pytest.mark.parametrize("gate_class", gates.ONE_QUBIT_GATES)
 def test_adding_a_single_qubit_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._OneQubitCliffordGate], empty_layer
+    gate_class: type[gates._OneQubitCliffordGate], empty_layer
 ):
     gate = gate_class(Qubit(0))
     empty_layer.add_gates(gate)
@@ -78,7 +83,7 @@ def test_adding_a_single_qubit_gate_to_a_layer_puts_it_in_the_layer(
 
 @pytest.mark.parametrize("gate_class", gates.TWO_QUBIT_GATES)
 def test_adding_two_qubit_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._TwoQubitGate], empty_layer
+    gate_class: type[gates._TwoQubitGate], empty_layer
 ):
     gate = gate_class(Qubit(0), Qubit(1))
     empty_layer.add_gates(gate)
@@ -87,7 +92,7 @@ def test_adding_two_qubit_gate_to_a_layer_puts_it_in_the_layer(
 
 @pytest.mark.parametrize("gate_class", gates.RESET_GATES)
 def test_adding_reset_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._ResetGate], empty_layer
+    gate_class: type[gates._ResetGate], empty_layer
 ):
     gate = gate_class(Qubit(0))
     empty_layer.add_gates(gate)
@@ -97,7 +102,7 @@ def test_adding_reset_gate_to_a_layer_puts_it_in_the_layer(
 @pytest.mark.parametrize("gate_class", gates.MEASUREMENT_GATES - {gates.MPP})
 @pytest.mark.parametrize("invert", (True, False))
 def test_adding_measurement_gate_to_a_layer_puts_it_in_the_layer(
-    gate_class: Type[gates._MeasurementGate], invert, empty_layer
+    gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
     gate = gate_class(Qubit(0), invert=invert)
     empty_layer.add_gates(gate)
@@ -153,7 +158,7 @@ def test_adding_a_gate_increases_the_number_of_gates_in_the_layer(empty_layer):
 
 @pytest.mark.parametrize("single_qubit_gate_class", gates.ONE_QUBIT_GATES)
 def test_error_is_raised_when_adding_two_single_qubit_gates_on_the_same_qubit(
-    single_qubit_gate_class: Type[gates._OneQubitCliffordGate], empty_layer
+    single_qubit_gate_class: type[gates._OneQubitCliffordGate], empty_layer
 ):
     qubit = Qubit(0)
     empty_layer.add_gates(gates.H(qubit))
@@ -171,7 +176,7 @@ def test_error_is_raised_when_adding_two_single_qubit_gates_on_the_same_qubit(
 
 @pytest.mark.parametrize("two_qubit_gate_class", gates.TWO_QUBIT_GATES)
 def test_error_is_raised_when_adding_two_qubit_gate_with_one_of_qubits_is_in_layer(
-    two_qubit_gate_class: Type[gates._TwoQubitGate], empty_layer
+    two_qubit_gate_class: type[gates._TwoQubitGate], empty_layer
 ):
     qubit = Qubit(4)
     empty_layer.add_gates(gates.H(qubit))
@@ -189,7 +194,7 @@ def test_error_is_raised_when_adding_two_qubit_gate_with_one_of_qubits_is_in_lay
 
 @pytest.mark.parametrize("reset_gate_class", gates.RESET_GATES)
 def test_error_is_raised_when_adding_reset_gate_to_a_layer_which_already_uses_that_qubit(
-    reset_gate_class: Type[gates._ResetGate], empty_layer
+    reset_gate_class: type[gates._ResetGate], empty_layer
 ):
     qubit = Qubit(2)
     empty_layer.add_gates(gates.H(qubit))
@@ -210,7 +215,7 @@ def test_error_is_raised_when_adding_reset_gate_to_a_layer_which_already_uses_th
 )
 @pytest.mark.parametrize("invert", (True, False))
 def test_error_is_raised_when_adding_a_measurement_gate_to_a_layer_which_already_uses_that_qubit(
-    measurement_gate_class: Type[gates._MeasurementGate], invert, empty_layer
+    measurement_gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
     qubit = Qubit(0)
     empty_layer.add_gates(gates.H(qubit))
@@ -498,7 +503,6 @@ class TestStimCircuit:
             (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
             (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
-            (gates.CZSWAP(Qubit(0), Qubit(1)), stim.Circuit("CZSWAP 0 1")),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
         ],
@@ -509,6 +513,18 @@ class TestStimCircuit:
         empty_layer.add_gates(gate)
         empty_layer.permute_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
+        # Enable CZSWAP test if Stim > 1.13.0.
+        # TODO: If the condition is met, this part is
+        # executed for every test parameter. There should
+        # be a clause for executing once.
+        if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
+            gate = gates.CZSWAP(Qubit(0), Qubit(1))
+            expected_circuit = stim.Circuit("CZSWAP 0 1")
+            empty_layer = GateLayer()
+            empty_circuit = stim.Circuit()
+            empty_layer.add_gates(gate)
+            empty_layer.permute_stim_circuit(empty_circuit)
+            assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
         "mpp_gate, expected_circuit",
@@ -604,7 +620,13 @@ class TestStimCircuit:
     @pytest.mark.parametrize("gate_class", gates.TWO_QUBIT_GATES)
     def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
-    ):
+    ) -> None:
+        if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0 and gate_class == gates.CZSWAP:
+            pytest.skip(
+                "CZSWAP gate has been introduced in Stim v1.13.0. "
+                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0. "
+                f"Current Stim version is {CURRENT_STIM_VERSION}."
+            )
         empty_layer.add_gates(
             [gate_class(Qubit(0), Qubit(1)), gate_class(Qubit(2), Qubit(3))]
         )

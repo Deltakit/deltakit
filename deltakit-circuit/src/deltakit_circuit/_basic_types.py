@@ -7,7 +7,7 @@ modelling.
 from __future__ import annotations
 
 from functools import cached_property
-from typing import NamedTuple, Union
+from typing import NamedTuple
 
 from deltakit_circuit._qubit_identifiers import Coordinate
 from deltakit_circuit.gates import CX, CY, CZ, PauliBasis
@@ -15,7 +15,7 @@ from deltakit_circuit.gates import CX, CY, CZ, PauliBasis
 PauliBases = tuple[PauliBasis, ...]
 
 # pylint: disable=invalid-name
-CP = Union[CX, CY, CZ]
+CP = CX | CY | CZ
 
 
 class Coord2DDelta(NamedTuple):
@@ -50,7 +50,8 @@ class Coord2DDelta(NamedTuple):
         """
         if isinstance(other, Coord2DDelta):
             return self.x * other.x + self.y * other.y
-        raise TypeError(f"Dot product is not implemented for {type(other)}")
+        msg = f"Dot product is not implemented for {type(other)}"
+        raise TypeError(msg)
 
 
 class Coord2D(Coordinate):

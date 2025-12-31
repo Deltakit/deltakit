@@ -1,5 +1,4 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import FrozenSet, List
 
 import pytest
 from deltakit_core.decoding_graphs import DecodingHyperEdge
@@ -20,7 +19,7 @@ class TestDecompositions:
     def test_decomposing_item_without_complete_decompositions_gives_empty_list(
         self,
         edge: DecodingHyperEdge,
-        edges: List[DecodingHyperEdge],
+        edges: list[DecodingHyperEdge],
     ):
         assert list(decompositions(edge, edges)) == []
 
@@ -57,7 +56,7 @@ class TestDecompositions:
         ],
     )
     def test_individual_decompositions_of_degree_three_edge_is_expected_decomposition(
-        self, edges: List[DecodingHyperEdge]
+        self, edges: list[DecodingHyperEdge]
     ):
         assert next(decompositions(DecodingHyperEdge(range(3)), edges)) == set(edges)
 
@@ -149,7 +148,7 @@ class TestDecompositions:
     def test_first_decomposition_of_hyperedge_matches_expected_decomposition(
         self,
         edge: DecodingHyperEdge,
-        edges: List[DecodingHyperEdge],
-        expected_decomposition: FrozenSet[DecodingHyperEdge],
+        edges: list[DecodingHyperEdge],
+        expected_decomposition: frozenset[DecodingHyperEdge],
     ):
         assert next(decompositions(edge, edges)) == expected_decomposition

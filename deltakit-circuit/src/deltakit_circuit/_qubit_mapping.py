@@ -2,12 +2,12 @@
 """Module which defines mappings between qubits that deltakit_circuit uses and indices
 which stim uses."""
 
-from typing import Dict, Iterable
+from collections.abc import Iterable
 
 from deltakit_circuit._qubit_identifiers import Qubit, T
 
 
-def default_qubit_mapping(qubits: Iterable[Qubit[T]]) -> Dict[Qubit[T], int]:
+def default_qubit_mapping(qubits: Iterable[Qubit[T]]) -> dict[Qubit[T], int]:
     """Generate a mapping from each qubit to an int by default.
     If the unique identifier for the qubit is an int then the unique
     identifier is the value for that qubit.
@@ -37,8 +37,9 @@ def default_qubit_mapping(qubits: Iterable[Qubit[T]]) -> Dict[Qubit[T], int]:
     Dict[Qubit[T], int]
         The mapping of qubit to integers.
     """
-    if len(set(type(qubit.unique_identifier) for qubit in qubits)) > 1:
-        raise TypeError("All Qubit.unique_identifier fields must be of the same type")
+    if len({type(qubit.unique_identifier) for qubit in qubits}) > 1:
+        msg = "All Qubit.unique_identifier fields must be of the same type"
+        raise TypeError(msg)
 
     mapping = {}
     for index, qubit in enumerate(qubits):

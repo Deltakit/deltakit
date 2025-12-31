@@ -134,17 +134,19 @@ def validate_generation(func):
                     "big code patches. This may lead to a server timeout.",
                     uid="decorator",
                 )
-        if experiment_definition.code_type in {QECECodeType.BIVARIATE_BICYCLE}:
-            if parameters is not None:
-                if parameters.matrix_specifications is not None:
-                    param_l = parameters.matrix_specifications.param_l
-                    has_basis_gates = experiment_definition.basis_gates is not None
-                    if param_l >= 15 and has_basis_gates:
-                        Logging.warn(
-                            "BBCode circuit generation with a provided gate set "
-                            "may be slow. This may lead to a server timeout.",
-                            uid="decorator",
-                        )
+        if (
+            experiment_definition.code_type in {QECECodeType.BIVARIATE_BICYCLE}
+            and parameters is not None
+            and parameters.matrix_specifications is not None
+        ):
+            param_l = parameters.matrix_specifications.param_l
+            has_basis_gates = experiment_definition.basis_gates is not None
+            if param_l >= 15 and has_basis_gates:
+                Logging.warn(
+                    "BBCode circuit generation with a provided gate set "
+                    "may be slow. This may lead to a server timeout.",
+                    uid="decorator",
+                )
         return func(obj, experiment_definition)
 
     return wrapper

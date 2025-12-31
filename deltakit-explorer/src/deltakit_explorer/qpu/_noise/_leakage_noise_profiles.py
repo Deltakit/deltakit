@@ -112,7 +112,7 @@ def one_qubit_clifford_gate_relaxation_noise_profile(pR: float) -> NoiseProfile:
         return [
             Relax(qubit, pR)
             for qubit in noise_context.gate_layer_qubits(
-                tuple(TWO_QUBIT_GATES) + (OneQubitCliffordGate,), gate_qubit_count=1
+                (*tuple(TWO_QUBIT_GATES), OneQubitCliffordGate), gate_qubit_count=1
             )
         ]
 

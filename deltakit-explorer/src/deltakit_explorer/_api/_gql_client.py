@@ -316,7 +316,8 @@ class GQLClient(APIClient):
             **noise_model.__dict__,
         }
         if noise_model.ENDPOINT is None:
-            raise NotImplementedError(f"Noise addition for {type(noise_model)} is not implemented.")
+            msg = f"Noise addition for {type(noise_model)} is not implemented."
+            raise NotImplementedError(msg)
         result = self.execute(
             query_name=noise_model.ENDPOINT, variable_values=variables, request_id=request_id)
         dstring = DataString.from_data_string(result[noise_model.ENDPOINT_RESULT_FIELDNAME]["uid"])

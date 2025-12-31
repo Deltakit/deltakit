@@ -111,8 +111,8 @@ class TestExhaustiveWeightedMatchingNoise:
         dem = stim_circuit.detector_error_model(decompose_errors=True)
         decoding_graph, logicals = dem_to_decoding_graph_and_logicals(dem)
 
-        times = set(
-            [decoding_graph.detector_records[logical.second].time for logical in logicals[0]])
+        times = {
+            decoding_graph.detector_records[logical.second].time for logical in logicals[0]}
         exhaustion_ceiling = min(
             [sum(decoding_graph.edge_records[edge].weight for edge in logicals[0]
                  if decoding_graph.detector_records[edge.second].time == time)
@@ -131,8 +131,7 @@ class TestExhaustiveWeightedMatchingNoise:
 
     def test_no_errors_above_ceiling_are_sampled(self, manual_decoding_hypergraph):
         noise_model = ExhaustiveWeightedMatchingNoise(0.01)
-        noise_sample = {sample for sample
-                        in noise_model.error_generator(manual_decoding_hypergraph)}
+        noise_sample = set(noise_model.error_generator(manual_decoding_hypergraph))
         assert not noise_sample
 
     def test_correct_errors_are_generated(self, noise_model_and_decoding_graph):

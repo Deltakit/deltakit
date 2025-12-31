@@ -7,7 +7,6 @@ circuit for a quantum memory experiment with a Calderbank-Shor-Steane
 
 from __future__ import annotations
 
-from typing import Optional
 
 import deltakit_explorer
 import stim
@@ -25,13 +24,15 @@ from deltakit_explorer.codes._planar_code._unrotated_planar_code import \
 from deltakit_explorer.codes._planar_code._unrotated_toric_code import \
     UnrotatedToricCode
 from deltakit_explorer.codes._repetition_code import RepetitionCode
+from deltakit_explorer.enums import QECECodeType, QECExperimentType
+from deltakit_explorer.types import CircuitParameters, QECExperimentDefinition
 
 
 def css_code_memory_circuit(
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """
@@ -66,17 +67,16 @@ def css_code_memory_circuit(
         If logical_basis is neither PauliBasis.X nor PauliBasis.Z.
     """
     if num_rounds < 1:
-        raise ValueError("Invalid num_rounds, it has to be positive.")
+        msg = "Invalid num_rounds, it has to be positive."
+        raise ValueError(msg)
     if logical_basis not in [PauliBasis.X, PauliBasis.Z]:
-        raise ValueError(
-            "Invalid logical_basis, it has to be PauliBasis.X or PauliBasis.Z"
-        )
+        msg = "Invalid logical_basis, it has to be PauliBasis.X or PauliBasis.Z"
+        raise ValueError(msg)
     if use_iswap_gates and client is None:
-        raise NotImplementedError(
-            "`use_iswap_gates == True` is only supported when a `client` object is provided."
-        )
+        msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
+        raise NotImplementedError(msg)
     if client is not None:
-        return _cloud_css_code_experiment_circuit(deltakit_explorer.enums.QECExperimentType.QUANTUM_MEMORY,
+        return _cloud_css_code_experiment_circuit(QECExperimentType.QUANTUM_MEMORY,
                                               css_code, num_rounds, logical_basis, client, use_iswap_gates)
     data_qubit_init_stage = (
         css_code.encode_logical_zeroes()
@@ -95,11 +95,11 @@ def css_code_memory_circuit(
 
 
 def _cloud_css_code_experiment_circuit(
-    experiment_type: deltakit_explorer.enums.QECExperimentType,
+    experiment_type: QECExperimentType,
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """
@@ -137,39 +137,40 @@ def _cloud_css_code_experiment_circuit(
         If `use_iswap_gates` is used without `client`.
     """
     if use_iswap_gates and client is None:
-        raise NotImplementedError(
-            "`use_iswap_gates == True` is only supported when a `client` object is provided."
-        )
+        msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
+        raise NotImplementedError(msg)
     if client is None:
-        raise NotImplementedError("A `client` is required to obtain a stability circuit.")
+        msg = "A `client` is required to obtain a stability circuit."
+        raise NotImplementedError(msg)
 
     code_types = {
-        RotatedPlanarCode: deltakit_explorer.enums.QECECodeType.ROTATED_PLANAR,
-        UnrotatedPlanarCode: deltakit_explorer.enums.QECECodeType.UNROTATED_PLANAR,
-        UnrotatedToricCode: deltakit_explorer.enums.QECECodeType.UNROTATED_TORIC,
-        RepetitionCode: deltakit_explorer.enums.QECECodeType.REPETITION,
-        BivariateBicycleCode: deltakit_explorer.enums.QECECodeType.BIVARIATE_BICYCLE,
+        RotatedPlanarCode: QECECodeType.ROTATED_PLANAR,
+        UnrotatedPlanarCode: QECECodeType.UNROTATED_PLANAR,
+        UnrotatedToricCode: QECECodeType.UNROTATED_TORIC,
+        RepetitionCode: QECECodeType.REPETITION,
+        BivariateBicycleCode: QECECodeType.BIVARIATE_BICYCLE,
     }
     code_type = code_types[css_code.__class__]
 
     if isinstance(css_code, PlanarCode):
-        parameters = deltakit_explorer.types.CircuitParameters.from_sizes(
+        parameters = CircuitParameters.from_sizes(
             (css_code.width, css_code.height)
         )
     elif isinstance(css_code, RepetitionCode):
-        parameters = deltakit_explorer.types.CircuitParameters.from_sizes(
+        parameters = CircuitParameters.from_sizes(
             (css_code.distance,)
         )
     elif isinstance(css_code, BivariateBicycleCode):
-        parameters=deltakit_explorer.types.CircuitParameters.from_matrix_specification(
+        parameters=CircuitParameters.from_matrix_specification(
             param_l=css_code.param_l,
             param_m=css_code.param_m,
             m_A_powers=css_code.m_A_powers,
             m_B_powers=css_code.m_B_powers,
         )
     else:
-        raise ValueError("Unrecognised `css_code` type.")
-    basis_gates: Optional[list[str]] = None
+        msg = "Unrecognised `css_code` type."
+        raise ValueError(msg)
+    basis_gates: list[str] | None = None
     if use_iswap_gates:
         basis_gates = [
             "ISWAP",
@@ -179,7 +180,7 @@ def _cloud_css_code_experiment_circuit(
         ]
 
     circuit = client.generate_circuit(
-        deltakit_explorer.types.QECExperimentDefinition(
+        QECExperimentDefinition(
             experiment_type=experiment_type,
             code_type=code_type,
             observable_basis=logical_basis,
@@ -196,7 +197,7 @@ def css_code_stability_circuit(
     css_code: StabiliserCode,
     num_rounds: int,
     logical_basis: PauliBasis,
-    client: Optional[deltakit_explorer.Client] = None,
+    client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
 ) -> Circuit:
     """
@@ -230,5 +231,5 @@ def css_code_stability_circuit(
     ValueError :
         If `css_code` is not of a valid type.
     """
-    return _cloud_css_code_experiment_circuit(deltakit_explorer.enums.QECExperimentType.STABILITY,
+    return _cloud_css_code_experiment_circuit(QECExperimentType.STABILITY,
                                               css_code, num_rounds, logical_basis, client, use_iswap_gates)

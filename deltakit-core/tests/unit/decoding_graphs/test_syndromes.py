@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """Tests for decoding syndrome datastructures."""
 
-from typing import List, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 import pytest
@@ -88,7 +88,7 @@ class TestOrderedSyndrome:
         annotated_syndrome: OrderedSyndrome,
         detector_records,
         layer_num: int,
-        layers: List[OrderedSyndrome],
+        layers: list[OrderedSyndrome],
     ):
         assert (
             annotated_syndrome.split_by_time_coord(detector_records, layer_num)
@@ -251,7 +251,7 @@ class TestBitstringCreation:
         ],
     )
     def test_iterating_a_bitstring_gives_expected_bits(
-        self, bitstring: Bitstring, expected_bits: List[Bit]
+        self, bitstring: Bitstring, expected_bits: list[Bit]
     ):
         assert list(bitstring) == expected_bits
 
@@ -265,7 +265,7 @@ class TestBitstringCreation:
         ],
     )
     def test_creating_bitstring_from_indices_gives_expected_bitstring(
-        self, indices: List[int], expected_bitstring: Bitstring
+        self, indices: list[int], expected_bitstring: Bitstring
     ):
         assert Bitstring.from_indices(indices) == expected_bitstring
 
@@ -280,7 +280,7 @@ class TestBitstringCreation:
         ],
     )
     def test_creating_bitstring_from_bits_gives_expected_bitstring(
-        self, bits: List[Bit], expected_bitstring: Bitstring
+        self, bits: list[Bit], expected_bitstring: Bitstring
     ):
         assert Bitstring.from_bits(bits) == expected_bitstring
 
@@ -464,7 +464,7 @@ class TestBitstringMethods:
         ],
     )
     def test_converting_bitstring_into_list_of_indices_gives_expected_indices(
-        self, bitstring: Bitstring, expected_indices: List[int]
+        self, bitstring: Bitstring, expected_indices: list[int]
     ):
         assert bitstring.to_indices() == expected_indices
 
@@ -500,7 +500,7 @@ class TestBitstringMethods:
         self,
         bitstring: Bitstring,
         num_bits_per_word: int,
-        expected_words: List[Bitstring],
+        expected_words: list[Bitstring],
     ):
         assert list(bitstring.to_words(num_bits_per_word)) == expected_words
 

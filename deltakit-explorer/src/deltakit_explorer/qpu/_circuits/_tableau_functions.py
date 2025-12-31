@@ -8,8 +8,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import reduce
 from operator import mul
-from typing import (DefaultDict, Dict, List, Optional, Sequence, Set, Tuple,
-                    Union)
+from collections.abc import Sequence
 
 import numpy as np
 import stim
@@ -29,42 +28,42 @@ from deltakit_explorer.qpu._native_gate_set import (NativeGateSetAndTimes,
 # key: tuple of the form (gate's layer index, gate's qubit, gate's stim_string representation)
 # values: dictionary containing preceding and succeeding unitary block indices:
 #   {"preceding": 0, "succeeding": 1}
-SpecialGateDict = Dict[Tuple[int, Qubit, str], Dict[str, int]]
+SpecialGateDict = dict[tuple[int, Qubit, str], dict[str, int]]
 
 # key: tableau in str form: ("+X", "+Z")
 # values: tuple of gates that give the tableau, as strs: ("X", "X")
-TableauDict = Dict[Tuple[str, ...], Tuple[str, ...]]
+TableauDict = dict[tuple[str, ...], tuple[str, ...]]
 
 # key: tableau, in str form: ("+X", "+Z")
 # values: list of possible unitary gates with that tableau: [[I], [X, X], [Z, Z], ...]
-EquivalentTableauDict = Dict[Tuple[str, str], List[List[OneQubitCliffordGate]]]
+EquivalentTableauDict = dict[tuple[str, str], list[list[OneQubitCliffordGate]]]
 
 # A single entry in the CompilationData.two_qubit_gates dictionary. The first
 # item in the tuple describes the gate layer index, qubit, and gate.stim_string
 # for the given gate. The second entry is the unitary block dictionary, with keys
 # being "preceding" or "succeeding" and values being the unitary block index.
-TwoQubitGateDictEntry = Tuple[Tuple[int, Qubit, str], Dict[str, int]]
+TwoQubitGateDictEntry = tuple[tuple[int, Qubit, str], dict[str, int]]
 
 # Dictionary to look up compilation of a two qubit in terms of additional unitary
 # gates required. The key can be either a gate currently being compiled or the native
 # gate being compiled to. The values are the unitary blocks needed to do the compilation.
 # The order is ub1,ub2,ub3,ub4, corresponding to before and after qubit1 and before and
 # after qubit 2 respectively.
-TwoQubitGateCompilationLookupDict = Dict[
+TwoQubitGateCompilationLookupDict = dict[
     TwoOperandGate,
-    Tuple[
-        List[OneQubitCliffordGate],
-        List[OneQubitCliffordGate],
-        List[OneQubitCliffordGate],
-        List[OneQubitCliffordGate],
+    tuple[
+        list[OneQubitCliffordGate],
+        list[OneQubitCliffordGate],
+        list[OneQubitCliffordGate],
+        list[OneQubitCliffordGate],
     ],
 ]
 
-MEAS_COMPILATION_LOOKUP_DICT: Dict[
-    Union[MX, MY, MZ, MRX, MRY, MRZ],
-    Dict[
-        Union[MX, MY, MZ, MRX, MRY, MRZ],
-        Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate]],
+MEAS_COMPILATION_LOOKUP_DICT: dict[
+    MX | MY | MZ | MRX | MRY | MRZ,
+    dict[
+        MX | MY | MZ | MRX | MRY | MRZ,
+        tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate]],
     ],
 ] = {
     MX: {MX: ([], []), MY: ([S], [S_DAG]), MZ: ([H], [H])},
@@ -73,11 +72,11 @@ MEAS_COMPILATION_LOOKUP_DICT: Dict[
 }
 # key is the gate you're compiling from, value is the gate
 # you're compiling to
-RESET_COMPILATION_LOOKUP_DICT: Dict[
-    Union[RX, RY, RZ],
-    Dict[
-        Union[RX, RY, RZ],
-        Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate]],
+RESET_COMPILATION_LOOKUP_DICT: dict[
+    RX | RY | RZ,
+    dict[
+        RX | RY | RZ,
+        tuple[list[OneQubitCliffordGate], list[OneQubitCliffordGate]],
     ],
 ] = {
     RX: {
@@ -225,7 +224,7 @@ def _get_tableau_from_sequence_of_gates(
 
 def _get_tableau_as_key(
     tableau: stim.Tableau, up_to_paulis: bool = False
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """
     Given a stim.Tableau, corresponding to a one-qubit
     Clifford unitary, return a tuple of the string output
@@ -268,14 +267,15 @@ def _get_tableau_from_sequence_of_1q_gates(gates: Sequence[str]) -> stim.Tableau
             ),
         )
     except ValueError as ve:
-        raise ValueError("'gates' must be composed of only single qubit gates") from ve
+        msg = "'gates' must be composed of only single qubit gates"
+        raise ValueError(msg) from ve
 
 
 def _get_compilation_dict(
     native_gates: NativeGateSetAndTimes,
-    max_length: Optional[int] = None,
+    max_length: int | None = None,
     up_to_paulis: bool = False,
-) -> Tuple[TableauDict, EquivalentTableauDict]:
+) -> tuple[TableauDict, EquivalentTableauDict]:
     """
     Create a compilation dictionary that specifies, for a given set of single
     qubit native gates, the lowest length operator-product per tableau. To achieve this,
@@ -339,8 +339,8 @@ def _get_compilation_dict(
 
     # Include the identity tableau, as it is always there by default
     min_weight_tableau_dict: TableauDict = {identity_tableau: ()}
-    equiv_tableau_dict: DefaultDict[
-        Tuple[str, str], List[List[OneQubitCliffordGate]]
+    equiv_tableau_dict: defaultdict[
+        tuple[str, str], list[list[OneQubitCliffordGate]]
     ] = defaultdict(list)
     current_weight = 1
     while max_length is None or current_weight <= max_length:
@@ -403,9 +403,9 @@ def _get_tableau_y_image_as_string(tableau: stim.Tableau, up_to_paulis: bool):
 def _get_compilation_with_projectors_before_unitaries(
     compilation_dict: TableauDict,
     unitary_block: Sequence[OneQubitCliffordGate],
-    projector_before_unitaries: Union[MZ, RZ, MX, RX, MY, RY],
+    projector_before_unitaries: MZ | RZ | MX | RX | MY | RY,
     up_to_paulis: bool = False,
-) -> Tuple[str, ...]:
+) -> tuple[str, ...]:
     """
     Given a string/block of unitary gates, and specifying which projector
     this unitary block is preceded by (reset or measurement), use the Tableau
@@ -449,7 +449,7 @@ def _get_compilation_with_projectors_before_unitaries(
     # first, get the Tableau for the unitary_block
     if len(unitary_block) == 0:
         unitary_block_tableau: stim.Tableau = stim.Tableau.from_named_gate("I")
-        shortest_gates: Tuple = tuple()
+        shortest_gates: tuple = ()
     else:
         unitary_block_tableau = _get_tableau_from_sequence_of_1q_gates(
             [gate.stim_string for gate in unitary_block]
@@ -485,9 +485,8 @@ def _get_compilation_with_projectors_before_unitaries(
             del compilation_dict_with_y[tableau]
         compilation_dict = compilation_dict_with_y
     else:
-        raise NotImplementedError(
-            f"{projector_before_unitaries.stim_string} is not a recognised projector"
-        )
+        msg = f"{projector_before_unitaries.stim_string} is not a recognised projector"
+        raise NotImplementedError(msg)
 
     # for the basis of the reset or measurement before a unitary block, we can just consider
     # the part of the Tableau relevant to the basis.
@@ -501,12 +500,13 @@ def _get_compilation_with_projectors_before_unitaries(
                 shortest_gates = gates
 
     if not unitary_block_tableau_in_comp_dict:
-        raise KeyError(
+        msg = (
             "unitary_block's tableau is not in the compilation_dictionary."
             " This means the output of this function may include gates not"
             " in the native gate set. Try compiling unitary_block to the"
             " native gate set first."
         )
+        raise KeyError(msg)
 
     return shortest_gates
 
@@ -514,9 +514,9 @@ def _get_compilation_with_projectors_before_unitaries(
 def _get_compilation_with_measurement_after_unitaries(
     compilation_dict: TableauDict,
     unitary_block: Sequence[OneQubitCliffordGate],
-    measurement_after_unitaries: Union[MZ, RZ, MX, RX, MY, RY],
+    measurement_after_unitaries: MZ | RZ | MX | RX | MY | RY,
     up_to_paulis: bool = False,
-) -> Tuple[str, ...]:
+) -> tuple[str, ...]:
     """
     In the case of a measurement following a block of unitary operators,
     we may simply consider the Tableau's that treat the measurement basis
@@ -599,7 +599,7 @@ def _is_identity_like(tableau: stim.Tableau) -> bool:
 
 def _get_tableau_key_from_sequence_of_gates(
     gates: Sequence[OneQubitCliffordGate], up_to_paulis: bool = False
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     return _get_tableau_as_key(
         _get_tableau_from_sequence_of_1q_gates([gate.stim_string for gate in gates]),
         up_to_paulis,
@@ -608,7 +608,7 @@ def _get_tableau_key_from_sequence_of_gates(
 
 def _get_single_qubits_tableau_key_from_two_qubit_tableau(
     two_qubit_tableau: stim.Tableau, qubit_index: int, up_to_paulis: bool = False
-) -> Tuple[str, str]:
+) -> tuple[str, str]:
     """
     Given a tableau for a two-qubit gate, get the part of the tableau that corresponds
     to just one of the qubits, specified by qubit_index.
@@ -630,9 +630,8 @@ def _get_single_qubits_tableau_key_from_two_qubit_tableau(
         E.g, ("+Z", "+X") or ("Z", "X") if up_to_paulis=True.
     """
     if two_qubit_tableau.to_unitary_matrix(endian="little").shape != (4, 4):
-        raise ValueError(
-            "The given tableau does not describe a two qubit gate"
-        )
+        msg = "The given tableau does not describe a two qubit gate"
+        raise ValueError(msg)
     if qubit_index == 0:
         tableau_key = (
             str(two_qubit_tableau.x_output(qubit_index))[
@@ -657,19 +656,19 @@ def _get_single_qubits_tableau_key_from_two_qubit_tableau(
 def _get_compilation_with_two_qubit_gates(
     two_qubit_gate: TwoOperandGate,
     compilation_dict: TableauDict,
-    unitary_block_1: List[OneQubitCliffordGate],
-    unitary_block_2: List[OneQubitCliffordGate],
-    unitary_block_3: List[OneQubitCliffordGate],
-    unitary_block_4: List[OneQubitCliffordGate],
-    gate_exchange_dict: Optional[EquivalentTableauDict] = None,
+    unitary_block_1: list[OneQubitCliffordGate],
+    unitary_block_2: list[OneQubitCliffordGate],
+    unitary_block_3: list[OneQubitCliffordGate],
+    unitary_block_4: list[OneQubitCliffordGate],
+    gate_exchange_dict: EquivalentTableauDict | None = None,
     up_to_paulis: bool = False,
     allow_terms_to_mutate: bool = True,
     allow_terms_to_multiply: bool = True,
-) -> Tuple[
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
-    List[OneQubitCliffordGate],
+) -> tuple[
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
+    list[OneQubitCliffordGate],
 ]:
     """
     Given the following circuit diagram:
@@ -760,8 +759,8 @@ def _get_compilation_with_two_qubit_gates(
         for outer_start_index in range(len(unitary_block_whole) - 1, -1, -1):
             # within each sub-block of gates in unitary_block, see if there
             # is an equivalent gate expression that lets us pull something through
-            unitary_block_equiv_gates: List[
-                List[OneQubitCliffordGate]
+            unitary_block_equiv_gates: list[
+                list[OneQubitCliffordGate]
             ] = gate_exchange_dict.get(
                 _get_tableau_key_from_sequence_of_gates(
                     unitary_block_whole[
@@ -891,9 +890,8 @@ def _get_compilation_with_two_qubit_gates(
                             for gate in compilation_dict[second_qubit_tab]
                         ]
                     except KeyError as ke:
-                        raise KeyError(
-                            f"Tableau missing from compilation dictionary: {str(ke)}"
-                        ) from ke
+                        msg = f"Tableau missing from compilation dictionary: {ke!s}"
+                        raise KeyError(msg) from ke
 
                     # update pre-2q gate unitaries
                     # = original block up to where our outer index is
@@ -960,11 +958,11 @@ class CompilationData:
         Number of layers in the circuit
     """
 
-    unitary_blocks: Dict[int, List[OneQubitCliffordGate]]
+    unitary_blocks: dict[int, list[OneQubitCliffordGate]]
     reset_gates: SpecialGateDict
     measurement_gates: SpecialGateDict
     two_qubit_gates: SpecialGateDict
-    non_gatelayer_layers: Dict[int, Layer]
+    non_gatelayer_layers: dict[int, Layer]
     iterations: int = 1
     num_layers: int = 0
 
@@ -981,7 +979,8 @@ def _get_relevant_dict_to_update(
         return meas_dict
     if isinstance(gate, TwoOperandGate):
         return two_q_dict
-    raise ValueError(f"Gate is not MR, M, R or 2Q: {gate}")
+    msg = f"Gate is not MR, M, R or 2Q: {gate}"
+    raise ValueError(msg)
 
 
 def _extract_structure_from_circuit(
@@ -1066,24 +1065,24 @@ def _extract_structure_from_circuit(
     """
     # iterate over the layers
     # {(gate_layer_index, qubit_index, gate_stim_string): {preceding: [], succeeding: []}}
-    unitary_blocks: Dict[int, List[OneQubitCliffordGate]] = {}
+    unitary_blocks: dict[int, list[OneQubitCliffordGate]] = {}
     reset_dict: SpecialGateDict = {}
     meas_dict: SpecialGateDict = {}
     two_q_dict: SpecialGateDict = {}
-    non_gate_layers: Dict[int, Layer] = {}
+    non_gate_layers: dict[int, Layer] = {}
 
     # for each special gate, keep track of any unitaries that have been encountered
     # e.g, for a circuit: q0 = --X--Z--S--RZ--, this would be {q0: [X, Z, S]} up until
     # the reset, at which point those unitaries are set as a unitary block preceding
     # the RZ, then cleared.
-    current_gates_per_qubit: Dict[Qubit, List[OneQubitCliffordGate]] = {
+    current_gates_per_qubit: dict[Qubit, list[OneQubitCliffordGate]] = {
         q: [] for q in circuit.qubits
     }
     # keep track of the most recent special gate encountered on a qubit. initially set
     # to the identity on qubit -1 at layer -1 as a default value.
     # e.g, after encountering an RZ at layer 0 on Qubit(0), this will be {Qubit(0): (RZ(0), 0)}.
     # if we then later encounter an MZ at layer 5 on Qubit(0), this will be {Qubit(0): (MZ(0), 5)}.
-    most_recent_special_gate_per_qubit: Dict[Qubit, Tuple[Gate, int]] = {
+    most_recent_special_gate_per_qubit: dict[Qubit, tuple[Gate, int]] = {
         q: (I(-1), -1) for q in circuit.qubits
     }
     unitary_block_index = 0
@@ -1126,7 +1125,8 @@ def _extract_structure_from_circuit(
             for gate in layer.gates:
                 # if gate is just a unitary, add it and move on
                 if isinstance(gate, MPP):
-                    raise NotImplementedError("MPP gates not yet supported")
+                    msg = "MPP gates not yet supported"
+                    raise NotImplementedError(msg)
                 if not isinstance(
                     gate, (RX, RY, RZ, MRX, MRZ, MRY, MX, MY, MZ, TwoOperandGate)
                 ):
@@ -1207,11 +1207,11 @@ def _extract_structure_from_circuit(
 
 
 def _add_gates_from_unitary_blocks(
-    unitary_blocks: Dict[int, List[Gate]],
-    gate_unitary_block_info: Dict[str, int],
-    circuit_layers: DefaultDict[int, GateLayer],
+    unitary_blocks: dict[int, list[Gate]],
+    gate_unitary_block_info: dict[str, int],
+    circuit_layers: defaultdict[int, GateLayer],
     layer_index: int,
-    unitary_blocks_already_added: Set[int],
+    unitary_blocks_already_added: set[int],
 ):
     r"""
     Edit the given `circuit_layers` by adding gates from the unitary blocks to the relevant
@@ -1250,7 +1250,7 @@ def _add_gates_from_unitary_blocks(
 
 
 def _create_circuit_from_compilation_data(
-    comp_data: CompilationData, layer_index_lookup: Dict[int, int], iterations: int = 1
+    comp_data: CompilationData, layer_index_lookup: dict[int, int], iterations: int = 1
 ) -> Circuit:
     """
     The inverse of `_extract_structure_from_circuit` - from a CompilationData object,
@@ -1271,8 +1271,8 @@ def _create_circuit_from_compilation_data(
     Circuit
         `deltakit.circuit.Circuit` representation of the circuit described by CompilationData.
     """
-    circuit_layers: DefaultDict[int, GateLayer] = defaultdict(GateLayer)
-    unitary_blocks_already_added: Set[int] = set()
+    circuit_layers: defaultdict[int, GateLayer] = defaultdict(GateLayer)
+    unitary_blocks_already_added: set[int] = set()
 
     # insert one-qubit special gates
     for special_gate_dict, gate_string_lookup in (

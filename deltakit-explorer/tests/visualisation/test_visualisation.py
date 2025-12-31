@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import ClassVar
 
 import matplotlib
 import matplotlib.image as img
@@ -13,7 +14,7 @@ from deltakit_explorer.types import QubitCoordinateToDetectorMapping
 
 class TestVisualisation:
 
-    defect_rates = [
+    defect_rates: ClassVar[list[dict[tuple[float, ...], list[float]]]] = [
         {
             (4.0, 5.0): [0.06904, 0.18388, 0.18308, 0.18564, 0.18602, 0.18416, 0.18526, 0.12188],
             (2.0, 5.0): [0.08488, 0.19028, 0.18948, 0.19204, 0.19622, 0.20552, 0.20192, 0.14066],
@@ -28,14 +29,14 @@ class TestVisualisation:
         }
     ]
 
-    detector_map = {
+    detector_map: ClassVar[dict[tuple[float, ...], list[int]]] = {
         (2.0, 5.0): [0, 4, 8, 12, 16, 20, 24, 28],
         (2.0, 7.0): [2, 5, 9, 13, 17, 21, 25, 30],
         (4.0, 5.0): [3, 7, 11, 15, 19, 23, 27, 31],
         (4.0, 3.0): [1, 6, 10, 14, 18, 22, 26, 29]
     }
 
-    defect_coords = {
+    defect_coords: ClassVar[dict[int, tuple[float, ...]]] = {
         0: (1.0, 4.0, 0.0), 1: (3.0, 4.0, 0.0), 2: (3.0, 6.0, 0.0), 3: (5.0, 6.0, 0.0),
         4: (1.0, 4.0, 1.0), 5: (3.0, 4.0, 1.0), 6: (3.0, 6.0, 1.0), 7: (5.0, 6.0, 1.0),
         8: (1.0, 4.0, 2.0), 9: (3.0, 4.0, 2.0), 10: (3.0, 6.0, 2.0), 11: (5.0, 6.0, 2.0),

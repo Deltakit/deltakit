@@ -8,15 +8,15 @@ from deltakit_explorer.qpu._noise._noise_parameters import \
 
 @pytest.fixture
 def noise_params():
-    return dict(
-        t1=20e-6,
-        t2=30e-6,
-        p_1_qubit_gate_error=0.001,
-        p_2_qubit_gate_error=0.02,
-        p_reset_error=0.03,
-        p_meas_qubit_error=0.04,
-        p_readout_flip=0.05,
-    )
+    return {
+        't1': 20e-6,
+        't2': 30e-6,
+        'p_1_qubit_gate_error': 0.001,
+        'p_2_qubit_gate_error': 0.02,
+        'p_reset_error': 0.03,
+        'p_meas_qubit_error': 0.04,
+        'p_readout_flip': 0.05,
+    }
 
 
 class TestPhysicalNoise:

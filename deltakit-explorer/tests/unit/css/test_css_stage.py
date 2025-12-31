@@ -2,7 +2,7 @@
 import itertools
 
 import pytest
-from deltakit_circuit import (Circuit, Coordinate, GateLayer,
+from deltakit_circuit import (Circuit, GateLayer,
                               MeasurementRecord, Observable, PauliX, PauliY,
                               PauliZ, Qubit)
 from deltakit_circuit._basic_types import Coord2D
@@ -61,19 +61,26 @@ class TestCalculateDetectorCoordinates:
         "stabilisers, expected_coordinates",
         [
             (
+
                 [
                     Stabiliser([PauliX(0)], Qubit(1)),
                     Stabiliser([PauliX(2)], Qubit(3)),
                     Stabiliser([PauliX(10)], Qubit(5)),
                 ],
-                (Coordinate(1, 0), Coordinate(3, 0), Coordinate(5, 0)),
+                (
+                    (1, 0),
+                    (3, 0),
+                    (5, 0)),
             ),
             (
                 [
                     Stabiliser([PauliX(0)], Qubit((1, 1, 7))),
                     Stabiliser([PauliX(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(1.0, 1.0, 7.0, 0.0), Coordinate(3.0, 0.0, 2.0, 0.0)),
+                (
+                    (1.0, 1.0, 7.0, 0.0),
+                    (3.0, 0.0, 2.0, 0.0)
+                ),
             ),
             (
                 [
@@ -81,42 +88,60 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(2)], Qubit((3, 0, 2))),
                     Stabiliser([PauliX((2, 2))], Qubit((3, 0))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)),
+                (
+                    (0, 0),
+                    (1, 0),
+                    (2, 0)),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliY(1)]),
                     Stabiliser([PauliX(2), PauliZ(3)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(0.5, 0), Coordinate(2.5, 0)),
+                (
+                   (0.5, 0),
+                   (2.5, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit((1, 1, 7))),
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                 ],
-                (Coordinate(1.0, 1.0, 7.0, 0.0), Coordinate(1.0, 2.0, 2.5, 0.0)),
+                (
+                   (1.0, 1.0, 7.0, 0.0),
+                   (1.0, 2.0, 2.5, 0.0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit((1, 1, 7))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                   (0, 0),
+                   (1, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX((2, 2, 2)), PauliX((0, 2, 3))], Qubit((3, 0))),
                     Stabiliser([PauliX(0), PauliZ(1)], Qubit(("apple", 0))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(1.2, 0), Coordinate(1.8, 0)),
+                (
+                    (1.2, 0),
+                    (1.8, 0)
+                ),
             ),
             (
                 [
@@ -124,7 +149,11 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ(2)], Qubit((3, 0, 2))),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)),
+                (
+                    (0, 0),
+                    (1, 0),
+                    (2, 0)
+                ),
             ),
             (
                 [
@@ -132,15 +161,21 @@ class TestCalculateDetectorCoordinates:
                     Stabiliser([PauliX(0), PauliY(3)]),
                     Stabiliser([PauliX(1), PauliZ((2, 1))]),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
             (
                 [
                     Stabiliser([PauliX(7)], Qubit(1.2)),
                     Stabiliser([PauliX(0), PauliY(3)]),
-                    Stabiliser([PauliX(1), PauliZ(("test"))]),
+                    Stabiliser([PauliX(1), PauliZ("test")]),
                 ],
-                (Coordinate(0, 0), Coordinate(1, 0)),
+                (
+                    (0, 0),
+                    (1, 0)
+                ),
             ),
         ],
     )
@@ -330,7 +365,7 @@ class TestCSSStageWithAllParameters:
                 stabilisers=example_simultaneous_stabilisers,
             )
 
-    @pytest.mark.parametrize("stabilisers", [[[]], None, [[], []]], tuple(tuple()))
+    @pytest.mark.parametrize("stabilisers", [[[]], None, [[], []]], ())
     def test_raises_error_when_stabilisers_is_empty_but_num_rounds_is_positive(
         self, stabilisers
     ):
@@ -528,7 +563,7 @@ class TestCSSStageWithAllParameters:
                     observable_definitions={0: [Qubit(0)]},
                     final_round_resets={RZ(1)},
                 ),
-                tuple(),
+                (),
             ),
             (full_stage_1_round.stage, full_stage_1_round.expected_ordered_stabilisers),
         ],
@@ -611,8 +646,7 @@ class TestTransversalHStage:
             final_round_resets=stage._final_round_resets,
         )
         assert stage.first_round == Circuit(
-            [GateLayer(stage._first_round_gates)]
-            + stage_without_trv_h.first_round.layers
+            [GateLayer(stage._first_round_gates), *stage_without_trv_h.first_round.layers]
         )
 
 
@@ -680,8 +714,7 @@ class TestTransversalSWAPStage:
             final_round_resets=stage._final_round_resets,
         )
         assert stage.first_round == Circuit(
-            [GateLayer(stage._first_round_gates)]
-            + stage_without_trv_h.first_round.layers
+            [GateLayer(stage._first_round_gates), *stage_without_trv_h.first_round.layers]
         )
 
 

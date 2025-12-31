@@ -2,7 +2,6 @@
 """Tests for decoding DetectorRecord datastructure."""
 
 from itertools import chain
-from typing import Tuple
 
 import pytest
 from deltakit_core.decoding_graphs import DetectorRecord
@@ -19,7 +18,7 @@ class TestDetectorRecord:
         ],
     )
     def test_full_coordinates_are_spatial_then_time(
-        self, detector_record: DetectorRecord, expected_coord: Tuple[int, ...]
+        self, detector_record: DetectorRecord, expected_coord: tuple[int, ...]
     ):
         assert detector_record.full_coord == expected_coord
 

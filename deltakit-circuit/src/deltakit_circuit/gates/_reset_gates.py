@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """This module provides all reset gates."""
 
-from typing import ClassVar, FrozenSet, Type, Union, get_args
+from typing import ClassVar, get_args
 
 from deltakit_circuit.gates._abstract_gates import OneQubitResetGate, PauliBasis
 from deltakit_circuit._qubit_identifiers import T
@@ -89,6 +89,6 @@ class RY(OneQubitResetGate[T]):
     stim_string: ClassVar[str] = f"R{basis.value}"
 
 
-_ResetGate = Union[RZ, RX, RY]
+_ResetGate = RZ | RX | RY
 
-RESET_GATES: FrozenSet[Type[_ResetGate]] = frozenset(get_args(_ResetGate))
+RESET_GATES: frozenset[type[_ResetGate]] = frozenset(get_args(_ResetGate))

@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import Any, Dict, Iterable, Iterator, Optional, Tuple
+from typing import Any
+from collections.abc import Iterable, Iterator
 
 import deltakit_circuit as sp
 import numpy as np
@@ -11,9 +12,9 @@ import stim
 from deltakit_core.decoding_graphs import OrderedSyndrome
 from deltakit_decode.noise_sources._generic_noise_sources import (
     BatchErrorGenerator, MonteCarloNoise)
-from typing_extensions import TypeAlias
+from typing import TypeAlias
 
-StimErrorT: TypeAlias = Tuple[OrderedSyndrome, Tuple[bool, ...]]
+StimErrorT: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
 
 
 def give_empty(_):
@@ -43,13 +44,11 @@ class StimNoise(MonteCarloNoise[stim.Circuit,
 
     def __init__(self,
                  before_gate_noise_profile:
-                     Optional[sp.NoiseProfile |
-                              Iterable[sp.NoiseProfile]] = None,
+                     sp.NoiseProfile | Iterable[sp.NoiseProfile] | None = None,
                  after_gate_noise_profile:
-                     Optional[sp.NoiseProfile |
-                              Iterable[sp.NoiseProfile]] = None,
+                     sp.NoiseProfile | Iterable[sp.NoiseProfile] | None = None,
                  gate_replacement_policy:
-                     Optional[sp.GateReplacementPolicy] = None,
+                     sp.GateReplacementPolicy | None = None,
                  batch_size=1024):
         self._batch_size = batch_size
         self._before_gate_noise_profile: \
@@ -91,7 +90,7 @@ class StimNoise(MonteCarloNoise[stim.Circuit,
     def error_generator(
         self,
         code_data: stim.Circuit,
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> Iterator[StimErrorT]:
         stim_circuit = self.permute_stim_circuit(code_data)
         sampler = stim_circuit.compile_detector_sampler(seed=seed)
@@ -104,7 +103,7 @@ class StimNoise(MonteCarloNoise[stim.Circuit,
     def build_batch_error_generator(
         self,
         code_data: stim.Circuit,
-        seed: Optional[int] = None
+        seed: int | None = None
     ) -> BatchErrorGenerator:
         """Given some representation of a code, return a generator of batches of errors
         for that code.
@@ -174,7 +173,7 @@ class OptionedStim(StimNoise):
     def __repr__(self) -> str:
         return "OptionedStim"
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["after_clifford_depolarisation"] = \
             self._after_clifford_depolarisation
@@ -243,7 +242,7 @@ class ToyNoise(StimNoise):
     def __repr__(self) -> str:
         return "ToyNoise"
 
-    def field_values(self) -> Dict[str, Any]:
+    def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
         base_dict["p_physical"] = self._p_physical
         return base_dict
@@ -270,7 +269,7 @@ class SampleStimNoise(StimNoise):
 def stim_batch_to_decode_batch(
     detector_batch: npt.NDArray[np.uint8],
     num_observables: int = 0,
-) -> Iterator[Tuple[OrderedSyndrome, Tuple[bool, ...]]]:
+) -> Iterator[tuple[OrderedSyndrome, tuple[bool, ...]]]:
     """Convert a Stim detector batch, optionally including observables, to a batch
     appropriate for use with deltakit-decode, with deltakit-decode syndrome objects and the observables split
     out as a tuple of booleans.

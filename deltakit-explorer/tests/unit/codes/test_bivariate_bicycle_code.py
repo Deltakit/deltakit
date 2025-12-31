@@ -128,7 +128,7 @@ class TestPolynomial:
         assert poly.mult_by_monomial(mon) == exp_poly
 
     def test_Polynomial_eq_returns_False_if_compared_to_non_Polynomial_type(self):
-        assert not Polynomial([]) == 1
+        assert Polynomial([]) != 1
 
 
 class TestMonomial:
@@ -189,4 +189,4 @@ class TestMonomial:
         assert mon.inverse() == inv
 
     def test_Monomial_eq_returns_False_if_compared_to_non_Monomial(self):
-        assert not Monomial(1, 1, 2, 2) == 2
+        assert Monomial(1, 1, 2, 2) != 2

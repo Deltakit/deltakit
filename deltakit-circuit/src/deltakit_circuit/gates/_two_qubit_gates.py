@@ -8,7 +8,7 @@ where the first qubit is on the left and the second is on the right."""
 
 from __future__ import annotations
 
-from typing import ClassVar, Union, get_args
+from typing import ClassVar, get_args
 
 from deltakit_circuit.gates._abstract_gates import ControlledGate, SymmetricTwoQubitGate
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T
@@ -16,7 +16,7 @@ from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepB
 # pylint: disable=invalid-name
 
 
-class CX(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]]):
+class CX(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
     """The Z-controlled X gate. First qubit is the control, second qubit is
     the target. The first qubit can be replaced by a measurement record.
     Applies an X gate to the target if the control is in the ``|1>`` state.
@@ -45,7 +45,7 @@ class CX(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]])
     stim_string: ClassVar[str] = "CX"
 
 
-class CY(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]]):
+class CY(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
     """The Z-controlled Y gate. First qubit is the control, second qubit is
     the target. The first qubit can be replaced by a measurement record.
     Applies a Y gate to the target if the control is in the ``|1>`` state.
@@ -75,7 +75,7 @@ class CY(ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]])
 
 
 class CZ(
-    ControlledGate[Union[Qubit[T], SweepBit, MeasurementRecord], Qubit[T]],
+    ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]],
     SymmetricTwoQubitGate,
 ):
     """The Z-controlled Z gate. First qubit is the control, second qubit is
@@ -415,7 +415,7 @@ class XCY(ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "XCY"
 
 
-class XCZ(ControlledGate[Qubit[T], Union[Qubit[T], SweepBit, MeasurementRecord]]):
+class XCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
     """The X-controlled Z gate. First qubit is the control, second qubit is
     the target. The second qubit can be replaced by a measurement record.
     Applies a Z gate to the target if the control is in the ``|->`` state.
@@ -513,7 +513,7 @@ class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
     stim_string: ClassVar[str] = "YCY"
 
 
-class YCZ(ControlledGate[Qubit[T], Union[Qubit[T], SweepBit, MeasurementRecord]]):
+class YCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
     """The Y-controlled Z gate. First qubit is the control, second qubit is
     the target. The second qubit can be replaced by a measurement record.
     Applies a Z gate to the target if the control is in the ``|-i>`` state.
@@ -600,28 +600,28 @@ class CZSWAP(SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]):
     stim_string: ClassVar[str] = "CZSWAP"
 
 
-_TwoQubitGate = Union[
-    CX,
-    CXSWAP,
-    CY,
-    CZ,
-    CZSWAP,
-    ISWAP,
-    ISWAP_DAG,
-    SQRT_XX,
-    SQRT_XX_DAG,
-    SQRT_YY,
-    SQRT_YY_DAG,
-    SQRT_ZZ,
-    SQRT_ZZ_DAG,
-    SWAP,
-    XCX,
-    XCY,
-    XCZ,
-    YCX,
-    YCY,
-    YCZ,
-]
+_TwoQubitGate = (
+    CX
+    | CXSWAP
+    | CY
+    | CZ
+    | CZSWAP
+    | ISWAP
+    | ISWAP_DAG
+    | SQRT_XX
+    | SQRT_XX_DAG
+    | SQRT_YY
+    | SQRT_YY_DAG
+    | SQRT_ZZ
+    | SQRT_ZZ_DAG
+    | SWAP
+    | XCX
+    | XCY
+    | XCZ
+    | YCX
+    | YCY
+    | YCZ
+)
 
 
 TWO_QUBIT_GATES: frozenset[type[_TwoQubitGate]] = frozenset(get_args(_TwoQubitGate))

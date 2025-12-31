@@ -6,13 +6,14 @@ from a sequence of stages.
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from deltakit_circuit import Circuit
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._css._detectors import \
     get_stage_transition_circuit
 from deltakit_explorer.qpu._circuits import merge_layers
+import itertools
 
 
 def experiment_circuit(experiment: Sequence[CSSStage]) -> Circuit:
@@ -42,23 +43,25 @@ def experiment_circuit(experiment: Sequence[CSSStage]) -> Circuit:
         measurements and observable additions.
     """
     if len(experiment) < 3:
-        raise ValueError("Experiment should contain at least three stages.")
+        msg = "Experiment should contain at least three stages."
+        raise ValueError(msg)
     if not experiment[0].resets_only:
         raise ValueError(
             "Experiment should start with a CSSStage which"
             + " consists only of qubit resets."
         )
     if not experiment[-1].allowable_final_stage:
-        raise ValueError(
+        msg = (
             "Experiment should end with a CSSStage with properties as described in "
             "allowable_final_stage."
         )
+        raise ValueError(msg)
     circuit = experiment[0].remaining_rounds
 
     # Get the detectors for stage transitions.
     stage_transition_detectors = [
         get_stage_transition_circuit(previous_stage, current_stage)
-        for previous_stage, current_stage in zip(experiment[:-1], experiment[1:])
+        for previous_stage, current_stage in itertools.pairwise(experiment)
     ]
     for stage, stage_transition_detector in zip(
         experiment[1:], stage_transition_detectors
@@ -71,6 +74,4 @@ def experiment_circuit(experiment: Sequence[CSSStage]) -> Circuit:
         circuit.append_layers(stage.remaining_rounds)
 
     # Compress circuit
-    final_circuit = merge_layers(circuit, break_repeat_blocks=True)
-
-    return final_circuit
+    return merge_layers(circuit, break_repeat_blocks=True)

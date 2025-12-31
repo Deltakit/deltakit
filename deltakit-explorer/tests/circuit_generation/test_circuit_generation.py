@@ -29,11 +29,7 @@ def mock_client(mocker):
     RepetitionCode(distance=3),
 ])
 @pytest.mark.parametrize("basis", [PauliBasis.X, PauliBasis.Z])
-@pytest.mark.parametrize("css_code_experiment_circuit", [
-    css_code_memory_circuit,
-    css_code_stability_circuit,
-])
-def test_css_code_experiment_circuit_cloud(mock_client, code, basis, css_code_experiment_circuit):
+def test_css_code_experiment_circuit_cloud(mock_client, code, basis):
     result = css_code_memory_circuit(
         css_code=code,
         num_rounds=3,

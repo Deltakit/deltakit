@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from itertools import islice
 from pathlib import Path
-from typing import (AbstractSet, Any, Dict, Iterable, List, Optional, Sequence,
-                    Tuple)
+from typing import Any
+from collections.abc import Iterable, Sequence, Set as AbstractSet
 from warnings import warn
 
 import numpy as np
@@ -19,14 +19,14 @@ from deltakit_decode.analysis._decoder_manager import (
 from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
 from deltakit_decode.noise_sources import SampleStimNoise
 from deltakit_decode.noise_sources._generic_noise_sources import NoiseModel
-from typing_extensions import TypeAlias
+from typing import TypeAlias
 
-StimOutput: TypeAlias = Tuple[OrderedSyndrome, Tuple[bool, ...]]
-StimBatchOutput: TypeAlias = Tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]
+StimOutput: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
+StimBatchOutput: TypeAlias = tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]
 
 
 class StimDecoderManager(
-        NoiseModelDecoderManager[StimOutput, stim.Circuit, Tuple[bool, ...],
+        NoiseModelDecoderManager[StimOutput, stim.Circuit, tuple[bool, ...],
                                  StimBatchOutput, npt.NDArray[np.uint8]]):
     """Decoder manager to support Stim circuits being used for noise generation, and
     Stim observables to define decoder success.
@@ -56,9 +56,9 @@ class StimDecoderManager(
             stim_noise_circuit: stim.Circuit,
             decoder: GraphDecoder,
             noise_model: NoiseModel[stim.Circuit, StimOutput] | None = None,
-            reporters: Optional[List[BaseReporter]] = None,
-            metadata: Optional[Dict[str, str]] = None,
-            seed: Optional[int] = None,
+            reporters: list[BaseReporter] | None = None,
+            metadata: dict[str, str] | None = None,
+            seed: int | None = None,
             batch_size: int = int(1e4)):
         if noise_model is None:
             noise_model = SampleStimNoise()
@@ -72,19 +72,18 @@ class StimDecoderManager(
         self._decoder = decoder
 
     @property
-    def errors_per_logical(self) -> List[int]:
+    def errors_per_logical(self) -> list[int]:
         """Uses self._empirical_decoding_error_distribution to get the number of
         fails for each logical in the order they appear in
         self._decoder.logicals."""
         return self._empirical_decoding_error_distribution.fails_per_logical.tolist()
 
-    def _analyse_correction(self, error: StimOutput, correction: Tuple[bool, ...]
+    def _analyse_correction(self, error: StimOutput, correction: tuple[bool, ...]
                             ) -> bool:
         _, target_logical_flip = error
-        is_fail = target_logical_flip != correction
-        return is_fail
+        return target_logical_flip != correction
 
-    def _decode_from_error(self, error: StimOutput) -> Tuple[bool, ...]:
+    def _decode_from_error(self, error: StimOutput) -> tuple[bool, ...]:
         syndrome, target_logical_flip = error
         correction = self._decoder.decode_to_logical_flip(syndrome)
         self._empirical_decoding_error_distribution.record_error(correction,
@@ -98,8 +97,8 @@ class StimDecoderManager(
             predicted_observables, actual_observables)
         return predicted_observables
 
-    def get_reporter_results(self) -> Dict[str, Any]:
-        analysis_results: Dict[str, Any] = {"decoder": str(self._decoder)}
+    def get_reporter_results(self) -> dict[str, Any]:
+        analysis_results: dict[str, Any] = {"decoder": str(self._decoder)}
         analysis_results.update(self._noise_model.field_values())
         analysis_results.update(super().get_reporter_results())
         if len(self._decoder.logicals) > 1:
@@ -117,7 +116,7 @@ class StimDecoderManager(
         return f"{self._decoder}_{self._noise_model}"
 
     @property
-    def error_distribution_over_logicals(self) -> Dict[Tuple[bool, ...], int]:
+    def error_distribution_over_logicals(self) -> dict[tuple[bool, ...], int]:
         """Getter that provides insight into the distribution of failures over
         multiple logicals.
 
@@ -167,8 +166,8 @@ class B8DecoderManager(DecoderManager):
             syndrome_b8_input: Path | bytes,
             logical_flip_b8_input: Path | bytes,
             decoder: GraphDecoder,
-            reporters: Optional[List[BaseReporter]] = None,
-            metadata: Optional[Dict[str, Any]] = None):
+            reporters: list[BaseReporter] | None = None,
+            metadata: dict[str, Any] | None = None):
         super().__init__(len(decoder.logicals), reporters, metadata)
         if reporters:
             warn("Reporters on a B8DecoderManager will not be used.", stacklevel=2)
@@ -179,14 +178,14 @@ class B8DecoderManager(DecoderManager):
     def run_single_shot(self) -> bool:
         raise NotImplementedError()
 
-    def run_batch_shots(self, batch_limit: Optional[int]) -> Tuple[int, int]:
+    def run_batch_shots(self, batch_limit: int | None) -> tuple[int, int]:
         detector_num = len(self._decoder.decoding_graph.nodes) - \
             len(self._decoder.decoding_graph.boundaries)
         num_logicals = len(self._decoder.logicals)
         syndrome_generator = b8_to_syndromes(self._syndrome_b8_input,
                                              detector_num)
         target_generator = b8_to_logical_flip(self._logical_flip_b8_input, num_logicals)
-        syndrome_and_targets: Iterable[Tuple[OrderedSyndrome, Tuple[bool, ...]]]
+        syndrome_and_targets: Iterable[tuple[OrderedSyndrome, tuple[bool, ...]]]
         syndrome_and_targets = zip(syndrome_generator, target_generator)
 
         if batch_limit is not None:
@@ -200,8 +199,8 @@ class B8DecoderManager(DecoderManager):
 
 
 class GraphDecoderManager(NoiseModelDecoderManager[
-    AbstractSet[EdgeT], HyperMultiGraph, Tuple[bool, ...],
-        List[AbstractSet[EdgeT]], List[Tuple[bool, ...]]]):
+    AbstractSet[EdgeT], HyperMultiGraph, tuple[bool, ...],
+        list[AbstractSet[EdgeT]], list[tuple[bool, ...]]]):
     """Decoder manager for a graph decoder with an edge-based noise model. In
     this representation, an edge corresponds to a possible error event and
     the nodes of the edge correspond to the syndromes triggered by the error.
@@ -211,11 +210,11 @@ class GraphDecoderManager(NoiseModelDecoderManager[
             self,
             noise_model: NoiseModel,
             decoder: GraphDecoder[HyperMultiGraph],
-            decoding_graph: Optional[HyperMultiGraph] = None,
-            logicals: Optional[Sequence[AbstractSet[DecodingHyperEdge | int]]] = None,
-            reporters: Optional[List[BaseReporter]] = None,
-            metadata: Optional[Dict[str, str]] = None,
-            seed: Optional[int] = None,
+            decoding_graph: HyperMultiGraph | None = None,
+            logicals: Sequence[AbstractSet[DecodingHyperEdge | int]] | None = None,
+            reporters: list[BaseReporter] | None = None,
+            metadata: dict[str, str] | None = None,
+            seed: int | None = None,
             batch_size: int = int(1e4)):
         super().__init__(noise_model,
                          len(logicals
@@ -230,7 +229,7 @@ class GraphDecoderManager(NoiseModelDecoderManager[
         self._logicals = logicals if logicals is not None else decoder.logicals
 
     @property
-    def errors_per_logical(self) -> List[int]:
+    def errors_per_logical(self) -> list[int]:
         """Uses self._empirical_decoding_error_distribution_over_logicals to get
         the number of fails for each logical in the order they appear in
         self._decoder.logicals."""
@@ -238,16 +237,14 @@ class GraphDecoderManager(NoiseModelDecoderManager[
 
     def _analyse_correction(self,
                             error: AbstractSet[EdgeT],
-                            correction: Tuple[bool, ...],
+                            correction: tuple[bool, ...],
                             ) -> bool:
         target_logical_flip = tuple(len(error & logical) % 2 == 1
                                 for logical in self._logicals)
-        if target_logical_flip != correction:
-            return True
-        return False
+        return target_logical_flip != correction
 
     @property
-    def error_distribution_over_logicals(self) -> Dict[Tuple[bool, ...], int]:
+    def error_distribution_over_logicals(self) -> dict[tuple[bool, ...], int]:
         """Getter that provides insight into the distribution of failures over
         multiple logicals.
 
@@ -267,7 +264,7 @@ class GraphDecoderManager(NoiseModelDecoderManager[
             all combinations of logicals."""
         return self._empirical_decoding_error_distribution.to_dict()
 
-    def _decode_from_error(self, error: AbstractSet[EdgeT]) -> Tuple[bool, ...]:
+    def _decode_from_error(self, error: AbstractSet[EdgeT]) -> tuple[bool, ...]:
         syndrome = self._decoding_graph.error_to_syndrome(error)
         correction = self._decoder.decode_to_logical_flip(syndrome)
         target_logical_flip = tuple(len(error & logical) % 2 == 1
@@ -276,15 +273,15 @@ class GraphDecoderManager(NoiseModelDecoderManager[
                                                                  target_logical_flip)
         return correction
 
-    def _decode_batch_from_error(self, errors: List[AbstractSet[EdgeT]]
-                                 ) -> List[Tuple[bool, ...]]:
+    def _decode_batch_from_error(self, errors: list[AbstractSet[EdgeT]]
+                                 ) -> list[tuple[bool, ...]]:
         return [self._decode_from_error(error) for error in errors]
 
-    def get_reporter_results(self) -> Dict[str, Any]:
+    def get_reporter_results(self) -> dict[str, Any]:
         analysis_results = {"decoder": str(self._decoder)}
         analysis_results.update(self._noise_model.field_values())
         if len(self._decoder.logicals) > 1:
-            errors_per_logical: Dict[str, Any] = {
+            errors_per_logical: dict[str, Any] = {
                 f"fails_log_{i}": fails
                 for i, fails in enumerate(self.errors_per_logical)
             }

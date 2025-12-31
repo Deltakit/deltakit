@@ -202,7 +202,7 @@ jobs:
         zip sdists.zip *.tar.gz
         zip signatures.zip *.json
         rm -f *.tar.gz *.json
-    - name: Upload artifact signatures to GitHub Release
+    - name: Upload artefact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
       # Upload to GitHub Release using the `gh` CLI.

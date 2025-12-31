@@ -2,7 +2,7 @@
 import csv
 from itertools import cycle
 from pathlib import Path
-from typing import Iterable, Iterator, List, Tuple
+from collections.abc import Iterable, Iterator
 
 from deltakit_core.decoding_graphs import Bitstring
 
@@ -31,7 +31,7 @@ def split_input_data_to_c64(
 
 def c64_to_addressed_input_words(
     input_path: Path, round_width: int
-) -> Iterator[List[Tuple[int, int]]]:
+) -> Iterator[list[tuple[int, int]]]:
     """Given a path to a c64 file, return, for each line, the words within the line
     and the index of each word in each round. These are appropriate for input to a
     hardware decoder, they could be syndromes or measurement data.

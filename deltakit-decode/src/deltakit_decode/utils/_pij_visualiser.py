@@ -1,5 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import Dict, List, Sequence, Tuple
+from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,8 +7,8 @@ from matplotlib.ticker import FuncFormatter
 
 
 def plot_correlation_matrix(
-    matrix: List[List[float]],
-    major_minor_mapping: Dict[Tuple[float, ...], List[int]],
+    matrix: list[list[float]],
+    major_minor_mapping: dict[tuple[float, ...], list[int]],
     labels: Sequence[str] = (),
 ):
     """Plot a given correlation matrix as a heatmap.
@@ -32,8 +32,8 @@ def plot_correlation_matrix(
     try:
         import seaborn as sns  # noqa: PLC0415
     except ImportError as ie:
-        raise ImportError(
-            "Seaborn is not installed - please install Visualisation extras") from ie
+        msg = "Seaborn is not installed - please install Visualisation extras"
+        raise ImportError(msg) from ie
 
     # create a list of indices of the minor ticks for which to label with
     # the qubit labels such that the labels are in the middle of the major

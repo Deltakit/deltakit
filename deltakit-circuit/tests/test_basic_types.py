@@ -12,7 +12,7 @@ class TestCoord2DDelta:
 class TestCoord2D:
     def test_raises_error_if_tuple_added(self):
         with pytest.raises(TypeError):
-            Coord2D(1, 1) + (1, 1)
+            Coord2D(1, 1) + (1, 1)  # noqa: RUF005
 
     def test_raises_error_if_qcoorddelta_subtracted(self):
         with pytest.raises(TypeError):

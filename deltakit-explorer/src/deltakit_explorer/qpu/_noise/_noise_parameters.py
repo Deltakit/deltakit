@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from itertools import chain
-from typing import Callable, Dict, List, Optional, Type
+from collections.abc import Callable
 
 import numpy as np
 from deltakit_circuit import NoiseProfile, Qubit
@@ -41,12 +41,14 @@ def _idle_noise_from_t1_t2(
         a one-qubit noise channel.
     """
     if t1 <= 0.0:
-        raise ValueError("Relaxation time `t1` must be positive.")
+        msg = "Relaxation time `t1` must be positive."
+        raise ValueError(msg)
     if t2 <= 0.0:
-        raise ValueError("Dephasing time `t2` must be positive.")
+        msg = "Dephasing time `t2` must be positive."
+        raise ValueError(msg)
     if t2 >= 2 * t1:
-        raise ValueError("Dephasing time `t2` must be less "
-                         "than twice relaxation time `t1`.")
+        msg = "Dephasing time `t2` must be less than twice relaxation time `t1`."
+        raise ValueError(msg)
 
     def _get_idle_noise(qubit: Qubit, t: float) -> OneQubitNoiseChannel:
         if t1 == t2:
@@ -103,17 +105,17 @@ class NoiseParameters:
 
     name = "noise_model"
 
-    gate_noise: List[NoiseProfile] = field(default_factory=list)
-    idle_noise: Optional[Callable[[Qubit, float], NoiseChannel]] = None
-    reset_noise: List[NoiseProfile] = field(default_factory=list)
-    measurement_noise_after: List[NoiseProfile] = field(default_factory=list)
-    measurement_noise_before: List[NoiseProfile] = field(default_factory=list)
+    gate_noise: list[NoiseProfile] = field(default_factory=list)
+    idle_noise: Callable[[Qubit, float], NoiseChannel] | None = None
+    reset_noise: list[NoiseProfile] = field(default_factory=list)
+    measurement_noise_after: list[NoiseProfile] = field(default_factory=list)
+    measurement_noise_before: list[NoiseProfile] = field(default_factory=list)
 
-    measurement_flip: Dict[
-        Type[_MeasurementGate], Callable[[_MeasurementGate], _MeasurementGate]
+    measurement_flip: dict[
+        type[_MeasurementGate], Callable[[_MeasurementGate], _MeasurementGate]
     ] = field(default_factory=dict)
 
-    def as_noise_profile_after_gate(self) -> List[NoiseProfile]:
+    def as_noise_profile_after_gate(self) -> list[NoiseProfile]:
         """
         Returns the noise profiles encapsulated by this object as a single generator
         of noise profiles. Omits the noise before measurement.

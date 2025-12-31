@@ -1,8 +1,9 @@
 import functools
 import warnings
-from typing import Callable, ParamSpec, TypeVar, overload
+from typing import ParamSpec, TypeVar, overload
+from collections.abc import Callable
 
-import semver
+from packaging.version import Version
 
 P = ParamSpec("P")
 RetType = TypeVar("RetType")
@@ -18,7 +19,7 @@ def deprecated(
     *,
     reason: str | None = None,
     replaced_by: str | None = None,
-    removed_in_version: semver.Version | None = None,
+    removed_in_version: Version | None = None,
 ) -> Callable[[Callable[P, RetType]], Callable[P, RetType]]:
     pass  # pragma: no cover
 
@@ -29,7 +30,7 @@ def deprecated(
     *,
     reason: str | None = None,
     replaced_by: str | None = None,
-    removed_in_version: semver.Version | None = None,
+    removed_in_version: Version | None = None,
 ) -> Callable[[Callable[P, RetType]], Callable[P, RetType]] | Callable[P, RetType]:
     """Deprecation decorator.
 
@@ -47,10 +48,11 @@ def deprecated(
         that raises a deprecation warning or a decorator that can deprecate a function.
     """
     if all(p is None for p in (f, reason, replaced_by, removed_in_version)):
-        raise ValueError(
+        msg = (
             "Expected at least one of f, reason, replaced_by or removed_in_version to "
             "be provided. All of them are None."
         )
+        raise ValueError(msg)
     if f is not None:
         msg = f"{f.__name__} is deprecated and will eventually be removed."
 

@@ -249,17 +249,20 @@ def calculate_lambda_and_lambda_stddev(
     non_unique_entries_mask = unique_counts.counts > 1
     if numpy.any(non_unique_entries_mask):
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
-        raise ValueError(
+        msg = (
             "Multiple entries were provided for the following distances: "
             f"{non_unique_values}. This is not supported."
         )
+        raise ValueError(msg)
 
     # Make sure that there are no even distances.
     if numpy.any(distances % 2 == 0):
-        raise ValueError(
+        msg = (
             "Found at least one even distance in the provided distances "
             f"({distances.tolist()}). This is not supported."
         )
+        raise ValueError(msg)
+
     if method not in _LAMBDA_FITTING_METHODS:
         warnings.warn(
             "Got a fitting method that is not supported by this function "

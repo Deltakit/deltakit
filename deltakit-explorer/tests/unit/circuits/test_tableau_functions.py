@@ -7,6 +7,8 @@ from operator import add, mul
 import numpy as np
 import pytest
 import stim
+from packaging.version import Version
+from importlib.metadata import version
 from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
                               NoiseLayer, Observable, PauliX, Qubit,
                               ShiftCoordinates)
@@ -42,6 +44,11 @@ from deltakit_explorer.qpu._circuits._tableau_functions import (
     _get_compilation_with_projectors_before_unitaries,
     _get_compilation_with_two_qubit_gates, _is_identity_like)
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
+
+
+CURRENT_STIM_VERSION = Version(version("stim"))
+STIM_VERSION_V1_13_0 = Version("1.13.0")
+
 
 # define set of compilation dictionaries for testing
 compilation_dict0 = {("+X", "+Z"): ()}
@@ -413,13 +420,13 @@ class TestGetCompilationDict:
         # is non-deterministic in its order, and when two sets of gates evaluate to the same tableau,
         # it will pick one at random. e.g, +X,+Y can be SQRT_X*X or X*SQRT_X.
         assert any(
-            (
-                _get_compilation_dict(
-                    NativeGateSet(one_qubit_gates=native_gate_set), max_length=weight
-                )[0]
-                == expected_dict
-                for expected_dict in possible_dicts
-            )
+
+            _get_compilation_dict(
+                NativeGateSet(one_qubit_gates=native_gate_set), max_length=weight
+            )[0]
+            == expected_dict
+            for expected_dict in possible_dicts
+
         )
 
     @pytest.mark.parametrize(
@@ -581,15 +588,13 @@ class TestGetCompilationDict:
         # is non-deterministic in its order, and when two sets of gates evaluate to the same tableau,
         # it will pick one at random. e.g, X,Y can be SQRT_X*X or X*SQRT_X.
         assert any(
-            (
-                _get_compilation_dict(
-                    NativeGateSet(one_qubit_gates=native_gate_set),
-                    max_length=weight,
-                    up_to_paulis=True,
-                )[0]
-                == expected_dict
-                for expected_dict in possible_dicts
-            )
+            _get_compilation_dict(
+                NativeGateSet(one_qubit_gates=native_gate_set),
+                max_length=weight,
+                up_to_paulis=True,
+            )[0]
+            == expected_dict
+            for expected_dict in possible_dicts
         )
 
     @pytest.mark.parametrize(
@@ -760,14 +765,12 @@ class TestGetCompilationDict:
         # is non-deterministic in its order, and when two sets of gates evaluate to the same tableau,
         # it will pick one at random. e.g, X,Y can be SQRT_X*X or X*SQRT_X.
         assert any(
-            (
-                _get_compilation_dict(
-                    NativeGateSet(one_qubit_gates=native_gate_set),
-                    up_to_paulis=True,
-                )[0]
-                == expected_dict
-                for expected_dict in possible_dicts
-            )
+            _get_compilation_dict(
+                NativeGateSet(one_qubit_gates=native_gate_set),
+                up_to_paulis=True,
+            )[0]
+            == expected_dict
+            for expected_dict in possible_dicts
         )
 
     @pytest.mark.parametrize(
@@ -796,7 +799,7 @@ class TestGetCompilationDict:
         )
         # change format, add identity
         equiv_dict = {
-            k: [tuple([g.stim_string for g in equiv]) for equiv in v][0]
+            k: next(tuple([g.stim_string for g in equiv]) for equiv in v)
             for k, v in equiv_dict.items()
         }
         equiv_dict[("+X", "+Z")] = ()
@@ -829,10 +832,8 @@ class TestGetCompilationDict:
             NativeGateSet(one_qubit_gates=native_gate_set)
         )[1]
         assert any(
-            (
-                (equiv_dict[k] == v for k, v in possible_dict)
-                for possible_dict in possible_dicts
-            )
+            (equiv_dict[k] == v for k, v in possible_dict)
+            for possible_dict in possible_dicts
         )
 
     @pytest.mark.parametrize("up_to_paulis", [True, False])
@@ -909,10 +910,8 @@ class TestGetCompilationDict:
             NativeGateSet(one_qubit_gates=native_gate_set), up_to_paulis=True
         )[1]
         assert any(
-            (
-                (equiv_dict[k] == v for k, v in possible_dict)
-                for possible_dict in possible_dicts
-            )
+            (equiv_dict[k] == v for k, v in possible_dict)
+            for possible_dict in possible_dicts
         )
 
 
@@ -4432,7 +4431,7 @@ class TestCompilationData:
             circuit.replace_gates({two_qubit_gate: lambda gate: CX(*gate.qubits)})
 
     @pytest.mark.parametrize(
-        "circuit, non_gatelayer_layers, reset_dict, unitary_blocks",
+        "circuit, non_gatelayer_layers",
         [
             [
                 Circuit(Circuit(GateLayer(RZ(0)), iterations=2)),
@@ -4446,9 +4445,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                },
-                {},
-                {0: [], 1: []},
+                }
             ],
             [
                 Circuit([GateLayer(RZ(0)), Circuit(GateLayer(RZ(0)), iterations=2)]),
@@ -4462,9 +4459,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                },
-                {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
-                {0: [], 1: []},
+                }
             ],
             [
                 Circuit(
@@ -4484,12 +4479,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                },
-                {
-                    (0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1},
-                    (2, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2},
-                },
-                {0: [], 1: [], 2: []},
+                }
             ],
             [
                 Circuit(Circuit(Circuit(GateLayer(RZ(0)), iterations=2), iterations=2)),
@@ -4518,15 +4508,13 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                },
-                {},
-                {},
-            ],
-        ],
+                }
+            ]
+        ]
     )
     class TestNestedCircuits:
         def test_extract_structure_from_circuit_gives_correct_output_for_nested_Circuits(
-            self, circuit, non_gatelayer_layers, reset_dict, unitary_blocks
+            self, circuit, non_gatelayer_layers
         ):
             results = _extract_structure_from_circuit(circuit)
             assert results.non_gatelayer_layers == non_gatelayer_layers
@@ -5196,7 +5184,7 @@ class TestCompileCircuitWithTableau:
             assert compiled_circ == expected_circ
 
         def test_no_non_native_gates_left_after_compilation(
-            self, circ, native_gate_set, expected_circ
+            self, circ, native_gate_set, expected_circ  # noqa: ARG002
         ):
             compiled_circ = compile_circuit_to_native_gates(circ, native_gate_set)
             for gate_layer in compiled_circ.gate_layers():
@@ -5285,7 +5273,7 @@ class TestCompileCircuitWithTableau:
             assert compiled_circ == expected_circ
 
         def test_no_non_native_gates_left_after_compilation(
-            self, circ, native_gate_set, expected_circ
+            self, circ, native_gate_set, expected_circ  # noqa: ARG002
         ):
             compiled_circ = compile_circuit_to_native_gates(circ, native_gate_set)
             for gate_layer in compiled_circ.gate_layers():
@@ -8977,6 +8965,14 @@ class TestTwoQubitGateCompilationDicts:
         )
         assert stim.Tableau.from_named_gate("CZ") == cz_with_unitaries_tableau
 
+    @pytest.mark.skipif(
+        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
+        reason=(
+            "CZSWAP gate has been introduced in Stim v1.13.0."
+            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+            f"Current Stim version is {CURRENT_STIM_VERSION}."
+        )
+    )
     @pytest.mark.parametrize("gate", list(GATE_TO_CZSWAP_DICT.keys()))
     def test_cpswap_to_czswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = GATE_TO_CZSWAP_DICT[gate]
@@ -9010,6 +9006,14 @@ class TestTwoQubitGateCompilationDicts:
             == czswap_with_unitaries_tableau
         )
 
+    @pytest.mark.skipif(
+        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
+        reason=(
+            "CZSWAP gate has been introduced in Stim v1.13.0."
+            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
+            f"Current Stim version is {CURRENT_STIM_VERSION}."
+        )
+    )
     @pytest.mark.parametrize("gate", list(CZSWAP_TO_GATE_DICT.keys()))
     def test_czswap_to_cpswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = CZSWAP_TO_GATE_DICT[gate]

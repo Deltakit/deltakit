@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import ClassVar, FrozenSet, Type, Union, get_args
+from typing import ClassVar, get_args
 
 from deltakit_circuit.gates._abstract_gates import OneQubitCliffordGate
 from deltakit_circuit._qubit_identifiers import T
@@ -463,24 +463,24 @@ class SQRT_Y_DAG(OneQubitCliffordGate[T]):
     stim_string: ClassVar[str] = "SQRT_Y_DAG"
 
 
-_OneQubitCliffordGate = Union[
-    I,
-    X,
-    Y,
-    Z,
-    H,
-    S,
-    S_DAG,
-    SQRT_X,
-    SQRT_X_DAG,
-    SQRT_Y,
-    SQRT_Y_DAG,
-    H_XY,
-    H_YZ,
-    C_XYZ,
-    C_ZYX,
-]
+_OneQubitCliffordGate = (
+    I
+    | X
+    | Y
+    | Z
+    | H
+    | S
+    | S_DAG
+    | SQRT_X
+    | SQRT_X_DAG
+    | SQRT_Y
+    | SQRT_Y_DAG
+    | H_XY
+    | H_YZ
+    | C_XYZ
+    | C_ZYX
+)
 
-ONE_QUBIT_GATES: FrozenSet[Type[_OneQubitCliffordGate]] = frozenset(
+ONE_QUBIT_GATES: frozenset[type[_OneQubitCliffordGate]] = frozenset(
     get_args(_OneQubitCliffordGate)
 )

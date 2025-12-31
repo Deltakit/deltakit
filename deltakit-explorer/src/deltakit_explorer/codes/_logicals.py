@@ -6,8 +6,7 @@ with a collection of stabilisers.
 
 from __future__ import annotations
 
-import warnings
-from typing import Collection, Iterable, Optional
+from collections.abc import Collection, Iterable
 
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
@@ -16,10 +15,7 @@ from deltakit_explorer.codes._css._stabiliser_helper_functions import \
 from deltakit_explorer.codes._stabiliser import Stabiliser
 from numpy.typing import NDArray
 from stim import PauliString, Tableau
-
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=SyntaxWarning)
-    from bposd.css import css_code  # type: ignore
+from bposd.css import css_code
 
 
 def paulistring_to_operator(
@@ -48,7 +44,7 @@ def paulistring_to_operator(
 
 
 def get_str_logical_operators_from_tableau(
-    stabilisers: Collection[PauliString], num_logical_qubits: Optional[int] = None
+    stabilisers: Collection[PauliString], num_logical_qubits: int | None = None
 ) -> list[tuple[PauliString, PauliString]]:
     """
     For a general stabiliser code, computes the logical operators for a collection of
@@ -117,7 +113,7 @@ def get_str_logical_operators_from_tableau(
 
 
 def get_logical_operators_from_tableau(
-    stabilisers: Iterable[Stabiliser], num_logical_qubits: Optional[int] = None
+    stabilisers: Iterable[Stabiliser], num_logical_qubits: int | None = None
 ) -> tuple[tuple[set[_PauliGate], ...], tuple[set[_PauliGate], ...]]:
     """
     For a general stabiliser code, computes the logical operators for a collection of
@@ -235,9 +231,9 @@ def get_logical_operators_from_css_parity_check_matrices(
     x_logs, z_logs = code.compute_logicals()
 
     return tuple(
-        set(PauliX(column_to_qubit[i]) for i, x in enumerate(log_op) if x)
+        {PauliX(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
         for log_op in x_logs
     ), tuple(
-        set(PauliZ(column_to_qubit[i]) for i, x in enumerate(log_op) if x)
+        {PauliZ(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
         for log_op in z_logs
     )

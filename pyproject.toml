@@ -5,16 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "deltakit"
 version = "0.5.1"
-description = "Deltakit SDK"
+description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 
 authors = [{ name = "Deltakit Team", email = "deltakit@riverlane.com" }]
 
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -25,132 +25,114 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
+
 dependencies = [
-    "deltakit_circuit",
-    "deltakit_core",
-    "deltakit_decode",
-    "deltakit_explorer",
+  "deltakit-circuit~=0.5",
+  "deltakit-core~=0.5",
+  "deltakit-decode~=0.5",
+  "deltakit-explorer~=0.5",
 ]
 
 [project.urls]
 Homepage = "https://github.com/Deltakit/deltakit"
-"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
+Source = "https://github.com/Deltakit/deltakit"
+Documentation = "https://deltakit.riverlane.com/"
+Issues = "https://github.com/Deltakit/deltakit/issues"
 Changelog = "https://github.com/Deltakit/deltakit/releases"
 
-[project.optional-dependencies]
-# any changes here should be duplicated to dev dependency list
-# AND feature.pytest.dependencies in pixi.toml
-tests = [
-    "pytest>=8.4.1,<9",
-    "pytest-cov>=6.2.1,<7",
-    "pytest-mock>=3.14.1,<4",
-    "pytest-asyncio>=1.0.0,<2",
-    "pytest-skip-slow>=0.0.5",
-    "pytest-testmon>=2.0, <3",
-    "pytest-lazy-fixtures>=1.0, <2",
+[dependency-groups]
+tests_extras = [
+  "matplotlib~=3.10,>=3.10.7",
+  "numpy~=2.0",
+  "pandas~=2.2,>=2.2.2",
 ]
-# any changes here should be duplicated to dev dependency list
-lint = [
-    "mypy>=1.17,<2",
-    "ruff>=0.12.2,<0.13",
-    "typos>=1.34.0,<2",
-    "isort>=6.0",
+test = [
+  "pytest>=9.0",
+  "pytest-cov>=7.0",
+  "pytest-skip-slow>=0.0.5",
+  { include-group = "tests_extras" },
 ]
-# any changes here should be duplicated to dev dependency list
+lint = ["mypy~=1.17", "ruff~=0.14", "typos~=1.34", "deptry~=0.23"]
+docs_extras = [
+  "tqdm~=4.67",
+  "stim~=1.11; python_version >= '3.10' and python_version < '3.12'",
+  "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
+  "stim~=1.15; python_version >= '3.13'",
+  "numpy~=2.0",
+  "matplotlib~=3.10,>=3.10.7",
+  "pandas~=2.2,>=2.2.2",
+]
 docs = [
-    "myst_nb>=1.0,<2.0",
-    "sphinxawesome-theme>=5.3.2,<6",
-    "sphinx-autodoc-typehints>=3.0.0,<4",
-    "sphinx-copybutton>=0.5.2,<0.6",
-    "pip-licenses>=5.0",
-    "sphinx-design>0.6, <1.0",
-    "sphinx-autobuild>=2024.10.3",
-    "myst-parser>=4.0, <5",
-    "vale>=3.12.0.0",
-    "jupytext>=1.17.0,<2",
-    "jupyter>=1.1.1,<2",
-    "ipykernel >=6.29.5,<7"
+  { include-group = "docs_extras" },
+  "myst_nb>=1.0",
+  "sphinxawesome-theme>=5.3",
+  "sphinx-autodoc-typehints>=3.0",
+  "sphinx-copybutton>=0.5",
+  "pip-licenses>=5.0",
+  "sphinx-design>=0.6",
+  "sphinx-autobuild>=2024.10.3",
+  "myst-parser>=4.0",
+  "vale>=3.12",
+  "jupytext>=1.17",
+  "jupyter>=1.1",
+  "ipykernel>=6.29",
 ]
-# any changes here should be duplicated to dev dependency list
-build = [
-    "build>=1.2.0",
-]
-# any changes here should be duplicated to dev dependency list
-security = [
-    "bandit>=1.8.6,<2",
-    "ochrona>=2.0.2,<3.0",
-    "pip-audit >=2.7.3",
-]
+security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
 dev = [
-    # poetry seems to be having trouble with elements of
-    # deltakit being "listed as a dependency of itself".
-    # this list needs to contain all dependencies in other groups
-    # (tests, lint, docs, build, security) + dev
-    # "deltakit[tests]",
-    "pytest>=8.4.1,<9",
-    "pytest-cov>=6.2.1,<7",
-    "pytest-mock>=3.14.1,<4",
-    "pytest-asyncio>=1.0.0,<2",
-    "pytest-skip-slow>=0.0.5",
-    "pytest-testmon>=2.0, <3",
-    "pytest-lazy-fixtures>=1.0, <2",
-    # "deltakit[lint]",
-    "mypy>=1.17,<2",
-    "ruff>=0.12.2,<0.13",
-    "typos>=1.34.0,<2",
-    "isort>=6.0",
-    # "deltakit[docs]",
-    "myst_nb>=1.0,<2.0",
-    "sphinxawesome-theme>=5.3.2,<6",
-    "sphinx-autodoc-typehints>=3.0.0,<4",
-    "sphinx-copybutton>=0.5.2,<0.6",
-    "pip-licenses>=5.0",
-    "sphinx-design>0.6, <1.0",
-    "sphinx-autobuild>=2024.10.3",
-    "myst-parser>=4.0, <5",
-    "vale>=3.12.0.0",
-    "jupytext>=1.17.0,<2",
-    "jupyter>=1.1.1,<2",
-    # "deltakit[build]",
-    "build>=1.2.0",
-    # "deltakit[security]",
-    "bandit>=1.8.6,<2",
-    "ochrona>=2.0.2,<3.0",
-    "pip-audit >=2.7.3",
-    # other
-    "pre-commit>=4.2.0,<5",
-    "ipykernel>=6.29.5,<7",
-    "validate-pyproject>=0.24.1",
-    "python-semantic-release>=10.2.0",
-    "tomlkit>=0.13,<1",
-    "deptry>=0.23, <1",
-    "ipykernel >=6.29.5,<7",
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "docs" },
+  { include-group = "security" },
+  # other
+  "pre-commit~=4.2",
+  "validate-pyproject~=0.24.1",
+  "python-semantic-release~=10.2",
 ]
 
-# for mypy configuration, see `mypy.ini`.
+[tool.uv.workspace]
+members = [
+  "deltakit-core",
+  "deltakit-circuit",
+  "deltakit-decode",
+  "deltakit-explorer",
+]
+
+[tool.uv.sources]
+deltakit-core = { workspace = true }
+deltakit-circuit = { workspace = true }
+deltakit-decode = { workspace = true }
+deltakit-explorer = { workspace = true }
+
+[tool.mypy]
+files = "src/**/*.py"
+
 # for ruff configuration, see `ruff.toml`
 
 [tool.pytest.ini_options]
+testpaths = ["./tests/"]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
-filterwarnings = [
-  "error",
-  # Note: the below line ignore a specific warning about changes in multiprocessing.
-  # This warning is only raised by a few tests in deltakit-decode. This is a temporary
-  # fix.
-  "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks in the child.:DeprecationWarning"
-]
-
-[tool.isort]
-skip = [".pixi", ".tox", ".venv"]
+filterwarnings = ["error"]
 
 [tool.bandit]
 # './tools/vale.py' is for `pixi run bandit`; 'tools/vale.py' is for pre-commit
-exclude_dirs = ['.github', '.pixi', '.tox', '.venv', './tools/vale.py', 'tools/vale.py']
-skips = ['B101', 'B311']  # B101 is just use of `assert`; 'B311' is use of random module
+exclude_dirs = [
+  '.github',
+  '.pixi',
+  '.tox',
+  '.venv',
+  './tools/vale.py',
+  'tools/vale.py',
+]
+skips = [
+  'B101',
+  'B311',
+] # B101 is just use of `assert`; 'B311' is use of random module
 
 [tool.typos.default]
 locale = 'en-gb'
@@ -164,43 +146,31 @@ youre = "you're"
 distribtuion = "distribution"
 interm = "interm"
 ket = "ket"
-ND = "ND"  # part of NDArray
+ND = "ND"                         # part of NDArray
 Alise = "Alise"
 DEPOLARIZE = "DEPOLARIZE"
 depolarization = "depolarization"
-Authorization = "Authorization" # Web-related field.
-color = "color" # Used in matplotlib and stim APIs.
+Authorization = "Authorization"   # Web-related field.
+color = "color"                   # Used in matplotlib and stim APIs.
 colors = "colors"
-optimize = "optimize" # scipy.optimize
-ax = "ax" # Typical naming for matplotlib Axes instances.
+optimize = "optimize"             # scipy.optimize
+ax = "ax"                         # Typical naming for matplotlib Axes instances.
 center = "center"
 stabilizer = "stabilizer"
 stabilizers = "stabilizers"
-synchronize = "synchronize" # multiprocessing import
+synchronize = "synchronize"       # multiprocessing import
 neighbors = "neighbors"
+labeled = "labeled"
+labeler = "labeler"
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
-extend-exclude = ["docs/styles", "**/LICENSE", "**/*.html", "licenses.confluence"]
-
-[tool.coverage.run]
-omit = [
-  ".pixi/*",
+extend-exclude = [
+  "docs/styles",
+  "**/LICENSE",
+  "**/*.html",
+  "licenses.confluence",
 ]
-
-[tool.deptry]
-ignore = ["DEP003"]
-
-[tool.deptry.per_rule_ignores]
-DEP001 = ["tests"]
-DEP002 = ['deltakit', 'deltakit_explorer', 'deltakit_circuit', 'deltakit_core', 'deltakit_decode',
-          'pytest-cov', 'pytest-asyncio', 'pytest-skip-slow', 'pytest-testmon',
-          'mypy', 'ruff', 'isort',
-          'myst_nb', 'sphinxawesome-theme', 'sphinx-autodoc-typehints', 'sphinx-design',
-          'sphinx-copybutton', 'sphinx-autobuild', 'myst-parser', 'jupytext', 'jupyter',
-          'pip-licenses', 'build', 'bandit', 'ochrona', 'pip-audit', 'ipykernel',
-          'validate-pyproject', 'typos', 'vale',
-          'python-semantic-release', 'pre-commit', 'deptry']
 
 [tool.semantic_release]
 allow_zero_version = true
@@ -214,49 +184,45 @@ match = ".*"
 
 [tool.semantic_release.changelog]
 exclude_commit_patterns = [
-    '''task(?:\([^)]*?\))?: .+''',
-    '''chore(?:\([^)]*?\))?: .+''',
-    '''ci(?:\([^)]*?\))?: .+''',
-    '''refactor(?:\([^)]*?\))?: .+''',
-    '''style(?:\([^)]*?\))?: .+''',
-    '''tests?(?:\([^)]*?\))?: .+''',
-    '''build\((?!deps\): .+)''',
-    '''release(?:\([^)]*?\))?: .+''',
-    '''dev(?:\([^)]*?\))?: .+''',
-    '''Initial [Cc]ommit.*''',
+  '''task(?:\([^)]*?\))?: .+''',
+  '''chore(?:\([^)]*?\))?: .+''',
+  '''ci(?:\([^)]*?\))?: .+''',
+  '''refactor(?:\([^)]*?\))?: .+''',
+  '''style(?:\([^)]*?\))?: .+''',
+  '''tests?(?:\([^)]*?\))?: .+''',
+  '''build\((?!deps\): .+)''',
+  '''release(?:\([^)]*?\))?: .+''',
+  '''dev(?:\([^)]*?\))?: .+''',
+  '''Initial [Cc]ommit.*''',
 ]
 mode = "update"
 
 [tool.semantic_release.commit_parser_options]
-other_allowed_tags = ["build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
-allowed_tags = ["feat", "fix", "perf", "build", "chore", "ci", "docs", "style", "refactor", "tests", "release", "dev"]
-
-[tool.poetry.dependencies]
-python = ">=3.10,<3.14"
-deltakit-core = { path = "./deltakit-core/", develop = true }
-deltakit-circuit = { path = "./deltakit-circuit/", develop = true }
-deltakit-decode = { path = "./deltakit-decode/", develop = true }
-deltakit-explorer = { path = "./deltakit-explorer/", develop = true }
-
-[tool.hatch.envs.default]
-pre-install-commands = [
-  "pip install -e ./deltakit-core",
-  "pip install -e ./deltakit-circuit",
-  "pip install -e ./deltakit-decode",
-  "pip install -e ./deltakit-explorer",
+other_allowed_tags = [
+  "build",
+  "chore",
+  "ci",
+  "docs",
+  "style",
+  "refactor",
+  "tests",
+  "release",
+  "dev",
 ]
-features = ["dev"]
-
-[tool.uv.workspace]
-members = [
-  "deltakit-core",
-  "deltakit-circuit",
-  "deltakit-decode",
-  "deltakit-explorer",
+allowed_tags = [
+  "feat",
+  "fix",
+  "perf",
+  "build",
+  "chore",
+  "ci",
+  "docs",
+  "style",
+  "refactor",
+  "tests",
+  "release",
+  "dev",
 ]
 
-[tool.uv.sources]
-deltakit-core     = { workspace = true }
-deltakit-circuit  = { workspace = true }
-deltakit-decode   = { workspace = true }
-deltakit-explorer = { workspace = true }
+[tool.deptry]
+extend_exclude = ["deltakit_*", "docs/", "tools/"]

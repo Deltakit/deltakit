@@ -41,6 +41,8 @@ class TestPijVisualiser:
         assert filepath.is_file()
 
     def test_plot_correlation_matrix_raises_exception_if_seaborn_not_installed(self):
-        with mock.patch("builtins.__import__", side_effect=ImportError):
-            with pytest.raises(ImportError, match=r"Seaborn is not installed - please install Visualisation extras"):
-                plot_correlation_matrix([], {})
+        with (
+             mock.patch("builtins.__import__", side_effect=ImportError),
+             pytest.raises(ImportError, match=r"Seaborn is not installed - please install Visualisation extras")
+        ):
+            plot_correlation_matrix([], {})

@@ -32,7 +32,7 @@ def stim_circuit_planar_5x5x2():
                                   before_measure_flip_probability=0.1)
 
 
-class TestParseStimCircuit():
+class TestParseStimCircuit:
 
     @pytest.fixture(params=[
         stim_circuit_rep_5x4(),

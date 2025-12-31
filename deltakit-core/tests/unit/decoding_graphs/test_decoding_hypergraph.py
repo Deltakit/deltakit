@@ -3,7 +3,6 @@
 
 import re
 from itertools import combinations
-from typing import Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -115,7 +114,7 @@ class TestDecodingHyperGraph:
         ],
     )
     def test_hypergraph_has_expected_edges(self, hypergraph, expected_edges):
-        hypergraph_edges = set(edge.vertices for edge in hypergraph.edges)
+        hypergraph_edges = {edge.vertices for edge in hypergraph.edges}
         assert hypergraph_edges == expected_edges
 
     @pytest.mark.parametrize(
@@ -196,7 +195,7 @@ class TestDecodingHyperGraph:
     def test_get_edge_record_from_edge(
         self,
         graph: DecodingHyperGraph,
-        edge_dets: Tuple[int],
+        edge_dets: tuple[int],
         expected_record: EdgeRecord,
     ):
         assert graph.get_edge_record(*edge_dets).data == expected_record.data
@@ -255,9 +254,9 @@ class TestDecodingHyperGraph:
         self, hypergraph, syndromes, expected_edges
     ):
         for syndrome, expected_edge in zip(syndromes, expected_edges, strict=True):
-            incident_edges = set(
+            incident_edges = {
                 frozenset(edge) for edge in hypergraph.incident_edges(syndrome)
-            )
+            }
             assert incident_edges == expected_edge
 
     @pytest.mark.parametrize(
@@ -276,7 +275,7 @@ class TestDecodingHyperGraph:
     def test_neighbours_return_expected_nodes(self, hypergraph, expected_neighbours):
         neighbours = {
             syndrome: set(hypergraph.neighbors(syndrome))
-            for syndrome in expected_neighbours.keys()
+            for syndrome in expected_neighbours
         }
         assert neighbours == expected_neighbours
 
