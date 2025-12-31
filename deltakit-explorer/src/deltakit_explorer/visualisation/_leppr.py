@@ -1,4 +1,3 @@
-import warnings
 from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
@@ -16,6 +15,9 @@ def plot_logical_error_probability_per_round(
     num_rounds: npt.NDArray[numpy.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[numpy.float64] | Sequence[float],
     logical_error_probability_stddev: npt.NDArray[numpy.float64] | Sequence[float] | None = None,
+    *,
+    logy: bool = True,
+    num_sigmas: int = 3,
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
@@ -34,6 +36,8 @@ def plot_logical_error_probability_per_round(
             a sequence of floats representing the standard deviation of the logical
             error probabilities corresponding to the number of rounds in ``num_rounds``.
             If None, no error bars will be plotted. Default is None.
+        logy (bool): if ``True``, the Y-axis uses a logarithmic scale.
+        num_sigmas (int): number of sigmas to consider when plotting error bars.
         fig (Figure | None, optional):
             a matplotlib Figure object to plot on. If None, a new figure will be created.
             Default is None.
@@ -44,90 +48,89 @@ def plot_logical_error_probability_per_round(
     Returns:
         tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
 
-    Example
-        from deltakit_explorer.analysis import calculate_lep_and_lep_stddev, compute_logical_error_per_round
-        num_failed_shots=[34, 151, 356]
-        num_shots=[500000] * 3
-        num_rounds=[2, 4, 6]
+    Example:
 
-        res = compute_logical_error_per_round(
-                    num_failed_shots=num_failed_shots,
-                    num_shots=num_shots,
-                    num_rounds=num_rounds,
-                )
-
-        # plot logical error probabilities
-        lep, lep_stddev = calculate_lep_and_lep_stddev(fails=num_failed_shots, shots=num_shots)
-        fig, ax = plot_logical_error_probability_per_round(
-            res,
-            num_rounds=num_rounds,
-            logical_error_probability=lep,
-            logical_error_probability_stddev=lep_stddev,
-            )
-        plt.show()
+        >>> from deltakit_explorer.analysis import (
+        ...     calculate_lep_and_lep_stddev, compute_logical_error_per_round,
+        ... )
+        >>> num_failed_shots=[34, 151, 356]
+        >>> num_shots=[500000] * 3
+        >>> num_rounds=[2, 4, 6]
+        >>> res = compute_logical_error_per_round(
+        ...     num_failed_shots=num_failed_shots,
+        ...     num_shots=num_shots,
+        ...     num_rounds=num_rounds,
+        ... )
+        >>> lep, lep_stddev = calculate_lep_and_lep_stddev(
+        ...     fails=num_failed_shots, shots=num_shots
+        ... )
+        >>> fig, ax = plot_logical_error_probability_per_round(
+        ...     res,
+        ...     num_rounds=num_rounds,
+        ...     logical_error_probability=lep,
+        ...     logical_error_probability_stddev=lep_stddev,
+        ... )
     """
     if (fig is None) ^ (ax is None):
-        raise ValueError("The 'fig' and 'ax' parameters should either both be set or unset. Got only one set, which is not handled.")
+        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
+        raise ValueError(msg)
+
     if fig is None and ax is None:
         fig, ax = plt.subplots()
 
-    if not len(num_rounds) == len(logical_error_probability) == len(logical_error_probability_stddev):
+    assert ax is not None
+    assert fig is not None
+
+    lens = {len(num_rounds), len(logical_error_probability)}
+    if logical_error_probability_stddev is not None:
+        lens.add(len(logical_error_probability_stddev))
+    if len(lens) > 1:
         raise ValueError(
             "The lengths of 'num_rounds', 'logical_error_probability' and "
-            "'logical_error_probability_stddev' must be the same. "
-            f"Got lengths {len(num_rounds)}, {len(logical_error_probability)}, "
-            f"and {len(logical_error_probability_stddev)} respectively."
+            "'logical_error_probability_stddev' must be the same. Got the following "
+            f"lengths {lens}."
         )
 
     isort = numpy.argsort(num_rounds)
     num_rounds = numpy.asarray(num_rounds)[isort]
     logical_error_probability = numpy.asarray(logical_error_probability)[isort]
-    logical_error_probability_stddev = numpy.asarray(logical_error_probability_stddev)[isort]
-    while num_rounds[0] <= 0:
-        warnings.warn(
-            f"Found an invalid number of rounds: {num_rounds[0]}. Number of rounds "
-            "should be >= 1."
-        )
-        num_rounds = num_rounds[1:]
-        logical_error_probability = logical_error_probability[1:]
-        logical_error_probability_stddev = logical_error_probability_stddev[1:]
-
-    if numpy.any(logical_error_probability <= 0) or numpy.any(logical_error_probability >= 1):
-        raise RuntimeError(
-            "Found an invalid logical error probability. Probabilities must be between 0 and 1"
-            "Logical error probabilities: "
-            f"{logical_error_probability}."
+    if logical_error_probability_stddev is not None:
+        logical_error_probability_stddev = (
+            num_sigmas * numpy.asarray(logical_error_probability_stddev)[isort]
         )
 
     leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
     spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
 
-    if leppr < 0 or spam < 0 or leppr >= 0.5 or spam >= 0.5:
-        warnings.warn(
-            "LEPPR or SPAM error is not within [0, 0.5)."
-            f"LEPPR: {leppr}, SPAM error: {spam}."
-        )
-    if leppr_stddev < 0 or spam_stddev < 0:
-        raise RuntimeError(
-            "LEPPR or SPAM error standard deviation is negative. Standard deviations must be non-negative."
-            f"LEPPR stddev: {leppr_stddev}, SPAM error stddev: {spam_stddev}."
-        )
-
-    # plot logical error probabilities
-    ax.errorbar(num_rounds, logical_error_probability, yerr=logical_error_probability_stddev, fmt="o", color=RIVERLANE_PLOT_COLOURS[0], label = "Logical error probabilities")
-    # plot fitted LEPPR curve
+    # Plot the logical error probabilities
+    ax.errorbar(
+        num_rounds,
+        logical_error_probability,
+        yerr=logical_error_probability_stddev,
+        fmt="o",
+        color=RIVERLANE_PLOT_COLOURS[0],
+        label="Logical error probabilities (±σ)"
+    )
+    # Plot the fitted logical error probability per round curve
     interpolation_points = 200
     rounds_interpolated = numpy.linspace(
-        num_rounds[0], num_rounds[-1], interpolation_points,
-        dtype=numpy.float64,
+        num_rounds[0], num_rounds[-1], interpolation_points
     )
     y_interpolated = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
 
     lep_interpolated = (1 - y_interpolated) /2
-    ax.plot(rounds_interpolated, lep_interpolated,label=f"Fit, ε={leppr:.4f}" + r"$\pm$" + f"{leppr_stddev:.4f}", color=RIVERLANE_PLOT_COLOURS[0])
+    ax.plot(
+        rounds_interpolated,
+        lep_interpolated,
+        label=f"Fit, ε={leppr:.4f} ± {leppr_stddev:.4f}",
+        color=RIVERLANE_PLOT_COLOURS[0]
+    )
 
-    # add error band to LEPPR curve
-    lep_interpolated_err = numpy.array([numpy.sqrt(((2*spam_stddev)/(1-2*spam_stddev))**2 + ((2*r*leppr_stddev)/(1-2*leppr_stddev))**2) for r in rounds_interpolated])
+    # Add error band to logical error probability per round curve
+    lep_interpolated_err = numpy.sqrt(
+        ((2 * spam_stddev) / (1 - 2 * spam_stddev))**2
+        + ((2 * rounds_interpolated * leppr_stddev) / (1 - 2 * leppr_stddev))**2
+    )
     upper_error = lep_interpolated + lep_interpolated_err
     lower_error = lep_interpolated - lep_interpolated_err
     lower_error = numpy.clip(lower_error, 0, 1)  # ensure no negative values for log scale
@@ -136,6 +139,28 @@ def plot_logical_error_probability_per_round(
     ax.set_title("Logical Error Probability Per Round Fit")
     ax.set_xlabel("Rounds")
     ax.set_ylabel("Logical Error Probability")
+    if logy:
+        ax.set_yscale("log")
     ax.legend()
 
     return fig, ax
+
+
+if __name__ == "__main__":
+    from deltakit_explorer.analysis import (
+        calculate_lep_and_lep_stddev, compute_logical_error_per_round,
+    )
+    import matplotlib.pyplot as plt
+    num_rounds = [2, 4, 6]
+    num_shots = [500000] * 3
+    num_failed_shots = [34, 151, 356]
+
+    lep, lep_stddev = calculate_lep_and_lep_stddev(num_failed_shots, num_shots)
+    res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
+    fig, ax = plot_logical_error_probability_per_round(
+        res,
+        num_rounds=num_rounds,
+        logical_error_probability=lep,
+        logical_error_probability_stddev=lep_stddev,
+    )
+    plt.show()
