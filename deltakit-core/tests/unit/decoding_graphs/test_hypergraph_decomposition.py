@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import pytest
+
 from deltakit_core.decoding_graphs import DecodingHyperEdge
 from deltakit_core.decoding_graphs._hypergraph_decomposition import decompositions
 

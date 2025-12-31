@@ -1,10 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-from pathlib import Path
 from collections.abc import Iterator
+from pathlib import Path
 
 import numpy as np
+
 from deltakit_core.decoding_graphs import Bitstring, OrderedSyndrome
 
 

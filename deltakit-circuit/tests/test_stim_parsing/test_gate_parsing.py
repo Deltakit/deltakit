@@ -1,14 +1,15 @@
 # (c) Copyright Riverlane 2020-2025.
-import deltakit_circuit as sp
+from importlib.metadata import version
+
 import pytest
 import stim
 from packaging.version import Version
-from importlib.metadata import version
+
+import deltakit_circuit as sp
 from deltakit_circuit._parse_stim import (
     _classify_pauli_target,
     parse_stim_gate_instruction,
 )
-
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")

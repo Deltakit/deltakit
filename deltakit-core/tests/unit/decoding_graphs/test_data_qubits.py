@@ -2,9 +2,11 @@
 """Tests for data qubits datastrucutres."""
 
 import math
-from collections.abc import Iterable, Set as AbstractSet
+from collections.abc import Iterable
+from collections.abc import Set as AbstractSet
 
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,

@@ -6,6 +6,8 @@ from typing import Literal
 
 import pytest
 import stim
+from pytest_mock.plugin import MockerFixture
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DecodingHyperMultiGraph,
@@ -18,7 +20,6 @@ from deltakit_core.decoding_graphs._explained_dem_parsing import (
     noise_probability,
     parse_explained_dem,
 )
-from pytest_mock.plugin import MockerFixture
 
 PauliNoiseT = Literal["X_ERROR", "Y_ERROR", "Z_ERROR"]
 DepolariseNoiseT = Literal["DEPOLARIZE1", "DEPOLARIZE2"]

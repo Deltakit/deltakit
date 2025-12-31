@@ -4,8 +4,10 @@ from itertools import product
 
 import numpy as np
 import pytest
-from deltakit_decode.analysis._empirical_decoding_error_distribution import \
-    EmpiricalDecodingErrorDistribution
+
+from deltakit_decode.analysis._empirical_decoding_error_distribution import (
+    EmpiricalDecodingErrorDistribution,
+)
 
 
 class TestEmpiricalDecodingErrorDistribution:

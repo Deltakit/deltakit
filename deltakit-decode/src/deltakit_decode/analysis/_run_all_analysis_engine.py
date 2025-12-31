@@ -1,19 +1,21 @@
 # (c) Copyright Riverlane 2020-2025.
 import datetime
 import logging
+from collections.abc import Callable, Iterable
 from multiprocessing.synchronize import Lock as LockBase
 from pathlib import Path
 from typing import Any
-from collections.abc import Callable, Iterable
 
 import numpy as np
 import pandas as pd
-from deltakit_decode.analysis._decoder_manager import DecoderManager
-from deltakit_decode.analysis._empirical_decoding_error_distribution import \
-    EmpiricalDecodingErrorDistribution
-from deltakit_decode.utils import make_logger
 from pathos.pools import ProcessPool
 from tqdm import tqdm
+
+from deltakit_decode.analysis._decoder_manager import DecoderManager
+from deltakit_decode.analysis._empirical_decoding_error_distribution import (
+    EmpiricalDecodingErrorDistribution,
+)
+from deltakit_decode.utils import make_logger
 
 
 class RunAllAnalysisEngine:

@@ -6,13 +6,13 @@ from __future__ import annotations
 import math
 from typing import ClassVar, get_args
 
+from deltakit_circuit._qubit_identifiers import Qubit, T
 from deltakit_circuit.noise_channels._abstract_noise_channels import (
     MultiProbabilityNoiseChannel,
     OneQubitNoiseChannel,
     OneQubitOneProbabilityNoiseChannel,
     TwoQubitNoiseChannel,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T
 
 
 class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):

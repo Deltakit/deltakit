@@ -1,7 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
-import deltakit_circuit as sp
 import pytest
 import stim
+
+import deltakit_circuit as sp
 
 
 def test_parsing_empty_repeat_block_gives_empty_circuit():

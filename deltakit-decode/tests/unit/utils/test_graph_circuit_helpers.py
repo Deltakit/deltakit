@@ -2,9 +2,12 @@
 
 import pytest
 import stim
-from deltakit_decode.utils._graph_circuit_helpers import (split_measurement_bitstring,
-                                                          stim_circuit_to_graph_dem)
 from deltakit_core.decoding_graphs import FixedWidthBitstring
+
+from deltakit_decode.utils._graph_circuit_helpers import (
+    split_measurement_bitstring,
+    stim_circuit_to_graph_dem,
+)
 
 
 def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():

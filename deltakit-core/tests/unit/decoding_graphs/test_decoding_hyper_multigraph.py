@@ -5,6 +5,7 @@ import math
 
 import numpy as np
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DecodingHyperMultiGraph,

@@ -1,11 +1,12 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import chain
 from collections.abc import Iterable
+from itertools import chain
 from unittest.mock import MagicMock
 
-import stim
-
 import pytest
+import stim
+from pytest_mock import MockerFixture
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DemParser,
@@ -15,9 +16,7 @@ from deltakit_core.decoding_graphs import (
     LogicalsInEdges,
     observable_warning,
 )
-
 from deltakit_core.decoding_graphs._dem_parsing import CoordinateOffset, DetectorCounter
-from pytest_mock import MockerFixture
 
 
 class TestCoordinateOffset:

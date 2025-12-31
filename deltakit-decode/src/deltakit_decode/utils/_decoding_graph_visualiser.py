@@ -3,9 +3,12 @@ from collections.abc import Collection, Iterable
 
 import numpy as np
 import plotly.graph_objects as go
-from deltakit_core.decoding_graphs import (DecodingEdge, NXDecodingGraph,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome)
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    NXDecodingGraph,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+)
 
 
 class VisDecodingGraph3D:

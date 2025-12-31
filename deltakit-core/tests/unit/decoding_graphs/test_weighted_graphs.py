@@ -7,6 +7,7 @@ from collections.abc import Iterable, Sequence
 import numpy as np
 import numpy.typing as npt
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DetectorRecord,

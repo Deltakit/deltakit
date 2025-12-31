@@ -4,6 +4,7 @@ import tempfile
 
 import pytest
 import stim
+
 from deltakit_core.data_formats import (
     b8_to_logical_flip,
     b8_to_measurements,

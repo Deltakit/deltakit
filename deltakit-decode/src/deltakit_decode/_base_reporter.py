@@ -7,6 +7,7 @@ from contextlib import AbstractContextManager
 from math import sqrt
 from time import time_ns
 from typing import Any
+
 from typing_extensions import Self
 
 from deltakit_decode.utils import make_logger

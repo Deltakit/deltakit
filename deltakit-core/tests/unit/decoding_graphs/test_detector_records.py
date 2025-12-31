@@ -4,6 +4,7 @@
 from itertools import chain
 
 import pytest
+
 from deltakit_core.decoding_graphs import DetectorRecord
 
 

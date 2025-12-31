@@ -7,9 +7,9 @@ from unittest.mock import MagicMock
 import numpy as np
 import pandas as pd
 import pytest
+
 from deltakit_decode.analysis._decoder_manager import DecoderManager
-from deltakit_decode.analysis._run_all_analysis_engine import \
-    RunAllAnalysisEngine
+from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
 
 @pytest.fixture(params=[0, 1, 4])

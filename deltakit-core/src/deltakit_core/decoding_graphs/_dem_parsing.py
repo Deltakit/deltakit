@@ -6,9 +6,9 @@ from __future__ import annotations
 import collections.abc
 import warnings
 from collections import Counter
+from collections.abc import Iterable, Iterator
 from itertools import chain, zip_longest
 from typing import Generic, Protocol, TypeVar, cast
-from collections.abc import Iterable, Iterator
 
 import stim
 

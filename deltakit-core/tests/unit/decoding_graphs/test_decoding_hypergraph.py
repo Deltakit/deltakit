@@ -7,6 +7,8 @@ from itertools import combinations
 import numpy as np
 import numpy.typing as npt
 import pytest
+from pytest_lazy_fixtures import lf
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DecodingHyperGraph,
@@ -14,7 +16,6 @@ from deltakit_core.decoding_graphs import (
     EdgeRecord,
     OrderedSyndrome,
 )
-from pytest_lazy_fixtures import lf
 
 
 def decoding_hypergraph_with_hyperedges():

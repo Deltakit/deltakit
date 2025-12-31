@@ -2,8 +2,11 @@
 import deltakit_circuit as sp
 import pytest
 import stim
-from deltakit_circuit.gates._abstract_gates import (OneQubitMeasurementGate,
-                                                    TwoOperandGate)
+from deltakit_circuit.gates._abstract_gates import (
+    OneQubitMeasurementGate,
+    TwoOperandGate,
+)
+
 from deltakit_decode.noise_sources import OptionedStim, StimNoise, ToyNoise
 
 

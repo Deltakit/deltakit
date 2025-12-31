@@ -8,11 +8,13 @@ import numpy.testing as npt
 import pytest
 import stim
 from deltakit_core.decoding_graphs import dem_to_decoding_graph_and_logicals
-from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
-from deltakit_decode.utils._derivation_tools import (create_correlation_matrix,
-                                                     generate_expectation_data)
 from pytest_lazy_fixtures import lf
 
+from deltakit_decode.utils._derivation_tools import (
+    create_correlation_matrix,
+    generate_expectation_data,
+)
+from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
 
 REFERENCE_DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "tests" / "reference_data"
 

@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+from collections.abc import Generator, Mapping, Sequence
 from enum import Enum
 from typing import ClassVar, Generic, TypeVar, cast
-from collections.abc import Generator, Mapping, Sequence
 
 import stim
-from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
 from typing_extensions import Self
+
+from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
 
 
 class PauliBasis(Enum):

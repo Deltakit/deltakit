@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 import csv
+from collections.abc import Iterable, Iterator
 from itertools import cycle
 from pathlib import Path
-from collections.abc import Iterable, Iterator
 
 from deltakit_core.decoding_graphs import Bitstring
 

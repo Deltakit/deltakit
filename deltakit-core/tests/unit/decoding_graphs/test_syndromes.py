@@ -5,6 +5,7 @@ from collections.abc import Sequence
 
 import numpy as np
 import pytest
+
 from deltakit_core.decoding_graphs import (
     Bitstring,
     DetectorRecord,

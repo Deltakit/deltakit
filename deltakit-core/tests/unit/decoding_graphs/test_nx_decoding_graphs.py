@@ -9,6 +9,7 @@ import networkx as nx
 import numpy as np
 import numpy.typing as npt
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,

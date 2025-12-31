@@ -1,10 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
+import contextlib
 from itertools import combinations
 
-import deltakit_circuit as sp
 import pytest
 import stim
-import contextlib
+
+import deltakit_circuit as sp
 
 
 @pytest.fixture

@@ -1,9 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import permutations
 import itertools
+from itertools import permutations
 
 import pytest
 import stim
+
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import Qubit
 

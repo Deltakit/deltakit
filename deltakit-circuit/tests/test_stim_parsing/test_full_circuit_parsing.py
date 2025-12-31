@@ -1,7 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
-import deltakit_circuit as sp
 import pytest
 import stim
+
+import deltakit_circuit as sp
 from deltakit_circuit._parse_stim import (
     InstructionNotImplemented,
     parse_circuit_instruction,

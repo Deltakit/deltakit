@@ -3,6 +3,7 @@ from copy import copy, deepcopy
 from itertools import permutations
 
 import pytest
+
 from deltakit_circuit import PauliProduct, PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import CorrelatedError, ElseCorrelatedError

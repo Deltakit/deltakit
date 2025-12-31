@@ -4,6 +4,7 @@ from itertools import cycle
 from unittest.mock import Mock
 
 import pytest
+
 from deltakit_decode._base_reporter import TimingReporter
 
 

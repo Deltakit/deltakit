@@ -1,9 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
 from copy import deepcopy
 
-import deltakit_circuit as sp
 import pytest
 import stim
+
+import deltakit_circuit as sp
 
 
 def test_noise_context_can_return_qubits_operated_on_by_a_one_qubit_gate_type_in_a_gate_layer():

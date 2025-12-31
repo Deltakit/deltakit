@@ -1,9 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
 import math
 
-import stim
-
 import pytest
+import stim
+from pytest_lazy_fixtures import lf
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -12,8 +13,6 @@ from deltakit_core.decoding_graphs import (
     dem_to_decoding_graph_and_logicals,
     dem_to_hypergraph_and_logicals,
 )
-
-from pytest_lazy_fixtures import lf
 
 
 def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed_hyper():

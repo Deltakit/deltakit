@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
+
 from deltakit_circuit import Qubit
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2

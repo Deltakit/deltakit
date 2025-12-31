@@ -2,8 +2,8 @@
 from unittest.mock import Mock
 
 import pytest
-from deltakit_decode.analysis._matching_decoder_managers import \
-    GraphDecoderManager
+
+from deltakit_decode.analysis._matching_decoder_managers import GraphDecoderManager
 
 
 class TestGraphDecoderManager:

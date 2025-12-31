@@ -4,15 +4,11 @@
 from __future__ import annotations
 
 import math
-from typing import ClassVar, get_args
 from collections.abc import Iterable, Mapping
+from typing import ClassVar, get_args
 
 import stim
-from deltakit_circuit.gates._abstract_gates import (
-    Gate,
-    OneQubitMeasurementGate,
-    PauliBasis,
-)
+
 from deltakit_circuit._qubit_identifiers import (
     MeasurementPauliProduct,
     Qubit,
@@ -20,6 +16,11 @@ from deltakit_circuit._qubit_identifiers import (
     U,
     _InvertiblePauliGate,
     _PauliGate,
+)
+from deltakit_circuit.gates._abstract_gates import (
+    Gate,
+    OneQubitMeasurementGate,
+    PauliBasis,
 )
 
 

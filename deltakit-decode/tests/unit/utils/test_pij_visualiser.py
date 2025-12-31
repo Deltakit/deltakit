@@ -3,6 +3,7 @@ import platform
 from unittest import mock
 
 import pytest
+
 from deltakit_decode.utils._pij_visualiser import plot_correlation_matrix
 
 

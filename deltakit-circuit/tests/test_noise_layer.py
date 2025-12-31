@@ -3,6 +3,7 @@ from itertools import permutations
 
 import pytest
 import stim
+
 from deltakit_circuit import (
     Circuit,
     Detector,

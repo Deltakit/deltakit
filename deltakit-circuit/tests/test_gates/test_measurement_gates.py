@@ -1,8 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import permutations
 import itertools
+from itertools import permutations
 
 import pytest
+
 from deltakit_circuit import (
     InvertiblePauliX,
     InvertiblePauliY,

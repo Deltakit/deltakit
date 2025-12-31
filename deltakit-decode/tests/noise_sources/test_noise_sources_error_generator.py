@@ -3,22 +3,30 @@
 import deltakit_circuit as sp
 import pytest
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge, DecodingHyperEdge,
-                                           DecodingHyperGraph, EdgeRecord,
-                                           HyperMultiGraph, NXDecodingGraph,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome,
-                                           dem_to_decoding_graph_and_logicals,
-                                           dem_to_hypergraph_and_logicals)
-from deltakit_decode.utils import parse_stim_circuit
-from deltakit_decode.noise_sources import (EdgeProbabilityMatchingNoise,
-                                           ExhaustiveMatchingNoise,
-                                           ExhaustiveWeightedMatchingNoise,
-                                           FixedWeightMatchingNoise,
-                                           SampleStimNoise,
-                                           UniformMatchingNoise)
-from deltakit_decode.noise_sources._generic_noise_sources import _NoiseModel
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    DecodingHyperEdge,
+    DecodingHyperGraph,
+    EdgeRecord,
+    HyperMultiGraph,
+    NXDecodingGraph,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+    dem_to_decoding_graph_and_logicals,
+    dem_to_hypergraph_and_logicals,
+)
 from pytest_lazy_fixtures import lf
+
+from deltakit_decode.noise_sources import (
+    EdgeProbabilityMatchingNoise,
+    ExhaustiveMatchingNoise,
+    ExhaustiveWeightedMatchingNoise,
+    FixedWeightMatchingNoise,
+    SampleStimNoise,
+    UniformMatchingNoise,
+)
+from deltakit_decode.noise_sources._generic_noise_sources import _NoiseModel
+from deltakit_decode.utils import parse_stim_circuit
 
 
 @pytest.fixture(scope="module")

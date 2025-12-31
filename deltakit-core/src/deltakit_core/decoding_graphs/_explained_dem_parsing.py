@@ -2,6 +2,7 @@
 from collections import defaultdict
 
 import stim
+
 from deltakit_core.decoding_graphs import (
     AnyEdgeT,
     DecodingHyperEdge,

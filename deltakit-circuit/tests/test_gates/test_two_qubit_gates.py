@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import chain, permutations, product
 import itertools
+from itertools import chain, permutations, product
 
 import pytest
 import stim

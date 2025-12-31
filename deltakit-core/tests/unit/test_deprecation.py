@@ -1,6 +1,7 @@
-from deltakit_core.deprecation import deprecated
 import pytest
 from packaging.version import Version
+
+from deltakit_core.deprecation import deprecated
 
 
 def non_deprecated_add(a: float, b: float, ndigits: int | None = None) -> float:

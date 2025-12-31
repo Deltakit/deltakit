@@ -1,11 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
+from importlib.metadata import version
 
 import pytest
 import stim
 from packaging.version import Version
-from importlib.metadata import version
 
 from deltakit_circuit import (
     Circuit,
@@ -27,7 +27,6 @@ from deltakit_circuit import (
 )
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
-
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")

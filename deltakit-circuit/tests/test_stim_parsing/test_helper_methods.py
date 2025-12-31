@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
+
 from deltakit_circuit._parse_stim import group_targets
 
 

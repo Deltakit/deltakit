@@ -6,19 +6,23 @@ from unittest import mock
 
 import pytest
 import stim
-from deltakit_core.decoding_graphs import (dem_to_decoding_graph_and_logicals,
-                                           dem_to_hypergraph_and_logicals)
 from deltakit_core.data_formats import b8_to_syndromes
-from deltakit_decode.utils import (calculate_pij_values,
-                                   create_dem_from_pij,
-                                   dem_and_pij_edges_max_diff,
-                                   generate_expectation_data,
-                                   parse_stim_circuit,
-                                   pij_and_dem_edge_diff,
-                                   pij_edges_max_diff,
-                                   pijs_edge_diff)
+from deltakit_core.decoding_graphs import (
+    dem_to_decoding_graph_and_logicals,
+    dem_to_hypergraph_and_logicals,
+)
 from pytest_lazy_fixtures import lf
 
+from deltakit_decode.utils import (
+    calculate_pij_values,
+    create_dem_from_pij,
+    dem_and_pij_edges_max_diff,
+    generate_expectation_data,
+    parse_stim_circuit,
+    pij_and_dem_edge_diff,
+    pij_edges_max_diff,
+    pijs_edge_diff,
+)
 
 REFERENCE_DATA_DIR = Path(__file__).parent.parent.parent.parent.parent / "tests" / "reference_data"
 
