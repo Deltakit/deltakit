@@ -1,5 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
+from pathlib import Path
+
 import pytest
 
 from deltakit_core.data_formats._measurements import (
@@ -28,10 +30,10 @@ class TestMeasurements:
     )
     def test_split_input_data_to_c64_gives_correct_results(
         self, tmp_path, bitstrings, c64_string
-    ):
-        tmp_c64_file = tmp_path / "tmp_split_measurement_events_out.c64"
+    ) -> None:
+        tmp_c64_file: Path = tmp_path / "tmp_split_measurement_events_out.c64"
         split_input_data_to_c64(bitstrings, tmp_c64_file)
-        with open(tmp_c64_file, "r") as c64_handle:
+        with tmp_c64_file.open("r") as c64_handle:
             assert c64_handle.read() == c64_string
 
     @pytest.mark.parametrize(
@@ -68,8 +70,8 @@ class TestMeasurements:
     def test_c64_to_addressed_input_words(
         self, tmp_path, c64_lines, round_width, expected_addressed_words
     ):
-        tmp_c64_file = tmp_path / "tmp_addressed_words.c64"
-        with open(tmp_c64_file, "w") as c64_handle:
+        tmp_c64_file: Path = tmp_path / "tmp_addressed_words.c64"
+        with tmp_c64_file.open("w") as c64_handle:
             c64_handle.write(c64_lines)
         assert (
             list(c64_to_addressed_input_words(tmp_c64_file, round_width))
