@@ -59,7 +59,7 @@ target-version = "py310"
 
 [lint]
 select = [
-    "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "I", "N", "NPY", "PD",
+    "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "I", "ICN", "N", "NPY", "PD",
     "PGH", "PIE", "PL", "PT", "PYI", "RET", "RUF", "SIM", "T", "UP", "W", "YTT"
 ]
 ignore = [
