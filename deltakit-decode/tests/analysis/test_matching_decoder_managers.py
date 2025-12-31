@@ -8,11 +8,11 @@ from deltakit_decode.analysis._matching_decoder_managers import GraphDecoderMana
 
 class TestGraphDecoderManager:
 
-    @pytest.fixture()
+    @pytest.fixture
     def logicals(self):
         return [set(range(10)), {1}]
 
-    @pytest.fixture()
+    @pytest.fixture
     def mock_graph_decoder(self, mocker, logicals) -> Mock:
         decode_to_logical_flip = mocker.Mock(return_value=(True,))
         logicals = mocker.PropertyMock(return_value=logicals)
@@ -21,12 +21,12 @@ class TestGraphDecoderManager:
         type(decoder).logicals = logicals
         return decoder
 
-    @pytest.fixture()
+    @pytest.fixture
     def mock_noise_model(self, mocker) -> Mock:
         noise_model: Mock = mocker.Mock()
         return noise_model
 
-    @pytest.fixture()
+    @pytest.fixture
     def example_graph_decoder_manager(self, mock_noise_model, mock_graph_decoder):
         return GraphDecoderManager(mock_noise_model, mock_graph_decoder)
 

@@ -176,7 +176,7 @@ class TestOptionedStim:
     def code_rounds_distance(self, request):
         return request.param
 
-    @pytest.fixture()
+    @pytest.fixture
     def clean_stim_circuit(self, code_rounds_distance):
         code, rounds, distance = code_rounds_distance
         return stim.Circuit.generated(code,
