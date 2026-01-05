@@ -1,4 +1,5 @@
-# Automatically add labels to PR according to the rules defined in ../labeler.yml.
+# Automatically add labels to PR according to rules defined in `../labeler.yml`.
+# These labels are then used to filter out CI tests depending on which package changed.
 name: Label PRs
 
 on:
