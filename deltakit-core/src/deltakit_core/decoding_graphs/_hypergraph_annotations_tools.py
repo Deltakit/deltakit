@@ -2,8 +2,8 @@
 """Module for utilities on annotating hypergraphs with window ids."""
 
 from collections import defaultdict
-from itertools import combinations
 from collections.abc import Callable
+from itertools import combinations
 
 from networkx import DiGraph
 from networkx.algorithms import simple_cycles

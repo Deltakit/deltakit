@@ -1,6 +1,7 @@
 """Unit tests for windowing utilities."""
 
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DecodingHyperGraph,
