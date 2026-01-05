@@ -36,8 +36,8 @@ class TestCloudDecoder:
         ]
     )
     def test_raises_with_no_client(self, decoder_class):
+        client = None
         with pytest.raises(NotImplementedError, match="a `client` must be provided"):
-            client = None
             decoder_class("", client=client)
 
     @pytest.mark.parametrize(
@@ -75,8 +75,8 @@ class TestCloudDecoder:
     )
     def test_cloud_decoder_raises_with_no_observables(self, circuit):
         client = Client("http://localhost")
+        decoder = _CloudDecoder(circuit, client=client)
         with pytest.raises(ValueError, match="Circuit must have at least one observable"):
-            decoder = _CloudDecoder(circuit, client=client)
             decoder.decode_batch_to_logical_flip(
                 np.array([[0, 1], [1, 0]], dtype=np.uint8)
             )

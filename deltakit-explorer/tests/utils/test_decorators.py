@@ -43,5 +43,5 @@ def test_validate_and_split_decoding_negative():
     dets = DetectionEvents(np.ones((10, 2)), "B8", 2)
     obs = ObservableFlips(np.ones((10, 2)), "B8", 2)
     decoder = Decoder(DecoderType.MWPM)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="fail"):
         dummy(None, dets, obs, decoder, "CIRCUIT")
