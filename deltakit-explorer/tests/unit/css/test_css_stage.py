@@ -77,7 +77,7 @@ all_example_stages = [comp.stage for comp in all_example_stage_comps]
 
 class TestCalculateDetectorCoordinates:
     @pytest.mark.parametrize(
-        "stabilisers, expected_coordinates",
+        ("stabilisers", "expected_coordinates"),
         [
             (
 
@@ -227,7 +227,7 @@ class TestCSSStageWithMeasurementsAndObservablesOnly:
         assert test_stage.allowable_final_stage
 
     @pytest.mark.parametrize(
-        "first_round_measurements, observable_definitions, expected_first_round",
+        ("first_round_measurements", "observable_definitions", "expected_first_round"),
         [
             ([MZ(0)], None, Circuit([GateLayer([MZ(0)])])),
             (
@@ -350,7 +350,7 @@ class TestCSSStageWithResetsOnly:
         assert not test_stage.allowable_final_stage
 
     @pytest.mark.parametrize(
-        "final_round_resets, expected_remaining_rounds_circuit",
+        ("final_round_resets", "expected_remaining_rounds_circuit"),
         [
             ([RZ(0)], Circuit(GateLayer([RZ(0)]))),
             ([RX(0), RZ(6), RX(3)], Circuit(GateLayer([RX(0), RZ(6), RX(3)]))),
@@ -431,7 +431,7 @@ class TestCSSStageWithAllParameters:
             )
 
     @pytest.mark.parametrize(
-        "stabilisers, final_round_resets",
+        ("stabilisers", "final_round_resets"),
         [
             (example_simultaneous_stabilisers, [RZ(Qubit(Coord2D(1, 1)))]),
         ],
@@ -574,7 +574,7 @@ class TestCSSStageWithAllParameters:
             assert stabiliser in expected_resets_as_stabilisers
 
     @pytest.mark.parametrize(
-        "stage, expected_ordered_stabilisers",
+        ("stage", "expected_ordered_stabilisers"),
         [
             (
                 CSSStage(
@@ -608,7 +608,7 @@ class TestCSSStageWithAllParameters:
         )
 
     @pytest.mark.parametrize(
-        "stage1, stage2", itertools.combinations(all_example_stages, 2)
+        ("stage1", "stage2"), itertools.combinations(all_example_stages, 2)
     )
     def test___eq___returns_false_for_not_equal_stages(self, stage1, stage2):
         assert stage1 != stage2

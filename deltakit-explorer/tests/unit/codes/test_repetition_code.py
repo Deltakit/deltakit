@@ -39,7 +39,7 @@ def test__check_stabiliser_type_is_valid(
 @pytest.mark.parametrize("use_ancilla_qubits", [True, False])
 @pytest.mark.parametrize("default_schedule", [True, False])
 @pytest.mark.parametrize(
-    "distance, odd_data_qubit_coords, expected_data_qubits",
+    ("distance", "odd_data_qubit_coords", "expected_data_qubits"),
     [
         (
             5,
@@ -106,7 +106,7 @@ def test__data_qubits_gives_correct_set_of_qubits(
 @pytest.mark.parametrize("use_looping_stabiliser", [False, True])
 @pytest.mark.parametrize("default_schedule", [True, False])
 @pytest.mark.parametrize(
-    "distance, odd_data_qubit_coords, expected_ancilla_qubits",
+    ("distance", "odd_data_qubit_coords", "expected_ancilla_qubits"),
     [
         (
             5,
@@ -180,7 +180,7 @@ def test__stabiliser_ancilla_qubits_gives_correct_set_of_qubits(
 @pytest.mark.parametrize("use_looping_stabiliser", [False, True])
 @pytest.mark.parametrize("default_schedule", [True, False])
 @pytest.mark.parametrize(
-    "distance, use_ancilla_qubits, odd_data_qubit_coords, expected_ancillas",
+    ("distance", "use_ancilla_qubits", "odd_data_qubit_coords", "expected_ancillas"),
     [
         (
             3,
@@ -280,7 +280,7 @@ def test__ancilla_qubits_gives_correct_qubits(
 @pytest.mark.parametrize("use_looping_stabiliser", [False, True])
 @pytest.mark.parametrize("default_schedule", [True, False])
 @pytest.mark.parametrize(
-    "distance, use_ancilla_qubits, odd_data_qubit_coords, expected_qubits",
+    ("distance", "use_ancilla_qubits", "odd_data_qubit_coords", "expected_qubits"),
     [
         (
             3,
@@ -415,8 +415,7 @@ def test_property_qubits_is_as_expected(
 @pytest.mark.parametrize("use_ancilla_qubits", [True, False])
 @pytest.mark.parametrize("default_schedule", [True, False])
 @pytest.mark.parametrize(
-    "distance, stabiliser_type, odd_data_qubit_coords, x_logicals_expected,"
-    "z_logicals_expected",
+    ("distance", "stabiliser_type", "odd_data_qubit_coords", "x_logicals_expected", "z_logicals_expected"),
     [
         (
             5,
@@ -631,8 +630,7 @@ d_3_x_stabilisers_odd_data_looped_reversed = (
 
 
 @pytest.mark.parametrize(
-    "distance, stabiliser_type, use_ancilla_qubits, use_looping_stabiliser, "
-    "odd_data_qubit_coords, default_schedule, expected_stabilisers",
+    ("distance", "stabiliser_type", "use_ancilla_qubits", "use_looping_stabiliser", "odd_data_qubit_coords", "default_schedule", "expected_stabilisers"),
     [
         (
             5,

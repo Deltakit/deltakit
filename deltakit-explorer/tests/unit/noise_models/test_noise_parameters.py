@@ -19,7 +19,7 @@ from deltakit_explorer.qpu._noise._noise_parameters import _idle_noise_from_t1_t
 
 class TestNoiseParameters:
     @pytest.mark.parametrize(
-        "gate_dict, idle, reset, m_noise, m_flip, before_gate",
+        ("gate_dict", "idle", "reset", "m_noise", "m_flip", "before_gate"),
         [
             (
                 {

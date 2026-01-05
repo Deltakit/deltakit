@@ -24,7 +24,7 @@ class TestSD6NoiseModel:
         assert SD6Noise(p=prob).p == prob
 
     @pytest.mark.parametrize(
-        "gate_layer, expected_gate_layer",
+        ("gate_layer", "expected_gate_layer"),
         [
             (GateLayer(MZ(0)), GateLayer(MZ(0, 0.1))),
             (GateLayer(MRX(0)), GateLayer(MRX(0, 0.1))),
@@ -39,7 +39,7 @@ class TestSD6NoiseModel:
         assert gate_layer == expected_gate_layer
 
     @pytest.mark.parametrize(
-        "input_layer, expected_output_layers",
+        ("input_layer", "expected_output_layers"),
         [
             (
                 GateLayer([H(Qubit(1)), CX(0, 2)]),
@@ -76,13 +76,13 @@ class TestSD6NoiseModel:
         assert noise_model.idle_noise(Qubit(1)) == expected_noise_channel
 
     @pytest.mark.parametrize(
-        "gate_layer, noise_after",
-        (
+        ("gate_layer", "noise_after"),
+        [
             (GateLayer(RZ(Qubit(1))), PauliXError(1, 0.1)),
             (GateLayer(MRX(Qubit(1))), PauliZError(1, 0.1)),
             (GateLayer(MRY(Qubit(1))), PauliXError(1, 0.1)),
             (GateLayer(MRZ(Qubit(1))), PauliXError(1, 0.1)),
-        ),
+        ],
     )
     def test_default_reset_noise(self, noise_model, gate_layer, noise_after):
         circuit = Circuit(gate_layer)

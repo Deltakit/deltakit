@@ -28,7 +28,7 @@ class TestToyNoise:
         )
 
     @pytest.mark.parametrize(
-        "input_layer, expected_output_layers",
+        ("input_layer", "expected_output_layers"),
         [
             (
                 GateLayer([H(Qubit(1)), CX(0, 2)]),
@@ -78,7 +78,7 @@ class TestToyNoise:
             NoiseContext(circuit, layer)
         ) == [depolarize_1]
 
-    @pytest.mark.parametrize("toy_noise, str_val", [
+    @pytest.mark.parametrize(("toy_noise", "str_val"), [
         (ToyNoise(p=0.123), "toy_noise_1e-01"),
         (ToyNoise(p=0.123, p_measurement_flip=0.234), "toy_noise_1e-01_2e-01")
     ])

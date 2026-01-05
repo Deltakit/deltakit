@@ -32,7 +32,7 @@ class TestPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (
                 PhenomenologicalNoise(
@@ -61,7 +61,7 @@ class TestPhenomenologicalNoise:
         )
 
     @pytest.mark.parametrize(
-        "phenomenological_noise, probability",
+        ("phenomenological_noise", "probability"),
         [
             (lambda qubit: Depolarise1(qubit, 0.0), 0.0),
             (lambda qubit: Depolarise1(qubit, 0.001), 0.001),
@@ -86,7 +86,7 @@ class TestToyPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (ToyPhenomenologicalNoise(), 0.0),
             (ToyPhenomenologicalNoise(p=0.001), 0.001),

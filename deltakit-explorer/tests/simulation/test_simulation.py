@@ -66,7 +66,7 @@ class TestStimSimulation:
             )
 
     @pytest.mark.parametrize(
-            "circuit,result",
+            ("circuit", "result"),
             [
                 (
                     "MZ 1\nLEAKAGE(0.0) 1",

@@ -78,7 +78,7 @@ class TestStabiliserClass:
             )
 
     @pytest.mark.parametrize(
-        "stabiliser, expected_dqs",
+        ("stabiliser", "expected_dqs"),
         [
             (
                 Stabiliser(paulis=(PauliX(0), PauliY(1))),
@@ -143,7 +143,7 @@ class TestStabiliserClass:
         assert stabiliser.data_qubits == expected_dqs
 
     @pytest.mark.parametrize(
-        "stabiliser, expected_paulis",
+        ("stabiliser", "expected_paulis"),
         [
             (
                 Stabiliser(paulis=[PauliX(0), PauliY(1)]),
@@ -178,7 +178,7 @@ class TestStabiliserClass:
     def test_paulis_set_correctly(self, stabiliser, expected_paulis):
         assert stabiliser.paulis == expected_paulis
 
-    @pytest.mark.parametrize("paulis, ancilla", paulis_and_ancilla_qubits_pair_examples)
+    @pytest.mark.parametrize(("paulis", "ancilla"), paulis_and_ancilla_qubits_pair_examples)
     def test__eq__and__hash__work_correctly_for_equal_paulis(self, paulis, ancilla):
         stab_0 = Stabiliser(paulis=paulis, ancilla_qubit=ancilla)
         stab_1 = Stabiliser(paulis=paulis, ancilla_qubit=ancilla)
@@ -186,7 +186,7 @@ class TestStabiliserClass:
         assert hash(stab_0) == hash(stab_1)
 
     @pytest.mark.parametrize(
-        "paulis_ancilla_0, paulis_ancilla_1",
+        ("paulis_ancilla_0", "paulis_ancilla_1"),
         itertools.combinations(paulis_and_ancilla_qubits_pair_examples, r=2),
     )
     def test__neq__and__hash__work_correctly_for_different_paulis(
@@ -202,7 +202,7 @@ class TestStabiliserClass:
         assert hash(stab_0) != hash(stab_1)
 
     @pytest.mark.parametrize(
-        "pauli_1, pauli_2, expected_product",
+        ("pauli_1", "pauli_2", "expected_product"),
         [
             (
                 Stabiliser(
@@ -254,7 +254,7 @@ class TestStabiliserClass:
         assert pauli_1 * pauli_2 == expected_product
 
     @pytest.mark.parametrize(
-        "stabiliser, expected_operator_repr, expected_repr",
+        ("stabiliser", "expected_operator_repr", "expected_repr"),
         [
             (
                 Stabiliser(

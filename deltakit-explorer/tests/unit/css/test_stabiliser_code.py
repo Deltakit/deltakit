@@ -36,19 +36,19 @@ class StabiliserCodeForTesting(StabiliserCode):
 
 class TestLogicalOperators:
     @pytest.mark.parametrize(
-        "x_logical_operators, z_logical_operators",
+        ("x_logical_operators", "z_logical_operators"),
         [
-            [(frozenset({}),), (frozenset({}),)],
-            [(frozenset({PauliX(Qubit(0))}),), (frozenset({PauliZ(Qubit(0))}),)],
-            [
+            ((frozenset({}),), (frozenset({}),)),
+            ((frozenset({PauliX(Qubit(0))}),), (frozenset({PauliZ(Qubit(0))}),)),
+            (
                 (frozenset({PauliX(Qubit(0)), PauliX(Qubit(1))}),),
                 (frozenset({PauliZ(Qubit(0)), PauliZ(Qubit(1))}),),
-            ],
-            [
+            ),
+            (
                 (frozenset({PauliX(Qubit(0))}), frozenset({PauliX(Qubit(1))})),
                 (frozenset({PauliZ(Qubit(0))}), frozenset({PauliZ(Qubit(1))})),
-            ],
-            [
+            ),
+            (
                 (
                     frozenset({PauliX(Qubit(0)), PauliX(Qubit(1))}),
                     frozenset({PauliX(Qubit(2)), PauliX(Qubit(3))}),
@@ -57,7 +57,7 @@ class TestLogicalOperators:
                     frozenset({PauliZ(Qubit(0)), PauliZ(Qubit(1))}),
                     frozenset({PauliZ(Qubit(2)), PauliZ(Qubit(3))}),
                 ),
-            ],
+            ),
         ],
     )
     class TestLogicalOperatorProperty:

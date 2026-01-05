@@ -43,7 +43,7 @@ class TestRelaxationNoiseProfiles:
         return Circuit(GateLayer(RZ(qubit) for qubit in range(5)))
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (GateLayer(X(1)), [Relax(1, relaxation_prob)]),
             (
@@ -88,7 +88,7 @@ class TestRelaxationNoiseProfiles:
         assert noise_channels == [Relax(0, self.relaxation_prob)]
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (
                 GateLayer(X(4)),
@@ -131,7 +131,7 @@ class TestRelaxationNoiseProfiles:
         assert noise_channels == expected_noise_channels
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (
                 GateLayer(MZ(4)),
@@ -186,7 +186,7 @@ class TestRelaxationNoiseProfiles:
         assert noise_channels == expected_noise_channels
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (GateLayer(X(1)), []),
             (
@@ -237,7 +237,7 @@ class TestLeakageNoiseProfiles:
     leakage_prob = 0.5
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (GateLayer(X(1)), []),
             (
@@ -269,7 +269,7 @@ class TestLeakageNoiseProfiles:
         assert noise_channels == expected_noise_channels
 
     @pytest.mark.parametrize(
-        "input_layer, expected_noise_channels",
+        ("input_layer", "expected_noise_channels"),
         [
             (GateLayer(X(1)), []),
             (

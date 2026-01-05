@@ -96,7 +96,7 @@ class TestNativeGateSetAndTimes:
             NativeGateSetAndTimes(measurement_gates=input_gates)
 
     @pytest.mark.parametrize(
-        "gate, time, gate_type_attr",
+        ("gate", "time", "gate_type_attr"),
         [
             (SQRT_X, 2.0, "one_qubit_gates"),
             (SQRT_XX, 0.001, "two_qubit_gates"),
@@ -120,7 +120,7 @@ class TestNativeGateSetAndTimes:
             native_gate_set.add_gate(MY_GATE, 2.71)
 
     @pytest.mark.parametrize(
-        "gate, gate_type_attr",
+        ("gate", "gate_type_attr"),
         [
             (SQRT_X, "one_qubit_gates"),
             (SQRT_XX, "two_qubit_gates"),
