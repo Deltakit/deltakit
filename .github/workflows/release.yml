@@ -44,10 +44,10 @@ jobs:
           # No need to keep these as they will be published in this workflow.
           retention-days: 1
 
-  # In order to avoid creating too much CI jobs, and because most packages will be
-  # installed through a "pip install deltakit", this job does not test each deltakit
-  # package in isolation but rather installs all of them and performs all the tests in
-  # the same environment.
+  # To avoid creating unnecessary CI jobs, and because most packages are 
+  # typically installed through `pip install deltakit`, this job does not test each deltakit
+  # package in isolation. Instead, it installs all of them and performs all tests suites in
+  # a single environment.
   test_wheels:
     if: ${{ inputs.run_tests }}
     name: >-
