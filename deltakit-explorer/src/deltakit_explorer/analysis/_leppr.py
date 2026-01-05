@@ -1,8 +1,7 @@
 import warnings
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from math import floor
-from collections.abc import Callable
 
 import numpy
 import numpy.typing as npt

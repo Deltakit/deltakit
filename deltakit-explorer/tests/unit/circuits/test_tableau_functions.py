@@ -2,49 +2,105 @@ import random
 import re
 from copy import deepcopy
 from functools import reduce
+from importlib.metadata import version
 from operator import add, mul
 
 import numpy as np
 import pytest
 import stim
-from packaging.version import Version
-from importlib.metadata import version
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              NoiseLayer, Observable, PauliX, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    NoiseLayer,
+    Observable,
+    PauliX,
+    Qubit,
+    ShiftCoordinates,
+)
 from deltakit_circuit._basic_types import Coord2D
-from deltakit_circuit.gates import (CX, CXSWAP, CY, CZ, CZSWAP, ISWAP,
-                                    ISWAP_DAG, MPP, MRX, MRY, MRZ, MX, MY, MZ,
-                                    RX, RY, RZ, S_DAG, SQRT_X, SQRT_X_DAG,
-                                    SQRT_XX, SQRT_XX_DAG, SQRT_Y, SQRT_Y_DAG,
-                                    SQRT_YY, SQRT_YY_DAG, SQRT_ZZ, SQRT_ZZ_DAG,
-                                    SWAP, XCX, XCY, XCZ, YCX, YCY, YCZ, Gate,
-                                    H, I, PauliBasis, S, X, Y, Z)
+from deltakit_circuit.gates import (
+    CX,
+    CXSWAP,
+    CY,
+    CZ,
+    CZSWAP,
+    ISWAP,
+    ISWAP_DAG,
+    MPP,
+    MRX,
+    MRY,
+    MRZ,
+    MX,
+    MY,
+    MZ,
+    RX,
+    RY,
+    RZ,
+    S_DAG,
+    SQRT_X,
+    SQRT_X_DAG,
+    SQRT_XX,
+    SQRT_XX_DAG,
+    SQRT_Y,
+    SQRT_Y_DAG,
+    SQRT_YY,
+    SQRT_YY_DAG,
+    SQRT_ZZ,
+    SQRT_ZZ_DAG,
+    SWAP,
+    XCX,
+    XCY,
+    XCZ,
+    YCX,
+    YCY,
+    YCZ,
+    Gate,
+    H,
+    I,
+    PauliBasis,
+    S,
+    X,
+    Y,
+    Z,
+)
 from deltakit_circuit.noise_channels import Depolarise2
-from deltakit_explorer.codes._css._css_code_experiment_circuit import \
-    css_code_memory_circuit
-from deltakit_explorer.codes._planar_code import (RotatedPlanarCode,
-                                                  UnrotatedPlanarCode)
+from packaging.version import Version
+
+from deltakit_explorer.codes._css._css_code_experiment_circuit import (
+    css_code_memory_circuit,
+)
+from deltakit_explorer.codes._planar_code import RotatedPlanarCode, UnrotatedPlanarCode
 from deltakit_explorer.qpu._circuits._tableau_compile_functions import (
     _compile_measurement_to_native_gates_plus_unitaries,
     _compile_or_exchange_unitary_block,
     _compile_reset_and_meas_to_native_gates,
     _compile_reset_to_native_gates_plus_unitaries,
     _compile_two_qubit_gate_to_target,
-    _compile_two_qubit_gates_to_native_gates, compile_circuit_to_native_gates)
+    _compile_two_qubit_gates_to_native_gates,
+    compile_circuit_to_native_gates,
+)
 from deltakit_explorer.qpu._circuits._tableau_functions import (
-    CZ_TO_GATE_DICT, CZSWAP_TO_GATE_DICT, GATE_TO_CZ_DICT, GATE_TO_CZSWAP_DICT,
-    MEAS_COMPILATION_LOOKUP_DICT, RESET_COMPILATION_LOOKUP_DICT,
-    CompilationData, _create_circuit_from_compilation_data,
-    _extract_structure_from_circuit, _get_compilation_dict,
-    _get_tableau_from_sequence_of_1q_gates,
-    _get_single_qubits_tableau_key_from_two_qubit_tableau,
-    _get_relevant_dict_to_update,
+    CZ_TO_GATE_DICT,
+    CZSWAP_TO_GATE_DICT,
+    GATE_TO_CZ_DICT,
+    GATE_TO_CZSWAP_DICT,
+    MEAS_COMPILATION_LOOKUP_DICT,
+    RESET_COMPILATION_LOOKUP_DICT,
+    CompilationData,
+    _create_circuit_from_compilation_data,
+    _extract_structure_from_circuit,
+    _get_compilation_dict,
     _get_compilation_with_measurement_after_unitaries,
     _get_compilation_with_projectors_before_unitaries,
-    _get_compilation_with_two_qubit_gates, _is_identity_like)
+    _get_compilation_with_two_qubit_gates,
+    _get_relevant_dict_to_update,
+    _get_single_qubits_tableau_key_from_two_qubit_tableau,
+    _get_tableau_from_sequence_of_1q_gates,
+    _is_identity_like,
+)
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
-
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")

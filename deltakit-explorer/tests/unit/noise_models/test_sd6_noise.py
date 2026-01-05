@@ -1,10 +1,14 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit import (Circuit, GateLayer, NoiseContext, NoiseLayer,
-                              Qubit)
+from deltakit_circuit import Circuit, GateLayer, NoiseContext, NoiseLayer, Qubit
 from deltakit_circuit.gates import CX, MRX, MRY, MRZ, MZ, RZ, H, X, Y
-from deltakit_circuit.noise_channels import (Depolarise1, Depolarise2,
-                                             PauliXError, PauliZError)
+from deltakit_circuit.noise_channels import (
+    Depolarise1,
+    Depolarise2,
+    PauliXError,
+    PauliZError,
+)
+
 from deltakit_explorer.qpu import QPU
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
 from deltakit_explorer.qpu._noise import SD6Noise

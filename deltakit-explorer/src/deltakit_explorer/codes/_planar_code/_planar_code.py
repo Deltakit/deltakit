@@ -12,9 +12,10 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
+
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 from deltakit_explorer.enums._basic_enums import DrawingColours

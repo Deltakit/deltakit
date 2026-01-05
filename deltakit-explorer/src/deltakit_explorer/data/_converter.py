@@ -9,6 +9,7 @@ from io import BufferedIOBase, BytesIO, RawIOBase, StringIO, TextIOWrapper
 from pathlib import Path
 
 import numpy.typing as npt
+
 from deltakit_explorer.enums._api_enums import DataFormat
 
 

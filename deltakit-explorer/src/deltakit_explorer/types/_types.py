@@ -18,8 +18,15 @@ from typing import Any, ClassVar
 import numpy as np
 import numpy.typing as npt
 import stim
-from deltakit_explorer.data._converter import (read_01, read_b8, read_csv,
-                                               write_01, write_b8, write_csv)
+
+from deltakit_explorer.data._converter import (
+    read_01,
+    read_b8,
+    read_csv,
+    write_01,
+    write_b8,
+    write_csv,
+)
 from deltakit_explorer.enums._api_enums import APIEndpoints, DataFormat, DecoderType
 from deltakit_explorer.types._data_string import DataString
 

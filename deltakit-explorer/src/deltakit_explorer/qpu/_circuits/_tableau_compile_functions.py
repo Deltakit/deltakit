@@ -1,27 +1,49 @@
 from collections.abc import Callable, Sequence
 
 from deltakit_circuit import Circuit, Qubit
-from deltakit_circuit.gates import (CXSWAP, CZSWAP, ISWAP, ISWAP_DAG,
-                                    MEASUREMENT_GATE_MAPPING,
-                                    ONE_QUBIT_GATE_MAPPING, RESET_GATE_MAPPING,
-                                    TWO_QUBIT_GATE_MAPPING, Gate,
-                                    SymmetricTwoQubitGate)
+from deltakit_circuit.gates import (
+    CXSWAP,
+    CZSWAP,
+    ISWAP,
+    ISWAP_DAG,
+    MEASUREMENT_GATE_MAPPING,
+    ONE_QUBIT_GATE_MAPPING,
+    RESET_GATE_MAPPING,
+    TWO_QUBIT_GATE_MAPPING,
+    Gate,
+    SymmetricTwoQubitGate,
+)
+
 from deltakit_explorer.qpu._circuits._circuit_functions import merge_layers
-from deltakit_explorer.qpu._native_gate_set import (NativeGateSetAndTimes,
-                                                    OneQubitCliffordGate,
-                                                    TwoOperandGate)
+from deltakit_explorer.qpu._native_gate_set import (
+    NativeGateSetAndTimes,
+    OneQubitCliffordGate,
+    TwoOperandGate,
+)
 
 from ._tableau_functions import (
-    CZ_TO_GATE_DICT, CZSWAP_TO_GATE_DICT, GATE_TO_CZ_DICT, GATE_TO_CZSWAP_DICT,
-    MEAS_COMPILATION_LOOKUP_DICT, RESET_COMPILATION_LOOKUP_DICT,
-    CompilationData, EquivalentTableauDict, SpecialGateDict, TableauDict,
-    TwoQubitGateCompilationLookupDict, TwoQubitGateDictEntry,
-    _create_circuit_from_compilation_data, _extract_structure_from_circuit,
-    _get_compilation_dict, _get_compilation_with_measurement_after_unitaries,
+    CZ_TO_GATE_DICT,
+    CZSWAP_TO_GATE_DICT,
+    GATE_TO_CZ_DICT,
+    GATE_TO_CZSWAP_DICT,
+    MEAS_COMPILATION_LOOKUP_DICT,
+    RESET_COMPILATION_LOOKUP_DICT,
+    CompilationData,
+    EquivalentTableauDict,
+    SpecialGateDict,
+    TableauDict,
+    TwoQubitGateCompilationLookupDict,
+    TwoQubitGateDictEntry,
+    _create_circuit_from_compilation_data,
+    _extract_structure_from_circuit,
+    _get_compilation_dict,
+    _get_compilation_with_measurement_after_unitaries,
     _get_compilation_with_projectors_before_unitaries,
-    _get_compilation_with_two_qubit_gates, _get_tableau_as_key,
+    _get_compilation_with_two_qubit_gates,
+    _get_tableau_as_key,
     _get_tableau_from_sequence_of_1q_gates,
-    _get_tableau_key_from_sequence_of_gates)
+    _get_tableau_key_from_sequence_of_gates,
+)
 
 
 def _compile_to_native_gates_plus_unitaries(

@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
 from deltakit_circuit import PauliX, PauliZ, Qubit
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._css._stabiliser_code import StabiliserCode
 

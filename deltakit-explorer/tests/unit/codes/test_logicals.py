@@ -1,10 +1,10 @@
+import deltakit_circuit as circuit
 import pytest
 import stim
+
 from deltakit_explorer.codes._logicals import (
     paulistring_to_operator,
 )
-
-import deltakit_circuit as circuit
 
 
 @pytest.mark.parametrize("string", ["+XY", "+YX", "-ZXY"])

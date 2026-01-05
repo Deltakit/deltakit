@@ -1,12 +1,33 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit.gates import (CX, CY, CZ, Gate, ISWAP, MEASUREMENT_GATES,
-                                    MY, ONE_QUBIT_GATES, RESET_GATES, RX, RY, RZ,
-                                    SQRT_X, SQRT_XX, TWO_QUBIT_GATES, H, I, X,
-                                    Y, Z)
-from deltakit_explorer.qpu._native_gate_set import (ExhaustiveGateSet,
-                                                    NativeGateSet,
-                                                    NativeGateSetAndTimes)
+from deltakit_circuit.gates import (
+    CX,
+    CY,
+    CZ,
+    ISWAP,
+    MEASUREMENT_GATES,
+    MY,
+    ONE_QUBIT_GATES,
+    RESET_GATES,
+    RX,
+    RY,
+    RZ,
+    SQRT_X,
+    SQRT_XX,
+    TWO_QUBIT_GATES,
+    Gate,
+    H,
+    I,
+    X,
+    Y,
+    Z,
+)
+
+from deltakit_explorer.qpu._native_gate_set import (
+    ExhaustiveGateSet,
+    NativeGateSet,
+    NativeGateSetAndTimes,
+)
 
 
 class TestNativeGateSetAndTimes:

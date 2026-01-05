@@ -5,6 +5,7 @@ import pytest
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import PauliBasis
+
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 paulis_and_ancilla_qubits_pair_examples = [

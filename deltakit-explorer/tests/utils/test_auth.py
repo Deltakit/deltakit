@@ -7,6 +7,7 @@ from contextlib import suppress
 
 import pytest
 import requests
+
 from deltakit_explorer._api import _auth
 from deltakit_explorer._utils import _utils as utils
 

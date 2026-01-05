@@ -4,12 +4,17 @@ import deltakit_circuit
 import numpy as np
 import pytest
 import stim
-from deltakit_explorer import Client, types, _api
-from deltakit_explorer._cloud_decoders import (ACDecoder,
-                                               BeliefMatchingDecoder,
-                                               BPOSDecoder, CCDecoder,
-                                               LCDecoder, MWPMDecoder,
-                                               _CloudDecoder)
+
+from deltakit_explorer import Client, _api, types
+from deltakit_explorer._cloud_decoders import (
+    ACDecoder,
+    BeliefMatchingDecoder,
+    BPOSDecoder,
+    CCDecoder,
+    LCDecoder,
+    MWPMDecoder,
+    _CloudDecoder,
+)
 
 
 class TestCloudDecoder:

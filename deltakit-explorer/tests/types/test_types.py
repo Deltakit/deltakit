@@ -2,18 +2,28 @@
 from __future__ import annotations
 
 import pathlib
-from tempfile import TemporaryDirectory
 from dataclasses import dataclass
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pytest
 from deltakit_circuit.gates import PauliBasis
+
 from deltakit_explorer.enums import DataFormat, QECECodeType, QECExperimentType
-from deltakit_explorer.types import (BinaryDataType, CircuitParameters,
-                                     DataString, MatrixSpecifications,
-                                     PhysicalNoiseModel, QECExperiment,
-                                     QECExperimentDefinition, RAMData, Sizes,
-                                     TypedData, TypedDataFile, TypedDataString)
+from deltakit_explorer.types import (
+    BinaryDataType,
+    CircuitParameters,
+    DataString,
+    MatrixSpecifications,
+    PhysicalNoiseModel,
+    QECExperiment,
+    QECExperimentDefinition,
+    RAMData,
+    Sizes,
+    TypedData,
+    TypedDataFile,
+    TypedDataString,
+)
 from deltakit_explorer.types._types import JSONable
 
 

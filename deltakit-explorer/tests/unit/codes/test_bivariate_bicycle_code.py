@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import pytest
+
 from deltakit_explorer.codes._bivariate_bicycle_code import Monomial, Polynomial
 
 

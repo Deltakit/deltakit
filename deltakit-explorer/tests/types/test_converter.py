@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+
 from deltakit_explorer.data import write_binary_data_to_file
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._types import Measurements

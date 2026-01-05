@@ -9,20 +9,23 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy.typing as npt
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
-from deltakit_explorer.codes._planar_code._planar_code import (PlanarCode,
-                                                               ScheduleType)
-from deltakit_explorer.codes._schedules._schedule_order import (
-    ScheduleOrder, get_x_and_z_schedules)
-from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import \
-    UnrotatedPlanarCodeSchedules
-from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.enums._basic_enums import DrawingColours
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from numpy import arctan2, argsort, array, int8
+
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
+from deltakit_explorer.codes._schedules._schedule_order import (
+    ScheduleOrder,
+    get_x_and_z_schedules,
+)
+from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import (
+    UnrotatedPlanarCodeSchedules,
+)
+from deltakit_explorer.codes._stabiliser import Stabiliser
+from deltakit_explorer.enums._basic_enums import DrawingColours
 
 
 class UnrotatedToricCode(PlanarCode):

@@ -6,9 +6,11 @@ from deltakit_circuit import GateLayer, PauliX, Qubit
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import MPP, MRX, MRY, MRZ, MX, MY, MZ, H, I
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1
+
 from deltakit_explorer.qpu._noise import PhenomenologicalNoise
-from deltakit_explorer.qpu._noise._phenomenological_noise import \
-    ToyPhenomenologicalNoise
+from deltakit_explorer.qpu._noise._phenomenological_noise import (
+    ToyPhenomenologicalNoise,
+)
 
 qubits = [Qubit(0), Qubit(17), Qubit(Coord2D(1, 1))]
 

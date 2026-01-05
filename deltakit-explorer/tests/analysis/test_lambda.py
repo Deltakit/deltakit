@@ -1,10 +1,11 @@
 import itertools
+from typing import Literal
 
 import numpy
 import pytest
-from typing import Literal
 
 from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stddev
+
 
 @pytest.fixture
 def rng() -> numpy.random.Generator:

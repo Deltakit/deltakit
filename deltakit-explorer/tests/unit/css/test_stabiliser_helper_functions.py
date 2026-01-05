@@ -1,15 +1,15 @@
 # (c) Copyright Riverlane 2020-2025.
+from importlib.metadata import version
+
 import pytest
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
-from deltakit_explorer.codes._css._stabiliser_helper_functions import \
-    pauli_gates_to_stim_pauli_string
+from packaging.version import Version
 from stim import PauliString
 
-import stim
-from packaging.version import Version
-from importlib.metadata import version
-
+from deltakit_explorer.codes._css._stabiliser_helper_functions import (
+    pauli_gates_to_stim_pauli_string,
+)
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")

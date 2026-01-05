@@ -2,8 +2,13 @@
 import pytest
 from deltakit_circuit import Circuit, GateLayer, NoiseContext, Qubit, SweepBit
 from deltakit_circuit.gates import CX, MRX, MRY, MRZ, RX, RY, RZ, H
-from deltakit_circuit.noise_channels import (Depolarise1, Depolarise2,
-                                             PauliXError, PauliZError)
+from deltakit_circuit.noise_channels import (
+    Depolarise1,
+    Depolarise2,
+    PauliXError,
+    PauliZError,
+)
+
 from deltakit_explorer.qpu._noise import SI1000Noise
 
 

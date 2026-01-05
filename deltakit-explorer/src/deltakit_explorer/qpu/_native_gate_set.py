@@ -6,16 +6,26 @@ of a QPU.
 
 from typing import Optional
 
-from deltakit_circuit.gates import (MEASUREMENT_GATES, ONE_QUBIT_GATES,
-                                    ONE_QUBIT_MEASUREMENT_GATES, RESET_GATES,
-                                    TWO_QUBIT_GATES, Gate,
-                                    OneQubitCliffordGate, OneQubitResetGate,
-                                    TwoOperandGate, _MeasurementGate)
+from deltakit_circuit.gates import (
+    MEASUREMENT_GATES,
+    ONE_QUBIT_GATES,
+    ONE_QUBIT_MEASUREMENT_GATES,
+    RESET_GATES,
+    TWO_QUBIT_GATES,
+    Gate,
+    OneQubitCliffordGate,
+    OneQubitResetGate,
+    TwoOperandGate,
+    _MeasurementGate,
+)
 from deltakit_circuit.gates._measurement_gates import MPP
-from deltakit_explorer._gates._gate_sets import (DEFAULT_MEASUREMENT_GATES,
-                                                 DEFAULT_ONE_QUBIT_GATES,
-                                                 DEFAULT_RESET_GATES,
-                                                 DEFAULT_TWO_QUBIT_GATES)
+
+from deltakit_explorer._gates._gate_sets import (
+    DEFAULT_MEASUREMENT_GATES,
+    DEFAULT_ONE_QUBIT_GATES,
+    DEFAULT_RESET_GATES,
+    DEFAULT_TWO_QUBIT_GATES,
+)
 
 
 class NativeGateSetAndTimes:

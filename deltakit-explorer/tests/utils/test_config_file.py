@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import pytest
+
 from deltakit_explorer._utils import _utils as utils
 
 

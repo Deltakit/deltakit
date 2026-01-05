@@ -4,6 +4,7 @@ import pytest
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import MX, MZ, RX, RZ, PauliBasis
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._repetition_code import RepetitionCode
 from deltakit_explorer.codes._stabiliser import Stabiliser

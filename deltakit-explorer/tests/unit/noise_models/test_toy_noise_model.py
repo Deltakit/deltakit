@@ -3,6 +3,7 @@ import pytest
 from deltakit_circuit import Circuit, GateLayer, NoiseContext, Qubit
 from deltakit_circuit.gates import CX, MZ, RZ, H
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise import ToyNoise
 
 

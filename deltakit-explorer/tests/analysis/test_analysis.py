@@ -6,7 +6,9 @@ import pytest
 
 from deltakit_explorer import Logging
 from deltakit_explorer.analysis._analysis import (
-    calculate_lep_and_lep_stddev, get_exp_fit, get_lambda_fit
+    calculate_lep_and_lep_stddev,
+    get_exp_fit,
+    get_lambda_fit,
 )
 
 
