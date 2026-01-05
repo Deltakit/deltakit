@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from typing import ClassVar, get_args
 
-from deltakit_circuit.gates._abstract_gates import OneQubitCliffordGate
 from deltakit_circuit._qubit_identifiers import T
+from deltakit_circuit.gates._abstract_gates import OneQubitCliffordGate
 
 # pylint: disable=invalid-name
 

@@ -1,6 +1,7 @@
+import importlib
 import importlib.metadata
 import warnings
-import importlib
+
 from packaging.version import Version
 
 

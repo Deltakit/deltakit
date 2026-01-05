@@ -5,6 +5,7 @@ from collections import defaultdict
 from collections.abc import Sequence
 
 import numpy as np
+
 from deltakit_core.decoding_graphs._decoding_graph import (
     DecodingEdge,
     EdgeRecord,

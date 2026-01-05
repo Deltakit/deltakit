@@ -5,6 +5,7 @@ import deltakit_circuit as sp
 import networkx as nx
 import pytest
 import stim
+
 from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
 
 

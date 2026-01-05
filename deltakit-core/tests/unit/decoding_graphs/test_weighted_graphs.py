@@ -7,6 +7,7 @@ from collections.abc import Iterable, Sequence
 import numpy as np
 import numpy.typing as npt
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DetectorRecord,
@@ -22,7 +23,7 @@ def approx_contains(container: Iterable[npt.ArrayLike], element: npt.ArrayLike) 
 
 class TestChangingGraphErrorProbabilities:
     @pytest.mark.parametrize(
-        "graph, p_errors",
+        ("graph", "p_errors"),
         [
             (
                 NXDecodingGraph.from_edge_list(

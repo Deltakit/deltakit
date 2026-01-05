@@ -2,8 +2,9 @@
 
 import numpy as np
 import stim
-from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 from tqdm import tqdm
+
+from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 
 def run_decoding_on_circuit(

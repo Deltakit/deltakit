@@ -1,12 +1,13 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
+
 from deltakit_circuit import Qubit
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
 
 
 @pytest.mark.parametrize(
-    "depolarising_noise, expected_string",
+    ("depolarising_noise", "expected_string"),
     [(Depolarise1, "DEPOLARIZE1"), (Depolarise2, "DEPOLARIZE2")],
 )
 def test_depolarising_noise_stim_string_matches_expected_string(
@@ -111,7 +112,7 @@ def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
 
 
 @pytest.mark.parametrize(
-    "depolarising_noise, expected_repr",
+    ("depolarising_noise", "expected_repr"),
     [
         (Depolarise1(Qubit(0), 0.001), "DEPOLARIZE1(Qubit(0), probability=0.001)"),
         (
@@ -158,7 +159,7 @@ def test_error_is_raised_if_probability_is_outside_of_the_natural_range(
 
 
 @pytest.mark.parametrize(
-    "qubit1, qubit2", [(0, 0), (Qubit(3), Qubit(3)), ("a", "a"), (0, Qubit(0))]
+    ("qubit1", "qubit2"), [(0, 0), (Qubit(3), Qubit(3)), ("a", "a"), (0, Qubit(0))]
 )
 def test_error_is_raised_if_arguments_to_depolarise2_are_the_same(qubit1, qubit2):
     with pytest.raises(

@@ -1,13 +1,14 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import pytest
+
 from deltakit_core.decoding_graphs import DecodingHyperEdge
 from deltakit_core.decoding_graphs._hypergraph_decomposition import decompositions
 
 
 class TestDecompositions:
     @pytest.mark.parametrize(
-        "edge, edges",
+        ("edge", "edges"),
         [
             (DecodingHyperEdge((0, 1)), []),
             (
@@ -98,7 +99,7 @@ class TestDecompositions:
         ]
 
     @pytest.mark.parametrize(
-        "edge, edges, expected_decomposition",
+        ("edge", "edges", "expected_decomposition"),
         [
             (
                 DecodingHyperEdge({0, 1}),

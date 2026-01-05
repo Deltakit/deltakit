@@ -65,7 +65,7 @@ def decoding_hypergraph_without_hyperedges():
 
 
 @pytest.mark.parametrize(
-    "hypergraph, expected_repr",
+    ("hypergraph", "expected_repr"),
     [
         (
             decoding_hypergraph_with_hyperedges(),
@@ -99,7 +99,7 @@ def test_integer_hypergraph_repr_is_expected(hypergraph, expected_repr):
 
 
 @pytest.mark.parametrize(
-    "graph, start_index",
+    ("graph", "start_index"),
     [
         (DecodingHyperGraph(DecodingHyperEdge((i, i + 1)) for i in range(0, 10, 2)), 0),
         (DecodingHyperGraph([DecodingHyperEdge((2, 1)), DecodingHyperEdge((1, 0))]), 0),
@@ -237,7 +237,7 @@ class TestGraphToJSON:
     reference_data_dir = Path("tests") / "reference_data" / "json"
 
     @pytest.mark.parametrize(
-        "graph_logicals, reference_json_filename",
+        ("graph_logicals", "reference_json_filename"),
         [
             (
                 decoding_graph_logicals_no_boundaries(),
@@ -262,8 +262,8 @@ class TestGraphToJSON:
         reference_json_filename: str,
     ) -> None:
         computed_json = graph_to_json(*graph_logicals)
-        with open(
-            self.reference_data_dir / reference_json_filename, "r", encoding="utf-8"
+        with (self.reference_data_dir / reference_json_filename).open(
+            "r", encoding="utf-8"
         ) as json_handle:
             expected_json = json_handle.read().strip()
         assert computed_json == expected_json
@@ -578,7 +578,7 @@ REFERENCE_DATA_DIR = Path(__file__).parent.parent.parent / "reference_data"
 
 
 @pytest.mark.parametrize(
-    "circuit_path, expected_distance",
+    ("circuit_path", "expected_distance"),
     [
         (Path("stim/circuit_logical_off_boundary.stim"), 3),
         (Path("stim/circuit_two_equivalent_logicals.stim"), 3),

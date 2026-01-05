@@ -13,7 +13,6 @@ from deltakit_core.decoding_graphs._data_qubits import (
     OrderedDecodingEdges,
     errors_to_syndrome,
 )
-
 from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,
     DecodingCode,
@@ -26,30 +25,6 @@ from deltakit_core.decoding_graphs._decoding_graph import (
     NXDecodingMultiGraph,
     NXLogicals,
 )
-
-from deltakit_core.decoding_graphs._dem_parsing import (
-    DemParser,
-    DetectorCounter,
-    DetectorRecorder,
-    LogicalsInEdges,
-    dem_to_decoding_graph_and_logicals,
-    dem_to_hypergraph_and_logicals,
-    observable_warning,
-)
-
-from deltakit_core.decoding_graphs._syndromes import (
-    Bitstring,
-    DetectorRecord,
-    FixedWidthBitstring,
-    OrderedSyndrome,
-    get_round_words,
-)
-
-from deltakit_core.decoding_graphs._weighted_graphs import (
-    change_graph_error_probabilities,
-    vector_weights,
-)
-
 from deltakit_core.decoding_graphs._decoding_graph_tools import (
     compute_graph_distance,
     compute_graph_distance_for_logical,
@@ -64,12 +39,19 @@ from deltakit_core.decoding_graphs._decoding_graph_tools import (
     unweight_graph,
     worst_case_num_detectors,
 )
-
+from deltakit_core.decoding_graphs._dem_parsing import (
+    DemParser,
+    DetectorCounter,
+    DetectorRecorder,
+    LogicalsInEdges,
+    dem_to_decoding_graph_and_logicals,
+    dem_to_hypergraph_and_logicals,
+    observable_warning,
+)
 from deltakit_core.decoding_graphs._explained_dem_parsing import (
     extract_logicals,
     parse_explained_dem,
 )
-
 from deltakit_core.decoding_graphs._hypergraph_annotations_tools import (
     annotate_edges_with_window_ids,
     get_unique_logical_window_ids,
@@ -78,16 +60,25 @@ from deltakit_core.decoding_graphs._hypergraph_annotations_tools import (
     separate_edges_per_window_id,
     separate_logicals_by_window_id,
 )
-
 from deltakit_core.decoding_graphs._hypergraph_decomposition import decompositions
-
+from deltakit_core.decoding_graphs._syndromes import (
+    Bitstring,
+    DetectorRecord,
+    FixedWidthBitstring,
+    OrderedSyndrome,
+    get_round_words,
+)
+from deltakit_core.decoding_graphs._weighted_graphs import (
+    change_graph_error_probabilities,
+    vector_weights,
+)
 from deltakit_core.decoding_graphs._windowing_utils import (
-    nodes_within_radius,
-    weighted_nodes_within_radius,
-    induce_subhypergraph,
     connect_dangling_to_boundary_hypergraph,
-    relabel_hypergraph_nodes_contiguously,
     expand_nodes_to_time_span,
+    induce_subhypergraph,
+    nodes_within_radius,
+    relabel_hypergraph_nodes_contiguously,
+    weighted_nodes_within_radius,
 )
 
 # List only public members in `__all__`.

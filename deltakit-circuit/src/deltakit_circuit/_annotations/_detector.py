@@ -32,6 +32,7 @@ class Detector:
         self,
         measurements: MeasurementRecord | Iterable[MeasurementRecord],
         coordinate: Iterable[float] | None = None,
+        *,
         tag: str | None = None,
     ):
         self._measurements = (

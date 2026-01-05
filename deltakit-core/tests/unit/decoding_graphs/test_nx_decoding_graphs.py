@@ -9,6 +9,7 @@ import networkx as nx
 import numpy as np
 import numpy.typing as npt
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -371,7 +372,7 @@ class TestAnyNXBasedGraph:
         assert set(decoding_graph.nodes) == set(node_list)
 
     @pytest.mark.parametrize(
-        "graph, expected_boundaries",
+        ("graph", "expected_boundaries"),
         [
             (decoding_graph_boundaries_0_4(), {0, 4}),
             (decoding_graph_no_boundaries(), set()),
@@ -391,7 +392,7 @@ class TestAnyNXBasedGraph:
         assert returned_boundaries == expected_boundaries
 
     @pytest.mark.parametrize(
-        "graph, boundaries",
+        ("graph", "boundaries"),
         [
             (decoding_graph_boundaries_0_4(), [0, 4]),
             (decoding_multi_graph_boundaries_0_4(), [0, 4]),
@@ -403,7 +404,7 @@ class TestAnyNXBasedGraph:
         assert all(node not in graph.no_boundary_view for node in boundaries)
 
     @pytest.mark.parametrize(
-        "graph, boundary_edges",
+        ("graph", "boundary_edges"),
         [
             (decoding_graph_boundaries_0_4(), [(0, 1), (3, 4)]),
             (
@@ -420,7 +421,7 @@ class TestAnyNXBasedGraph:
         assert all(edge not in graph.no_boundary_view.edges for edge in boundary_edges)
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, syndrome_bit, expected_neighbours",
+        ("edges_nodes_graph", "syndrome_bit", "expected_neighbours"),
         [
             (edge_list_node_list_and_decoding_graph_layered(), 2, {0, 1, 3, 6}),
             (edge_list_node_list_and_decoding_multi_graph_layered(), 2, {0, 1, 3, 6}),
@@ -436,7 +437,7 @@ class TestAnyNXBasedGraph:
         assert neighbours == expected_neighbours
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, endpoints, expected_path",
+        ("edges_nodes_graph", "endpoints", "expected_path"),
         [
             (
                 edge_list_node_list_and_decoding_graph_layered(),
@@ -458,7 +459,7 @@ class TestAnyNXBasedGraph:
         assert set(shortest_path) == {DecodingEdge(u, v) for u, v in expected_path}
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, endpoints, expected_length",
+        ("edges_nodes_graph", "endpoints", "expected_length"),
         [
             (edge_list_node_list_and_decoding_graph_layered(), (0, 6), 2),
             (edge_list_node_list_and_decoding_multi_graph_layered(), (0, 6), 2),
@@ -483,7 +484,7 @@ class TestAnyNXBasedGraph:
             graph_class.from_edge_list(edge_data)
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, endpoints, expected_path",
+        ("edges_nodes_graph", "endpoints", "expected_path"),
         [
             (
                 edge_list_node_list_and_decoding_graph_layered_with_boundaries(),
@@ -517,7 +518,7 @@ class TestAnyNXBasedGraph:
         assert set(shortest_path) == {DecodingEdge(u, v) for u, v in expected_path}
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, endpoints, expected_length",
+        ("edges_nodes_graph", "endpoints", "expected_length"),
         [
             (
                 edge_list_node_list_and_decoding_graph_layered_with_boundaries(),
@@ -663,7 +664,7 @@ class TestNXGraphMutability:
         assert node_view["node_property"] == 4
 
     @pytest.mark.parametrize(
-        "graph, edge_identifier",
+        ("graph", "edge_identifier"),
         [
             (decoding_graph_boundaries_0_4(), (1, 2)),
             (decoding_multi_graph_boundaries_0_4(), (1, 2, 0)),
@@ -682,7 +683,7 @@ class TestNXGraphMutability:
             graph_view.remove_edges_from([edge_identifier])
 
     @pytest.mark.parametrize(
-        "graph, edge_identifier",
+        ("graph", "edge_identifier"),
         [
             (decoding_graph_boundaries_0_4(), (1, 2)),
             (decoding_multi_graph_boundaries_0_4(), (1, 2, 0)),
@@ -699,7 +700,7 @@ class TestNXGraphMutability:
         assert edge_view["edge_property"] == 4
 
     @pytest.mark.parametrize(
-        "graph, edge_identifier",
+        ("graph", "edge_identifier"),
         [
             (decoding_graph_boundaries_0_4(), (1, 2)),
             (decoding_multi_graph_boundaries_0_4(), (1, 2, 0)),
@@ -754,7 +755,7 @@ class TestNXDecodingGraph:
         assert graph.edge_records == reference_graph.edge_records
 
     @pytest.mark.parametrize(
-        "graph, expected_edges",
+        ("graph", "expected_edges"),
         [
             (
                 decoding_graph_boundaries_0_4(),
@@ -776,7 +777,7 @@ class TestNXDecodingGraph:
         assert set(graph.boundary_edges) == expected_edges
 
     @pytest.mark.parametrize(
-        "edges_nodes_graph, syndrome_bit, expected_edges",
+        ("edges_nodes_graph", "syndrome_bit", "expected_edges"),
         [
             (
                 edge_list_node_list_and_decoding_graph_layered(),
@@ -798,7 +799,7 @@ class TestNXDecodingGraph:
         assert set(decoding_graph.incident_edges(syndrome_bit)) == incident_edges
 
     @pytest.mark.parametrize(
-        "detectors, expected_edge",
+        ("detectors", "expected_edge"),
         [
             ((0, 1), DecodingEdge(0, 1)),
             ((0, 2), DecodingEdge(0, 2)),
@@ -810,7 +811,7 @@ class TestNXDecodingGraph:
         assert graph.get_edge(*detectors) == expected_edge
 
     @pytest.mark.parametrize(
-        "detectors, expected_edge",
+        ("detectors", "expected_edge"),
         [
             ((0, 1), [DecodingEdge(0, 1)]),
             ((0, 2), [DecodingEdge(0, 2)]),
@@ -822,7 +823,7 @@ class TestNXDecodingGraph:
         assert graph.get_edges(*detectors) == expected_edge
 
     @pytest.mark.parametrize(
-        "graph, edge_dets, expected_record",
+        ("graph", "edge_dets", "expected_record"),
         [
             (
                 NXDecodingGraph.from_edge_list(
@@ -864,7 +865,7 @@ class TestNXDecodingGraph:
         assert graph.get_edge_record(*edge_dets).data == expected_record.data
 
     @pytest.mark.parametrize(
-        "nx_edges, nx_boundaries, expected_hyper_edges",
+        ("nx_edges", "nx_boundaries", "expected_hyper_edges"),
         [
             (
                 {(1, 3), (2, 7), (3, 7)},
@@ -934,7 +935,7 @@ class TestNXDecodingGraph:
         assert dict(modified_edge_record) not in other_edge_dicts
 
     @pytest.mark.parametrize(
-        "graph, expected_parity_check_matrix",
+        ("graph", "expected_parity_check_matrix"),
         [
             (
                 NXDecodingGraph.from_edge_list([(0, 1), (1, 2)]),
@@ -1008,7 +1009,7 @@ class TestNXDecodingMultiGraph:
         assert graph.edge_records == reference_graph.edge_records
 
     @pytest.mark.parametrize(
-        "graph, expected_edges",
+        ("graph", "expected_edges"),
         [
             (
                 decoding_multi_graph_boundaries_0_4(),
@@ -1028,7 +1029,7 @@ class TestNXDecodingMultiGraph:
         assert sorted(boundary_edges) == sorted(expected_edges)
 
     @pytest.mark.parametrize(
-        "syndrome_bit, expected_edges",
+        ("syndrome_bit", "expected_edges"),
         [
             (1, [((0, 1), 0), ((1, 2), 0), ((1, 5), 0), ((0, 1), 1)]),
             (3, [((2, 3), 0), ((0, 3), 0), ((3, 7), 0), ((2, 3), 1)]),
@@ -1046,7 +1047,7 @@ class TestNXDecodingMultiGraph:
         assert sorted(expected_edges) == sorted(incident_edges)
 
     @pytest.mark.parametrize(
-        "detectors, expected_edges",
+        ("detectors", "expected_edges"),
         [
             ((0, 1), {(DecodingEdge(0, 1), 0), (DecodingEdge(0, 1), 1)}),
             ((0, 2), {(DecodingEdge(0, 2), 0)}),
@@ -1081,7 +1082,7 @@ class TestNXDecodingMultiGraph:
         assert dict(modified_edge_record) not in other_edge_dicts
 
     @pytest.mark.parametrize(
-        "multigraph, expected_parity_check_matrix",
+        ("multigraph", "expected_parity_check_matrix"),
         [
             (
                 NXDecodingMultiGraph.from_edge_list([(0, 1), (1, 2)]),
@@ -1103,7 +1104,7 @@ class TestNXDecodingMultiGraph:
         )
 
     @pytest.mark.parametrize(
-        "multigraph, expected_parity_check_matrix",
+        ("multigraph", "expected_parity_check_matrix"),
         [
             (
                 NXDecodingMultiGraph.from_edge_list([(0, 1), (0, 1)]),

@@ -1,17 +1,20 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-from functools import cached_property
 from collections.abc import Iterable
+from functools import cached_property
 
 import networkx as nx
 import numpy as np
 import pymatching
 import stim
 from deltakit_circuit import Circuit
-from deltakit_core.decoding_graphs import (DecodingHyperEdge,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome)
+from deltakit_core.decoding_graphs import (
+    DecodingHyperEdge,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+)
+
 from deltakit_decode._abstract_matching_decoders import GraphDecoder
 from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
 

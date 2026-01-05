@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import ClassVar, Generic, TypeVar
 from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
+from typing import ClassVar, Generic, TypeVar
 
 import stim
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
-from deltakit_circuit._qubit_identifiers import PauliProduct, Qubit, T, U, _PauliGate
 from typing_extensions import Self
+
+from deltakit_circuit._qubit_identifiers import PauliProduct, Qubit, T, U, _PauliGate
+from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 
 
 class ProbabilityError(ValueError):
@@ -384,7 +385,9 @@ class OneQubitOneProbabilityNoiseChannel(
         The probability that this error occurs.
     """
 
-    def __init__(self, qubit: Qubit[T] | T, probability: float, tag: str | None = None):
+    def __init__(
+        self, qubit: Qubit[T] | T, probability: float, *, tag: str | None = None
+    ):
         super().__init__(qubit, probability, tag=tag)
 
     def approx_equals(

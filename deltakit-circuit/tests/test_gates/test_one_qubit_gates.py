@@ -1,15 +1,16 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import permutations
 import itertools
+from itertools import permutations
 
 import pytest
 import stim
+
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import Qubit
 
 
 @pytest.mark.parametrize(
-    "one_qubit_gate, expected_string",
+    ("one_qubit_gate", "expected_string"),
     [
         (gates.I, "I"),
         (gates.X, "X"),
@@ -35,7 +36,7 @@ def test_one_qubit_gate_stim_string_matches_expected_string(
 
 
 @pytest.mark.parametrize(
-    "one_qubit_gate,tag",
+    ("one_qubit_gate", "tag"),
     itertools.product(gates.ONE_QUBIT_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
 )
 def test_one_qubit_gates_repr_matches_expected_representation(
@@ -64,7 +65,7 @@ def test_one_qubit_gates_on_different_qubits_are_not_equal(one_qubit_gate):
 
 
 @pytest.mark.parametrize(
-    "one_qubit_gate1, one_qubit_gate2", permutations(gates.ONE_QUBIT_GATES, 2)
+    ("one_qubit_gate1", "one_qubit_gate2"), permutations(gates.ONE_QUBIT_GATES, 2)
 )
 def test_different_one_qubit_gates_on_same_qubit_are_different(
     one_qubit_gate1, one_qubit_gate2

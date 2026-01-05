@@ -3,8 +3,8 @@
 
 from typing import ClassVar, get_args
 
-from deltakit_circuit.gates._abstract_gates import OneQubitResetGate, PauliBasis
 from deltakit_circuit._qubit_identifiers import T
+from deltakit_circuit.gates._abstract_gates import OneQubitResetGate, PauliBasis
 
 
 class RZ(OneQubitResetGate[T]):

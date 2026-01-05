@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from typing import ClassVar, get_args
 
-from deltakit_circuit.noise_channels._abstract_noise_channels import PauliProductNoise
 from deltakit_circuit._qubit_identifiers import T
+from deltakit_circuit.noise_channels._abstract_noise_channels import PauliProductNoise
 
 
 class CorrelatedError(PauliProductNoise[T]):

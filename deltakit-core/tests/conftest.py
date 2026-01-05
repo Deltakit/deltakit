@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
+from pathlib import Path
+
 import numpy as np
 import pytest
-
-from pathlib import Path
 
 
 @pytest.fixture(scope="session")

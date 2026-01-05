@@ -4,20 +4,22 @@
 from __future__ import annotations
 
 from collections import Counter, UserDict, defaultdict
-from functools import cached_property
-from itertools import chain, repeat
-from typing import Any, cast, Literal, SupportsIndex, overload
-from typing_extensions import Self
 from collections.abc import (
     Collection,
     Iterable,
     Iterator,
     Mapping,
     Sequence,
+)
+from collections.abc import (
     Set as AbstractSet,
 )
+from functools import cached_property
+from itertools import chain, repeat
+from typing import Any, Literal, SupportsIndex, cast, overload
 
 import numpy as np
+from typing_extensions import Self
 
 Bit = Literal[0, 1]
 

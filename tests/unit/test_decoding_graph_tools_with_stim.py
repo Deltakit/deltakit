@@ -148,7 +148,7 @@ def test_compute_graph_weighted_distance(code_task, distance):
 
 
 @pytest.mark.parametrize(
-    "circuit_path, expected_distance",
+    ("circuit_path", "expected_distance"),
     [
         (Path("stim/circuit_logical_off_boundary.stim"), 3),
         (Path("stim/circuit_two_equivalent_logicals.stim"), 3),

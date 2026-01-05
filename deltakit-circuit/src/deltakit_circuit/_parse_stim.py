@@ -5,15 +5,32 @@ circuits."""
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Hashable, Iterable, Mapping, Sequence
 from itertools import tee, zip_longest
 from typing import TypeVar, cast
-from collections.abc import Hashable, Iterable, Mapping, Sequence
 
 import stim
+
 from deltakit_circuit._annotations._detector import Detector, MeasurementRecord
 from deltakit_circuit._annotations._observable import Observable
 from deltakit_circuit._annotations._shift_coordinates import ShiftCoordinates
 from deltakit_circuit._gate_layer import GateLayer
+from deltakit_circuit._noise_layer import NoiseLayer
+from deltakit_circuit._qubit_identifiers import (
+    Coordinate,
+    InvertiblePauliX,
+    InvertiblePauliY,
+    InvertiblePauliZ,
+    MeasurementPauliProduct,
+    PauliProduct,
+    PauliX,
+    PauliY,
+    PauliZ,
+    Qubit,
+    SweepBit,
+    _InvertiblePauliGate,
+    _PauliGate,
+)
 from deltakit_circuit.gates import GATE_MAPPING, OneQubitResetGate, _Gate
 from deltakit_circuit.gates._abstract_gates import (
     OneQubitCliffordGate,
@@ -38,22 +55,6 @@ from deltakit_circuit.noise_channels import (
     PauliZError,
     Relax,
     _NoiseChannel,
-)
-from deltakit_circuit._noise_layer import NoiseLayer
-from deltakit_circuit._qubit_identifiers import (
-    Coordinate,
-    InvertiblePauliX,
-    InvertiblePauliY,
-    InvertiblePauliZ,
-    MeasurementPauliProduct,
-    PauliProduct,
-    PauliX,
-    PauliY,
-    PauliZ,
-    Qubit,
-    SweepBit,
-    _InvertiblePauliGate,
-    _PauliGate,
 )
 
 

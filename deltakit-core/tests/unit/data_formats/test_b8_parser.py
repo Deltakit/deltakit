@@ -1,9 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
-import pathlib
 import tempfile
+from pathlib import Path
 
 import pytest
 import stim
+
 from deltakit_core.data_formats import (
     b8_to_logical_flip,
     b8_to_measurements,
@@ -17,10 +18,10 @@ from deltakit_core.data_formats._b801_parsers import to_bytearray
 from deltakit_core.decoding_graphs import Bitstring, OrderedSyndrome
 
 
-def test_to_bytearray(reference_data_dir):
+def test_to_bytearray(reference_data_dir) -> None:
     # test that the two uses of to_bytearray are equivalent
-    example_b8_file = reference_data_dir / "b801" / "detection_events.b8"
-    with open(example_b8_file, "rb") as b8_data:
+    example_b8_file: Path = reference_data_dir / "b801" / "detection_events.b8"
+    with example_b8_file.open("rb") as b8_data:
         res = to_bytearray(b8_data.read())
     ref = to_bytearray(example_b8_file)
     assert res == ref
@@ -62,7 +63,7 @@ class TestB8ReadWriteMethods:
         )
 
     @pytest.mark.parametrize(
-        "bits,length",
+        ("bits", "length"),
         [
             *[(0, length) for length in (2, 4, 7, 8, 9, 41)],
             *[(1 << length - 1, length) for length in (2, 4, 7, 8, 9, 41)],
@@ -75,7 +76,7 @@ class TestB8ReadWriteMethods:
         # https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#the-b8-format
         bitsstr = " ".join(reversed(f"{bits:0{length}b}"))
         with tempfile.TemporaryDirectory() as d:
-            path = pathlib.Path(d) / "tmp.dat"
+            path = Path(d) / "tmp.dat"
             stim.Circuit(f"X 1\nM {bitsstr}").compile_sampler().sample_write(
                 shots=2, filepath=str(path), format="b8"
             )
@@ -84,7 +85,7 @@ class TestB8ReadWriteMethods:
         assert res == [Bitstring(bits), Bitstring(bits)]
 
     @pytest.mark.parametrize(
-        "file_name, expected_logical_flips, num_logicals",
+        ("file_name", "expected_logical_flips", "num_logicals"),
         [
             (
                 "obs_flips_one_logical.b8",
@@ -175,28 +176,28 @@ class TestB8ReadWriteMethods:
 
     def test_example_b8_logical_flip_read_write_equivalence(
         self, reference_data_dir, tmp_path
-    ):
-        example_b8_file = (
+    ) -> None:
+        example_b8_file: Path = (
             reference_data_dir / "b801" / "obs_flips_predicted_by_pymatching.b8"
         )
         parsed_syndromes = b8_to_logical_flip(example_b8_file, 1)
-        tmp_b8_out_file = tmp_path / "tmp_logical_flips_out.b8"
+        tmp_b8_out_file: Path = tmp_path / "tmp_logical_flips_out.b8"
         logical_flips_to_b8_file(tmp_b8_out_file, parsed_syndromes)
         with (
-            open(example_b8_file, "rb") as origin_handle,
-            open(tmp_b8_out_file, "rb") as out_handle,
+            example_b8_file.open("rb") as origin_handle,
+            tmp_b8_out_file.open("rb") as out_handle,
         ):
             assert origin_handle.read() == out_handle.read()
 
     def test_example_b8_syndrome_read_write_equivalence(
         self, reference_data_dir, tmp_path
-    ):
-        example_b8_file = reference_data_dir / "b801" / "detection_events.b8"
+    ) -> None:
+        example_b8_file: Path = reference_data_dir / "b801" / "detection_events.b8"
         parsed_syndromes = b8_to_syndromes(example_b8_file, 40)
-        tmp_b8_out_file = tmp_path / "tmp_detection_events_out.b8"
+        tmp_b8_out_file: Path = tmp_path / "tmp_detection_events_out.b8"
         syndromes_to_b8_file(tmp_b8_out_file, 40, parsed_syndromes)
         with (
-            open(example_b8_file, "rb") as origin_handle,
-            open(tmp_b8_out_file, "rb") as out_handle,
+            example_b8_file.open("rb") as origin_handle,
+            tmp_b8_out_file.open("rb") as out_handle,
         ):
             assert origin_handle.read() == out_handle.read()

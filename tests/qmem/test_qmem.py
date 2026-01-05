@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
-import os
 from itertools import groupby
 from operator import itemgetter
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,7 +26,7 @@ from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 max_shots = 1e7
 
 # File name to save output data.
-filename = f"RPC_MWPM_X_MEM_{max_shots:.0e}_shots.csv"
+filename = Path(f"RPC_MWPM_X_MEM_{max_shots:.0e}_shots.csv")
 
 
 def rotated_planar_xmem_noiseless(
@@ -238,7 +238,7 @@ def plot_per_round_logical_error(data, colors, distance: int) -> None:
     plt.plot(
         physical_error,
         logical_rates_per_round,
-        label=f"{filename.replace('.csv', '')} d={distance}",
+        label=f"{filename.name.replace('.csv', '')} d={distance}",
         markersize=7,
         marker="o",
         linestyle="-",
@@ -260,10 +260,10 @@ def test_qmem() -> None:
 
     # overwrite_data = False
     overwrite_data = True
-    if overwrite_data and os.path.exists(filename):
-        os.remove(filename)
+    if overwrite_data and filename.exists():
+        filename.unlink()
 
-    if overwrite_data or not os.path.exists(filename):
+    if overwrite_data or not filename.exists():
         # Make all the decoder managers for the different data-points
         decoder_managers: list[tuple[int, StimDecoderManager]] = []
         for phys in physical_error_rates:
@@ -304,4 +304,4 @@ def test_qmem() -> None:
     plt.grid()
     plt.legend()
 
-    plt.savefig(filename + ".png")
+    plt.savefig(filename.parent / f"{filename.name}.png")
