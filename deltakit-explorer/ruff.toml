@@ -2,6 +2,7 @@
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
+include = ["src/deltakit_explorer/**/*.py", "tests/**/*.py"]
 
 [lint]
 ignore = [
