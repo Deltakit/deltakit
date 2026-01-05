@@ -1,7 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 from copy import copy, deepcopy
+
 import pytest
 import stim
+
 from deltakit_circuit import Coordinate, Detector, MeasurementRecord
 
 
@@ -14,7 +16,7 @@ class TestMeasurementRecord:
         assert MeasurementRecord(-5) == MeasurementRecord(-5)
 
     @pytest.mark.parametrize(
-        "record_1, record_2",
+        ("record_1", "record_2"),
         [(MeasurementRecord(-5), -5), (MeasurementRecord(-5), MeasurementRecord(-12))],
     )
     def test_example_inequality_between_measurement_records(self, record_1, record_2):
@@ -48,7 +50,7 @@ class TestDetector:
         )
 
     @pytest.mark.parametrize(
-        "detector, expected_repr",
+        ("detector", "expected_repr"),
         [
             (
                 Detector(MeasurementRecord(-1)),
@@ -70,7 +72,7 @@ class TestDetector:
         assert repr(detector) == expected_repr
 
     @pytest.mark.parametrize(
-        "detector, expected_circuit",
+        ("detector", "expected_circuit"),
         [
             (Detector([MeasurementRecord(-1)]), stim.Circuit("DETECTOR rec[-1]")),
             (Detector(MeasurementRecord(-4)), stim.Circuit("DETECTOR rec[-4]")),
@@ -159,11 +161,11 @@ class TestCoordinateTransforms:
 
     @pytest.mark.parametrize(
         "detector",
-        (
+        [
             Detector(MeasurementRecord(-1), Coordinate(0, 0, 1)),
             Detector(MeasurementRecord(-1), Coordinate(0, 0, 0)),
             Detector(MeasurementRecord(-2), Coordinate(0, 0, 1)),
-        ),
+        ],
     )
     def test_detector_hash(self, detector: Detector):
         assert hash(detector) == hash(detector)

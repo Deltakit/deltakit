@@ -1,8 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import permutations
 import itertools
+from itertools import permutations
 
 import pytest
+
 from deltakit_circuit import (
     InvertiblePauliX,
     InvertiblePauliY,
@@ -17,7 +18,7 @@ from deltakit_circuit import (
 
 
 @pytest.mark.parametrize(
-    "measurement_gate, expected_string",
+    ("measurement_gate", "expected_string"),
     [
         (gates.MZ, "MZ"),
         (gates.MX, "MX"),
@@ -36,7 +37,7 @@ def test_all_measurement_gate_stim_string_match_expected_string(
 
 
 @pytest.mark.parametrize(
-    "measurement_gate, expected_basis",
+    ("measurement_gate", "expected_basis"),
     [
         (gates.MZ, gates.PauliBasis.Z),
         (gates.MX, gates.PauliBasis.X),
@@ -54,7 +55,7 @@ def test_one_qubit_measurement_gate_bases_match_expected_basis(
 
 
 @pytest.mark.parametrize(
-    "measurement_gate_class,tag,probability",
+    ("measurement_gate_class", "tag", "probability"),
     itertools.product(
         gates.MEASUREMENT_GATES - {gates.MPP},
         [None, "", "sjkdhf", "λ", "leaky<0>"],
@@ -72,7 +73,7 @@ def test_repr_of_non_inverted_one_qubit_measurement_gate_matches_expected_repres
 
 
 @pytest.mark.parametrize(
-    "measurement_gate_class,tag",
+    ("measurement_gate_class", "tag"),
     itertools.product(
         gates.MEASUREMENT_GATES - {gates.MPP},
         [None, "", "sjkdhf", "λ", "leaky<0>"],
@@ -89,7 +90,7 @@ def test_repr_of_inverted_one_qubit_measurement_gate_matches_expected_representa
 
 
 @pytest.mark.parametrize(
-    "mpp_gate, expected_repr",
+    ("mpp_gate", "expected_repr"),
     [
         (
             gates.MPP(PauliX(Qubit(0)), 0.01),
@@ -165,7 +166,7 @@ class TestSingleQubitMeasurements:
         )
 
     @pytest.mark.parametrize(
-        "measurement_gate1, measurement_gate2",
+        ("measurement_gate1", "measurement_gate2"),
         permutations(SINGLE_QUBIT_MEASUREMENTS, 2),
     )
     def test_different_single_qubit_measurements_on_same_qubit_are_not_equal(
@@ -182,7 +183,7 @@ class TestSingleQubitMeasurements:
         assert gate1.approx_equals(gate2, rel_tol=0.001)
 
     @pytest.mark.parametrize(
-        "measurement_gate1, measurement_gate2",
+        ("measurement_gate1", "measurement_gate2"),
         permutations(SINGLE_QUBIT_MEASUREMENTS, 2),
     )
     def test_equal_measurement_gates_except_gate_type_are_not_approximately_equal(
@@ -309,7 +310,8 @@ class TestMPPGate:
         assert gates.MPP(qubit_identifier, 0.1) != gates.MPP(qubit_identifier, 0.2)
 
     @pytest.mark.parametrize(
-        "qubit_identifier1, qubit_identifier2", permutations(MPP_QUBIT_IDENTIFIERS, 2)
+        ("qubit_identifier1", "qubit_identifier2"),
+        permutations(MPP_QUBIT_IDENTIFIERS, 2),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -317,7 +319,7 @@ class TestMPPGate:
         assert gates.MPP(qubit_identifier1, 0.2) != gates.MPP(qubit_identifier2, 0.2)
 
     @pytest.mark.parametrize(
-        "qubit_identifier1, qubit_identifier2",
+        ("qubit_identifier1", "qubit_identifier2"),
         permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_ONE_QUBIT, 2),
     )
     def test_mpp_gate_with_equivalent_one_qubit_identifiers_are_equal(
@@ -326,7 +328,7 @@ class TestMPPGate:
         assert gates.MPP(qubit_identifier1, 0.2) == gates.MPP(qubit_identifier2, 0.2)
 
     @pytest.mark.parametrize(
-        "qubit_identifier1, qubit_identifier2",
+        ("qubit_identifier1", "qubit_identifier2"),
         permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_TWO_QUBIT, 2),
     )
     def test_mpp_gate_with_equivalent_two_qubit_identifiers_are_equal(
@@ -351,7 +353,8 @@ class TestMPPGate:
         )
 
     @pytest.mark.parametrize(
-        "qubit_identifier1, qubit_identifier2", permutations(MPP_QUBIT_IDENTIFIERS, 2)
+        ("qubit_identifier1", "qubit_identifier2"),
+        permutations(MPP_QUBIT_IDENTIFIERS, 2),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_approx_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -361,7 +364,7 @@ class TestMPPGate:
         )
 
     @pytest.mark.parametrize(
-        "qubit_identifier, expected_pauli_product",
+        ("qubit_identifier", "expected_pauli_product"),
         [
             (MeasurementPauliProduct(PauliX(0)), MeasurementPauliProduct(PauliX(0))),
             (

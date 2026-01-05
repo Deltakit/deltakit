@@ -5,17 +5,19 @@ from __future__ import annotations
 
 import math
 from collections import Counter, UserDict
-from functools import cached_property
-from itertools import chain
-from typing import Any, Generic, TypeVar
 from collections.abc import (
     Collection,
     Iterable,
     Iterator,
     Mapping,
     Sequence,
+)
+from collections.abc import (
     Set as AbstractSet,
 )
+from functools import cached_property
+from itertools import chain
+from typing import Any, Generic, TypeVar
 
 from deltakit_core.decoding_graphs._syndromes import (
     Bit,

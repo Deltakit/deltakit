@@ -3,6 +3,7 @@ from copy import copy, deepcopy
 from itertools import permutations
 
 import pytest
+
 from deltakit_circuit import PauliProduct, PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import CorrelatedError, ElseCorrelatedError
@@ -21,7 +22,7 @@ def pauli_product():
 
 
 @pytest.mark.parametrize(
-    "correlated_error, expected_string",
+    ("correlated_error", "expected_string"),
     [
         (CorrelatedError, "CORRELATED_ERROR"),
         (ElseCorrelatedError, "ELSE_CORRELATED_ERROR"),
@@ -34,7 +35,7 @@ def test_correlated_error_stim_string_matches_expected_string(
 
 
 @pytest.mark.parametrize(
-    "correlated_error, expected_repr",
+    ("correlated_error", "expected_repr"),
     [
         (
             CorrelatedError(PauliProduct([PauliX(Qubit(0)), PauliY(Qubit(1))]), 0.001),
@@ -97,7 +98,7 @@ def test_correlated_errors_with_probabilities_within_tolerance_are_approx_equal(
 
 
 @pytest.mark.parametrize(
-    "pauli_prod_1, pauli_prod_2", permutations(EQUAL_ONE_QUBIT_PAULI_PRODUCTS, 2)
+    ("pauli_prod_1", "pauli_prod_2"), permutations(EQUAL_ONE_QUBIT_PAULI_PRODUCTS, 2)
 )
 @pytest.mark.parametrize("error_class", [CorrelatedError, ElseCorrelatedError])
 def test_correlated_errors_with_equivalent_one_qubit_input_pauli_products_are_equal(

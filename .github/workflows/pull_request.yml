@@ -15,7 +15,7 @@ jobs:
   # Because there is no easy way to ensure that label_pr.yml runs before this workflow,
   # this job returns all the packages when no tags are set.
   define-project-matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       projects: ${{ steps.json_labels.outputs.projects }}
     steps:
@@ -33,7 +33,7 @@ jobs:
 
   # Build deltakit wheels.
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs: define-project-matrix
     strategy:
       matrix:
@@ -56,7 +56,7 @@ jobs:
 
   merge_upload_artefacts:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Merge Artefacts
         uses: actions/upload-artifact/merge@v4

@@ -4,28 +4,29 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+from collections.abc import Callable, Iterable, Mapping
 from copy import deepcopy
 from enum import IntEnum, auto
 from itertools import chain
 from typing import Generic, Literal, Protocol, get_args, no_type_check
-from collections.abc import Callable, Iterable, Mapping
 
 import stim
-from deltakit_circuit._parse_stim import parse_circuit_instruction
-from deltakit_circuit._qubit_mapping import default_qubit_mapping
+
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._annotations._observable import Observable
 from deltakit_circuit._annotations._shift_coordinates import ShiftCoordinates
 from deltakit_circuit._gate_layer import GateLayer
-from deltakit_circuit.gates._abstract_gates import OneQubitMeasurementGate
-from deltakit_circuit.gates._measurement_gates import MPP, _MeasurementGate
 from deltakit_circuit._noise_factory import (
     GateReplacementPolicy,
     NoiseContext,
     NoiseProfile,
 )
 from deltakit_circuit._noise_layer import NoiseLayer
+from deltakit_circuit._parse_stim import parse_circuit_instruction
 from deltakit_circuit._qubit_identifiers import Coordinate, Qubit, T, U
+from deltakit_circuit._qubit_mapping import default_qubit_mapping
+from deltakit_circuit.gates._abstract_gates import OneQubitMeasurementGate
+from deltakit_circuit.gates._measurement_gates import MPP, _MeasurementGate
 
 
 class _Comparable(Protocol):  # pylint: disable=too-few-public-methods

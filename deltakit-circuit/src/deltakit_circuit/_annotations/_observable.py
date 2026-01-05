@@ -31,6 +31,7 @@ class Observable:
         self,
         observable_index: int,
         measurements: MeasurementRecord | Iterable[MeasurementRecord],
+        *,
         tag: str | None = None,
     ):
         if observable_index < 0:

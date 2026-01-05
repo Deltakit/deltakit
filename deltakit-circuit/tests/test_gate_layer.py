@@ -1,11 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
+from importlib.metadata import version
 
 import pytest
 import stim
 from packaging.version import Version
-from importlib.metadata import version
 
 from deltakit_circuit import (
     Circuit,
@@ -27,7 +27,6 @@ from deltakit_circuit import (
 )
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
-
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")
@@ -100,7 +99,7 @@ def test_adding_reset_gate_to_a_layer_puts_it_in_the_layer(
 
 
 @pytest.mark.parametrize("gate_class", gates.MEASUREMENT_GATES - {gates.MPP})
-@pytest.mark.parametrize("invert", (True, False))
+@pytest.mark.parametrize("invert", [True, False])
 def test_adding_measurement_gate_to_a_layer_puts_it_in_the_layer(
     gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
@@ -213,7 +212,7 @@ def test_error_is_raised_when_adding_reset_gate_to_a_layer_which_already_uses_th
 @pytest.mark.parametrize(
     "measurement_gate_class", gates.MEASUREMENT_GATES - {gates.MPP}
 )
-@pytest.mark.parametrize("invert", (True, False))
+@pytest.mark.parametrize("invert", [True, False])
 def test_error_is_raised_when_adding_a_measurement_gate_to_a_layer_which_already_uses_that_qubit(
     measurement_gate_class: type[gates._MeasurementGate], invert, empty_layer
 ):
@@ -350,7 +349,7 @@ class TestGateLayerApproxEquals:
             GateLayer([gates.Z(1), gates.X(0), gates.MZ(2, 0.00100001)]), abs_tol=1e-8
         )
 
-    @pytest.mark.parametrize("abs_tol, rel_tol", [(1e-9, 1e-5), (1e-8, 0.0)])
+    @pytest.mark.parametrize(("abs_tol", "rel_tol"), [(1e-9, 1e-5), (1e-8, 0.0)])
     def test_two_gate_layers_with_measurement_gates_not_approx_equal_are_not_approx_equal(
         self, abs_tol, rel_tol
     ):
@@ -408,7 +407,7 @@ def test_replacing_gate_which_is_not_in_the_gate_layer_does_nothing():
 
 
 @pytest.mark.parametrize(
-    "old_gate, new_gate",
+    ("old_gate", "new_gate"),
     [
         (gates.H(Qubit(1)), gates.X(Qubit(1))),
         (gates.MPP([PauliX(0), PauliY(1)]), gates.MPP([PauliZ(0), PauliY(1)])),
@@ -476,7 +475,7 @@ def test_hash(empty_layer, gate_layer):
 
 class TestStimCircuit:
     @pytest.mark.parametrize(
-        "gate, expected_circuit",
+        ("gate", "expected_circuit"),
         [
             (gates.X(Qubit(4)), stim.Circuit("X 4")),
             (gates.Y(Qubit(3)), stim.Circuit("Y 3")),
@@ -498,7 +497,7 @@ class TestStimCircuit:
         assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
-        "gate, expected_circuit",
+        ("gate", "expected_circuit"),
         [
             (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
             (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
@@ -527,7 +526,7 @@ class TestStimCircuit:
             assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
-        "mpp_gate, expected_circuit",
+        ("mpp_gate", "expected_circuit"),
         [
             (gates.MPP(PauliX(Qubit(0))), stim.Circuit("MPP X0")),
             (gates.MPP(InvertiblePauliZ(Qubit(2))), stim.Circuit("MPP Z2")),
@@ -643,7 +642,7 @@ class TestStimCircuit:
     #     assert len(str(empty_circuit).split("\n")) == 1
 
     @pytest.mark.parametrize(
-        "gate1, gate2",
+        ("gate1", "gate2"),
         [
             (gates.MPP(PauliX(Qubit(3))), gates.MPP(PauliX(Qubit(2)))),
             (
@@ -684,7 +683,7 @@ class TestStimCircuit:
         assert empty_circuit == stim.Circuit("MX 0\nMZ 1")
 
     @pytest.mark.parametrize(
-        "gate, qubit_mapping, expected_stim_circuit",
+        ("gate", "qubit_mapping", "expected_stim_circuit"),
         [
             (gates.X((0, 0)), {Qubit((0, 0)): 0}, stim.Circuit("X 0")),
             (gates.Y((0, 0)), {Qubit((0, 0)): 3}, stim.Circuit("Y 3")),
@@ -755,7 +754,7 @@ class TestQubitTransforms:
         assert empty_layer.qubits == frozenset((Qubit(3), Qubit(4), Qubit(5)))
 
     @pytest.mark.parametrize(
-        "input_layer, id_mapping, expected_layer",
+        ("input_layer", "id_mapping", "expected_layer"),
         [
             (
                 GateLayer([gates.X(0), gates.CX(1, 2)]),

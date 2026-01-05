@@ -2,17 +2,17 @@
 from unittest.mock import Mock
 
 import pytest
-from deltakit_decode.analysis._matching_decoder_managers import \
-    GraphDecoderManager
+
+from deltakit_decode.analysis._matching_decoder_managers import GraphDecoderManager
 
 
 class TestGraphDecoderManager:
 
-    @pytest.fixture()
+    @pytest.fixture
     def logicals(self):
         return [set(range(10)), {1}]
 
-    @pytest.fixture()
+    @pytest.fixture
     def mock_graph_decoder(self, mocker, logicals) -> Mock:
         decode_to_logical_flip = mocker.Mock(return_value=(True,))
         logicals = mocker.PropertyMock(return_value=logicals)
@@ -21,16 +21,16 @@ class TestGraphDecoderManager:
         type(decoder).logicals = logicals
         return decoder
 
-    @pytest.fixture()
+    @pytest.fixture
     def mock_noise_model(self, mocker) -> Mock:
         noise_model: Mock = mocker.Mock()
         return noise_model
 
-    @pytest.fixture()
+    @pytest.fixture
     def example_graph_decoder_manager(self, mock_noise_model, mock_graph_decoder):
         return GraphDecoderManager(mock_noise_model, mock_graph_decoder)
 
-    @pytest.mark.parametrize("error, expected_logical_flip", [
+    @pytest.mark.parametrize(("error", "expected_logical_flip"), [
         (set(), (False, False)),
         ({1}, (True, True)),
         ({1, 2}, (False, True)),
@@ -43,7 +43,7 @@ class TestGraphDecoderManager:
         assert not example_graph_decoder_manager._analyse_correction(
             error, expected_logical_flip)
 
-    @pytest.mark.parametrize("error, expected_logical_flip", [
+    @pytest.mark.parametrize(("error", "expected_logical_flip"), [
         (set(), (False, True)),
         ({1}, (True, False)),
         ({1, 2}, (True, True)),
@@ -56,7 +56,7 @@ class TestGraphDecoderManager:
         assert example_graph_decoder_manager._analyse_correction(
             error, expected_logical_flip)
 
-    @pytest.mark.parametrize("logicals, error, expected_logical_flip", [
+    @pytest.mark.parametrize(("logicals", "error", "expected_logical_flip"), [
         ([{0}], {0}, (True,)),
         ([{0}], {1}, (False,)),
         ([{0}, {1}], {1}, (False, True))

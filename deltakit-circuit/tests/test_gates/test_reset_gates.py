@@ -1,15 +1,16 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import permutations
 import itertools
+from itertools import permutations
 
 import pytest
 import stim
+
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import Qubit
 
 
 @pytest.mark.parametrize(
-    "reset_gate, expected_string",
+    ("reset_gate", "expected_string"),
     [
         (gates.RZ, "RZ"),
         (gates.RX, "RX"),
@@ -21,7 +22,7 @@ def test_reset_gate_stim_string_matches_expected_string(reset_gate, expected_str
 
 
 @pytest.mark.parametrize(
-    "reset_gate, expected_basis",
+    ("reset_gate", "expected_basis"),
     [
         (gates.RZ, gates.PauliBasis.Z),
         (gates.RX, gates.PauliBasis.X),
@@ -33,7 +34,7 @@ def test_reset_gate_basis_is_expected_basis(reset_gate, expected_basis):
 
 
 @pytest.mark.parametrize(
-    "reset_gate,tag",
+    ("reset_gate", "tag"),
     itertools.product(gates.RESET_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
 )
 def test_repr_of_reset_gate_matches_the_expected_representation(
@@ -61,7 +62,9 @@ def test_reset_gates_on_different_qubits_are_not_equal(reset_gate):
     assert reset_gate(Qubit(0)) != reset_gate(Qubit(1))
 
 
-@pytest.mark.parametrize("reset_gate1, reset_gate2", permutations(gates.RESET_GATES, 2))
+@pytest.mark.parametrize(
+    ("reset_gate1", "reset_gate2"), permutations(gates.RESET_GATES, 2)
+)
 def test_different_reset_gates_on_same_qubit_are_not_equal(reset_gate1, reset_gate2):
     assert reset_gate1(Qubit(0)) != reset_gate2(Qubit(0))
 

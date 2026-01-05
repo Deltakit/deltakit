@@ -1,7 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit._qubit_mapping import default_qubit_mapping
+
 from deltakit_circuit._qubit_identifiers import Qubit
+from deltakit_circuit._qubit_mapping import default_qubit_mapping
 
 
 def test_default_qubit_mapping_for_integer_qubits_returns_the_unique_identifier():

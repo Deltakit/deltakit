@@ -1,9 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
 import math
 
-import stim
-
 import pytest
+import stim
+from pytest_lazy_fixtures import lf
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -12,8 +13,6 @@ from deltakit_core.decoding_graphs import (
     dem_to_decoding_graph_and_logicals,
     dem_to_hypergraph_and_logicals,
 )
-
-from pytest_lazy_fixtures import lf
 
 
 def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed_hyper():
@@ -505,7 +504,7 @@ def test_there_are_no_multi_edges_in_the_logicals(dem, dem_to_graph_method):
 
 
 @pytest.mark.parametrize(
-    "dem, expected_weight",
+    ("dem", "expected_weight"),
     [
         (stim.DetectorErrorModel("error(0.1) D0 D1"), 2.1972245773362196),
         (
@@ -591,7 +590,7 @@ class TestDemToDecodingHyperGraph:
         assert DecodingHyperEdge({0, 1}, p_err=0) in graph.edges
 
     @pytest.mark.parametrize(
-        "dem, expected_logicals",
+        ("dem", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel(
@@ -671,7 +670,7 @@ class TestDemToNXGraph:
         assert DecodingEdge({0, 1}, p_err=0) in graph.edges
 
     @pytest.mark.parametrize(
-        "dem, expected_logicals",
+        ("dem", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel(
@@ -704,7 +703,8 @@ class TestDemToNXGraph:
         ],
     )
     def test_warning_raised_for_degree_0_edge(self, dem):
-        with pytest.warns(UserWarning):
+        msg = "Degree 0 edge has been skipped over in graph creation."
+        with pytest.warns(UserWarning, match=msg):
             dem_to_decoding_graph_and_logicals(dem)
 
 

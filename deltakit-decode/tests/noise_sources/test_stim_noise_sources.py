@@ -2,14 +2,17 @@
 import deltakit_circuit as sp
 import pytest
 import stim
-from deltakit_circuit.gates._abstract_gates import (OneQubitMeasurementGate,
-                                                    TwoOperandGate)
+from deltakit_circuit.gates._abstract_gates import (
+    OneQubitMeasurementGate,
+    TwoOperandGate,
+)
+
 from deltakit_decode.noise_sources import OptionedStim, StimNoise, ToyNoise
 
 
 class TestStimNoise:
 
-    @pytest.mark.parametrize("stim_circuit, target_gate, noise_channel, expected_stim_circuit", [
+    @pytest.mark.parametrize(("stim_circuit", "target_gate", "noise_channel", "expected_stim_circuit"), [
         (
             stim.Circuit("CX 0 1 2 8 9 4"),
             sp.gates.CX,
@@ -34,7 +37,7 @@ class TestStimNoise:
         assert stim_noise_model.permute_stim_circuit(
             stim_circuit) == expected_stim_circuit
 
-    @pytest.mark.parametrize("stim_circuit, target_gate, noise_channel, expected_stim_circuit", [
+    @pytest.mark.parametrize(("stim_circuit", "target_gate", "noise_channel", "expected_stim_circuit"), [
         (
             stim.Circuit("CX 0 1 2 8 9 4"),
             sp.gates.CX,
@@ -59,7 +62,7 @@ class TestStimNoise:
         assert stim_noise_model.permute_stim_circuit(
             stim_circuit) == expected_stim_circuit
 
-    @pytest.mark.parametrize("stim_circuit, replacement_policy, expected_stim_circuit", [
+    @pytest.mark.parametrize(("stim_circuit", "replacement_policy", "expected_stim_circuit"), [
         (
             stim.Circuit("MX 0 1 2 8 9 4"),
             {},
@@ -90,7 +93,7 @@ class TestToyNoise:
         assert optioned_stim.field_values() == {'noise_name': 'ToyNoise',
                                                 'p_physical': 0.02}
 
-    @pytest.mark.parametrize("stim_circuit, expected_stim_circuit", [
+    @pytest.mark.parametrize(("stim_circuit", "expected_stim_circuit"), [
         (
             stim.Circuit("CX 0 1 2 8 9 4"),
             stim.Circuit("CX 0 1 2 8 9 4\n DEPOLARIZE2(0.1) 0 1 2 8 9 4")
@@ -173,7 +176,7 @@ class TestOptionedStim:
     def code_rounds_distance(self, request):
         return request.param
 
-    @pytest.fixture()
+    @pytest.fixture
     def clean_stim_circuit(self, code_rounds_distance):
         code, rounds, distance = code_rounds_distance
         return stim.Circuit.generated(code,
