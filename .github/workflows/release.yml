@@ -28,7 +28,8 @@ jobs:
   build_dists:
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@v6
+      - name: Checking out the deltakit repository
+        uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -44,7 +45,7 @@ jobs:
           # No need to keep these as they will be published in this workflow.
           retention-days: 1
 
-  # To avoid creating unnecessary CI jobs, and because most packages are 
+  # To avoid creating unnecessary CI jobs, and because most packages are
   # typically installed through `pip install deltakit`, this job does not test each deltakit
   # package in isolation. Instead, it installs all of them and performs all tests suites in
   # a single environment.
@@ -75,7 +76,8 @@ jobs:
         python-version: ['3.10', '3.11', '3.12', '3.13']
         dependency-resolution: ['highest', 'lowest-direct']
     steps:
-      - uses: actions/checkout@v6
+      - name: Checking out the deltakit repository
+        uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
