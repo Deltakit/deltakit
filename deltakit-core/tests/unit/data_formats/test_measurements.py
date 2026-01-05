@@ -2,11 +2,11 @@
 
 import pytest
 
-from deltakit_core.decoding_graphs import Bitstring
 from deltakit_core.data_formats._measurements import (
     c64_to_addressed_input_words,
     split_input_data_to_c64,
 )
+from deltakit_core.decoding_graphs import Bitstring
 
 
 class TestMeasurements:
