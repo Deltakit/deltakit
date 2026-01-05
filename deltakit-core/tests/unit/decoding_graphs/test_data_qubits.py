@@ -85,7 +85,7 @@ class TestDecodingEdge:
 
     def test_self_loop_decoding_edge_raises_value_error(self, random_generator):
         syndrome_a = random_generator.integers(100)
-        msg = "Invalid DecodingEdge between detectors [0-9][0-9] and [0-9][0-9]."
+        msg = "Invalid DecodingEdge between detectors [0-9]+ and [0-9]+."
         with pytest.raises(ValueError, match=msg):
             DecodingEdge(syndrome_a, syndrome_a)
 
