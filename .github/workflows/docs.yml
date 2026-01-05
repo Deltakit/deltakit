@@ -10,7 +10,7 @@ on:
 jobs:
   check-deltakit-token:
     name: Check if Deltakit token exists
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       exists: ${{ steps.deltakit-token.outputs.exists }}
     steps:
