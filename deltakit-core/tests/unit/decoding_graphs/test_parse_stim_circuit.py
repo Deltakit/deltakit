@@ -12,7 +12,7 @@ except ImportError:
 from deltakit_core.decoding_graphs._decoding_graph_tools import parse_stim_circuit
 
 
-def stim_circuit_rep_5x4():
+def stim_circuit_rep_5x4() -> stim.Circuit:
     return stim.Circuit.generated(
         "repetition_code:memory",
         rounds=4,
@@ -22,7 +22,7 @@ def stim_circuit_rep_5x4():
     )
 
 
-def stim_circuit_rplanar_3x3x3():
+def stim_circuit_rplanar_3x3x3() -> stim.Circuit:
     return stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=3,
@@ -32,7 +32,7 @@ def stim_circuit_rplanar_3x3x3():
     )
 
 
-def stim_circuit_planar_5x5x2():
+def stim_circuit_planar_5x5x2() -> stim.Circuit:
     return stim.Circuit.generated(
         "surface_code:unrotated_memory_z",
         rounds=2,
@@ -56,7 +56,7 @@ class TestParseStimCircuit:
 
     def test_trimmed_stim_circuit_has_same_number_of_detectors_as_its_corresponding_trimmed_graph(
         self, stim_circuit: stim.Circuit
-    ):
+    ) -> None:
         trimmed_graph, _, trimmed_stim_circuit = parse_stim_circuit(stim_circuit)
         assert trimmed_stim_circuit.num_detectors == len(trimmed_graph.nodes) - len(
             trimmed_graph.boundaries
@@ -64,6 +64,6 @@ class TestParseStimCircuit:
 
     def test_trimmed_stim_circuit_has_same_number_of_observables_as_its_corresponding_trimmed_graph(
         self, stim_circuit: stim.Circuit
-    ):
+    ) -> None:
         _, trimmed_logicals, trimmed_stim_circuit = parse_stim_circuit(stim_circuit)
         assert trimmed_stim_circuit.num_observables == len(trimmed_logicals)

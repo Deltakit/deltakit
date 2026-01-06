@@ -24,7 +24,7 @@ from deltakit_core.decoding_graphs._hypergraph_annotations_tools import (
 
 
 @pytest.fixture(scope="module")
-def rotmem_code():
+def rotmem_code() -> DecodingCode:
     """Build a DecodingCode (hypergraph + logicals) for a rotated memory Z surface code."""
     circuit = stim.Circuit.generated(
         code_task="surface_code:rotated_memory_z",
@@ -44,7 +44,7 @@ def rotmem_code():
 
 
 @pytest.fixture(scope="module")
-def edge_window_graph(rotmem_code):
+def edge_window_graph(rotmem_code: DecodingCode) -> DecodingHyperGraph:
     """Annotate edges with window ids using the time coordinate as the window id."""
 
     def coordinate_to_window_id(coordinate):
@@ -54,13 +54,17 @@ def edge_window_graph(rotmem_code):
     return rotmem_code.hypergraph
 
 
-def test_annotate_edge_window_id_everything_window_id(edge_window_graph):
+def test_annotate_edge_window_id_everything_window_id(
+    edge_window_graph: DecodingHyperGraph,
+) -> None:
     """All edges receive an integer window_id after annotation."""
     for edge_record in edge_window_graph.edge_records.values():
         assert isinstance(edge_record["window_id"], int)
 
 
-def test_annotated_edge_window_ids_are_contiguous(edge_window_graph):
+def test_annotated_edge_window_ids_are_contiguous(
+    edge_window_graph: DecodingHyperGraph,
+) -> None:
     """Window ids cover a contiguous range from 0..25 (26 rounds)."""
     window_ids = set()
     for edge_record in edge_window_graph.edge_records.values():
@@ -68,20 +72,24 @@ def test_annotated_edge_window_ids_are_contiguous(edge_window_graph):
     assert tuple(sorted(window_ids)) == tuple(range(26))
 
 
-def test_get_window_id_transfer_graph_from_nodes(edge_window_graph):
+def test_get_window_id_transfer_graph_from_nodes(
+    edge_window_graph: DecodingHyperGraph,
+) -> None:
     """Transfer graph contains directed edges only from i to i+1 with no cycles."""
     transfer_graph = get_window_id_transfer_graph(edge_window_graph)
     expected_transfer_graph = nx.DiGraph([(i, i + 1) for i in range(25)])
     assert nx.utils.graphs_equal(transfer_graph, expected_transfer_graph)
 
 
-def test_get_unique_window_ids(edge_window_graph):
+def test_get_unique_window_ids(edge_window_graph: DecodingHyperGraph) -> None:
     """Unique edge window ids equal the expected set of windows."""
     window_ids = get_unique_window_ids(edge_window_graph)
     assert window_ids == set(range(26))
 
 
-def test_get_unique_logical_window_ids(edge_window_graph, rotmem_code):
+def test_get_unique_logical_window_ids(
+    edge_window_graph: DecodingHyperGraph, rotmem_code: DecodingCode
+) -> None:
     """Logical window ids equal the expected contiguous set (derived from logical supports)."""
     logical_window_ids = get_unique_logical_window_ids(
         edge_window_graph, rotmem_code.logicals
@@ -89,7 +97,9 @@ def test_get_unique_logical_window_ids(edge_window_graph, rotmem_code):
     assert logical_window_ids == set(range(26))
 
 
-def test_separate_logicals_by_window_id(edge_window_graph, rotmem_code):
+def test_separate_logicals_by_window_id(
+    edge_window_graph: DecodingHyperGraph, rotmem_code: DecodingCode
+) -> None:
     """Logicals are partitioned by window id with no overlap between adjacent windows."""
     separated_logicals = separate_logicals_by_window_id(
         edge_window_graph, rotmem_code.logicals
@@ -102,7 +112,7 @@ def test_separate_logicals_by_window_id(edge_window_graph, rotmem_code):
     assert sorted(separated_logicals.keys()) == list(separated_logicals.keys())
 
 
-def test_separate_edges_per_window_id(edge_window_graph):
+def test_separate_edges_per_window_id(edge_window_graph: DecodingHyperGraph) -> None:
     """Test edges are grouped per window id with full coverage and no duplication."""
     per_label = separate_edges_per_window_id(edge_window_graph, enforce_window_ids=True)
 
@@ -124,7 +134,7 @@ def test_separate_edges_per_window_id(edge_window_graph):
             seen.add(e)
 
 
-def test_separate_edges_per_window_id_enforce_window_ids_detects_unlabelled():
+def test_separate_edges_per_window_id_enforce_window_ids_detects_unlabelled() -> None:
     """If enforce_window_ids=True and an edge lacks window_id we raise ValueError."""
     edge1 = (0, 1)
     edge2 = (1, 2)

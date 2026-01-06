@@ -18,7 +18,7 @@ from deltakit_core.decoding_graphs._windowing_utils import (
 
 
 class TestNodesWithinRadius:
-    def test_basic_growth_from_single_start_node(self):
+    def test_basic_growth_from_single_start_node(self) -> None:
         edge_data = [
             (DecodingHyperEdge((0, 1)), EdgeRecord()),
             (DecodingHyperEdge((1, 2, 3)), EdgeRecord()),
@@ -32,12 +32,12 @@ class TestNodesWithinRadius:
         assert nodes_within_radius(hg, {0}, 3) == {0, 1, 2, 3, 4}
         assert nodes_within_radius(hg, {0}, 4) == {0, 1, 2, 3, 4, 5, 6}
 
-    def test_negative_radius_raises(self):
+    def test_negative_radius_raises(self) -> None:
         hg = DecodingHyperGraph([(0, 1)])
         with pytest.raises(ValueError, match="Radius must be non-negative"):
             nodes_within_radius(hg, {0}, -1)
 
-    def test_growth_on_cyclic_hypergraph(self):
+    def test_growth_on_cyclic_hypergraph(self) -> None:
         """Test growth on a more complex cyclic hypergraph."""
         edge_data = [
             (DecodingHyperEdge((0, 1, 2)), EdgeRecord()),
@@ -66,7 +66,7 @@ class TestNodesWithinRadius:
 
 
 class TestInducedSubhypergraph:
-    def test_filters_edges_and_detector_records(self):
+    def test_filters_edges_and_detector_records(self) -> None:
         edge_data = [
             (DecodingHyperEdge((0, 1)), EdgeRecord(0.1)),
             (DecodingHyperEdge((1, 2)), EdgeRecord(0.2)),
@@ -95,7 +95,7 @@ class TestInducedSubhypergraph:
 
 
 class TestConnectDanglingToBoundary:
-    def test_adds_and_combines_unary_boundary_edges(self):
+    def test_adds_and_combines_unary_boundary_edges(self) -> None:
         edge_data = [
             (DecodingHyperEdge((0, 1)), EdgeRecord(0.1)),  # inside
             (DecodingHyperEdge((1, 2)), EdgeRecord(0.2)),  # inside
@@ -123,7 +123,7 @@ class TestConnectDanglingToBoundary:
 
         assert folded.detector_records == sub.detector_records
 
-    def test_no_external_edges_means_no_change(self):
+    def test_no_external_edges_means_no_change(self) -> None:
         edge_data = [
             (DecodingHyperEdge((0, 1)), EdgeRecord(0.1)),
             (DecodingHyperEdge((1, 2)), EdgeRecord(0.2)),
@@ -141,7 +141,7 @@ class TestConnectDanglingToBoundary:
 
 
 class TestRelabelHypergraphNodesContiguously:
-    def test_relabels_sparse_node_ids(self):
+    def test_relabels_sparse_node_ids(self) -> None:
         # hypergraph whose node ids are sparse/non-contiguous
         edge_data = [
             (DecodingHyperEdge((10, 20)), EdgeRecord()),
@@ -169,7 +169,7 @@ class TestRelabelHypergraphNodesContiguously:
 
 
 class TestExpandNodesToTimeSpan:
-    def test_expands_to_full_time_interval(self):
+    def test_expands_to_full_time_interval(self) -> None:
         det_recs = {i: DetectorRecord(time=i) for i in range(6)}
         edge_data = []
         for i in range(1, 6):
@@ -179,7 +179,7 @@ class TestExpandNodesToTimeSpan:
         expanded = expand_nodes_to_time_span(hg, start_nodes)
         assert expanded == {1, 2, 3, 4, 5}
 
-    def test_empty_nodes_no_change(self):
+    def test_empty_nodes_no_change(self) -> None:
         hg = DecodingHyperGraph(
             [(DecodingHyperEdge((0, 1)), EdgeRecord())],
             detector_records={0: DetectorRecord(time=0), 1: DetectorRecord(time=1)},
