@@ -1,19 +1,25 @@
 # (c) Copyright Riverlane 2020-2025.
 import numpy as np
 import pytest
-from deltakit_circuit import (Circuit, GateLayer, NoiseContext, Qubit,
-                              before_measure_flip_probability, gates,
-                              measurement_noise_profile)
+from deltakit_circuit import (
+    Circuit,
+    GateLayer,
+    NoiseContext,
+    Qubit,
+    before_measure_flip_probability,
+    gates,
+    measurement_noise_profile,
+)
 from deltakit_circuit.gates import CX, X, Y, Z
 from deltakit_circuit.noise_channels import Depolarise1, PauliChannel1
+
 from deltakit_explorer.qpu._noise import NoiseParameters
-from deltakit_explorer.qpu._noise._noise_parameters import \
-    _idle_noise_from_t1_t2
+from deltakit_explorer.qpu._noise._noise_parameters import _idle_noise_from_t1_t2
 
 
 class TestNoiseParameters:
     @pytest.mark.parametrize(
-        "gate_dict, idle, reset, m_noise, m_flip, before_gate",
+        ("gate_dict", "idle", "reset", "m_noise", "m_flip", "before_gate"),
         [
             (
                 {

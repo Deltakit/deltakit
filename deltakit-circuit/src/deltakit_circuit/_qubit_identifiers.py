@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import warnings
 from collections import abc
+from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from itertools import chain
 from typing import ClassVar, Generic, TypeVar
-from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 
 import stim
 

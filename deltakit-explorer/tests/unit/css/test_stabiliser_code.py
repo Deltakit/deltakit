@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
 from deltakit_circuit import PauliX, PauliZ, Qubit
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._css._stabiliser_code import StabiliserCode
 
@@ -35,19 +36,19 @@ class StabiliserCodeForTesting(StabiliserCode):
 
 class TestLogicalOperators:
     @pytest.mark.parametrize(
-        "x_logical_operators, z_logical_operators",
+        ("x_logical_operators", "z_logical_operators"),
         [
-            [(frozenset({}),), (frozenset({}),)],
-            [(frozenset({PauliX(Qubit(0))}),), (frozenset({PauliZ(Qubit(0))}),)],
-            [
+            ((frozenset({}),), (frozenset({}),)),
+            ((frozenset({PauliX(Qubit(0))}),), (frozenset({PauliZ(Qubit(0))}),)),
+            (
                 (frozenset({PauliX(Qubit(0)), PauliX(Qubit(1))}),),
                 (frozenset({PauliZ(Qubit(0)), PauliZ(Qubit(1))}),),
-            ],
-            [
+            ),
+            (
                 (frozenset({PauliX(Qubit(0))}), frozenset({PauliX(Qubit(1))})),
                 (frozenset({PauliZ(Qubit(0))}), frozenset({PauliZ(Qubit(1))})),
-            ],
-            [
+            ),
+            (
                 (
                     frozenset({PauliX(Qubit(0)), PauliX(Qubit(1))}),
                     frozenset({PauliX(Qubit(2)), PauliX(Qubit(3))}),
@@ -56,7 +57,7 @@ class TestLogicalOperators:
                     frozenset({PauliZ(Qubit(0)), PauliZ(Qubit(1))}),
                     frozenset({PauliZ(Qubit(2)), PauliZ(Qubit(3))}),
                 ),
-            ],
+            ),
         ],
     )
     class TestLogicalOperatorProperty:

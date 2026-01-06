@@ -7,16 +7,19 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from itertools import chain
-from collections.abc import Callable
 
 import numpy as np
 from deltakit_circuit import NoiseProfile, Qubit
 from deltakit_circuit.gates import _MeasurementGate
-from deltakit_circuit.noise_channels import (Depolarise1, NoiseChannel,
-                                             OneQubitNoiseChannel,
-                                             PauliChannel1)
+from deltakit_circuit.noise_channels import (
+    Depolarise1,
+    NoiseChannel,
+    OneQubitNoiseChannel,
+    PauliChannel1,
+)
 
 
 def _idle_noise_from_t1_t2(

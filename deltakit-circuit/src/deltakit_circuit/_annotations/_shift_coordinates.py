@@ -26,6 +26,7 @@ class ShiftCoordinates:
     def __init__(
         self,
         coordinate_shift: Iterable[int | float],
+        *,
         tag: str | None = None,
     ):
         self._coordinate_shift = Coordinate(*coordinate_shift)

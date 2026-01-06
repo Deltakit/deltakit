@@ -1,7 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
-import deltakit_circuit as sp
 import pytest
 import stim
+
+import deltakit_circuit as sp
 from deltakit_circuit._parse_stim import parse_stim_noise_instruction
 
 
@@ -29,7 +30,7 @@ def test_error_is_raised_when_gate_class_is_passed_to_the_noise_parser():
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_noise_channel",
+    ("stim_circuit", "expected_noise_channel"),
     [
         (
             stim.Circuit("X_ERROR(0.2) 0"),
@@ -161,7 +162,7 @@ def test_parsing_single_noise_channel_stim_circuit_returns_correct_deltakit_circ
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         (
             stim.Circuit("X_ERROR(0.001) 0 1 2\nZ_ERROR(0.02) 0 1 2"),

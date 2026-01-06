@@ -3,6 +3,6 @@ import pytest
 import stim
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def empty_circuit():
     return stim.Circuit()

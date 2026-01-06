@@ -11,8 +11,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 import seaborn as sns
-from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 from matplotlib.ticker import FuncFormatter
+
+from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
 
 def correlation_matrix(

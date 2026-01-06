@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import re
 
+from stim import Circuit
+
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._data_string import DataString
-from stim import Circuit
 
 
 def get_binary_data_size(width: int, shots: int, data_format: DataFormat) -> int:

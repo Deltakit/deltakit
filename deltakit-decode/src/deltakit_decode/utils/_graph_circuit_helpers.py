@@ -3,14 +3,15 @@
 """
 
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge,
-                                           DemParser,
-                                           DetectorCounter,
-                                           NXDecodingGraph,
-                                           dem_to_decoding_graph_and_logicals)
-
 from deltakit_circuit import Circuit, trim_detectors
-from deltakit_core.decoding_graphs import FixedWidthBitstring
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    DemParser,
+    DetectorCounter,
+    FixedWidthBitstring,
+    NXDecodingGraph,
+    dem_to_decoding_graph_and_logicals,
+)
 
 
 def stim_circuit_to_graph_dem(stim_circuit: stim.Circuit,

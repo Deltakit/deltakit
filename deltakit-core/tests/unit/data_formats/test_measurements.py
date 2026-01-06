@@ -1,17 +1,19 @@
 # (c) Copyright Riverlane 2020-2025.
 
+from pathlib import Path
+
 import pytest
 
-from deltakit_core.decoding_graphs import Bitstring
 from deltakit_core.data_formats._measurements import (
     c64_to_addressed_input_words,
     split_input_data_to_c64,
 )
+from deltakit_core.decoding_graphs import Bitstring
 
 
 class TestMeasurements:
     @pytest.mark.parametrize(
-        "bitstrings, c64_string",
+        ("bitstrings", "c64_string"),
         [
             ([[Bitstring(0b10000010)]], "130\n"),
             ([[Bitstring(0b10000010), Bitstring(0b111000111)]], "130,455\n"),
@@ -28,14 +30,14 @@ class TestMeasurements:
     )
     def test_split_input_data_to_c64_gives_correct_results(
         self, tmp_path, bitstrings, c64_string
-    ):
-        tmp_c64_file = tmp_path / "tmp_split_measurement_events_out.c64"
+    ) -> None:
+        tmp_c64_file: Path = tmp_path / "tmp_split_measurement_events_out.c64"
         split_input_data_to_c64(bitstrings, tmp_c64_file)
-        with open(tmp_c64_file, "r") as c64_handle:
+        with tmp_c64_file.open("r") as c64_handle:
             assert c64_handle.read() == c64_string
 
     @pytest.mark.parametrize(
-        "c64_lines, round_width, expected_addressed_words",
+        ("c64_lines", "round_width", "expected_addressed_words"),
         [
             (
                 "0, 14, 13, 4, 1\n4",
@@ -68,8 +70,8 @@ class TestMeasurements:
     def test_c64_to_addressed_input_words(
         self, tmp_path, c64_lines, round_width, expected_addressed_words
     ):
-        tmp_c64_file = tmp_path / "tmp_addressed_words.c64"
-        with open(tmp_c64_file, "w") as c64_handle:
+        tmp_c64_file: Path = tmp_path / "tmp_addressed_words.c64"
+        with tmp_c64_file.open("w") as c64_handle:
             c64_handle.write(c64_lines)
         assert (
             list(c64_to_addressed_input_words(tmp_c64_file, round_width))

@@ -1,7 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 """Description of ``deltakit.explorer.visualisation`` namespace here."""
 
-from deltakit_explorer.visualisation._visualisation import (correlation_matrix,
+from deltakit_explorer.visualisation._visualisation import (
+                                                            correlation_matrix,
                                                             defect_diagram,
                                                             defect_rates)
 from deltakit_explorer.visualisation._lambda import plot_lambda

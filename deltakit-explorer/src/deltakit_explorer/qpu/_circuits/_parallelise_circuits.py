@@ -6,8 +6,14 @@ single circuit to be executed on a single QPU in parallel.
 
 
 import numpy as np
-from deltakit_circuit import (Circuit, Detector, GateLayer, Observable, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    Observable,
+    Qubit,
+    ShiftCoordinates,
+)
 
 # According to the purpose and business logic, content of this file
 # may violate pylint rules on cyclomatic complexity. Still, code

@@ -4,12 +4,13 @@
 from itertools import chain
 
 import pytest
+
 from deltakit_core.decoding_graphs import DetectorRecord
 
 
 class TestDetectorRecord:
     @pytest.mark.parametrize(
-        "detector_record, expected_coord",
+        ("detector_record", "expected_coord"),
         [
             (DetectorRecord((2, 6)), (2, 6, 0)),
             (DetectorRecord(), (0,)),

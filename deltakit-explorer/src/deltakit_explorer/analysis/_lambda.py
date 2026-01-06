@@ -5,7 +5,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 import scipy.optimize
 
@@ -31,41 +31,41 @@ class LambdaResults:
 
 _LambdaFittingCallable = Callable[
     [
-        npt.NDArray[numpy.int_] | Sequence[int],
-        npt.NDArray[numpy.float64] | Sequence[float],
-        npt.NDArray[numpy.float64] | Sequence[float],
+        npt.NDArray[np.int_] | Sequence[int],
+        npt.NDArray[np.float64] | Sequence[float],
+        npt.NDArray[np.float64] | Sequence[float],
     ],
     LambdaResults,
 ]
 
 
 def _lambda_fit_with_d(
-    distances: npt.NDArray[numpy.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
 ) -> LambdaResults:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
     of ``lep_per_round`` with ``distance``.
     """
     # Prepare data for the fit.
-    lep_per_round = numpy.asarray(lep_per_round, dtype=numpy.float64)
-    logleppr = numpy.log(lep_per_round)
+    lep_per_round = np.asarray(lep_per_round, dtype=np.float64)
+    logleppr = np.log(lep_per_round)
     logleppr_stddev = lep_stddev_per_round / lep_per_round
     # Fitting with numpy.polyfit to be able to provide standard deviations and recover a
     # covariance matrix as numpy.polynomial.Polyfit is not able to do that yet.
-    (slope, offset), cov = numpy.polyfit(
+    (slope, offset), cov = np.polyfit(
         distances, logleppr, 1, w=1 / logleppr_stddev, full=False, cov="unscaled"
     )
-    slope_stddev, offset_stddev = numpy.sqrt(numpy.diagonal(cov))
+    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
     # Recovering the numbers of interest. Maths representing what has been performed:
     # We start from Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
     # Applying ln:  ln(Ɛ_d) = - ln(Λ_0) - (d+1)/2 * ln(Λ)
     #                       = - ln(Λ_0) - ln(Λ)/2 - d * ln(Λ)/2
     # The linear fit performed above gave us slope  = -ln(Λ)/2
     #                                        offset = -ln(Λ_0) - ln(Λ)/2
-    lambda_value = float(numpy.exp(-2 * slope))
+    lambda_value = float(np.exp(-2 * slope))
     lambda_value_stddev = float(lambda_value * 2 * slope_stddev)
-    lambda0 = float(numpy.exp(-offset - numpy.log(lambda_value) / 2))
+    lambda0 = float(np.exp(-offset - np.log(lambda_value) / 2))
     # Λ_0 = exp(-offset - ln(Λ)/2)
     # Error analysis (to compute the standard deviation of Λ_0) done with the formulas
     # in https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae:
@@ -80,7 +80,7 @@ def _lambda_fit_with_d(
     #                                     - 2 * covariance(offset, ln(Λ) / 2))
     lambda0_stddev = float(
         lambda0
-        * numpy.sqrt(
+        * np.sqrt(
             offset_stddev**2
             + lambda_value_stddev**2 / (4 * lambda_value**2)
             - 2 * cov[0, 1]
@@ -90,21 +90,21 @@ def _lambda_fit_with_d(
 
 
 def _lambda_fit_with_d_plus_1_over_2(
-    distances: npt.NDArray[numpy.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
 ) -> LambdaResults:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
     of ``lep_per_round`` with ``(distance + 1) / 2``.
     """
     # Prepare data for the fit.
-    distances = numpy.asarray(distances, dtype=numpy.int_)
-    lep_per_round = numpy.asarray(lep_per_round, dtype=numpy.float64)
-    logleppr = numpy.log(lep_per_round)
+    distances = np.asarray(distances, dtype=np.int_)
+    lep_per_round = np.asarray(lep_per_round, dtype=np.float64)
+    logleppr = np.log(lep_per_round)
     logleppr_stddev = lep_stddev_per_round / lep_per_round
     # Fitting with numpy.polyfit to be able to provide standard deviations and recover a
     # covariance matrix as numpy.polynomial.Polyfit is not able to do that yet.
-    (slope, offset), cov = numpy.polyfit(
+    (slope, offset), cov = np.polyfit(
         (distances + 1) / 2,
         logleppr,
         1,
@@ -112,23 +112,23 @@ def _lambda_fit_with_d_plus_1_over_2(
         full=False,
         cov="unscaled",
     )
-    slope_stddev, offset_stddev = numpy.sqrt(numpy.diagonal(cov))
+    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
     # Recovering the numbers of interest. Maths representing what has been performed:
     # We start from Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
     # Applying ln:  ln(Ɛ_d) = - ln(Λ_0) - (d+1)/2 * ln(Λ)
     # The linear fit performed above gave us slope  = -ln(Λ)
     #                                        offset = -ln(Λ_0)
-    lambda_value = float(numpy.exp(-slope))
+    lambda_value = float(np.exp(-slope))
     lambda_value_stddev = float(lambda_value * slope_stddev)
-    lambda0 = float(numpy.exp(-offset))
+    lambda0 = float(np.exp(-offset))
     lambda0_stddev = float(lambda0 * offset_stddev)
     return LambdaResults(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
 
 
 def _lambda_fit_with_direct(
-    distances: npt.NDArray[numpy.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
 ) -> LambdaResults:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting
     ``lep_per_round`` to ``1 / Λ_0 * Λ**(-(distance + 1) / 2)`` directly.
@@ -137,7 +137,7 @@ def _lambda_fit_with_direct(
     generic method. As such, it requires more time to converge.
     """
     # Prepare data for the fit.
-    distances = numpy.asarray(distances, dtype=numpy.int_)
+    distances = np.asarray(distances, dtype=np.int_)
     # Here we are not fitting a polynomial anymore but directly the formula:
     #   Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
     # with ``x`` that is ``(d+1)/2``.
@@ -147,7 +147,7 @@ def _lambda_fit_with_direct(
         lep_per_round,
         sigma=lep_stddev_per_round,
         absolute_sigma=True,
-        jac=lambda x, lamb0, lamb: numpy.transpose(
+        jac=lambda x, lamb0, lamb: np.transpose(
             [
                 -1 / lamb0**2 * lamb ** (-x),
                 -1 / lamb0 * x * lamb ** (-x - 1),
@@ -155,10 +155,10 @@ def _lambda_fit_with_direct(
         ),
         # Both parameters below are needed for crazy values of lambda and lambda0 to
         # make sure the method converges to the correct value.
-        bounds=(0, numpy.inf),
+        bounds=(0, np.inf),
         maxfev=10000,
     )
-    lamb0_stddev, lamb_stddev = numpy.sqrt(numpy.diagonal(cov))
+    lamb0_stddev, lamb_stddev = np.sqrt(np.diagonal(cov))
     return LambdaResults(
         float(lamb), float(lamb_stddev), float(lamb0), float(lamb0_stddev)
     )
@@ -174,9 +174,9 @@ _LAMBDA_FITTING_METHODS: dict[
 
 
 def calculate_lambda_and_lambda_stddev(
-    distances: npt.NDArray[numpy.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float],
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
     method: Literal["d", "(d+1)/2", "direct"] = "(d+1)/2",
 ) -> LambdaResults:
     """Calculate the error suppression factor (Λ) and its standard deviation.
@@ -238,16 +238,16 @@ def calculate_lambda_and_lambda_stddev(
 
     """
     # Make sure that the inputs are numpy arrays sorted by distance
-    isort = numpy.argsort(distances)
-    distances = numpy.asarray(distances)[isort]
-    lep_per_round = numpy.asarray(lep_per_round)[isort]
-    lep_stddev_per_round = numpy.asarray(lep_stddev_per_round)[isort]
+    isort = np.argsort(distances)
+    distances = np.asarray(distances)[isort]
+    lep_per_round = np.asarray(lep_per_round)[isort]
+    lep_stddev_per_round = np.asarray(lep_stddev_per_round)[isort]
 
     # Check that we do not have duplicate data for the same distance as that will
     # confuse the numerical methods used in this function.
-    unique_counts = numpy.unique_counts(distances)
+    unique_counts = np.unique_counts(distances)
     non_unique_entries_mask = unique_counts.counts > 1
-    if numpy.any(non_unique_entries_mask):
+    if np.any(non_unique_entries_mask):
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
         msg = (
             "Multiple entries were provided for the following distances: "
@@ -256,7 +256,7 @@ def calculate_lambda_and_lambda_stddev(
         raise ValueError(msg)
 
     # Make sure that there are no even distances.
-    if numpy.any(distances % 2 == 0):
+    if np.any(distances % 2 == 0):
         msg = (
             "Found at least one even distance in the provided distances "
             f"({distances.tolist()}). This is not supported."

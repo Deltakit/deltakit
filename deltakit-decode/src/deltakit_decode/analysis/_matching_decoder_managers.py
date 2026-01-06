@@ -1,25 +1,32 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
+from collections.abc import Set as AbstractSet
 from itertools import islice
 from pathlib import Path
-from typing import Any
-from collections.abc import Iterable, Sequence, Set as AbstractSet
+from typing import Any, TypeAlias
 from warnings import warn
 
 import numpy as np
 import numpy.typing as npt
 import stim
-from deltakit_core.decoding_graphs import (DecodingHyperEdge, EdgeT,
-                                           HyperMultiGraph, OrderedSyndrome)
+from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
+from deltakit_core.decoding_graphs import (
+    DecodingHyperEdge,
+    EdgeT,
+    HyperMultiGraph,
+    OrderedSyndrome,
+)
+
 from deltakit_decode._abstract_matching_decoders import GraphDecoder
 from deltakit_decode._base_reporter import BaseReporter
 from deltakit_decode.analysis._decoder_manager import (
-    DecoderManager, NoiseModelDecoderManager)
-from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
+    DecoderManager,
+    NoiseModelDecoderManager,
+)
 from deltakit_decode.noise_sources import SampleStimNoise
 from deltakit_decode.noise_sources._generic_noise_sources import NoiseModel
-from typing import TypeAlias
 
 StimOutput: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
 StimBatchOutput: TypeAlias = tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]

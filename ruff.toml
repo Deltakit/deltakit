@@ -59,8 +59,8 @@ target-version = "py310"
 
 [lint]
 select = [
-    "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "N", "NPY", "PD", "PGH",
-    "PIE", "PL", "PYI", "RET", "RUF", "SIM", "T", "UP", "W", "YTT"
+    "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "I", "ICN", "N", "NPY", "PD",
+    "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RUF", "SIM", "T", "UP", "W", "YTT"
 ]
 ignore = [
     # Having an explicit argument to open() for the open mode is nice.

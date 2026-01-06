@@ -2,49 +2,105 @@ import random
 import re
 from copy import deepcopy
 from functools import reduce
+from importlib.metadata import version
 from operator import add, mul
 
 import numpy as np
 import pytest
 import stim
-from packaging.version import Version
-from importlib.metadata import version
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              NoiseLayer, Observable, PauliX, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    NoiseLayer,
+    Observable,
+    PauliX,
+    Qubit,
+    ShiftCoordinates,
+)
 from deltakit_circuit._basic_types import Coord2D
-from deltakit_circuit.gates import (CX, CXSWAP, CY, CZ, CZSWAP, ISWAP,
-                                    ISWAP_DAG, MPP, MRX, MRY, MRZ, MX, MY, MZ,
-                                    RX, RY, RZ, S_DAG, SQRT_X, SQRT_X_DAG,
-                                    SQRT_XX, SQRT_XX_DAG, SQRT_Y, SQRT_Y_DAG,
-                                    SQRT_YY, SQRT_YY_DAG, SQRT_ZZ, SQRT_ZZ_DAG,
-                                    SWAP, XCX, XCY, XCZ, YCX, YCY, YCZ, Gate,
-                                    H, I, PauliBasis, S, X, Y, Z)
+from deltakit_circuit.gates import (
+    CX,
+    CXSWAP,
+    CY,
+    CZ,
+    CZSWAP,
+    ISWAP,
+    ISWAP_DAG,
+    MPP,
+    MRX,
+    MRY,
+    MRZ,
+    MX,
+    MY,
+    MZ,
+    RX,
+    RY,
+    RZ,
+    S_DAG,
+    SQRT_X,
+    SQRT_X_DAG,
+    SQRT_XX,
+    SQRT_XX_DAG,
+    SQRT_Y,
+    SQRT_Y_DAG,
+    SQRT_YY,
+    SQRT_YY_DAG,
+    SQRT_ZZ,
+    SQRT_ZZ_DAG,
+    SWAP,
+    XCX,
+    XCY,
+    XCZ,
+    YCX,
+    YCY,
+    YCZ,
+    Gate,
+    H,
+    I,
+    PauliBasis,
+    S,
+    X,
+    Y,
+    Z,
+)
 from deltakit_circuit.noise_channels import Depolarise2
-from deltakit_explorer.codes._css._css_code_experiment_circuit import \
-    css_code_memory_circuit
-from deltakit_explorer.codes._planar_code import (RotatedPlanarCode,
-                                                  UnrotatedPlanarCode)
+from packaging.version import Version
+
+from deltakit_explorer.codes._css._css_code_experiment_circuit import (
+    css_code_memory_circuit,
+)
+from deltakit_explorer.codes._planar_code import RotatedPlanarCode, UnrotatedPlanarCode
 from deltakit_explorer.qpu._circuits._tableau_compile_functions import (
     _compile_measurement_to_native_gates_plus_unitaries,
     _compile_or_exchange_unitary_block,
     _compile_reset_and_meas_to_native_gates,
     _compile_reset_to_native_gates_plus_unitaries,
     _compile_two_qubit_gate_to_target,
-    _compile_two_qubit_gates_to_native_gates, compile_circuit_to_native_gates)
+    _compile_two_qubit_gates_to_native_gates,
+    compile_circuit_to_native_gates,
+)
 from deltakit_explorer.qpu._circuits._tableau_functions import (
-    CZ_TO_GATE_DICT, CZSWAP_TO_GATE_DICT, GATE_TO_CZ_DICT, GATE_TO_CZSWAP_DICT,
-    MEAS_COMPILATION_LOOKUP_DICT, RESET_COMPILATION_LOOKUP_DICT,
-    CompilationData, _create_circuit_from_compilation_data,
-    _extract_structure_from_circuit, _get_compilation_dict,
-    _get_tableau_from_sequence_of_1q_gates,
-    _get_single_qubits_tableau_key_from_two_qubit_tableau,
-    _get_relevant_dict_to_update,
+    CZ_TO_GATE_DICT,
+    CZSWAP_TO_GATE_DICT,
+    GATE_TO_CZ_DICT,
+    GATE_TO_CZSWAP_DICT,
+    MEAS_COMPILATION_LOOKUP_DICT,
+    RESET_COMPILATION_LOOKUP_DICT,
+    CompilationData,
+    _create_circuit_from_compilation_data,
+    _extract_structure_from_circuit,
+    _get_compilation_dict,
     _get_compilation_with_measurement_after_unitaries,
     _get_compilation_with_projectors_before_unitaries,
-    _get_compilation_with_two_qubit_gates, _is_identity_like)
+    _get_compilation_with_two_qubit_gates,
+    _get_relevant_dict_to_update,
+    _get_single_qubits_tableau_key_from_two_qubit_tableau,
+    _get_tableau_from_sequence_of_1q_gates,
+    _is_identity_like,
+)
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
-
 
 CURRENT_STIM_VERSION = Version(version("stim"))
 STIM_VERSION_V1_13_0 = Version("1.13.0")
@@ -261,9 +317,9 @@ class TestGetCompilationDict:
         )
 
     @pytest.mark.parametrize(
-        "native_gate_set, weight, possible_dicts",
+        ("native_gate_set", "weight", "possible_dicts"),
         [
-            [
+            (
                 {},
                 1,
                 [
@@ -271,14 +327,14 @@ class TestGetCompilationDict:
                         ("+X", "+Z"): (),
                     }
                 ],
-            ],
-            [{X}, 1, [{("+X", "+Z"): (), ("+X", "-Z"): ("X",)}]],
-            [
+            ),
+            ({X}, 1, [{("+X", "+Z"): (), ("+X", "-Z"): ("X",)}]),
+            (
                 {X, H},
                 1,
                 [{("+X", "+Z"): (), ("+X", "-Z"): ("X",), ("+Z", "+X"): ("H",)}],
-            ],
-            [
+            ),
+            (
                 {X, SQRT_X},
                 2,
                 [
@@ -295,10 +351,10 @@ class TestGetCompilationDict:
                         ("+X", "-Y"): ("SQRT_X",),
                     },
                 ],
-            ],
-            [{X}, 2, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]],
-            [{X, X}, 2, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]],
-            [
+            ),
+            ({X}, 2, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]),
+            ({X, X}, 2, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]),
+            (
                 {H, S},
                 2,
                 [
@@ -311,8 +367,8 @@ class TestGetCompilationDict:
                         ("+Z", "+Y"): ("H", "S"),
                     }
                 ],
-            ],
-            [
+            ),
+            (
                 {H, S, X},
                 2,
                 [
@@ -330,10 +386,10 @@ class TestGetCompilationDict:
                         ("+Y", "-Z"): ("X", "S"),
                     },
                 ],
-            ],
-            [{X}, 3, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]],
-            [{X}, 4, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]],
-            [
+            ),
+            ({X}, 3, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]),
+            ({X}, 4, [{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}]),
+            (
                 {S, S_DAG},
                 2,
                 [
@@ -356,8 +412,8 @@ class TestGetCompilationDict:
                         ("+X", "+Z"): (),
                     },
                 ],
-            ],
-            [
+            ),
+            (
                 {S, SQRT_X, H},
                 2,
                 [
@@ -410,7 +466,7 @@ class TestGetCompilationDict:
                         ("-Y", "+X"): ("S", "H"),
                     },
                 ],
-            ],
+            ),
         ],
     )
     def test_get_compilation_dict_returns_correct_values_when_up_to_paulis_is_False(
@@ -430,9 +486,9 @@ class TestGetCompilationDict:
         )
 
     @pytest.mark.parametrize(
-        "native_gate_set, weight, possible_dicts",
+        ("native_gate_set", "weight", "possible_dicts"),
         [
-            [
+            (
                 {},
                 1,
                 [
@@ -440,14 +496,14 @@ class TestGetCompilationDict:
                         ("X", "Z"): (),
                     }
                 ],
-            ],
-            [{X}, 1, [{("X", "Z"): ()}]],
-            [
+            ),
+            ({X}, 1, [{("X", "Z"): ()}]),
+            (
                 {X, H},
                 1,
                 [{("X", "Z"): (), ("Z", "X"): ("H",)}],
-            ],
-            [
+            ),
+            (
                 {X, SQRT_X},
                 2,
                 [
@@ -456,10 +512,10 @@ class TestGetCompilationDict:
                         ("X", "Y"): ("SQRT_X",),
                     },
                 ],
-            ],
-            [{X}, 2, [{("X", "Z"): ()}]],
-            [{X, X}, 2, [{("X", "Z"): ()}]],
-            [
+            ),
+            ({X}, 2, [{("X", "Z"): ()}]),
+            ({X, X}, 2, [{("X", "Z"): ()}]),
+            (
                 {H, S},
                 2,
                 [
@@ -471,8 +527,8 @@ class TestGetCompilationDict:
                         ("Z", "Y"): ("H", "S"),
                     }
                 ],
-            ],
-            [
+            ),
+            (
                 {H, S, X},
                 2,
                 [
@@ -484,10 +540,10 @@ class TestGetCompilationDict:
                         ("X", "Z"): (),
                     },
                 ],
-            ],
-            [{X}, 3, [{("X", "Z"): ()}]],
-            [{X}, 4, [{("X", "Z"): ()}]],
-            [
+            ),
+            ({X}, 3, [{("X", "Z"): ()}]),
+            ({X}, 4, [{("X", "Z"): ()}]),
+            (
                 {S, S_DAG},
                 2,
                 [
@@ -500,8 +556,8 @@ class TestGetCompilationDict:
                         ("X", "Z"): (),
                     },
                 ],
-            ],
-            [
+            ),
+            (
                 {S, SQRT_X, H},
                 2,
                 [
@@ -578,7 +634,7 @@ class TestGetCompilationDict:
                         ("Y", "X"): ("S", "H"),
                     },
                 ],
-            ],
+            ),
         ],
     )
     def test_get_compilation_dict_returns_correct_values_when_up_to_paulis_is_True(
@@ -598,23 +654,23 @@ class TestGetCompilationDict:
         )
 
     @pytest.mark.parametrize(
-        "native_gate_set, possible_dicts",
+        ("native_gate_set", "possible_dicts"),
         [
-            [
+            (
                 {},
                 [
                     {
                         ("X", "Z"): (),
                     }
                 ],
-            ],
-            [{X}, [{("X", "Z"): ()}]],
-            [{X, X}, [{("X", "Z"): ()}]],
-            [
+            ),
+            ({X}, [{("X", "Z"): ()}]),
+            ({X, X}, [{("X", "Z"): ()}]),
+            (
                 {X, H},
                 [{("X", "Z"): (), ("Z", "X"): ("H",)}],
-            ],
-            [
+            ),
+            (
                 {X, SQRT_X},
                 [
                     {
@@ -622,9 +678,8 @@ class TestGetCompilationDict:
                         ("X", "Y"): ("SQRT_X",),
                     },
                 ],
-            ],
-            [{X, X}, [{("X", "Z"): ()}]],
-            [
+            ),
+            (
                 {H, S},
                 [
                     {
@@ -644,8 +699,8 @@ class TestGetCompilationDict:
                         ("X", "Y"): ("S", "H", "S"),
                     },
                 ],
-            ],
-            [
+            ),
+            (
                 {H, S, X},
                 [
                     {
@@ -665,8 +720,8 @@ class TestGetCompilationDict:
                         ("X", "Y"): ("S", "H", "S"),
                     },
                 ],
-            ],
-            [
+            ),
+            (
                 {S, S_DAG},
                 [
                     {
@@ -678,8 +733,8 @@ class TestGetCompilationDict:
                         ("X", "Z"): (),
                     },
                 ],
-            ],
-            [
+            ),
+            (
                 {S, SQRT_X, H},
                 [
                     {
@@ -755,7 +810,7 @@ class TestGetCompilationDict:
                         ("Y", "X"): ("S", "H"),
                     },
                 ],
-            ],
+            ),
         ],
     )
     def test_get_compilation_dict_returns_correct_values_when_up_to_paulis_is_True_and_max_weight_None(
@@ -806,23 +861,23 @@ class TestGetCompilationDict:
         assert comp_dict == equiv_dict
 
     @pytest.mark.parametrize(
-        "native_gate_set, possible_dicts",
+        ("native_gate_set", "possible_dicts"),
         [
-            [
+            (
                 # just these small examples because the possibilities blow up quickly
                 {H, X},
                 [
                     {("-X", "-Z"): [("X", "H", "X", "H")]},
                     {("-X", "-Z"): [("H", "X", "H", "X")]},
                 ],
-            ],
-            [
+            ),
+            (
                 {H, Z},
                 [
                     {("-X", "-Z"): [("Z", "H", "Z", "H")]},
                     {("-X", "-Z"): [("H", "Z", "H", "Z")]},
                 ],
-            ],
+            ),
         ],
     )
     def test_get_compilation_dict_equivalent_tableau_dict_contents_for_realistic_native_gates(
@@ -864,43 +919,43 @@ class TestGetCompilationDict:
         assert all(len(val) >= 1 for val in equiv_tab_dict.values())
 
     @pytest.mark.parametrize(
-        "native_gate_set, possible_dicts",
+        ("native_gate_set", "possible_dicts"),
         [
-            [
+            (
                 {H, X},
                 [
                     # these are empty because up to Pauli there is a unique expression
                     {},
                 ],
-            ],
-            [
+            ),
+            (
                 {H, Z},
                 [
                     {},
                 ],
-            ],
-            [
+            ),
+            (
                 {H, Z, X},
                 [{}],
-            ],
-            [
+            ),
+            (
                 {S, SQRT_X},
                 [
                     {("Z", "X"): [("S", "SQRT_X", "S")]},
                     {("Z", "X"): [("SQRT_X", "S", "SQRT_X")]},
                 ],
-            ],
-            [
+            ),
+            (
                 {S, H, X},
                 [{("X", "Y"): [("S", "H", "S")]}, {("X", "Y"): [("H", "S", "H")]}],
-            ],
-            [
+            ),
+            (
                 {S_DAG, H, X},
                 [
                     {("X", "Y"): [("H", "S_DAG", "H")]},
                     {("X", "Y"): [("S_DAG", "H", "S_DAG")]},
                 ],
-            ],
+            ),
         ],
     )
     def test_get_compilation_dict_equivalent_tableau_dict_contents_for_realistic_native_gates_up_to_paulis_True(
@@ -928,22 +983,22 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MZ, RZ])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict1, [I], ()],
-            [compilation_dict1, [Z], ()],
-            [compilation_dict1, [Z, Z, Z], ()],
-            [compilation_dict2, [X], ("X",)],
-            [compilation_dict3, [X, Z], ("X",)],
-            [compilation_dict4, [X, H], ("X", "H")],
-            [compilation_dict5, [H, X], ("H")],
-            [compilation_dict6, [X, H], ("X", "H")],
-            [compilation_dict7, [H, X], ("H",)],
-            [compilation_dict8, [H, X], ("SQRT_Y",)],
-            [compilation_dict7, [S, SQRT_X, S], ("H",)],
-            [compilation_dict9, [X, H, Z], ("SQRT_X", "S")],
-            [compilation_dict10, [H, X], ("H", "X")],
+            (compilation_dict0, [I], ()),
+            (compilation_dict1, [I], ()),
+            (compilation_dict1, [Z], ()),
+            (compilation_dict1, [Z, Z, Z], ()),
+            (compilation_dict2, [X], ("X",)),
+            (compilation_dict3, [X, Z], ("X",)),
+            (compilation_dict4, [X, H], ("X", "H")),
+            (compilation_dict5, [H, X], ("H")),
+            (compilation_dict6, [X, H], ("X", "H")),
+            (compilation_dict7, [H, X], ("H",)),
+            (compilation_dict8, [H, X], ("SQRT_Y",)),
+            (compilation_dict7, [S, SQRT_X, S], ("H",)),
+            (compilation_dict9, [X, H, Z], ("SQRT_X", "S")),
+            (compilation_dict10, [H, X], ("H", "X")),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_z_basis(
@@ -962,23 +1017,23 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MX, RX])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict1, [I], ()],
-            [compilation_dict1, [Z], ("Z",)],
-            [compilation_dict1, [Z, Z, Z], ("Z",)],
-            [compilation_dict1, [X], ()],
-            [compilation_dict16, [X, Z], ("X", "Z")],
-            [compilation_dict11, [X, Z], ("Z",)],
-            [compilation_dict12, [X, H], ("X", "H")],
-            [compilation_dict13, [X, H], ("H",)],
-            [compilation_dict13, [H, S], ("H",)],
-            [compilation_dict14, [X, H, X], ("H", "X")],
-            [compilation_dict13, [S, SQRT_X, S], ("H",)],
-            [compilation_dict12, [X, H, Z], ("X", "H", "Z")],
-            [compilation_dict13, [X, H, Z], ("H",)],
-            [compilation_dict10, [X, H], ("X", "H")],
+            (compilation_dict0, [I], ()),
+            (compilation_dict1, [I], ()),
+            (compilation_dict1, [Z], ("Z",)),
+            (compilation_dict1, [Z, Z, Z], ("Z",)),
+            (compilation_dict1, [X], ()),
+            (compilation_dict16, [X, Z], ("X", "Z")),
+            (compilation_dict11, [X, Z], ("Z",)),
+            (compilation_dict12, [X, H], ("X", "H")),
+            (compilation_dict13, [X, H], ("H",)),
+            (compilation_dict13, [H, S], ("H",)),
+            (compilation_dict14, [X, H, X], ("H", "X")),
+            (compilation_dict13, [S, SQRT_X, S], ("H",)),
+            (compilation_dict12, [X, H, Z], ("X", "H", "Z")),
+            (compilation_dict13, [X, H, Z], ("H",)),
+            (compilation_dict10, [X, H], ("X", "H")),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_x_basis(
@@ -997,22 +1052,22 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MY, RY])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict1, [I], ()],
-            [compilation_dict1, [Z], ("Z",)],
-            [compilation_dict1, [Z, Z, Z], ("Z",)],
-            [compilation_dict1, [X], ("X",)],
-            [compilation_dict16, [X, Z], ()],
-            [compilation_dict12, [H, X], ()],
-            [compilation_dict13, [H, X], ()],
-            [compilation_dict13, [S, SQRT_X, S], ("H",)],
-            [compilation_dict13, [X, H, Z], ("H",)],
-            [compilation_dict10, [H, X], ()],
-            [compilation_dict15, [S], ("S",)],
-            [compilation_dict15, [S, S_DAG], ()],
-            [compilation_dict_full, [S, H, S], ("S", "H")],
+            (compilation_dict0, [I], ()),
+            (compilation_dict1, [I], ()),
+            (compilation_dict1, [Z], ("Z",)),
+            (compilation_dict1, [Z, Z, Z], ("Z",)),
+            (compilation_dict1, [X], ("X",)),
+            (compilation_dict16, [X, Z], ()),
+            (compilation_dict12, [H, X], ()),
+            (compilation_dict13, [H, X], ()),
+            (compilation_dict13, [S, SQRT_X, S], ("H",)),
+            (compilation_dict13, [X, H, Z], ("H",)),
+            (compilation_dict10, [H, X], ()),
+            (compilation_dict15, [S], ("S",)),
+            (compilation_dict15, [S, S_DAG], ()),
+            (compilation_dict_full, [S, H, S], ("S", "H")),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_y_basis(
@@ -1029,23 +1084,23 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MX, RX])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [Z], ()],
-            [compilation_dict0_nosign, [Z, Z, Z], ()],
-            [compilation_dict0_nosign, [X], ()],
-            [compilation_dict0_nosign, [SQRT_X], ()],
-            [compilation_dict1_nosign, [H, X], ("H", "X")],
-            [compilation_dict1_nosign, [SQRT_X], ()],
-            [compilation_dict2_nosign, [H, X], ("H",)],
-            [compilation_dict2_nosign, [S, SQRT_X, S_DAG], ("H",)],
-            [compilation_dict2_nosign, [S, SQRT_X], ("H",)],
-            [compilation_dict2_nosign, [SQRT_X], ()],
-            [compilation_dict3_nosign, [X, H, Z], ("X", "H", "Z")],
-            [compilation_dict3_nosign, [SQRT_X, H, S, Z], ("S", "SQRT_X", "S")],
-            [compilation_dict3_nosign, [SQRT_X], ()],
-            [compilation_dict2_nosign, [H, Z, H, X, H], ("H",)],
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [Z], ()),
+            (compilation_dict0_nosign, [Z, Z, Z], ()),
+            (compilation_dict0_nosign, [X], ()),
+            (compilation_dict0_nosign, [SQRT_X], ()),
+            (compilation_dict1_nosign, [H, X], ("H", "X")),
+            (compilation_dict1_nosign, [SQRT_X], ()),
+            (compilation_dict2_nosign, [H, X], ("H",)),
+            (compilation_dict2_nosign, [S, SQRT_X, S_DAG], ("H",)),
+            (compilation_dict2_nosign, [S, SQRT_X], ("H",)),
+            (compilation_dict2_nosign, [SQRT_X], ()),
+            (compilation_dict3_nosign, [X, H, Z], ("X", "H", "Z")),
+            (compilation_dict3_nosign, [SQRT_X, H, S, Z], ("S", "SQRT_X", "S")),
+            (compilation_dict3_nosign, [SQRT_X], ()),
+            (compilation_dict2_nosign, [H, Z, H, X, H], ("H",)),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_x_basis_with_up_to_paulis_True(
@@ -1064,28 +1119,27 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MZ, RZ])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [S], ()],
-            [compilation_dict1_nosign, [S], ()],
-            [compilation_dict2_nosign, [S], ()],
-            [compilation_dict2_nosign, [S, SQRT_Y], ("H",)],
-            [compilation_dict3_nosign, [S], ()],
-            [compilation_dict4_nosign, [S], ()],
-            [compilation_dict5_nosign, [X, Z], ()],
-            [compilation_dict5_nosign, [S], ()],
-            [compilation_dict6_nosign, [H, X], ("H", "X")],
-            [compilation_dict6_nosign, [S], ()],
-            [compilation_dict7_nosign, [H, X], ("H", "X")],
-            [compilation_dict7_nosign, [H, SQRT_X, SQRT_X], ("H", "SQRT_X", "SQRT_X")],
-            [compilation_dict7_nosign, [S], ()],
-            [compilation_dict8_nosign, [S, SQRT_X], ("S", "SQRT_X")],
-            [compilation_dict8_nosign, [S, SQRT_X, SQRT_Y], ("S", "SQRT_X")],
-            [compilation_dict8_nosign, [S], ()],
-            [compilation_dict2_nosign, [S, SQRT_X, S], ("H",)],
-            [compilation_dict2_nosign, [X, H, Z], ("H",)],
-            [compilation_dict4_nosign, [S], ()],
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [S], ()),
+            (compilation_dict1_nosign, [S], ()),
+            (compilation_dict2_nosign, [S], ()),
+            (compilation_dict2_nosign, [S, SQRT_Y], ("H",)),
+            (compilation_dict3_nosign, [S], ()),
+            (compilation_dict4_nosign, [S], ()),
+            (compilation_dict5_nosign, [X, Z], ()),
+            (compilation_dict5_nosign, [S], ()),
+            (compilation_dict6_nosign, [H, X], ("H", "X")),
+            (compilation_dict6_nosign, [S], ()),
+            (compilation_dict7_nosign, [H, X], ("H", "X")),
+            (compilation_dict7_nosign, [H, SQRT_X, SQRT_X], ("H", "SQRT_X", "SQRT_X")),
+            (compilation_dict7_nosign, [S], ()),
+            (compilation_dict8_nosign, [S, SQRT_X], ("S", "SQRT_X")),
+            (compilation_dict8_nosign, [S, SQRT_X, SQRT_Y], ("S", "SQRT_X")),
+            (compilation_dict8_nosign, [S], ()),
+            (compilation_dict2_nosign, [S, SQRT_X, S], ("H",)),
+            (compilation_dict2_nosign, [X, H, Z], ("H",)),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_z_basis_with_up_to_paulis_True(
@@ -1107,22 +1161,22 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MY, RY])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [X], ()],
-            [compilation_dict0_nosign, [Z], ()],
-            [compilation_dict0_nosign, [SQRT_Y], ()],
-            [compilation_dict0_nosign, [S, S_DAG], ()],
-            [compilation_dict1_nosign, [SQRT_Y], ()],
-            [compilation_dict2_nosign, [SQRT_Y], ()],
-            [compilation_dict3_nosign, [SQRT_Y], ()],
-            [compilation_dict4_nosign, [SQRT_Y], ()],
-            [compilation_dict4_nosign, [S, SQRT_X], ("S",)],
-            [compilation_dict5_nosign, [SQRT_Y], ()],
-            [compilation_dict6_nosign, [SQRT_Y], ()],
-            [compilation_dict7_nosign, [SQRT_Y], ()],
-            [compilation_dict8_nosign, [SQRT_Y], ()],
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [X], ()),
+            (compilation_dict0_nosign, [Z], ()),
+            (compilation_dict0_nosign, [SQRT_Y], ()),
+            (compilation_dict0_nosign, [S, S_DAG], ()),
+            (compilation_dict1_nosign, [SQRT_Y], ()),
+            (compilation_dict2_nosign, [SQRT_Y], ()),
+            (compilation_dict3_nosign, [SQRT_Y], ()),
+            (compilation_dict4_nosign, [SQRT_Y], ()),
+            (compilation_dict4_nosign, [S, SQRT_X], ("S",)),
+            (compilation_dict5_nosign, [SQRT_Y], ()),
+            (compilation_dict6_nosign, [SQRT_Y], ()),
+            (compilation_dict7_nosign, [SQRT_Y], ()),
+            (compilation_dict8_nosign, [SQRT_Y], ()),
         ],
     )
     def test_get_compilation_with_projectors_returns_correct_output_y_basis_with_up_to_paulis_True(
@@ -1144,15 +1198,15 @@ class TestGetCompilationWithProjectors:
 
     @pytest.mark.parametrize("projector_before_unitaries", [MZ, RZ])
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, up_to_paulis",
+        ("compilation_dict", "unitary_block", "up_to_paulis"),
         [
-            [{}, [I], False],
-            [compilation_dict0, [X], False],
-            [compilation_dict0, [X, Z], False],
-            [compilation_dict0, [SQRT_X, SQRT_X], False],
-            [{}, [I], True],
-            [compilation_dict0, [H], True],
-            [compilation_dict0, [H, X], True],
+            ({}, [I], False),
+            (compilation_dict0, [X], False),
+            (compilation_dict0, [X, Z], False),
+            (compilation_dict0, [SQRT_X, SQRT_X], False),
+            ({}, [I], True),
+            (compilation_dict0, [H], True),
+            (compilation_dict0, [H, X], True),
         ],
     )
     def test_get_compilation_with_projectors_throws_KeyError_if_unitary_block_tableau_not_in_compilation_dict(
@@ -1185,33 +1239,33 @@ class TestGetCompilationWithProjectors:
             _get_compilation_with_projectors_before_unitaries({}, [], non_projector)
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict2, [X], ("X",)],
-            [compilation_dict3, [X], ("X",)],
-            [compilation_dict1, [Z], ()],
-            [compilation_dict3, [Z], ()],
-            [compilation_dict1, [S], ()],
-            [compilation_dict3, [S], ()],
-            [compilation_dict3, [S, S_DAG, S], ()],
-            [compilation_dict3, [S_DAG, S, S_DAG], ()],
-            [compilation_dict9, [SQRT_X, S], ("SQRT_X", "S")],
-            [compilation_dict9, [S, SQRT_X, S, S_DAG], ("S", "SQRT_X")],
-            [compilation_dict2, [SQRT_X, SQRT_X], ("SQRT_X", "SQRT_X")],
-            [compilation_dict4, [X], ("X",)],
-            [compilation_dict4, [SQRT_X, SQRT_X], ("X",)],
-            [compilation_dict14, [H, X], ("H", "X")],
-            [compilation_dict14, [H, SQRT_X, SQRT_X], ("H", "X")],
-            [compilation_dict14, [H], ("H",)],
-            [compilation_dict19, [S_DAG, X, H, Z, S], ("SQRT_Y_DAG", "SQRT_X")],
-            [
+            (compilation_dict0, [I], ()),
+            (compilation_dict2, [X], ("X",)),
+            (compilation_dict3, [X], ("X",)),
+            (compilation_dict1, [Z], ()),
+            (compilation_dict3, [Z], ()),
+            (compilation_dict1, [S], ()),
+            (compilation_dict3, [S], ()),
+            (compilation_dict3, [S, S_DAG, S], ()),
+            (compilation_dict3, [S_DAG, S, S_DAG], ()),
+            (compilation_dict9, [SQRT_X, S], ("SQRT_X", "S")),
+            (compilation_dict9, [S, SQRT_X, S, S_DAG], ("S", "SQRT_X")),
+            (compilation_dict2, [SQRT_X, SQRT_X], ("SQRT_X", "SQRT_X")),
+            (compilation_dict4, [X], ("X",)),
+            (compilation_dict4, [SQRT_X, SQRT_X], ("X",)),
+            (compilation_dict14, [H, X], ("H", "X")),
+            (compilation_dict14, [H, SQRT_X, SQRT_X], ("H", "X")),
+            (compilation_dict14, [H], ("H",)),
+            (compilation_dict19, [S_DAG, X, H, Z, S], ("SQRT_Y_DAG", "SQRT_X")),
+            (
                 compilation_dict20,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 ("SQRT_Y", "S"),
-            ],
-            [compilation_dict13, [Z, H, X, H, S, SQRT_X], ("H",)],
-            [compilation_dict_full, [S, H, S], ("S", "H")],
+            ),
+            (compilation_dict13, [Z, H, X, H, S, SQRT_X], ("H",)),
+            (compilation_dict_full, [S, H, S], ("S", "H")),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_z_basis(
@@ -1225,32 +1279,32 @@ class TestGetCompilationWithProjectors:
         )
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict2, [X], ()],
-            [compilation_dict3, [X], ()],
-            [compilation_dict1, [Z], ("Z",)],
-            [compilation_dict15, [S], ("S",)],
-            [compilation_dict0, [SQRT_X, SQRT_X], ()],
-            [compilation_dict1, [SQRT_X, SQRT_X], ()],
-            [compilation_dict2, [SQRT_X, SQRT_X], ()],
-            [compilation_dict3, [SQRT_X, SQRT_X], ()],
-            [compilation_dict1, [S, S], ("Z",)],
-            [compilation_dict0, [X, SQRT_X], ()],
-            [compilation_dict0, [S_DAG, S, S, S_DAG], ()],
-            [compilation_dict17, [H], ("H",)],
-            [compilation_dict17, [H, X], ("H",)],
-            [compilation_dict17, [H, Z], ("H", "Z")],
-            [compilation_dict17, [H, H], ()],
-            [compilation_dict16, [X, Z], ("X", "Z")],
-            [compilation_dict1, [S_DAG, X, H, Z, S], ("Z",)],
-            [
+            (compilation_dict0, [I], ()),
+            (compilation_dict2, [X], ()),
+            (compilation_dict3, [X], ()),
+            (compilation_dict1, [Z], ("Z",)),
+            (compilation_dict15, [S], ("S",)),
+            (compilation_dict0, [SQRT_X, SQRT_X], ()),
+            (compilation_dict1, [SQRT_X, SQRT_X], ()),
+            (compilation_dict2, [SQRT_X, SQRT_X], ()),
+            (compilation_dict3, [SQRT_X, SQRT_X], ()),
+            (compilation_dict1, [S, S], ("Z",)),
+            (compilation_dict0, [X, SQRT_X], ()),
+            (compilation_dict0, [S_DAG, S, S, S_DAG], ()),
+            (compilation_dict17, [H], ("H",)),
+            (compilation_dict17, [H, X], ("H",)),
+            (compilation_dict17, [H, Z], ("H", "Z")),
+            (compilation_dict17, [H, H], ()),
+            (compilation_dict16, [X, Z], ("X", "Z")),
+            (compilation_dict1, [S_DAG, X, H, Z, S], ("Z",)),
+            (
                 compilation_dict18,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 ("SQRT_Y",),
-            ],
-            [compilation_dict7, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")],
+            ),
+            (compilation_dict7, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_x_basis(
@@ -1264,27 +1318,27 @@ class TestGetCompilationWithProjectors:
         )
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0, [I], ()],
-            [compilation_dict2, [Y], ()],
-            [compilation_dict3, [Y], ()],
-            [compilation_dict1, [Z], ("Z",)],
-            [compilation_dict3, [X], ("X",)],
-            [compilation_dict15, [S], ("S",)],
-            [compilation_dict13, [H], ("H",)],
-            [compilation_dict0, [X, Z], ()],
-            [compilation_dict9, [SQRT_X], ("SQRT_X",)],
-            [compilation_dict9, [S, SQRT_X], ("S", "SQRT_X")],
-            [compilation_dict8, [SQRT_Y], ()],
-            [compilation_dict18, [X, SQRT_Y], ("X", "SQRT_Y")],
-            [compilation_dict20, [S_DAG, X, H, Z, S], ("SQRT_Y", "S")],
-            [
+            (compilation_dict0, [I], ()),
+            (compilation_dict2, [Y], ()),
+            (compilation_dict3, [Y], ()),
+            (compilation_dict1, [Z], ("Z",)),
+            (compilation_dict3, [X], ("X",)),
+            (compilation_dict15, [S], ("S",)),
+            (compilation_dict13, [H], ("H",)),
+            (compilation_dict0, [X, Z], ()),
+            (compilation_dict9, [SQRT_X], ("SQRT_X",)),
+            (compilation_dict9, [S, SQRT_X], ("S", "SQRT_X")),
+            (compilation_dict8, [SQRT_Y], ()),
+            (compilation_dict18, [X, SQRT_Y], ("X", "SQRT_Y")),
+            (compilation_dict20, [S_DAG, X, H, Z, S], ("SQRT_Y", "S")),
+            (
                 compilation_dict0,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 (),
-            ],
-            [compilation_dict9, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")],
+            ),
+            (compilation_dict9, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_y_basis(
@@ -1298,26 +1352,26 @@ class TestGetCompilationWithProjectors:
         )
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [X], ()],
-            [compilation_dict0_nosign, [Z], ()],
-            [compilation_dict2_nosign, [H], ("H",)],
-            [compilation_dict2_nosign, [H, H], ()],
-            [compilation_dict0_nosign, [S], ()],
-            [compilation_dict0_nosign, [S_DAG], ()],
-            [compilation_dict4_nosign, [S], ()],
-            [compilation_dict4_nosign, [S_DAG], ()],
-            [compilation_dict9_nosign, [H, X], ("H", "X")],
-            [compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ("H", "Z")],
-            [compilation_dict10_nosign, [S_DAG, X, H, Z, S], ("SQRT_Y_DAG", "SQRT_X")],
-            [
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [X], ()),
+            (compilation_dict0_nosign, [Z], ()),
+            (compilation_dict2_nosign, [H], ("H",)),
+            (compilation_dict2_nosign, [H, H], ()),
+            (compilation_dict0_nosign, [S], ()),
+            (compilation_dict0_nosign, [S_DAG], ()),
+            (compilation_dict4_nosign, [S], ()),
+            (compilation_dict4_nosign, [S_DAG], ()),
+            (compilation_dict9_nosign, [H, X], ("H", "X")),
+            (compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ("H", "Z")),
+            (compilation_dict10_nosign, [S_DAG, X, H, Z, S], ("SQRT_Y_DAG", "SQRT_X")),
+            (
                 compilation_dict2_nosign,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 ("H",),
-            ],
-            [compilation_dict2_nosign, [Z, H, X, H, S, SQRT_X], ("H",)],
+            ),
+            (compilation_dict2_nosign, [Z, H, X, H, S, SQRT_X], ("H",)),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_z_basis_with_up_to_paulis_True(
@@ -1331,26 +1385,26 @@ class TestGetCompilationWithProjectors:
         )
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [X], ()],
-            [compilation_dict0_nosign, [Z], ()],
-            [compilation_dict2_nosign, [H], ("H",)],
-            [compilation_dict2_nosign, [H, H], ()],
-            [compilation_dict4_nosign, [S], ("S",)],
-            [compilation_dict4_nosign, [S_DAG], ("S_DAG",)],
-            [compilation_dict9_nosign, [H, X], ("H", "X")],
-            [compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ("H", "Z")],
-            [compilation_dict3_nosign, [S, SQRT_X, S], ("S", "SQRT_X", "S")],
-            [compilation_dict4_nosign, [X, S_DAG], ("S",)],
-            [compilation_dict0_nosign, [S_DAG, X, H, Z, S], ()],
-            [
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [X], ()),
+            (compilation_dict0_nosign, [Z], ()),
+            (compilation_dict2_nosign, [H], ("H",)),
+            (compilation_dict2_nosign, [H, H], ()),
+            (compilation_dict4_nosign, [S], ("S",)),
+            (compilation_dict4_nosign, [S_DAG], ("S_DAG",)),
+            (compilation_dict9_nosign, [H, X], ("H", "X")),
+            (compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ("H", "Z")),
+            (compilation_dict3_nosign, [S, SQRT_X, S], ("S", "SQRT_X", "S")),
+            (compilation_dict4_nosign, [X, S_DAG], ("S",)),
+            (compilation_dict0_nosign, [S_DAG, X, H, Z, S], ()),
+            (
                 compilation_dict2_nosign,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 ("H",),
-            ],
-            [compilation_dict4_nosign, [Z, H, X, H, S, SQRT_X], ("S",)],
+            ),
+            (compilation_dict4_nosign, [Z, H, X, H, S, SQRT_X], ("S",)),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_x_basis_with_up_to_paulis_True(
@@ -1364,27 +1418,27 @@ class TestGetCompilationWithProjectors:
         )
 
     @pytest.mark.parametrize(
-        "compilation_dict, unitary_block, expected_output",
+        ("compilation_dict", "unitary_block", "expected_output"),
         [
-            [compilation_dict0_nosign, [I], ()],
-            [compilation_dict0_nosign, [X], ()],
-            [compilation_dict0_nosign, [Z], ()],
-            [compilation_dict0_nosign, [Y], ()],
-            [compilation_dict2_nosign, [H], ()],
-            [compilation_dict2_nosign, [H, H], ()],
-            [compilation_dict4_nosign, [S], ("S",)],
-            [compilation_dict4_nosign, [S_DAG], ("S_DAG",)],
-            [compilation_dict9_nosign, [H, X], ()],
-            [compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ()],
-            [compilation_dict3_nosign, [S, SQRT_X, S], ()],
-            [compilation_dict4_nosign, [X, S_DAG], ("S",)],
-            [compilation_dict8_nosign, [S_DAG, X, H, Z, S], ("S", "SQRT_X")],
-            [
+            (compilation_dict0_nosign, [I], ()),
+            (compilation_dict0_nosign, [X], ()),
+            (compilation_dict0_nosign, [Z], ()),
+            (compilation_dict0_nosign, [Y], ()),
+            (compilation_dict2_nosign, [H], ()),
+            (compilation_dict2_nosign, [H, H], ()),
+            (compilation_dict4_nosign, [S], ("S",)),
+            (compilation_dict4_nosign, [S_DAG], ("S_DAG",)),
+            (compilation_dict9_nosign, [H, X], ()),
+            (compilation_dict9_nosign, [H, SQRT_X, SQRT_X], ()),
+            (compilation_dict3_nosign, [S, SQRT_X, S], ()),
+            (compilation_dict4_nosign, [X, S_DAG], ("S",)),
+            (compilation_dict8_nosign, [S_DAG, X, H, Z, S], ("S", "SQRT_X")),
+            (
                 compilation_dict2_nosign,
                 [SQRT_Y_DAG, S_DAG, SQRT_X, S, SQRT_Y],
                 (),
-            ],
-            [compilation_dict8_nosign, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")],
+            ),
+            (compilation_dict8_nosign, [Z, H, X, H, S, SQRT_X], ("S", "SQRT_X")),
         ],
     )
     def test_get_compilation_with_measurement_after_unitaries_gives_correct_output_y_basis_with_up_to_paulis_True(
@@ -1408,47 +1462,47 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict21, [[Z], [], [], []], ([], [Z], [], [])],
-            [CX, compilation_dict21, [[], [], [X], []], ([], [], [], [X])],
-            [CX, compilation_dict21, [[S], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict21, [[Z], [], [], []], ([], [Z], [], [])],
-            [CZ, compilation_dict21, [[], [], [Z], []], ([], [], [], [Z])],
-            [CZ, compilation_dict21, [[Z], [], [Z], []], ([], [Z], [], [Z])],
-            [CZ, compilation_dict21, [[S], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict21, [[], [], [S], []], ([], [], [], [S])],
-            [ISWAP, compilation_dict21, [[Z], [], [], []], ([], [], [], [Z])],
-            [ISWAP, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [])],
-            [ISWAP, compilation_dict21, [[Z], [], [Z], []], ([], [Z], [], [Z])],
-            [ISWAP, compilation_dict21, [[S], [], [], []], ([], [], [], [S])],
-            [ISWAP, compilation_dict21, [[], [], [S], []], ([], [S], [], [])],
-            [ISWAP, compilation_dict21, [[S_DAG], [], [], []], ([], [], [], [S_DAG])],
-            [ISWAP, compilation_dict21, [[], [], [S_DAG], []], ([], [S_DAG], [], [])],
-            [SWAP, compilation_dict21, [[Z], [], [], []], ([], [], [], [Z])],
-            [SWAP, compilation_dict21, [[X], [], [], []], ([], [], [], [X])],
-            [SWAP, compilation_dict21, [[Y], [], [], []], ([], [], [], [Y])],
-            [SWAP, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [])],
-            [SWAP, compilation_dict21, [[], [], [X], []], ([], [X], [], [])],
-            [SWAP, compilation_dict21, [[], [], [Y], []], ([], [Y], [], [])],
-            [SWAP, compilation_dict21, [[S], [], [], []], ([], [], [], [S])],
-            [SWAP, compilation_dict21, [[], [], [S], []], ([], [S], [], [])],
-            [SWAP, compilation_dict21, [[SQRT_X], [], [], []], ([], [], [], [SQRT_X])],
-            [SWAP, compilation_dict21, [[], [], [SQRT_X], []], ([], [SQRT_X], [], [])],
-            [SQRT_XX, compilation_dict21, [[X], [], [], []], ([], [X], [], [])],
-            [SQRT_XX, compilation_dict21, [[], [], [X], []], ([], [], [], [X])],
-            [
+            (CX, compilation_dict21, [[Z], [], [], []], ([], [Z], [], [])),
+            (CX, compilation_dict21, [[], [], [X], []], ([], [], [], [X])),
+            (CX, compilation_dict21, [[S], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict21, [[Z], [], [], []], ([], [Z], [], [])),
+            (CZ, compilation_dict21, [[], [], [Z], []], ([], [], [], [Z])),
+            (CZ, compilation_dict21, [[Z], [], [Z], []], ([], [Z], [], [Z])),
+            (CZ, compilation_dict21, [[S], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict21, [[], [], [S], []], ([], [], [], [S])),
+            (ISWAP, compilation_dict21, [[Z], [], [], []], ([], [], [], [Z])),
+            (ISWAP, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [])),
+            (ISWAP, compilation_dict21, [[Z], [], [Z], []], ([], [Z], [], [Z])),
+            (ISWAP, compilation_dict21, [[S], [], [], []], ([], [], [], [S])),
+            (ISWAP, compilation_dict21, [[], [], [S], []], ([], [S], [], [])),
+            (ISWAP, compilation_dict21, [[S_DAG], [], [], []], ([], [], [], [S_DAG])),
+            (ISWAP, compilation_dict21, [[], [], [S_DAG], []], ([], [S_DAG], [], [])),
+            (SWAP, compilation_dict21, [[Z], [], [], []], ([], [], [], [Z])),
+            (SWAP, compilation_dict21, [[X], [], [], []], ([], [], [], [X])),
+            (SWAP, compilation_dict21, [[Y], [], [], []], ([], [], [], [Y])),
+            (SWAP, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [])),
+            (SWAP, compilation_dict21, [[], [], [X], []], ([], [X], [], [])),
+            (SWAP, compilation_dict21, [[], [], [Y], []], ([], [Y], [], [])),
+            (SWAP, compilation_dict21, [[S], [], [], []], ([], [], [], [S])),
+            (SWAP, compilation_dict21, [[], [], [S], []], ([], [S], [], [])),
+            (SWAP, compilation_dict21, [[SQRT_X], [], [], []], ([], [], [], [SQRT_X])),
+            (SWAP, compilation_dict21, [[], [], [SQRT_X], []], ([], [SQRT_X], [], [])),
+            (SQRT_XX, compilation_dict21, [[X], [], [], []], ([], [X], [], [])),
+            (SQRT_XX, compilation_dict21, [[], [], [X], []], ([], [], [], [X])),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 [[SQRT_X], [], [], []],
                 ([], [SQRT_X], [], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 [[], [], [SQRT_X], []],
                 ([], [], [], [SQRT_X]),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_correct_for_pulling_through_case(
@@ -1462,80 +1516,77 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict22, [[S, S], [], [], []], ([], [Z], [], [])],
-            [CX, compilation_dict21, [[S, S, S], [], [], []], ([], [S_DAG], [], [])],
-            [CX, compilation_dict21, [[S, S, S, S], [], [], []], ([], [], [], [])],
-            [
+            (CX, compilation_dict22, [[S, S], [], [], []], ([], [Z], [], [])),
+            (CX, compilation_dict21, [[S, S, S], [], [], []], ([], [S_DAG], [], [])),
+            (CX, compilation_dict21, [[S, S, S, S], [], [], []], ([], [], [], [])),
+            (
                 CX,
                 compilation_dict21,
                 [[S, S_DAG, S_DAG, S], [], [], []],
                 ([], [], [], []),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[S_DAG, S, S, S_DAG], [], [], []],
                 ([], [], [], []),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[S, SQRT_X, S], [], [], []],
                 ([S, SQRT_X], [S], [], []),
-            ],
-            [CX, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])],
-            [CX, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [Z], [], [])],
-            [CZ, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])],
-            [CZ, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [Z], [], [])],
-            [CX, compilation_dict22, [[S, S], [], [], []], ([], [Z], [], [])],
-            [CZ, compilation_dict22, [[S, S], [], [], []], ([], [Z], [], [])],
-            [CX, compilation_dict21, [[S, S, S], [], [], []], ([], [S_DAG], [], [])],
-            [CZ, compilation_dict21, [[S, S, S], [], [], []], ([], [S_DAG], [], [])],
-            [SWAP, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [], [], [Z])],
-            [SWAP, compilation_dict22, [[], [], [Z, Z], []], ([], [], [], [])],
-            [SWAP, compilation_dict22, [[], [], [Z, Z, Z], []], ([], [Z], [], [])],
-            [SWAP, compilation_dict21, [[X, Z], [], [], []], ([], [], [], [Y])],
-            [SWAP, compilation_dict21, [[Z, X], [], [], []], ([], [], [], [Y])],
-            [SWAP, compilation_dict21, [[], [], [X, Z], []], ([], [Y], [], [])],
-            [SWAP, compilation_dict21, [[], [], [Z, X], []], ([], [Y], [], [])],
-            [SWAP, compilation_dict22, [[S, S], [], [], []], ([], [], [], [Z])],
-            [SWAP, compilation_dict22, [[S, S], [], [], []], ([], [], [], [Z])],
-            [ISWAP, compilation_dict21, [[Z, Z], [], [], []], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[Z, Z, Z], [], [], []], ([], [], [], [Z])],
-            [ISWAP, compilation_dict21, [[], [], [Z, Z], []], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[], [], [Z, Z, Z], []], ([], [Z], [], [])],
-            [ISWAP, compilation_dict21, [[Z, Z], [], [Z, Z], []], ([], [], [], [])],
-            [
+            ),
+            (CX, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])),
+            (CX, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [Z], [], [])),
+            (CZ, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])),
+            (CZ, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [Z], [], [])),
+            (CZ, compilation_dict22, [[S, S], [], [], []], ([], [Z], [], [])),
+            (CZ, compilation_dict21, [[S, S, S], [], [], []], ([], [S_DAG], [], [])),
+            (SWAP, compilation_dict22, [[Z, Z], [], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict22, [[Z, Z, Z], [], [], []], ([], [], [], [Z])),
+            (SWAP, compilation_dict22, [[], [], [Z, Z], []], ([], [], [], [])),
+            (SWAP, compilation_dict22, [[], [], [Z, Z, Z], []], ([], [Z], [], [])),
+            (SWAP, compilation_dict21, [[X, Z], [], [], []], ([], [], [], [Y])),
+            (SWAP, compilation_dict21, [[Z, X], [], [], []], ([], [], [], [Y])),
+            (SWAP, compilation_dict21, [[], [], [X, Z], []], ([], [Y], [], [])),
+            (SWAP, compilation_dict21, [[], [], [Z, X], []], ([], [Y], [], [])),
+            (SWAP, compilation_dict22, [[S, S], [], [], []], ([], [], [], [Z])),
+            (ISWAP, compilation_dict21, [[Z, Z], [], [], []], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[Z, Z, Z], [], [], []], ([], [], [], [Z])),
+            (ISWAP, compilation_dict21, [[], [], [Z, Z], []], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[], [], [Z, Z, Z], []], ([], [Z], [], [])),
+            (ISWAP, compilation_dict21, [[Z, Z], [], [Z, Z], []], ([], [], [], [])),
+            (
                 ISWAP,
                 compilation_dict21,
                 [[Z, Z, Z], [], [Z, Z, Z], []],
                 ([], [Z], [], [Z]),
-            ],
-            [ISWAP, compilation_dict21, [[S, S], [], [], []], ([], [], [], [Z])],
-            [ISWAP, compilation_dict21, [[], [], [S, S], []], ([], [Z], [], [])],
-            [ISWAP, compilation_dict21, [[S, S, S], [], [], []], ([], [], [], [S_DAG])],
-            [ISWAP, compilation_dict21, [[], [], [S, S, S], []], ([], [S_DAG], [], [])],
-            [ISWAP, compilation_dict21, [[S_DAG, S], [], [], []], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[], [], [S_DAG, S], []], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[S, S_DAG], [], [], []], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[], [], [S, S_DAG], []], ([], [], [], [])],
-            [SQRT_XX, compilation_dict21, [[X, X], [], [], []], ([], [], [], [])],
-            [SQRT_XX, compilation_dict21, [[], [], [X, X], []], ([], [], [], [])],
-            [
+            ),
+            (ISWAP, compilation_dict21, [[S, S], [], [], []], ([], [], [], [Z])),
+            (ISWAP, compilation_dict21, [[], [], [S, S], []], ([], [Z], [], [])),
+            (ISWAP, compilation_dict21, [[S, S, S], [], [], []], ([], [], [], [S_DAG])),
+            (ISWAP, compilation_dict21, [[], [], [S, S, S], []], ([], [S_DAG], [], [])),
+            (ISWAP, compilation_dict21, [[S_DAG, S], [], [], []], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[], [], [S_DAG, S], []], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[S, S_DAG], [], [], []], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[], [], [S, S_DAG], []], ([], [], [], [])),
+            (SQRT_XX, compilation_dict21, [[X, X], [], [], []], ([], [], [], [])),
+            (SQRT_XX, compilation_dict21, [[], [], [X, X], []], ([], [], [], [])),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 [[SQRT_X, SQRT_X], [], [], []],
                 ([], [X], [], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 [[], [], [SQRT_X, SQRT_X], []],
                 ([], [], [], [X]),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_correct_for_multiple_unitaries_on_left_to_pull_through(
@@ -1549,22 +1600,22 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict21, [[X], [], [], []], ([], [X], [], [X])],
-            [CX, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [Z])],
-            [CX, compilation_dict21, [[Y], [], [], []], ([], [Y], [], [X])],
-            [CX, compilation_dict21, [[], [], [Y], []], ([], [Z], [], [Y])],
-            [CZ, compilation_dict21, [[X], [], [], []], ([], [X], [], [Z])],
-            [CZ, compilation_dict21, [[], [], [X], []], ([], [Z], [], [X])],
-            [CZ, compilation_dict21, [[Y], [], [], []], ([], [Y], [], [Z])],
-            [CZ, compilation_dict21, [[], [], [Y], []], ([], [Z], [], [Y])],
-            [ISWAP, compilation_dict21, [[X], [], [], []], ([], [Z], [], [Y])],
-            [ISWAP, compilation_dict21, [[], [], [X], []], ([], [Y], [], [Z])],
-            [ISWAP, compilation_dict21, [[Y], [], [], []], ([], [Z], [], [X])],
-            [ISWAP, compilation_dict21, [[], [], [Y], []], ([], [X], [], [Z])],
-            [SQRT_XX, compilation_dict21, [[Z], [], [], []], ([], [Y], [], [X])],
-            [SQRT_XX, compilation_dict21, [[], [], [Z], []], ([], [X], [], [Y])],
+            (CX, compilation_dict21, [[X], [], [], []], ([], [X], [], [X])),
+            (CX, compilation_dict21, [[], [], [Z], []], ([], [Z], [], [Z])),
+            (CX, compilation_dict21, [[Y], [], [], []], ([], [Y], [], [X])),
+            (CX, compilation_dict21, [[], [], [Y], []], ([], [Z], [], [Y])),
+            (CZ, compilation_dict21, [[X], [], [], []], ([], [X], [], [Z])),
+            (CZ, compilation_dict21, [[], [], [X], []], ([], [Z], [], [X])),
+            (CZ, compilation_dict21, [[Y], [], [], []], ([], [Y], [], [Z])),
+            (CZ, compilation_dict21, [[], [], [Y], []], ([], [Z], [], [Y])),
+            (ISWAP, compilation_dict21, [[X], [], [], []], ([], [Z], [], [Y])),
+            (ISWAP, compilation_dict21, [[], [], [X], []], ([], [Y], [], [Z])),
+            (ISWAP, compilation_dict21, [[Y], [], [], []], ([], [Z], [], [X])),
+            (ISWAP, compilation_dict21, [[], [], [Y], []], ([], [X], [], [Z])),
+            (SQRT_XX, compilation_dict21, [[Z], [], [], []], ([], [Y], [], [X])),
+            (SQRT_XX, compilation_dict21, [[], [], [Z], []], ([], [X], [], [Y])),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_correct_for_case_when_pulling_through_creates_extra_term(
@@ -1578,92 +1629,92 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after, gate_exchange_dict",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after", "gate_exchange_dict"),
         [
-            [
+            (
                 CX,
                 compilation_dict21,
                 [[X, H], [], [], []],
                 ([H], [Z], [], []),
                 {("+Z", "-X"): [[H, Z]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[], [], [X, H], []],
                 ([], [Z], [H], [Z]),
                 {("+Z", "-X"): [[H, Z]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[Z, H], [], [], []],
                 ([H], [X], [], [X]),
                 {("-Z", "+X"): [[H, X]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[], [], [Z, H], []],
                 ([], [], [H], [X]),
                 {("-Z", "+X"): [[H, X]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[SQRT_X, S, SQRT_X], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[SQRT_X, S, SQRT_X, Z], [], [], []],
                 ([S, SQRT_X], [S_DAG], [], []),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[SQRT_X, S_DAG, SQRT_X], [], [], []],
                 ([S_DAG, SQRT_X], [S_DAG], [], []),
                 {("-Z", "-X"): [[S_DAG, SQRT_X, S_DAG]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[SQRT_X, S, SQRT_X], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[], [], [SQRT_X, S, SQRT_X], []],
                 ([], [], [S, SQRT_X], [S]),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[SQRT_X, S, SQRT_X, Z], [], [], []],
                 ([S, SQRT_X], [S_DAG], [], []),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[], [], [SQRT_X, S, SQRT_X, Z], []],
                 ([], [], [S, SQRT_X], [S_DAG]),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[], [], [SQRT_X, S, SQRT_X], [Z]],
                 ([], [], [S, SQRT_X], [S_DAG]),
                 {("+Z", "+X"): [[S, SQRT_X, S]]},
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_correct_when_unitary_block_must_be_exchanged_for_equivalent(
@@ -1683,34 +1734,34 @@ class TestGetCompilationWithTwoQubitGates:
 
     @pytest.mark.parametrize("up_to_paulis", [False, True])
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before",
+        ("two_qubit_gate", "comp_dict", "unitaries_before"),
         [
-            [CX, compilation_dict21, ([H], [], [], [])],
-            [CX, compilation_dict21, ([SQRT_X], [], [], [])],
-            [CX, compilation_dict21, ([SQRT_Y], [], [], [])],
-            [CX, compilation_dict21, ([SQRT_Y_DAG], [], [], [])],
-            [CX, compilation_dict21, ([], [], [SQRT_Y_DAG], [])],
-            [CZ, compilation_dict21, ([H], [], [], [])],
-            [CZ, compilation_dict21, ([SQRT_X], [], [], [])],
-            [CZ, compilation_dict21, ([], [], [SQRT_X], [])],
-            [CZ, compilation_dict21, ([SQRT_Y], [], [], [])],
-            [CZ, compilation_dict21, ([], [], [SQRT_Y], [])],
-            [ISWAP, compilation_dict21, ([H], [], [], [])],
-            [ISWAP, compilation_dict21, ([SQRT_Y], [], [], [])],
-            [ISWAP, compilation_dict21, ([], [], [SQRT_Y], [])],
-            [ISWAP, compilation_dict21, ([SQRT_Y_DAG], [], [], [])],
-            [ISWAP, compilation_dict21, ([], [], [SQRT_Y_DAG], [])],
-            [ISWAP, compilation_dict21, ([SQRT_X], [], [], [])],
-            [ISWAP, compilation_dict21, ([], [], [SQRT_X], [])],
-            [ISWAP, compilation_dict21, ([SQRT_X_DAG], [], [], [])],
-            [ISWAP, compilation_dict21, ([], [], [SQRT_X_DAG], [])],
-            [SQRT_XX, compilation_dict21, ([H], [], [], [])],
-            [SQRT_XX, compilation_dict21, ([S_DAG], [], [], [])],
-            [SQRT_XX, compilation_dict21, ([S_DAG], [], [S_DAG], [])],
-            [SQRT_XX, compilation_dict21, ([S], [], [], [])],
-            [SQRT_XX, compilation_dict21, ([], [], [S], [])],
-            [SQRT_XX, compilation_dict21, ([SQRT_Y], [], [], [])],
-            [SQRT_XX, compilation_dict21, ([], [], [SQRT_Y], [])],
+            (CX, compilation_dict21, ([H], [], [], [])),
+            (CX, compilation_dict21, ([SQRT_X], [], [], [])),
+            (CX, compilation_dict21, ([SQRT_Y], [], [], [])),
+            (CX, compilation_dict21, ([SQRT_Y_DAG], [], [], [])),
+            (CX, compilation_dict21, ([], [], [SQRT_Y_DAG], [])),
+            (CZ, compilation_dict21, ([H], [], [], [])),
+            (CZ, compilation_dict21, ([SQRT_X], [], [], [])),
+            (CZ, compilation_dict21, ([], [], [SQRT_X], [])),
+            (CZ, compilation_dict21, ([SQRT_Y], [], [], [])),
+            (CZ, compilation_dict21, ([], [], [SQRT_Y], [])),
+            (ISWAP, compilation_dict21, ([H], [], [], [])),
+            (ISWAP, compilation_dict21, ([SQRT_Y], [], [], [])),
+            (ISWAP, compilation_dict21, ([], [], [SQRT_Y], [])),
+            (ISWAP, compilation_dict21, ([SQRT_Y_DAG], [], [], [])),
+            (ISWAP, compilation_dict21, ([], [], [SQRT_Y_DAG], [])),
+            (ISWAP, compilation_dict21, ([SQRT_X], [], [], [])),
+            (ISWAP, compilation_dict21, ([], [], [SQRT_X], [])),
+            (ISWAP, compilation_dict21, ([SQRT_X_DAG], [], [], [])),
+            (ISWAP, compilation_dict21, ([], [], [SQRT_X_DAG], [])),
+            (SQRT_XX, compilation_dict21, ([H], [], [], [])),
+            (SQRT_XX, compilation_dict21, ([S_DAG], [], [], [])),
+            (SQRT_XX, compilation_dict21, ([S_DAG], [], [S_DAG], [])),
+            (SQRT_XX, compilation_dict21, ([S], [], [], [])),
+            (SQRT_XX, compilation_dict21, ([], [], [S], [])),
+            (SQRT_XX, compilation_dict21, ([SQRT_Y], [], [], [])),
+            (SQRT_XX, compilation_dict21, ([], [], [SQRT_Y], [])),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_does_not_compile_if_two_qubit_gate_and_ub_conjugate_not_identity_like(
@@ -1724,87 +1775,86 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict21, [[X], [X], [], []], ([], [], [], [X])],
-            [CX, compilation_dict21, [[X], [S, X], [], []], ([], [S_DAG], [], [X])],
-            [CX, compilation_dict21, [[X], [S, X], [], [X, S]], ([], [S_DAG], [], [S])],
-            [CX, compilation_dict21, [[Z], [Z], [], []], ([], [], [], [])],
-            [CX, compilation_dict21, [[Z], [X], [], []], ([], [Y], [], [])],
-            [CX, compilation_dict21, [[], [], [X], [Z]], ([], [], [], [Y])],
-            [CX, compilation_dict21, [[], [], [Z], [Z]], ([], [Z], [], [])],
-            [CX, compilation_dict21, [[], [Z], [Z], [Z]], ([], [], [], [])],
-            [CX, compilation_dict21, [[X], [X, Z], [], []], ([], [Z], [], [X])],
-            [CX, compilation_dict21, [[Z], [Z, X], [], []], ([], [X], [], [])],
-            [CZ, compilation_dict21, [[Z], [Z], [], []], ([], [], [], [])],
-            [CZ, compilation_dict21, [[X], [X], [], []], ([], [], [], [Z])],
-            [CZ, compilation_dict21, [[X], [S, X], [], []], ([], [S_DAG], [], [Z])],
-            [CZ, compilation_dict21, [[], [Z], [Z], []], ([], [Z], [], [Z])],
-            [CZ, compilation_dict21, [[Z], [X], [Z], [X]], ([], [Y], [], [Y])],
-            [CZ, compilation_dict21, [[Y], [Y], [], []], ([], [], [], [Z])],
-            [CZ, compilation_dict21, [[], [Z], [Y], [Y]], ([], [], [], [])],
-            [CZ, compilation_dict21, [[Z], [X, Z], [], []], ([], [X], [], [])],
-            [ISWAP, compilation_dict21, [[X], [Z], [], []], ([], [], [], [Y])],
-            [
+            (CX, compilation_dict21, [[X], [X], [], []], ([], [], [], [X])),
+            (CX, compilation_dict21, [[X], [S, X], [], []], ([], [S_DAG], [], [X])),
+            (CX, compilation_dict21, [[X], [S, X], [], [X, S]], ([], [S_DAG], [], [S])),
+            (CX, compilation_dict21, [[Z], [Z], [], []], ([], [], [], [])),
+            (CX, compilation_dict21, [[Z], [X], [], []], ([], [Y], [], [])),
+            (CX, compilation_dict21, [[], [], [X], [Z]], ([], [], [], [Y])),
+            (CX, compilation_dict21, [[], [], [Z], [Z]], ([], [Z], [], [])),
+            (CX, compilation_dict21, [[], [Z], [Z], [Z]], ([], [], [], [])),
+            (CX, compilation_dict21, [[X], [X, Z], [], []], ([], [Z], [], [X])),
+            (CX, compilation_dict21, [[Z], [Z, X], [], []], ([], [X], [], [])),
+            (CZ, compilation_dict21, [[Z], [Z], [], []], ([], [], [], [])),
+            (CZ, compilation_dict21, [[X], [X], [], []], ([], [], [], [Z])),
+            (CZ, compilation_dict21, [[X], [S, X], [], []], ([], [S_DAG], [], [Z])),
+            (CZ, compilation_dict21, [[], [Z], [Z], []], ([], [Z], [], [Z])),
+            (CZ, compilation_dict21, [[Z], [X], [Z], [X]], ([], [Y], [], [Y])),
+            (CZ, compilation_dict21, [[Y], [Y], [], []], ([], [], [], [Z])),
+            (CZ, compilation_dict21, [[], [Z], [Y], [Y]], ([], [], [], [])),
+            (CZ, compilation_dict21, [[Z], [X, Z], [], []], ([], [X], [], [])),
+            (ISWAP, compilation_dict21, [[X], [Z], [], []], ([], [], [], [Y])),
+            (
                 ISWAP,
                 compilation_dict21,
                 [[X], [Z], [], [Z, S, X]],
                 ([], [], [], [S_DAG]),
-            ],
-            [ISWAP, compilation_dict21, [[], [Z], [X], []], ([], [X], [], [Z])],
-            [ISWAP, compilation_dict21, [[Y], [Z], [], [X]], ([], [], [], [])],
-            [ISWAP, compilation_dict21, [[], [Z], [Y], [X]], ([], [Y], [], [Y])],
-            [ISWAP, compilation_dict21, [[X], [X, Z], [], []], ([], [X], [], [Y])],
-            [SQRT_XX, compilation_dict21, [[Z], [X], [], []], ([], [Z], [], [X])],
-            [SQRT_XX, compilation_dict21, [[], [X], [Z], []], ([], [], [], [Y])],
-            [SQRT_XX, compilation_dict21, [[], [], [Z], [Y]], ([], [X], [], [])],
-            [SQRT_XX, compilation_dict21, [[], [Z], [Z], []], ([], [Y], [], [Y])],
-            [SQRT_XX, compilation_dict21, [[Z], [], [], []], ([], [Y], [], [X])],
-            [SQRT_XX, compilation_dict21, [[Z], [X], [], []], ([], [Z], [], [X])],
-            [CX, compilation_dict21, [[X], [X], [X], [X]], ([], [], [], [X])],
-            [CX, compilation_dict21, [[Z, X], [X], [Z, X], [X]], ([], [], [], [Y])],
-            [
+            ),
+            (ISWAP, compilation_dict21, [[], [Z], [X], []], ([], [X], [], [Z])),
+            (ISWAP, compilation_dict21, [[Y], [Z], [], [X]], ([], [], [], [])),
+            (ISWAP, compilation_dict21, [[], [Z], [Y], [X]], ([], [Y], [], [Y])),
+            (ISWAP, compilation_dict21, [[X], [X, Z], [], []], ([], [X], [], [Y])),
+            (SQRT_XX, compilation_dict21, [[Z], [X], [], []], ([], [Z], [], [X])),
+            (SQRT_XX, compilation_dict21, [[], [X], [Z], []], ([], [], [], [Y])),
+            (SQRT_XX, compilation_dict21, [[], [], [Z], [Y]], ([], [X], [], [])),
+            (SQRT_XX, compilation_dict21, [[], [Z], [Z], []], ([], [Y], [], [Y])),
+            (SQRT_XX, compilation_dict21, [[Z], [], [], []], ([], [Y], [], [X])),
+            (CX, compilation_dict21, [[X], [X], [X], [X]], ([], [], [], [X])),
+            (CX, compilation_dict21, [[Z, X], [X], [Z, X], [X]], ([], [], [], [Y])),
+            (
                 CX,
                 compilation_dict21,
                 [[Z, X], [Z, X], [Z, X], [Z, X]],
                 ([], [Z], [], [X]),
-            ],
-            [  # this case can be reduced further if the equivalent tableau dictionary is also provided, such that the code considers X,H = H,Z
+            ),
+            (  # this case can be reduced further if the equivalent tableau dictionary is also provided, such that the code considers X,H = H,Z
                 CX,
                 compilation_dict21,
                 [[X, H, X], [Z, H, X], [X, H, X], [Z, H, X]],
                 ([X, H], [H, Z], [X, H], [H]),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[SQRT_X, X, Z, S], [S, X, Z], [S, Z], [Z, Y]],
                 ([SQRT_X], [], [S], [Z]),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 [[Y, Z, X], [Y, Z, X], [Y, Z, X], [Y, Z, X]],
                 ([], [], [], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 [[Y, Z, X], [Y, Z, X], [Y, Z, X], [Y, Z, X]],
                 ([], [], [], []),
-            ],
-            [
+            ),
+            (
                 SWAP,
                 compilation_dict21,
                 [[Y, Z, X], [Y, Z, X], [Y, Z, X], [Y, Z, X]],
                 ([], [], [], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict21,
                 [[Y, Z, X], [Y, Z, X], [Y, Z, X], [Y, Z, X]],
                 ([], [], [], []),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_pulls_terms_through_with_terms_after_two_qubit_gate(
@@ -1822,20 +1872,20 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, missing_tableau",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "missing_tableau"),
         [
-            [CX, compilation_dict21, [[Z], [SQRT_X], [], []], "('-X', '-Y')"],
-            [CX, compilation_dict0, [[Z], [], [], []], "('-X', '+Z')"],
-            [CX, compilation_dict1, [[X, Z], [], [], []], "('-X', '-Z')"],
-            [CX, compilation_dict21, [[], [], [Z], [SQRT_X]], "('-X', '-Y')"],
-            [CX, compilation_dict0, [[], [], [Z], []], "('-X', '+Z')"],
-            [CX, compilation_dict1, [[], [], [X, Z], []], "('-X', '-Z')"],
-            [CZ, compilation_dict21, [[Z], [SQRT_X], [], []], "('-X', '-Y')"],
-            [CZ, compilation_dict0, [[Z], [], [], []], "('-X', '+Z')"],
-            [CZ, compilation_dict1, [[X, Z], [], [], []], "('-X', '-Z')"],
-            [CZ, compilation_dict21, [[], [], [Z], [SQRT_X]], "('-X', '-Y')"],
-            [CZ, compilation_dict0, [[], [], [Z], []], "('-X', '+Z')"],
-            [CZ, compilation_dict1, [[], [], [X, Z], []], "('-X', '-Z')"],
+            (CX, compilation_dict21, [[Z], [SQRT_X], [], []], "('-X', '-Y')"),
+            (CX, compilation_dict0, [[Z], [], [], []], "('-X', '+Z')"),
+            (CX, compilation_dict1, [[X, Z], [], [], []], "('-X', '-Z')"),
+            (CX, compilation_dict21, [[], [], [Z], [SQRT_X]], "('-X', '-Y')"),
+            (CX, compilation_dict0, [[], [], [Z], []], "('-X', '+Z')"),
+            (CX, compilation_dict1, [[], [], [X, Z], []], "('-X', '-Z')"),
+            (CZ, compilation_dict21, [[Z], [SQRT_X], [], []], "('-X', '-Y')"),
+            (CZ, compilation_dict0, [[Z], [], [], []], "('-X', '+Z')"),
+            (CZ, compilation_dict1, [[X, Z], [], [], []], "('-X', '-Z')"),
+            (CZ, compilation_dict21, [[], [], [Z], [SQRT_X]], "('-X', '-Y')"),
+            (CZ, compilation_dict0, [[], [], [Z], []], "('-X', '+Z')"),
+            (CZ, compilation_dict1, [[], [], [X, Z], []], "('-X', '-Z')"),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_throws_KeyError_if_pulling_term_through_creates_tableau_not_in_comp_dict(
@@ -1847,49 +1897,49 @@ class TestGetCompilationWithTwoQubitGates:
             )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])],
-            [SQRT_XX, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])],
-            [SQRT_XX, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[S], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict11_nosign, [[S], [], [], []], ([], [S], [], [])],
-            [SWAP, compilation_dict11_nosign, [[S], [], [], []], ([], [], [], [S])],
-            [ISWAP, compilation_dict11_nosign, [[S], [], [], []], ([], [], [], [S])],
-            [CZ, compilation_dict11_nosign, [[], [], [S], []], ([], [], [], [S])],
-            [SWAP, compilation_dict11_nosign, [[], [], [S], []], ([], [S], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[], [], [S], []], ([], [S], [], [])],
-            [CZ, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])],
-            [SWAP, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])],
-            [ISWAP, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])],
-            [CX, compilation_dict11_nosign, [[H], [], [], []], ([H], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[H], [], [], []], ([H], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[H], [], [], []], ([], [], [], [H])],
-            [SWAP, compilation_dict11_nosign, [[], [], [H], []], ([], [H], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[], [], [H], []], ([], [], [H], [])],
-            [SQRT_XX, compilation_dict11_nosign, [[], [], [H], []], ([], [], [H], [])],
-            [
+            (CX, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[Z], [], [], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[], [], [Z], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])),
+            (SQRT_XX, compilation_dict11_nosign, [[], [], [X], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])),
+            (SQRT_XX, compilation_dict11_nosign, [[X], [], [], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[S], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict11_nosign, [[S], [], [], []], ([], [S], [], [])),
+            (SWAP, compilation_dict11_nosign, [[S], [], [], []], ([], [], [], [S])),
+            (ISWAP, compilation_dict11_nosign, [[S], [], [], []], ([], [], [], [S])),
+            (CZ, compilation_dict11_nosign, [[], [], [S], []], ([], [], [], [S])),
+            (SWAP, compilation_dict11_nosign, [[], [], [S], []], ([], [S], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[], [], [S], []], ([], [S], [], [])),
+            (CZ, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])),
+            (SWAP, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])),
+            (ISWAP, compilation_dict11_nosign, [[S], [], [S], []], ([], [S], [], [S])),
+            (CX, compilation_dict11_nosign, [[H], [], [], []], ([H], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[H], [], [], []], ([H], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[H], [], [], []], ([], [], [], [H])),
+            (SWAP, compilation_dict11_nosign, [[], [], [H], []], ([], [H], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[], [], [H], []], ([], [], [H], [])),
+            (SQRT_XX, compilation_dict11_nosign, [[], [], [H], []], ([], [], [H], [])),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X_DAG], []],
                 ([], [], [], [SQRT_X]),
-            ],
-            [CX, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [S_DAG], []], ([], [], [], [S])],
+            ),
+            (CX, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [S_DAG], []], ([], [], [], [S])),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_with_up_to_paulis_True_correct_for_pull_through_single_gate_case(
@@ -1910,56 +1960,56 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])],
-            [CX, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])],
-            [
+            (CX, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[Z, Z], [], [], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])),
+            (CX, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[], [], [X, X], []], ([], [], [], [])),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[S_DAG], [], [SQRT_X_DAG], []],
                 ([], [S], [], [SQRT_X]),
-            ],
-            [CX, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])],
-            [
+            ),
+            (CX, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X_DAG], []],
                 ([], [], [], [SQRT_X]),
-            ],
-            [CZ, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [S_DAG], []], ([], [], [], [S])],
-            [
+            ),
+            (CZ, compilation_dict11_nosign, [[S_DAG], [], [], []], ([], [S], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [S_DAG], []], ([], [], [], [S])),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[S_DAG], [], [S_DAG], []],
                 ([], [S], [], [S]),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 [[S_DAG], [], [], []],
                 ([], [], [], [S]),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 [[], [], [S_DAG], []],
                 ([], [S], [], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 [[S_DAG], [], [S_DAG], []],
                 ([], [S], [], [S]),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_with_up_to_paulis_True_correct_for_pull_through_multiple_gate_case(
@@ -1980,37 +2030,37 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [CX, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[Z], [], [], [Z]], ([], [], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[Z], [], [], [Z]], ([], [], [], [])],
-            [
+            (CX, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[Z], [Z], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[Z], [], [], [Z]], ([], [], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[Z], [], [], [Z]], ([], [], [], [])),
+            (
                 SQRT_XX,
                 compilation_dict11_nosign,
                 [[SQRT_X], [SQRT_X], [], []],
                 ([], [], [], []),
-            ],
-            [CX, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])],
-            [ISWAP, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])],
-            [
+            ),
+            (CX, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])),
+            (ISWAP, compilation_dict11_nosign, [[], [], [X], [X]], ([], [], [], [])),
+            (
                 SQRT_XX,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X], [SQRT_X]],
                 ([], [], [], []),
-            ],
-            [CX, compilation_dict11_nosign, [[S], [S_DAG], [], []], ([], [], [], [])],
-            [CZ, compilation_dict11_nosign, [[S], [S_DAG], [], []], ([], [], [], [])],
-            [SWAP, compilation_dict11_nosign, [[S], [], [], [S_DAG]], ([], [], [], [])],
-            [
+            ),
+            (CX, compilation_dict11_nosign, [[S], [S_DAG], [], []], ([], [], [], [])),
+            (CZ, compilation_dict11_nosign, [[S], [S_DAG], [], []], ([], [], [], [])),
+            (SWAP, compilation_dict11_nosign, [[S], [], [], [S_DAG]], ([], [], [], [])),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 [[S], [], [], [S_DAG]],
                 ([], [], [], []),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_with_up_to_paulis_True_correct_for_case_with_gates_after_2q_gate(
@@ -2031,71 +2081,71 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after, gate_exchange_dict",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after", "gate_exchange_dict"),
         [
-            [
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[SQRT_X, S, SQRT_X], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[SQRT_X, S, SQRT_X, Z], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[SQRT_X, S_DAG, SQRT_X], [], [], []],
                 ([S_DAG, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S_DAG, SQRT_X, S_DAG]]},
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict11_nosign,
                 [[SQRT_X, S_DAG, SQRT_X], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S, SQRT_X, S_DAG]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[SQRT_X, S, SQRT_X], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X, S, SQRT_X], []],
                 ([], [], [S, SQRT_X], [S]),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[SQRT_X, S, SQRT_X, Z], [], [], []],
                 ([S, SQRT_X], [S], [], []),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X, S, SQRT_X, Z], []],
                 ([], [], [S, SQRT_X], [S]),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 [[], [], [SQRT_X, S, SQRT_X], [Z]],
                 ([], [], [S, SQRT_X], [S]),
                 {("Z", "X"): [[S, SQRT_X, S]]},
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_with_up_to_paulis_True_correct_when_unitary_block_must_be_exchanged_for_equivalent(
@@ -2118,38 +2168,38 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before",
+        ("two_qubit_gate", "comp_dict", "unitaries_before"),
         [
-            [
+            (
                 CX,
                 compilation_dict21,
                 ([Y], [], [], []),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 ([], [], [Y], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 ([X], [], [], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 ([], [], [X], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict21,
                 ([], [], [X], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 ([], [], [Z], []),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_does_not_compile_relevant_cases_if_allow_terms_to_mutate_is_False(
@@ -2166,38 +2216,38 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before",
+        ("two_qubit_gate", "comp_dict", "unitaries_before"),
         [
-            [
+            (
                 CX,
                 compilation_dict21,
                 ([Y], [], [], []),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 ([], [], [Y], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 ([X], [], [], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict21,
                 ([], [], [X], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict21,
                 ([], [], [X], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict21,
                 ([], [], [Z], []),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_does_not_compile_relevant_cases_if_allow_terms_to_multiply_is_False(
@@ -2214,43 +2264,43 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before",
+        ("two_qubit_gate", "comp_dict", "unitaries_before"),
         [
-            [
+            (
                 CX,
                 compilation_dict11_nosign,
                 ([], [], [S], []),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict11_nosign,
                 ([SQRT_X], [], [], []),
-            ],
-            [
+            ),
+            (
                 CZ,
                 compilation_dict11_nosign,
                 ([SQRT_X], [], [], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 ([S], [], [], []),
-            ],
-            [
+            ),
+            (
                 ISWAP,
                 compilation_dict11_nosign,
                 ([], [], [S], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict11_nosign,
                 ([S], [], [], []),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 compilation_dict11_nosign,
                 ([], [], [S], []),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_does_not_compile_relevant_cases_if_allow_terms_to_multiply_is_False_and_up_to_paulis_True(
@@ -2268,32 +2318,32 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, comp_dict, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after"),
         [
-            [
+            (
                 CX,
                 compilation_dict21,
                 ([X], [], [], []),
                 ([], [X], [], [X]),
-            ],
-            [
+            ),
+            (
                 CX,
                 compilation_dict21,
                 ([], [], [Z], []),
                 ([], [Z], [], [Z]),
-            ],
-            [
+            ),
+            (
                 CXSWAP,
                 compilation_dict21,
                 ([X], [], [], []),
                 ([], [X], [], [X]),
-            ],
-            [
+            ),
+            (
                 CXSWAP,
                 compilation_dict21,
                 ([], [], [Z], []),
                 ([], [Z], [], [Z]),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_allows_certain_cases_if_allow_terms_to_multiply_True_and_allow_terms_to_mutate_False(
@@ -2311,62 +2361,61 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        "two_qubit_gate, unitaries_before, unitaries_after",
+        ("two_qubit_gate", "unitaries_before", "unitaries_after"),
         [
-            [
+            (
                 SQRT_XX,
                 [[H], [S, H, S], [H], [H, S, Z]],
                 ([H], [S, H, S], [H], [H, S, Z]),
-            ],
-            [SQRT_XX, [[], [H, S, Z], [S, H, S], [S, H, S]], ([], [X, H, S], [], [X])],
-            [SQRT_XX, [[S, H, S], [S, H, S], [], [H, S, Z]], ([], [X], [], [X, H, S])],
-            [SQRT_XX, [[], [S, H, S], [S, H, S], [S, H, S]], ([], [S, H, S], [], [X])],
-            [SQRT_XX, [[], [S, H, S], [S, H, S], [S, H, S]], ([], [S, H, S], [], [X])],
-            [
+            ),
+            (SQRT_XX, [[], [H, S, Z], [S, H, S], [S, H, S]], ([], [X, H, S], [], [X])),
+            (SQRT_XX, [[S, H, S], [S, H, S], [], [H, S, Z]], ([], [X], [], [X, H, S])),
+            (SQRT_XX, [[], [S, H, S], [S, H, S], [S, H, S]], ([], [S, H, S], [], [X])),
+            (
                 SQRT_XX,
                 [[], [S, H, S], [Z, H, S], [H, S, Z]],
                 ([], [S, H, S], [Z, H, S], [H, S, Z]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[H, S, Z], [S, H, S], [], [S, H, S]],
                 ([H, S], [S, X, H, S], [], [H, S, H]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[S, H, S], [S, H, S], [H, S, Z], [H, S, Z]],
                 ([], [], [H, S], [Z, H, S]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[X, H, S], [S, H, S], [X], [H, S, Z]],
                 ([H, S], [S, X, H, S], [], [X, H, S]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[S, X, H, S], [S, H, S], [H, S, H], [H, S, Z]],
                 ([], [Z, X], [], [X, H]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[X, H, S], [X, H, S], [H], [S, H, S]],
                 ([H, S], [Z, H, S], [H], [H, S, H]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[H], [S, H, S], [S, H, S], [X, H, S]],
                 ([H], [S, H, S], [], [X, H]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[X, H, S], [S, H, S], [S, H, S], [X, H, S]],
                 ([H, S], [S, X, H, S], [], [H]),
-            ],
-            [
+            ),
+            (
                 SQRT_XX,
                 [[H], [S, H, S], [S, X, H, S], [X, H, S]],
                 ([H], [H, S, H], [], [Z, X, H]),
-            ],
+            ),
         ],
     )
     def test__get_compilation_with_two_qubit_gates_for_snippets_of_memory_circuit(
@@ -2415,17 +2464,17 @@ class TestIsIdentityLike:
         assert not _is_identity_like(tableau)
 
     @pytest.mark.parametrize(
-        "control_gates, target_gates, two_q_gate",
+        ("control_gates", "target_gates", "two_q_gate"),
         [
-            [[I], [S], CX],
-            [[S], [H], CX],
-            [[X], [Z], CX],
-            [[I], [S], CZ],
-            [[S], [H], CZ],
-            [[X], [Z], CZ],
-            [[I], [S], ISWAP],
-            [[S], [H], ISWAP],
-            [[X], [Z], ISWAP],
+            ([I], [S], CX),
+            ([S], [H], CX),
+            ([X], [Z], CX),
+            ([I], [S], CZ),
+            ([S], [H], CZ),
+            ([X], [Z], CZ),
+            ([I], [S], ISWAP),
+            ([S], [H], ISWAP),
+            ([X], [Z], ISWAP),
         ],
     )
     def test__is_identity_like_returns_False_for_single_qubit_gates_followed_by_two_qubit_gate(
@@ -2442,28 +2491,28 @@ class TestIsIdentityLike:
         assert not _is_identity_like(tableau)
 
     @pytest.mark.parametrize(
-        "gate, conjugate",
+        ("gate", "conjugate"),
         [
-            [CX, [H, I]],
-            [CX, [SQRT_X, I]],
-            [CX, [SQRT_Y, I]],
-            [CX, [SQRT_Y_DAG, I]],
-            [CX, [I, SQRT_Y]],
-            [CX, [I, SQRT_Y_DAG]],
-            [ISWAP, [SQRT_Y, I]],
-            [ISWAP, [SQRT_Y_DAG, I]],
-            [ISWAP, [SQRT_X, I]],
-            [ISWAP, [SQRT_X_DAG, I]],
-            [ISWAP, [I, SQRT_Y]],
-            [ISWAP, [I, SQRT_Y_DAG]],
-            [ISWAP, [I, SQRT_X]],
-            [ISWAP, [I, SQRT_X_DAG]],
-            [SQRT_XX, [S_DAG, I]],
-            [SQRT_XX, [S, I]],
-            [SQRT_XX, [SQRT_Y, I]],
-            [SQRT_XX, [I, S_DAG]],
-            [SQRT_XX, [I, S]],
-            [SQRT_XX, [I, SQRT_Y]],
+            (CX, [H, I]),
+            (CX, [SQRT_X, I]),
+            (CX, [SQRT_Y, I]),
+            (CX, [SQRT_Y_DAG, I]),
+            (CX, [I, SQRT_Y]),
+            (CX, [I, SQRT_Y_DAG]),
+            (ISWAP, [SQRT_Y, I]),
+            (ISWAP, [SQRT_Y_DAG, I]),
+            (ISWAP, [SQRT_X, I]),
+            (ISWAP, [SQRT_X_DAG, I]),
+            (ISWAP, [I, SQRT_Y]),
+            (ISWAP, [I, SQRT_Y_DAG]),
+            (ISWAP, [I, SQRT_X]),
+            (ISWAP, [I, SQRT_X_DAG]),
+            (SQRT_XX, [S_DAG, I]),
+            (SQRT_XX, [S, I]),
+            (SQRT_XX, [SQRT_Y, I]),
+            (SQRT_XX, [I, S_DAG]),
+            (SQRT_XX, [I, S]),
+            (SQRT_XX, [I, SQRT_Y]),
         ],
     )
     def test__is_identity_like_returns_False_for_non_identity_gate_conjugates(
@@ -2485,21 +2534,21 @@ class TestIsIdentityLike:
         assert not _is_identity_like(tableau)
 
     @pytest.mark.parametrize(
-        "gate, conjugate",
+        ("gate", "conjugate"),
         [
-            [CX, [I, I]],
-            [CX, [X, I]],
-            [CX, [I, Z]],
-            [CX, [Z, Z]],
-            [CX, [S, I]],
-            [ISWAP, [I, I]],
-            [ISWAP, [I, X]],
-            [ISWAP, [Y, X]],
-            [ISWAP, [S, I]],
-            [SQRT_XX, [SQRT_X, I]],
-            [SQRT_XX, [I, SQRT_X]],
-            [SQRT_XX, [Z, I]],
-            [SQRT_XX, [I, Z]],
+            (CX, [I, I]),
+            (CX, [X, I]),
+            (CX, [I, Z]),
+            (CX, [Z, Z]),
+            (CX, [S, I]),
+            (ISWAP, [I, I]),
+            (ISWAP, [I, X]),
+            (ISWAP, [Y, X]),
+            (ISWAP, [S, I]),
+            (SQRT_XX, [SQRT_X, I]),
+            (SQRT_XX, [I, SQRT_X]),
+            (SQRT_XX, [Z, I]),
+            (SQRT_XX, [I, Z]),
         ],
     )
     def test__is_identity_like_returns_True_for_identity_like_non_trivial_gates(
@@ -2549,46 +2598,46 @@ class TestCompilationData:
         ],
     )
     @pytest.mark.parametrize(
-        "circuit, reset_dict, unitary_blocks",
+        ("circuit", "reset_dict", "unitary_blocks"),
         [
             # single length unitary blocks
-            [
+            (
                 Circuit(GateLayer(RX(0))),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(RX(0))]),
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0)], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RX(0)), GateLayer(X(0))]),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: [X(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(RX(0)), GateLayer(Y(0))]),
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0)], 1: [Y(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RX(0)), GateLayer(RX(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 1},
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RX(0)), GateLayer(X(0)), GateLayer(RX(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 1},
                     (2, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [X(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2602,8 +2651,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2618,8 +2667,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: [Z(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2636,19 +2685,19 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 2, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: [Z(0)], 3: []},
-            ],
+            ),
             # multiple length unitary blocks
-            [
+            (
                 Circuit([GateLayer(X(0)), GateLayer(Y(0)), GateLayer(RX(0))]),
                 {(2, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0), Y(0)], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RX(0)), GateLayer(X(0)), GateLayer(Y(0))]),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: [X(0), Y(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2660,8 +2709,8 @@ class TestCompilationData:
                 ),
                 {(2, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(RX(0)),
@@ -2675,8 +2724,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [X(0), Y(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2692,8 +2741,8 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2711,8 +2760,8 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: [S_DAG(0), SQRT_X(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2732,7 +2781,7 @@ class TestCompilationData:
                     (8, Qubit(0)): {"preceding": 2, "succeeding": 3},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: [S_DAG(0), SQRT_X(0)], 3: []},
-            ],
+            ),
         ],
     )
     class TestResetGates:
@@ -2777,46 +2826,46 @@ class TestCompilationData:
         ],
     )
     @pytest.mark.parametrize(
-        "circuit, meas_dict, unitary_blocks",
+        ("circuit", "meas_dict", "unitary_blocks"),
         [
             # single length unitary blocks
-            [
+            (
                 Circuit(GateLayer(MX(0))),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(MX(0))]),
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0)], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(MX(0)), GateLayer(X(0))]),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: [X(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(MX(0)), GateLayer(Y(0))]),
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0)], 1: [Y(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(MX(0)), GateLayer(MX(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 1},
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(MX(0)), GateLayer(X(0)), GateLayer(MX(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 1},
                     (2, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [X(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2830,8 +2879,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2846,8 +2895,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: [Z(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2864,19 +2913,19 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 2, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [Y(0)], 2: [Z(0)], 3: []},
-            ],
+            ),
             # multiple length unitary blocks
-            [
+            (
                 Circuit([GateLayer(X(0)), GateLayer(Y(0)), GateLayer(MX(0))]),
                 {(2, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0), Y(0)], 1: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(MX(0)), GateLayer(X(0)), GateLayer(Y(0))]),
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [], 1: [X(0), Y(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2888,8 +2937,8 @@ class TestCompilationData:
                 ),
                 {(2, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(MX(0)),
@@ -2903,8 +2952,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [], 1: [X(0), Y(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2920,8 +2969,8 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2939,8 +2988,8 @@ class TestCompilationData:
                     (5, Qubit(0)): {"preceding": 1, "succeeding": 2},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: [SQRT_X(0), S_DAG(0)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -2960,7 +3009,7 @@ class TestCompilationData:
                     (8, Qubit(0)): {"preceding": 2, "succeeding": 3},
                 },
                 {0: [X(0), Y(0)], 1: [Z(0), S(0)], 2: [S_DAG(0), SQRT_X(0)], 3: []},
-            ],
+            ),
         ],
     )
     class TestMeasurementGates:
@@ -2997,83 +3046,83 @@ class TestCompilationData:
 
     @pytest.mark.parametrize("two_qubit_gate", [CX, CY, CZ, SWAP, ISWAP, SQRT_XX])
     @pytest.mark.parametrize(
-        "circuit, two_q_dict, unitary_blocks",
+        ("circuit", "two_q_dict", "unitary_blocks"),
         [
             # single unitary gate around single 2q gate
-            [
+            (
                 Circuit(GateLayer(CX(0, 1))),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(CX(0, 1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(1)), GateLayer(CX(0, 1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(1))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(CX(0, 1)), GateLayer(Y(0))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [], 2: [Y(0)], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(1)), GateLayer(CX(0, 1)), GateLayer(Y(1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1)], 2: [], 3: [Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(CX(0, 1)), GateLayer(Y(1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [], 2: [], 3: [Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(1)), GateLayer(CX(0, 1)), GateLayer(Y(0))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1)], 2: [Y(0)], 3: []},
-            ],
+            ),
             # single unitary gate around multiple 2q gate
-            [
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(0)), GateLayer(CX(0, 1))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
@@ -3082,8 +3131,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: [], 5: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(1)), GateLayer(CX(0, 1))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
@@ -3092,8 +3141,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)], 4: [], 5: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3109,8 +3158,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: [Y(0)], 5: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3126,8 +3175,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: [], 5: [Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3143,8 +3192,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)], 4: [Y(0)], 5: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3160,8 +3209,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)], 4: [], 5: [Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3180,8 +3229,8 @@ class TestCompilationData:
                     (4, Qubit(1)): {"preceding": 5, "succeeding": 7},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: [Y(0)], 5: [], 6: [], 7: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3200,8 +3249,8 @@ class TestCompilationData:
                     (4, Qubit(1)): {"preceding": 5, "succeeding": 7},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)], 4: [Y(0)], 5: [], 6: [], 7: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3220,8 +3269,8 @@ class TestCompilationData:
                     (4, Qubit(1)): {"preceding": 5, "succeeding": 7},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: [], 5: [Y(1)], 6: [], 7: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(CX(0, 1)),
@@ -3240,41 +3289,41 @@ class TestCompilationData:
                     (4, Qubit(1)): {"preceding": 5, "succeeding": 7},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1)], 4: [], 5: [Y(1)], 6: [], 7: []},
-            ],
+            ),
             # multiple unitaries around 2q gate
-            [
+            (
                 Circuit([GateLayer(X(0)), GateLayer(Y(0)), GateLayer(CX(0, 1))]),
                 {
                     (2, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0), Y(0)], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(1)), GateLayer(Y(1)), GateLayer(CX(0, 1))]),
                 {
                     (2, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1), Y(1)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(0)), GateLayer(Y(0))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [X(0), Y(0)], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(1)), GateLayer(Y(1))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [], 3: [X(1), Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -3289,8 +3338,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0), Y(0)], 1: [], 2: [Z(0), S(0)], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(1)),
@@ -3305,8 +3354,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1), Y(1)], 2: [], 3: [Z(1), S(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -3321,8 +3370,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0), Y(0)], 1: [], 2: [], 3: [Z(1), S(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(1)),
@@ -3337,49 +3386,41 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [X(1), Y(1)], 2: [Z(0), S(0)], 3: []},
-            ],
+            ),
             # multiple unitaries around 2q gate, mixed qubits
-            [
+            (
                 Circuit([GateLayer([X(0), Y(1)]), GateLayer(CX(0, 1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [Y(1)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer([X(0), Y(1)])]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [X(0)], 3: [Y(1)]},
-            ],
-            [
-                Circuit([GateLayer(CX(0, 1)), GateLayer([X(0), Y(1)])]),
-                {
-                    (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
-                    (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
-                },
-                {0: [], 1: [], 2: [X(0)], 3: [Y(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(1), Y(0)]), GateLayer(CX(0, 1))]),
                 {
                     (1, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [Y(0)], 1: [X(1)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer([X(1), Y(0)])]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 2},
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [], 1: [], 2: [Y(0)], 3: [X(1)]},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3392,9 +3433,9 @@ class TestCompilationData:
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 3},
                 },
                 {0: [X(0)], 1: [Y(1)], 2: [Z(0)], 3: [S(1)]},
-            ],
+            ),
             # 2q gates interleaving on one qubit
-            [
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(CX(1, 2))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 4},
@@ -3403,8 +3444,8 @@ class TestCompilationData:
                     (1, Qubit(2)): {"preceding": 3, "succeeding": 6},
                 },
                 {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(1)), GateLayer(CX(1, 2))]),
                 {
                     (0, Qubit(0)): {"preceding": 0, "succeeding": 4},
@@ -3413,8 +3454,8 @@ class TestCompilationData:
                     (2, Qubit(2)): {"preceding": 3, "succeeding": 6},
                 },
                 {0: [], 1: [], 2: [X(1)], 3: [], 4: [], 5: [], 6: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -3430,8 +3471,8 @@ class TestCompilationData:
                     (3, Qubit(2)): {"preceding": 3, "succeeding": 6},
                 },
                 {0: [X(0)], 1: [], 2: [Y(1)], 3: [], 4: [], 5: [], 6: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3447,8 +3488,8 @@ class TestCompilationData:
                     (3, Qubit(2)): {"preceding": 3, "succeeding": 6},
                 },
                 {0: [X(0)], 1: [Y(1)], 2: [Z(1)], 3: [], 4: [], 5: [], 6: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3464,8 +3505,8 @@ class TestCompilationData:
                     (3, Qubit(2)): {"preceding": 3, "succeeding": 6},
                 },
                 {0: [X(0)], 1: [Y(1)], 2: [S(1)], 3: [], 4: [Z(0)], 5: [], 6: []},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3490,8 +3531,8 @@ class TestCompilationData:
                     5: [SQRT_X(1)],
                     6: [],
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3516,8 +3557,8 @@ class TestCompilationData:
                     5: [SQRT_X(1)],
                     6: [S_DAG(2)],
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3542,9 +3583,9 @@ class TestCompilationData:
                     5: [SQRT_Y(1)],
                     6: [SQRT_Y_DAG(2)],
                 },
-            ],
+            ),
             # 2q gates interleaving on 2 qubits
-            [
+            (
                 Circuit(
                     [GateLayer(CX(0, 1)), GateLayer(CX(1, 2)), GateLayer(CX(2, 3))]
                 ),
@@ -3568,8 +3609,8 @@ class TestCompilationData:
                     8: [],
                     9: [],
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3608,7 +3649,7 @@ class TestCompilationData:
                     8: [SQRT_X(2)],
                     9: [SQRT_X_DAG(3)],
                 },
-            ],
+            ),
         ],
     )
     class TestTwoQubitGates:
@@ -3642,38 +3683,38 @@ class TestCompilationData:
             circuit.replace_gates({two_qubit_gate: lambda gate: CX(*gate.qubits)})
 
     @pytest.mark.parametrize(
-        "circuit, non_gatelayer_dict",
+        ("circuit", "non_gatelayer_dict"),
         [
-            [
+            (
                 Circuit(Detector(MeasurementRecord(-1))),
                 {0: Detector(MeasurementRecord(-1))},
-            ],
-            [
+            ),
+            (
                 Circuit([Detector(MeasurementRecord(-1))]),
                 {0: Detector(MeasurementRecord(-1))},
-            ],
-            [
+            ),
+            (
                 Circuit(Observable(0, MeasurementRecord(-1))),
                 {0: Observable(0, MeasurementRecord(-1))},
-            ],
-            [
+            ),
+            (
                 Circuit([Observable(0, MeasurementRecord(-1))]),
                 {0: Observable(0, MeasurementRecord(-1))},
-            ],
-            [Circuit(ShiftCoordinates([1])), {0: ShiftCoordinates([1])}],
-            [
+            ),
+            (Circuit(ShiftCoordinates([1])), {0: ShiftCoordinates([1])}),
+            (
                 Circuit([ShiftCoordinates([1])]),
                 {0: ShiftCoordinates([1])},
-            ],
-            [
+            ),
+            (
                 Circuit(NoiseLayer(Depolarise2(0, 1, 0.01))),
                 {0: NoiseLayer(Depolarise2(0, 1, 0.01))},
-            ],
-            [
+            ),
+            (
                 Circuit([NoiseLayer(Depolarise2(0, 1, 0.01)), ShiftCoordinates([1])]),
                 {0: NoiseLayer(Depolarise2(0, 1, 0.01)), 1: ShiftCoordinates([1])},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         NoiseLayer(Depolarise2(0, 1, 0.01)),
@@ -3686,7 +3727,7 @@ class TestCompilationData:
                     1: ShiftCoordinates([1]),
                     2: NoiseLayer(Depolarise2(0, 1, 0.01)),
                 },
-            ],
+            ),
         ],
     )
     class TestNonGateLayers:
@@ -3729,21 +3770,21 @@ class TestCompilationData:
         ],
     )
     @pytest.mark.parametrize(
-        "circuit, unitary_blocks, reset_dict, meas_dict",
+        ("circuit", "unitary_blocks", "reset_dict", "meas_dict"),
         [
-            [
+            (
                 Circuit([GateLayer(RZ(0)), GateLayer(MZ(0))]),
                 {0: [], 1: [], 2: []},
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {(1, Qubit(0)): {"preceding": 1, "succeeding": 2}},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RZ(0)), GateLayer(X(0)), GateLayer(MZ(0))]),
                 {0: [], 1: [X(0)], 2: []},
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {(2, Qubit(0)): {"preceding": 1, "succeeding": 2}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -3755,8 +3796,8 @@ class TestCompilationData:
                 {0: [X(0)], 1: [Y(0)], 2: []},
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {(3, Qubit(0)): {"preceding": 1, "succeeding": 2}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -3769,8 +3810,8 @@ class TestCompilationData:
                 {0: [X(0)], 1: [Y(0)], 2: [Z(0)]},
                 {(1, Qubit(0)): {"preceding": 0, "succeeding": 1}},
                 {(3, Qubit(0)): {"preceding": 1, "succeeding": 2}},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RZ(0), RZ(1)]), GateLayer(MZ(0))]),
                 {0: [], 1: [], 2: [], 3: [], 4: []},
                 {
@@ -3778,8 +3819,8 @@ class TestCompilationData:
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(1, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RZ(0), RZ(1)]), GateLayer(X(0)), GateLayer(MZ(0))]),
                 {0: [], 1: [], 2: [X(0)], 3: [], 4: []},
                 {
@@ -3787,8 +3828,8 @@ class TestCompilationData:
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(2, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1)]),
@@ -3802,8 +3843,8 @@ class TestCompilationData:
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(2, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1)]),
@@ -3817,8 +3858,8 @@ class TestCompilationData:
                     (0, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(2, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3833,8 +3874,8 @@ class TestCompilationData:
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(3, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3849,8 +3890,8 @@ class TestCompilationData:
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(3, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3866,8 +3907,8 @@ class TestCompilationData:
                     (1, Qubit(1)): {"preceding": 1, "succeeding": 4},
                 },
                 {(3, Qubit(0)): {"preceding": 2, "succeeding": 3}},
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RZ(0), RZ(1)]), GateLayer([MZ(0), MZ(1)])]),
                 {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                 {
@@ -3878,8 +3919,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 2, "succeeding": 4},
                     (1, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1)]),
@@ -3896,8 +3937,8 @@ class TestCompilationData:
                     (2, Qubit(0)): {"preceding": 2, "succeeding": 4},
                     (2, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -3923,7 +3964,7 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 2, "succeeding": 4},
                     (3, Qubit(1)): {"preceding": 3, "succeeding": 5},
                 },
-            ],
+            ),
         ],
     )
     class TestResetAndMeas:
@@ -3999,9 +4040,9 @@ class TestCompilationData:
     )
     @pytest.mark.parametrize("two_qubit_gate", [CX, CY, CZ, SWAP, ISWAP, SQRT_XX])
     @pytest.mark.parametrize(
-        "circuit, unitary_blocks, reset_dict, meas_dict, two_q_dict",
+        ("circuit", "unitary_blocks", "reset_dict", "meas_dict", "two_q_dict"),
         [
-            [
+            (
                 Circuit([GateLayer(RZ(0)), GateLayer(CX(0, 1)), GateLayer(MZ(0))]),
                 {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                 {(0, Qubit(0)): {"preceding": 0, "succeeding": 1}},
@@ -4010,8 +4051,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (1, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [GateLayer([RZ(0), X(1)]), GateLayer(CX(0, 1)), GateLayer(MZ(0))]
                 ),
@@ -4022,8 +4063,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (1, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), X(1)]),
@@ -4038,8 +4079,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (1, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -4055,8 +4096,8 @@ class TestCompilationData:
                     (2, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (2, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -4073,8 +4114,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (3, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -4092,8 +4133,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (3, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -4118,8 +4159,8 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (3, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1)]),
@@ -4145,9 +4186,9 @@ class TestCompilationData:
                     (3, Qubit(0)): {"preceding": 1, "succeeding": 3},
                     (3, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
+            ),
             # interleaved 2q gates
-            [
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1), RZ(2)]),
@@ -4187,8 +4228,8 @@ class TestCompilationData:
                     (2, Qubit(1)): {"preceding": 5, "succeeding": 8},
                     (2, Qubit(2)): {"preceding": 6, "succeeding": 9},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1), RZ(2)]),
@@ -4229,8 +4270,8 @@ class TestCompilationData:
                     (3, Qubit(1)): {"preceding": 5, "succeeding": 8},
                     (3, Qubit(2)): {"preceding": 6, "succeeding": 9},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([RZ(0), RZ(1), RZ(2)]),
@@ -4273,8 +4314,8 @@ class TestCompilationData:
                     (4, Qubit(1)): {"preceding": 5, "succeeding": 8},
                     (4, Qubit(2)): {"preceding": 6, "succeeding": 9},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1), Z(2), S(3)]),
@@ -4301,8 +4342,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 4},
                     (1, Qubit(1)): {"preceding": 2, "succeeding": 5},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1), Z(2), S(3)]),
@@ -4329,8 +4370,8 @@ class TestCompilationData:
                     (1, Qubit(0)): {"preceding": 1, "succeeding": 4},
                     (1, Qubit(2)): {"preceding": 2, "succeeding": 6},
                 },
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([X(0), Y(1), Z(2), S(3)]),
@@ -4357,7 +4398,7 @@ class TestCompilationData:
                     (1, Qubit(2)): {"preceding": 1, "succeeding": 6},
                     (1, Qubit(0)): {"preceding": 2, "succeeding": 4},
                 },
-            ],
+            ),
         ],
     )
     class TestResetMeasAndTwoQGate:
@@ -4431,9 +4472,9 @@ class TestCompilationData:
             circuit.replace_gates({two_qubit_gate: lambda gate: CX(*gate.qubits)})
 
     @pytest.mark.parametrize(
-        "circuit, non_gatelayer_layers",
+        ("circuit", "non_gatelayer_layers"),
         [
-            [
+            (
                 Circuit(Circuit(GateLayer(RZ(0)), iterations=2)),
                 {
                     0: CompilationData(
@@ -4446,8 +4487,8 @@ class TestCompilationData:
                         1,
                     )
                 }
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RZ(0)), Circuit(GateLayer(RZ(0)), iterations=2)]),
                 {
                     1: CompilationData(
@@ -4460,8 +4501,8 @@ class TestCompilationData:
                         1,
                     )
                 }
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(RZ(0)),
@@ -4480,8 +4521,8 @@ class TestCompilationData:
                         1,
                     )
                 }
-            ],
-            [
+            ),
+            (
                 Circuit(Circuit(Circuit(GateLayer(RZ(0)), iterations=2), iterations=2)),
                 {
                     0: CompilationData(
@@ -4509,7 +4550,7 @@ class TestCompilationData:
                         1,
                     )
                 }
-            ]
+            )
         ]
     )
     class TestNestedCircuits:
@@ -4552,38 +4593,38 @@ class TestCompileCircuitWithTableau:
 
     @pytest.mark.parametrize("up_to_paulis", [False, True])
     @pytest.mark.parametrize(
-        "circuit, expected_circuit",
+        ("circuit", "expected_circuit"),
         [
-            [Circuit(GateLayer(X(0))), Circuit()],
-            [
+            (Circuit(GateLayer(X(0))), Circuit()),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(X(0)), GateLayer(MZ(0))]),
                 Circuit([GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(X(0)), GateLayer(RZ(0))]),
                 Circuit([GateLayer(RZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(0)), GateLayer(X(0)), GateLayer(CX(0, 1))]),
                 Circuit([GateLayer(CX(0, 1))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(MZ(0)), GateLayer(X(0)), GateLayer(X(0))]),
                 Circuit([GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RZ(0)), GateLayer(X(0)), GateLayer(X(0))]),
                 Circuit([GateLayer(RZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(CX(0, 1)), GateLayer(X(0)), GateLayer(X(0))]),
                 Circuit([GateLayer(CX(0, 1))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RZ(0)), GateLayer(Z(0)), GateLayer(MZ(0))]),
                 Circuit([GateLayer(RZ(0)), GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(RZ(0)),
@@ -4593,22 +4634,22 @@ class TestCompileCircuitWithTableau:
                     ]
                 ),
                 Circuit([GateLayer(RZ(0)), GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(Z(0)), GateLayer(CX(0, 1)), GateLayer(RZ(0))]),
                 Circuit([GateLayer(CX(0, 1)), GateLayer(RZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(X(1)), GateLayer(CX(0, 1)), GateLayer(RZ(1))]),
                 Circuit([GateLayer(CX(0, 1)), GateLayer(RZ(1))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [GateLayer([Z(0), Z(1)]), GateLayer(CX(0, 1)), GateLayer(RZ(1))]
                 ),
                 Circuit([GateLayer(CX(0, 1)), GateLayer(RZ(1))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer([Z(0), Z(1)]),
@@ -4617,8 +4658,8 @@ class TestCompileCircuitWithTableau:
                     ]
                 ),
                 Circuit([GateLayer(CX(0, 1)), GateLayer([RZ(0), RZ(1)])]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -4628,8 +4669,8 @@ class TestCompileCircuitWithTableau:
                     ]
                 ),
                 Circuit([GateLayer(H(0)), GateLayer(CX(0, 1)), GateLayer(RZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(X(0)),
@@ -4639,8 +4680,8 @@ class TestCompileCircuitWithTableau:
                     ]
                 ),
                 Circuit([GateLayer(H(0)), GateLayer(CX(0, 1)), GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(RZ(0)),
@@ -4660,7 +4701,7 @@ class TestCompileCircuitWithTableau:
                         GateLayer(RZ(0)),
                     ]
                 ),
-            ],
+            ),
         ],
     )
     def test_compile_circuit_with_tableau_removes_unnecessary_pauli_terms(
@@ -4675,34 +4716,34 @@ class TestCompileCircuitWithTableau:
 
     @pytest.mark.parametrize("up_to_paulis", [False, True])
     @pytest.mark.parametrize(
-        "circuit, expected_circuit",
+        ("circuit", "expected_circuit"),
         [
-            [Circuit([GateLayer(X(0))]), Circuit()],
-            [Circuit([GateLayer([X(0), Z(1)])]), Circuit()],
-            [
+            (Circuit([GateLayer(X(0))]), Circuit()),
+            (Circuit([GateLayer([X(0), Z(1)])]), Circuit()),
+            (
                 Circuit([GateLayer([X(0), Z(1)]), GateLayer(RZ(0))]),
                 Circuit(GateLayer(RZ(0))),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(0), Z(1)]), GateLayer(RZ(1))]),
                 Circuit(GateLayer(RZ(1))),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(0), Z(4)]), GateLayer(RZ(0))]),
                 Circuit(GateLayer(RZ(0))),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(10), Z(1)]), GateLayer(RZ(1))]),
                 Circuit(GateLayer(RZ(1))),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(0), Z(1)]), GateLayer(MZ(1))]),
                 Circuit(GateLayer(MZ(1))),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([X(10), Z(1)]), GateLayer(MZ(1))]),
                 Circuit(GateLayer(MZ(1))),
-            ],
+            ),
         ],
     )
     def test_compile_circuit_with_tableau_drops_qubits_with_no_special_gates(
@@ -4858,9 +4899,9 @@ class TestCompileCircuitWithTableau:
             )
 
     @pytest.mark.parametrize(
-        "circ, native_gate_set, expected_circ",
+        ("circ", "native_gate_set", "expected_circ"),
         [
-            [
+            (
                 Circuit([GateLayer([CX(1, 0)]), GateLayer(MX(1)), GateLayer(RX(1))]),
                 NativeGateSet(
                     reset_gates=set({RZ}),
@@ -4880,8 +4921,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer(H(1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([CX(1, 0)]), GateLayer(MX(1)), GateLayer(RX(1))]),
                 NativeGateSet(
                     reset_gates=set({RZ}),
@@ -4898,26 +4939,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer(H(1)),
                     ]
                 ),
-            ],
-            [
-                Circuit([GateLayer([CX(1, 0)]), GateLayer(MX(1)), GateLayer(RX(1))]),
-                NativeGateSet(
-                    reset_gates=set({RZ}),
-                    measurement_gates=set({MZ}),
-                    two_qubit_gates=set({CZ}),
-                ),
-                Circuit(
-                    [
-                        GateLayer(H(0)),
-                        GateLayer(CZ(1, 0)),
-                        GateLayer([H(0), H(1)]),
-                        GateLayer(MZ(1)),
-                        GateLayer(RZ(1)),
-                        GateLayer(H(1)),
-                    ]
-                ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([CX(1, 0)]), GateLayer(MX(1)), GateLayer(RX(1))]),
                 NativeGateSet(
                     one_qubit_gates=set({H, S}),
@@ -4935,8 +4958,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer(H(1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RX(0), I(1)]), GateLayer([CZ(1, 0)])]),
                 NativeGateSet(
                     one_qubit_gates=set({H, S_DAG}),
@@ -4953,8 +4976,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer([S_DAG(0), S_DAG(1)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RX(0), I(1)]), GateLayer([CZ(1, 0)])]),
                 NativeGateSet(
                     one_qubit_gates=set({H}),
@@ -4970,8 +4993,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer(H(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RX(1), I(0)]), GateLayer([CZ(0, 1)])]),
                 NativeGateSet(
                     one_qubit_gates=set({H, S_DAG}),
@@ -4988,8 +5011,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer([S_DAG(1), S_DAG(0)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer([RX(0)]), GateLayer([CZ(1, 0)])]),
                 NativeGateSet(
                     one_qubit_gates=set({H, S_DAG}),
@@ -5006,8 +5029,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer([S_DAG(0), S_DAG(1)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(S(0)),
@@ -5021,8 +5044,8 @@ class TestCompileCircuitWithTableau:
                     measurement_gates=set({MZ}),
                 ),
                 Circuit([GateLayer(S(0)), GateLayer(H(0)), GateLayer(MZ(0))]),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         Circuit(
@@ -5173,7 +5196,7 @@ class TestCompileCircuitWithTableau:
                         )
                     ]
                 ),
-            ],
+            ),
         ],
     )
     class TestMemoryCircuitSnippets:
@@ -5192,9 +5215,9 @@ class TestCompileCircuitWithTableau:
                     assert type(gate) in native_gate_set.native_gates
 
     @pytest.mark.parametrize(
-        "circ, native_gate_set, expected_circ",
+        ("circ", "native_gate_set", "expected_circ"),
         [
-            [
+            (
                 Circuit([GateLayer(RX(1)), Circuit(GateLayer(RX(0)))]),
                 NativeGateSet(
                     reset_gates=set({RZ}),
@@ -5207,8 +5230,8 @@ class TestCompileCircuitWithTableau:
                         GateLayer(H(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit([GateLayer(RX(1)), Circuit(GateLayer(RX(0)), iterations=2)]),
                 NativeGateSet(
                     reset_gates=set({RZ}),
@@ -5227,8 +5250,8 @@ class TestCompileCircuitWithTableau:
                         ),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 Circuit(
                     [
                         GateLayer(RX(1)),
@@ -5262,7 +5285,7 @@ class TestCompileCircuitWithTableau:
                         ),
                     ]
                 ),
-            ],
+            ),
         ],
     )
     class TestCompileRepeatBlocks:
@@ -5282,16 +5305,16 @@ class TestCompileCircuitWithTableau:
 
     class TestNonSymmetric2QGates:
         @pytest.mark.parametrize(
-            "circ, native_gate_set, expected_circ",
+            ("circ", "native_gate_set", "expected_circ"),
             [
-                [
+                (
                     Circuit(
                         [GateLayer([H(0)]), GateLayer([CZ(0, 1)]), GateLayer([H(0)])]
                     ),
                     NativeGateSet(two_qubit_gates=set({CX})),
                     Circuit([GateLayer([CX(1, 0)])]),
-                ],
-                [
+                ),
+                (
                     Circuit(
                         [
                             GateLayer([H(0)]),
@@ -5301,8 +5324,8 @@ class TestCompileCircuitWithTableau:
                     ),
                     NativeGateSet(two_qubit_gates=set({CXSWAP})),
                     Circuit([GateLayer(CXSWAP(1, 0)), GateLayer([H(1), H(0)])]),
-                ],
-                [
+                ),
+                (
                     Circuit([GateLayer([CZ(1, 0)]), GateLayer([CZ(2, 0)])]),
                     NativeGateSet(two_qubit_gates=set({CX})),
                     Circuit(
@@ -5313,8 +5336,8 @@ class TestCompileCircuitWithTableau:
                             GateLayer(H(0)),
                         ]
                     ),
-                ],
-                [
+                ),
+                (
                     Circuit(
                         [
                             GateLayer(H(0)),
@@ -5325,8 +5348,8 @@ class TestCompileCircuitWithTableau:
                     ),
                     NativeGateSet(two_qubit_gates=set({CX})),
                     Circuit([GateLayer([CX(1, 0)]), GateLayer([CX(2, 0)])]),
-                ],
-                [  # this test gives suboptimal results, because the first entangling gate gives identical
+                ),
+                (  # this test gives suboptimal results, because the first entangling gate gives identical
                     # gate counts for both orientations, However, the compilation is better if it is reversed,
                     # due to the following gate. So the compilation can only guarantee optimal compilation if
                     # there is some more complex operation happening that relays information between gates.
@@ -5341,8 +5364,8 @@ class TestCompileCircuitWithTableau:
                             GateLayer(H(2)),
                         ]
                     ),
-                ],
-                [
+                ),
+                (
                     Circuit(
                         [
                             GateLayer([S_DAG(0), H(1)]),
@@ -5360,7 +5383,7 @@ class TestCompileCircuitWithTableau:
                             GateLayer([H(0), S(1)]),
                         ]
                     ),
-                ],
+                ),
             ],
         )
         def test_compiles_to_non_symmetric_2q_gates_optimally(
@@ -5371,9 +5394,9 @@ class TestCompileCircuitWithTableau:
             )
 
         @pytest.mark.parametrize(
-            "circ, native_gate_set, expected_circs",
+            ("circ", "native_gate_set", "expected_circs"),
             [
-                [
+                (
                     Circuit(
                         [
                             GateLayer(SQRT_Y(0)),
@@ -5387,8 +5410,8 @@ class TestCompileCircuitWithTableau:
                         two_qubit_gates=set({CX}), one_qubit_gates=set({X, SQRT_Y})
                     ),
                     [Circuit([GateLayer([CX(1, 0)])])],
-                ],
-                [
+                ),
+                (
                     Circuit(
                         [
                             GateLayer(Z(0)),
@@ -5402,8 +5425,8 @@ class TestCompileCircuitWithTableau:
                         two_qubit_gates=set({CX}), one_qubit_gates=set({Z, SQRT_Y})
                     ),
                     [Circuit([GateLayer([CX(1, 0)])])],
-                ],
-                [
+                ),
+                (
                     Circuit(
                         [
                             GateLayer(S(0)),
@@ -5436,7 +5459,7 @@ class TestCompileCircuitWithTableau:
                             ]
                         ),
                     ],
-                ],
+                ),
             ],
         )
         def test_compiles_to_non_symmetric_2q_gates_even_if_non_native_gate_in_order_swapping_unitaries(
@@ -5453,10 +5476,10 @@ class TestCompileOrExchangeUnitaryBlock:
         assert _compile_or_exchange_unitary_block([], {}, up_to_paulis) == []
 
     @pytest.mark.parametrize(
-        "ub, comp_dict, expected_ub",
+        ("ub", "comp_dict", "expected_ub"),
         [
-            [[X(0), X(0)], compilation_dict21, []],
-            [[S(0), SQRT_X(0), S(0)], compilation_dict21, [H(0)]],
+            ([X(0), X(0)], compilation_dict21, []),
+            ([S(0), SQRT_X(0), S(0)], compilation_dict21, [H(0)]),
         ],
     )
     def test_compiles_ub_to_shorter_option_when_available(
@@ -5465,10 +5488,10 @@ class TestCompileOrExchangeUnitaryBlock:
         assert _compile_or_exchange_unitary_block(ub, comp_dict, False) == expected_ub
 
     @pytest.mark.parametrize(
-        "ub, comp_dict, expected_ub",
+        ("ub", "comp_dict", "expected_ub"),
         [
-            [[X(0), X(0)], compilation_dict11_nosign, []],
-            [[S(0), SQRT_X(0), S(0)], compilation_dict11_nosign, [H(0)]],
+            ([X(0), X(0)], compilation_dict11_nosign, []),
+            ([S(0), SQRT_X(0), S(0)], compilation_dict11_nosign, [H(0)]),
         ],
     )
     def test_compiles_ub_to_shorter_option_when_available_with_up_to_paulis_True(
@@ -5477,12 +5500,12 @@ class TestCompileOrExchangeUnitaryBlock:
         assert _compile_or_exchange_unitary_block(ub, comp_dict, True) == expected_ub
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def random_qubit():
     return Qubit(random.randint(0, 1000))
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def random_gate_layer():
     return random.randint(0, 1000)
 
@@ -5579,85 +5602,71 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
             assert np.sum(circ.as_stim_circuit().compile_sampler().sample(100)) == 0
 
     @pytest.mark.parametrize(
-        "current_gate, preceding_ub, succeeding_ub, target_gate, expected_unitary_blocks",
+        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
         [
-            [
+            (
                 RX,
                 [X],
                 [],
                 RZ,
                 ([X], [H]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [],
                 [X],
                 RZ,
                 ([], [H, X]),
-            ],
-            [
-                RX,
-                [],
-                [X],
-                RZ,
-                ([], [H, X]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [Y],
                 [],
                 RZ,
                 ([Y], [H]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [],
                 [S],
                 RY,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RY,
                 [X],
                 [],
                 RZ,
                 ([X], [H, S]),
-            ],
-            [
+            ),
+            (
                 RY,
                 [],
                 [S_DAG, H],
                 RZ,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RY,
                 [S],
                 [],
                 RZ,
                 ([S], [H, S]),
-            ],
-            [
+            ),
+            (
                 RZ,
                 [],
                 [H, S],
                 RY,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RZ,
                 [X],
                 [],
                 RY,
                 ([X], [S_DAG, H]),
-            ],
-            [
-                RZ,
-                [],
-                [H, S],
-                RY,
-                ([], []),
-            ],
+            ),
         ],
     )
     def test_returns_correctly_compiled_unitary_blocks_with_unitaries_already_in_blocks(
@@ -5693,85 +5702,71 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         )
 
     @pytest.mark.parametrize(
-        "current_gate, preceding_ub, succeeding_ub, target_gate, expected_unitary_blocks",
+        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
         [
-            [
+            (
                 RX,
                 [X],
                 [],
                 RZ,
                 ([], [H]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [],
                 [X],
                 RZ,
                 ([], [H]),
-            ],
-            [
-                RX,
-                [],
-                [X],
-                RZ,
-                ([], [H]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [Y],
                 [],
                 RZ,
                 ([], [H]),
-            ],
-            [
+            ),
+            (
                 RX,
                 [],
                 [S],
                 RY,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RY,
                 [X],
                 [],
                 RZ,
                 ([], [H, S]),
-            ],
-            [
+            ),
+            (
                 RY,
                 [],
                 [S_DAG, H],
                 RZ,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RY,
                 [S],
                 [],
                 RZ,
                 ([S], [H, S]),
-            ],
-            [
+            ),
+            (
                 RZ,
                 [],
                 [H, S],
                 RY,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 RZ,
                 [X],
                 [],
                 RY,
                 ([], [S, H]),
-            ],
-            [
-                RZ,
-                [],
-                [H, S],
-                RY,
-                ([], []),
-            ],
+            ),
         ],
     )
     def test_returns_correctly_compiled_unitary_blocks_with_unitaries_already_in_blocks_with_up_to_paulis_True(
@@ -6011,106 +6006,106 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         ) == ([], [], gate.stim_string)
 
     @pytest.mark.parametrize(
-        "current_gate, preceding_ub, succeeding_ub, target_gate, expected_unitary_blocks",
+        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
         [
-            [
+            (
                 MX,
                 [X],
                 [],
                 MZ,
                 ([H, Z], [H]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [X],
                 [Y],
                 MZ,
                 ([H, Z], [H, Y]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [S],
                 [],
                 MY,
                 ([Z], [S_DAG]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [],
                 [H],
                 MZ,
                 ([H], []),
-            ],
-            [
+            ),
+            (
                 MY,
                 [S],
                 [],
                 MZ,
                 ([H], [H, S]),
-            ],
-            [
+            ),
+            (
                 MY,
                 [S_DAG],
                 [],
                 MZ,
                 ([H, X], [H, S]),
-            ],
-            [
+            ),
+            (
                 MZ,
                 [S_DAG],
                 [],
                 MY,
                 ([S_DAG, H, S], [S_DAG, H]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [X],
                 [X],
                 MRZ,
                 ([H, Z], [H, X]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [S],
                 [],
                 MRY,
                 ([Z], [S_DAG]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [S],
                 [S],
                 MRY,
                 ([Z], []),
-            ],
-            [
+            ),
+            (
                 MRY,
                 [S_DAG],
                 [],
                 MRX,
                 ([Z], [S]),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [],
                 [X],
                 MRZ,
                 ([], [X]),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [H],
                 [SQRT_X, X],
                 MRY,
                 ([S], [H, X]),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [S_DAG, Z],
                 [S_DAG, Z],
                 MRX,
                 ([S, H], [H, S]),
-            ],
+            ),
         ],
     )
     def test_returns_correctly_compiled_unitary_blocks(
@@ -6146,106 +6141,106 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         )
 
     @pytest.mark.parametrize(
-        "current_gate, preceding_ub, succeeding_ub, target_gate, expected_unitary_blocks",
+        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
         [
-            [
+            (
                 MX,
                 [X],
                 [],
                 MZ,
                 ([H], [H]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [X],
                 [Y],
                 MZ,
                 ([H], [H]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [S],
                 [],
                 MY,
                 ([], [S]),
-            ],
-            [
+            ),
+            (
                 MX,
                 [],
                 [H],
                 MZ,
                 ([H], []),
-            ],
-            [
+            ),
+            (
                 MY,
                 [S_DAG],
                 [],
                 MZ,
                 ([H], [H, S]),
-            ],
-            [
+            ),
+            (
                 MY,
                 [S],
                 [],
                 MZ,
                 ([H], [H, S]),
-            ],
-            [
+            ),
+            (
                 MZ,
                 [S],
                 [],
                 MY,
                 ([SQRT_X], [S, H]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [X],
                 [X],
                 MRZ,
                 ([H], [H]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [S],
                 [],
                 MRY,
                 ([], [S]),
-            ],
-            [
+            ),
+            (
                 MRX,
                 [S],
                 [S],
                 MRY,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 MRY,
                 [S_DAG],
                 [],
                 MRX,
                 ([], [S]),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [],
                 [X],
                 MRZ,
                 ([], []),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [H],
                 [SQRT_X, X],
                 MRY,
                 ([S], [H]),
-            ],
-            [
+            ),
+            (
                 MRZ,
                 [S_DAG, Z],
                 [S_DAG, Z],
                 MRX,
                 ([S, H], [H, S]),
-            ],
+            ),
         ],
     )
     def test_returns_correctly_compiled_unitary_blocks_with_up_to_paulis_True(
@@ -6289,9 +6284,9 @@ class TestCompileResetAndMeasToNativeGates:
 
     @pytest.mark.parametrize("up_to_paulis", [True, False])
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, comp_dict",
+        ("comp_data", "native_gate_set", "comp_dict"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6301,8 +6296,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RZ}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6312,8 +6307,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RY}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6323,8 +6318,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RX}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6334,8 +6329,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RX}), one_qubit_gates=set({X, Z})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6345,8 +6340,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RY}), one_qubit_gates=set({H})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6356,8 +6351,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MZ}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6367,8 +6362,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MY}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6378,8 +6373,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MX}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6393,8 +6388,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({}),
                 ),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -6408,8 +6403,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({}),
                 ),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6423,8 +6418,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({}),
                 ),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6434,8 +6429,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MRX}), one_qubit_gates=set({})),
                 compilation_dict0,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6445,8 +6440,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RZ}), one_qubit_gates=set({S})),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6456,8 +6451,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RY}), one_qubit_gates=set({H})),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6467,8 +6462,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RX}), one_qubit_gates=set({Z, X})),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6478,19 +6473,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(reset_gates=set({RX}), one_qubit_gates=set({X, Z})),
                 compilation_dict21,
-            ],
-            [
-                CompilationData(
-                    {0: [], 1: []},
-                    {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                    {},
-                ),
-                NativeGateSet(reset_gates=set({RY}), one_qubit_gates=set({H})),
-                compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6502,8 +6486,8 @@ class TestCompileResetAndMeasToNativeGates:
                     measurement_gates=set({MZ}), one_qubit_gates=set({S, SQRT_X})
                 ),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6513,8 +6497,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MY}), one_qubit_gates=set({H, X})),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6527,8 +6511,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({SQRT_X, SQRT_X_DAG}),
                 ),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6542,8 +6526,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({X, Z, S}),
                 ),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -6557,8 +6541,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({Y, H}),
                 ),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6572,8 +6556,8 @@ class TestCompileResetAndMeasToNativeGates:
                     one_qubit_gates=set({S_DAG, SQRT_X}),
                 ),
                 compilation_dict21,
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6583,7 +6567,7 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 NativeGateSet(measurement_gates=set({MRX}), one_qubit_gates=set({S})),
                 compilation_dict21,
-            ],
+            ),
         ],
     )
     def test_throws_ValueError_when_compilation_not_possible_because_of_non_native_unitaries(
@@ -6602,9 +6586,9 @@ class TestCompileResetAndMeasToNativeGates:
             )
 
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, comp_dict, expected_comp_data",
+        ("comp_data", "native_gate_set", "comp_dict", "expected_comp_data"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6621,8 +6605,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6639,8 +6623,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -6657,8 +6641,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6675,8 +6659,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6693,8 +6677,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -6711,8 +6695,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -6729,8 +6713,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -6747,8 +6731,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -6765,8 +6749,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6783,8 +6767,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6801,8 +6785,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: []},
                     {},
@@ -6821,8 +6805,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [Y(0)]},
                     {},
@@ -6841,8 +6825,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [Y(0)]},
                     {},
@@ -6861,8 +6845,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6881,8 +6865,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S_DAG(0)], 1: []},
                     {},
@@ -6901,8 +6885,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6919,8 +6903,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [H(1)]},
                     {},
@@ -6937,8 +6921,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6957,8 +6941,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6975,8 +6959,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -6993,8 +6977,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7011,8 +6995,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [X(0)]},
                     {},
@@ -7031,8 +7015,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7051,8 +7035,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S_DAG(0)], 1: []},
                     {},
@@ -7071,8 +7055,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S_DAG(0)], 1: [S(0)]},
                     {},
@@ -7091,46 +7075,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
-                CompilationData(
-                    {0: [], 1: []},
-                    {},
-                    {(0, Qubit(0), "MRX"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-                NativeGateSet(measurement_gates=set({MRZ}), one_qubit_gates=set({H})),
-                compilation_dict21,
-                CompilationData(
-                    {0: [H(0)], 1: [H(0)]},
-                    {},
-                    {(0, Qubit(0), "MRZ"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-            ],
-            [
-                CompilationData(
-                    {0: [], 1: []},
-                    {},
-                    {(0, Qubit(0), "MRX"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-                NativeGateSet(
-                    measurement_gates=set({MRY}), one_qubit_gates=set({S_DAG, S})
-                ),
-                compilation_dict21,
-                CompilationData(
-                    {0: [S(0)], 1: [S_DAG(0)]},
-                    {},
-                    {(0, Qubit(0), "MRY"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -7151,8 +7097,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -7173,8 +7119,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7195,8 +7141,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [  # 31
+            ),
+            (  # 31
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -7217,8 +7163,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7239,8 +7185,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -7261,8 +7207,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7283,8 +7229,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7305,8 +7251,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(0), X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7327,8 +7273,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(1), X(1)]},
                     {(1, Qubit(1), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7349,8 +7295,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(1), X(1)]},
                     {(1, Qubit(1), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -7371,8 +7317,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                     {
@@ -7400,8 +7346,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                     {
@@ -7429,7 +7375,7 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
+            ),
         ],
     )
     def test_compiles_resets_and_meas_to_native_gates_if_possible(
@@ -7451,9 +7397,9 @@ class TestCompileResetAndMeasToNativeGates:
         )
 
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, comp_dict, expected_comp_data",
+        ("comp_data", "native_gate_set", "comp_dict", "expected_comp_data"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -7470,8 +7416,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -7488,8 +7434,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -7506,8 +7452,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -7524,8 +7470,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -7542,8 +7488,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -7560,8 +7506,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -7578,8 +7524,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -7596,8 +7542,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -7614,8 +7560,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7632,8 +7578,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7650,8 +7596,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: []},
                     {},
@@ -7668,8 +7614,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [Y(0)]},
                     {},
@@ -7688,8 +7634,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [Y(0)]},
                     {},
@@ -7708,8 +7654,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7726,8 +7672,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S(0)], 1: []},
                     {},
@@ -7746,8 +7692,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7764,8 +7710,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [H(1)]},
                     {},
@@ -7782,8 +7728,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7800,8 +7746,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7818,8 +7764,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7836,8 +7782,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7854,8 +7800,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [X(0)], 1: [X(0)]},
                     {},
@@ -7874,8 +7820,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: []},
                     {},
@@ -7892,8 +7838,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S(0)], 1: []},
                     {},
@@ -7910,8 +7856,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [S(0)], 1: [S(0)]},
                     {},
@@ -7930,44 +7876,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
-                CompilationData(
-                    {0: [], 1: []},
-                    {},
-                    {(0, Qubit(0), "MRX"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-                NativeGateSet(measurement_gates=set({MRZ}), one_qubit_gates=set({H})),
-                compilation_dict11_nosign,
-                CompilationData(
-                    {0: [H(0)], 1: [H(0)]},
-                    {},
-                    {(0, Qubit(0), "MRZ"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-            ],
-            [
-                CompilationData(
-                    {0: [], 1: []},
-                    {},
-                    {(0, Qubit(0), "MRX"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-                NativeGateSet(measurement_gates=set({MRY}), one_qubit_gates=set({S})),
-                compilation_dict11_nosign,
-                CompilationData(
-                    {0: [S(0)], 1: [S(0)]},
-                    {},
-                    {(0, Qubit(0), "MRY"): {"preceding": 0, "succeeding": 1}},
-                    {},
-                    {},
-                ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -7988,8 +7898,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -8010,8 +7920,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8032,8 +7942,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -8054,8 +7964,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8076,8 +7986,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 1, "succeeding": 2}},
@@ -8098,8 +8008,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8120,8 +8030,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8142,8 +8052,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(0), X(0)]},
                     {(1, Qubit(0), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8164,8 +8074,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(1), X(1)]},
                     {(1, Qubit(1), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8186,8 +8096,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [H(1), X(1)]},
                     {(1, Qubit(1), "RX"): {"preceding": 1, "succeeding": 2}},
@@ -8210,7 +8120,7 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
+            ),
         ],
     )
     def test_compiles_resets_and_meas_to_native_gates_if_possible_with_up_to_paulis_True(
@@ -8232,9 +8142,9 @@ class TestCompileResetAndMeasToNativeGates:
         )
 
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, comp_dict, expected_comp_data",
+        ("comp_data", "native_gate_set", "comp_dict", "expected_comp_data"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {
@@ -8257,8 +8167,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {
@@ -8281,8 +8191,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {
@@ -8305,8 +8215,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {
@@ -8329,8 +8239,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8347,8 +8257,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8365,8 +8275,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8387,8 +8297,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8409,8 +8319,8 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8431,7 +8341,7 @@ class TestCompileResetAndMeasToNativeGates:
                     {},
                     {},
                 ),
-            ],
+            ),
         ],
     )
     def test_compiles_resets_and_meas_to_native_gates_with_more_complicated_structure(
@@ -8454,9 +8364,9 @@ class TestCompileResetAndMeasToNativeGates:
 
     @pytest.mark.parametrize("up_to_paulis", [False, True])
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, layer_ind_lookup, expected_layer_ind_lookup",
+        ("comp_data", "native_gate_set", "layer_ind_lookup", "expected_layer_ind_lookup"),
         [
-            [
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8467,8 +8377,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RX})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8479,8 +8389,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8491,8 +8401,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 1: 1},
                 {0: 0, 1: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(1, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8503,8 +8413,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 1, 2: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8515,8 +8425,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 2, 2: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -8527,8 +8437,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 1: 1},
                 {0: 0, 1: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8539,8 +8449,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(one_qubit_gates=set({S_DAG, H}), reset_gates=set({RY})),
                 {0: 0, 1: 1},
                 {0: 0, 1: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [H]},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8551,8 +8461,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 1: 1},
                 {0: 0, 1: 1},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [H]},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8563,8 +8473,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(reset_gates=set({RZ})),
                 {0: 0, 2: 2},
                 {0: 0, 2: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8575,8 +8485,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8587,8 +8497,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ})),
                 {3: 3},
                 {3: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8599,8 +8509,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MX})),
                 {0: 0},
                 {0: 1},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8611,8 +8521,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MX})),
                 {0: 0, 1: 1},
                 {0: 1, 1: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8625,8 +8535,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0},
                 {0: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8639,8 +8549,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0},
                 {0: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8653,8 +8563,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 2, 1: 5, 2: 6},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8667,8 +8577,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 2, 1: 5, 2: 6},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8681,8 +8591,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 1, 2: 4},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8695,8 +8605,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3},
                 {0: 0, 1: 1, 2: 4, 3: 7},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8709,8 +8619,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
                 {0: 0, 1: 1, 2: 4, 3: 7, 4: 8},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: []},
                     {},
@@ -8723,8 +8633,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
                 {0: 0, 1: 1, 2: 4, 3: 7, 4: 8},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8735,8 +8645,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8747,8 +8657,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ}), reset_gates=set({RZ})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(0, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8759,8 +8669,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ}), reset_gates=set({RZ})),
                 {0: 0, 1: 1},
                 {0: 0, 1: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(0, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8771,8 +8681,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ}), reset_gates=set({RZ})),
                 {0: 0, 1: 1},
                 {0: 1, 1: 3},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8783,8 +8693,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ}), reset_gates=set({RZ})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 2, 2: 4},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(1, Qubit(0), "RX"): {"preceding": 0, "succeeding": 1}},
@@ -8795,8 +8705,8 @@ class TestCompileResetAndMeasToNativeGates:
                 NativeGateSet(measurement_gates=set({MZ}), reset_gates=set({RZ})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 2, 2: 5},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(1, Qubit(0), "RZ"): {"preceding": 0, "succeeding": 1}},
@@ -8811,8 +8721,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 3, 2: 8},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: []},
                     {(1, Qubit(0), "RY"): {"preceding": 0, "succeeding": 1}},
@@ -8827,8 +8737,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 3, 2: 8},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                     {
@@ -8847,8 +8757,8 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 1, 2: 2},
-            ],
-            [
+            ),
+            (
                 (
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                     {
@@ -8867,7 +8777,7 @@ class TestCompileResetAndMeasToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 0, 1: 1, 2: 2},
-            ],
+            ),
         ],
     )
     def test_shifts_following_layers_to_accommodate_new_unitaries(
@@ -9180,10 +9090,10 @@ class TestCompileTwoQubitGateToTarget:
         )
 
     @pytest.mark.parametrize(
-        "gate, target_gate, expected_unitaries",
+        ("gate", "target_gate", "expected_unitaries"),
         [
-            [CY, CX, ([], [], [S_DAG(1), H(1), H(1)], [H(1), H(1), S(1)])],
-            [
+            (CY, CX, ([], [], [S_DAG(1), H(1), H(1)], [H(1), H(1), S(1)])),
+            (
                 CX,
                 CY,
                 (
@@ -9192,14 +9102,14 @@ class TestCompileTwoQubitGateToTarget:
                     [H(1), H(1), S(1)],
                     [S_DAG(1), H(1), H(1)],
                 ),
-            ],
-            [
+            ),
+            (
                 CX,
                 SQRT_XX,
                 ([H(0)], [H(0), S_DAG(0)], [H(1), H(1)], [H(1), S_DAG(1), H(1)]),
-            ],
-            [SQRT_XX, CX, ([H(0)], [S(0), H(0)], [H(1), H(1)], [H(1), S(1), H(1)])],
-            [
+            ),
+            (SQRT_XX, CX, ([H(0)], [S(0), H(0)], [H(1), H(1)], [H(1), S(1), H(1)])),
+            (
                 CX,
                 SQRT_YY_DAG,
                 (
@@ -9208,8 +9118,8 @@ class TestCompileTwoQubitGateToTarget:
                     [H(1), H(1), S_DAG(1)],
                     [S(1), H(1), S_DAG(1), H(1)],
                 ),
-            ],
-            [
+            ),
+            (
                 SQRT_YY_DAG,
                 CX,
                 (
@@ -9218,7 +9128,7 @@ class TestCompileTwoQubitGateToTarget:
                     [S(1), H(1), H(1)],
                     [H(1), S(1), H(1), S_DAG(1)],
                 ),
-            ],
+            ),
         ],
     )
     def test_compiling_between_gates_stacks_unitaries_in_correct_way(
@@ -9238,10 +9148,10 @@ class TestCompileTwoQubitGateToTarget:
         )
 
     @pytest.mark.parametrize(
-        "gate, target_gate, expected_unitaries",
+        ("gate", "target_gate", "expected_unitaries"),
         [
-            [ISWAP, CZSWAP, ([], [S(0)], [], [S(1)])],
-            [
+            (ISWAP, CZSWAP, ([], [S(0)], [], [S(1)])),
+            (
                 ISWAP,
                 ISWAP_DAG,
                 (
@@ -9250,17 +9160,17 @@ class TestCompileTwoQubitGateToTarget:
                     [S(1)],
                     [S(1)],
                 ),
-            ],
-            [
+            ),
+            (
                 ISWAP_DAG,
                 CXSWAP,
                 ([S_DAG(0)], [H(0)], [S_DAG(1), H(1)], []),
-            ],
-            [
+            ),
+            (
                 ISWAP_DAG,
                 CZSWAP,
                 ([S_DAG(0)], [], [S_DAG(1)], []),
-            ],
+            ),
         ],
     )
     def test_compiling_between_gates_stacks_unitaries_in_correct_way_iswaplike(
@@ -9280,12 +9190,12 @@ class TestCompileTwoQubitGateToTarget:
         )
 
     @pytest.mark.parametrize(
-        "gate, target_gate, gate_to_interm_rep_dict",
+        ("gate", "target_gate", "gate_to_interm_rep_dict"),
         [
-            [CX, CZ, GATE_TO_CZSWAP_DICT],
-            [CZ, CX, GATE_TO_CZSWAP_DICT],
-            [CXSWAP, CZSWAP, GATE_TO_CZ_DICT],
-            [CZSWAP, CXSWAP, GATE_TO_CZ_DICT],
+            (CX, CZ, GATE_TO_CZSWAP_DICT),
+            (CZ, CX, GATE_TO_CZSWAP_DICT),
+            (CXSWAP, CZSWAP, GATE_TO_CZ_DICT),
+            (CZSWAP, CXSWAP, GATE_TO_CZ_DICT),
         ],
     )
     def test_specifying_wrong_dictionary_gives_ValueError(
@@ -9513,9 +9423,9 @@ class TestCompileTwoQubitGatesToNativeGates:
         )
 
     @pytest.mark.parametrize(
-        "comp_data, target_gate, expected_unitary_blocks",
+        ("comp_data", "target_gate", "expected_unitary_blocks"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9528,8 +9438,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CX,
                 {0: [], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [H(0)], 1: [], 2: [], 3: []},
                     {},
@@ -9542,8 +9452,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CX,
                 {0: [H(0)], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9557,8 +9467,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 CY,
                 # s_dag * s_dag * s_dag == s
                 {0: [], 1: [], 2: [S(1)], 3: [S_DAG(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [S_DAG(1)], 3: [S(1)]},
                     {},
@@ -9571,8 +9481,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CY,
                 {0: [], 1: [], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9585,8 +9495,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CZ,
                 {0: [], 1: [], 2: [H(1)], 3: [H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
                     {},
@@ -9601,8 +9511,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CZ,
                 {0: [], 1: [], 2: [H(1)], 3: [], 4: [], 5: [H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                     {},
@@ -9617,8 +9527,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CZ,
                 {0: [], 1: [], 2: [H(1)], 3: [H(1)], 4: [], 5: [H(2)], 6: [H(2)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9631,8 +9541,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 SQRT_XX,
                 {0: [H(0)], 1: [H(0), S_DAG(0)], 2: [], 3: [H(1), S_DAG(1), H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9646,8 +9556,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 SQRT_XX_DAG,
                 # sqrt_x = h * s_dag * s_dag * s_dag * h
                 {0: [H(0)], 1: [H(0), S(0)], 2: [], 3: [SQRT_X(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9660,8 +9570,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 SQRT_YY,
                 {0: [H(0), S(0)], 1: [SQRT_X(0)], 2: [S(1)], 3: [H(1), S(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9679,8 +9589,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                     2: [S_DAG(1)],
                     3: [S(1), H(1), S_DAG(1), H(1)],
                 },
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9693,8 +9603,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 SQRT_ZZ,
                 {0: [], 1: [S_DAG(0)], 2: [H(1)], 3: [S_DAG(1), H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9707,8 +9617,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 SQRT_ZZ_DAG,
                 {0: [], 1: [S(0)], 2: [H(1)], 3: [S(1), H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9726,8 +9636,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                     2: [H(1)],
                     3: [H(1), S_DAG(1)],
                 },
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [H(1)], 4: [], 5: [H(1)]},
                     {(2, Qubit(1), "RZ"): {"preceding": 4, "succeeding": 5}},
@@ -9747,8 +9657,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                     4: [],
                     5: [H(1)],
                 },
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9761,8 +9671,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 YCX,
                 {0: [H(0), S(0)], 1: [S_DAG(0), H(0)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9775,8 +9685,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CX,
                 {0: [S_DAG(0), H(0)], 1: [H(0), S(0)], 2: [], 3: []},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9789,8 +9699,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 YCZ,
                 {0: [H(0), S(0)], 1: [S_DAG(0), H(0)], 2: [H(1)], 3: [H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9803,8 +9713,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 CX,
                 {0: [S_DAG(0), H(0)], 1: [H(0), S(0)], 2: [H(1)], 3: [H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9817,8 +9727,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 YCZ,
                 {0: [], 1: [], 2: [H(1)], 3: [H(1)]},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9831,7 +9741,7 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 YCX,
                 {0: [], 1: [], 2: [H(1)], 3: [H(1)]},
-            ],
+            ),
         ],
     )
     def test_unitary_blocks_correct_when_compilation_successful(
@@ -9896,9 +9806,9 @@ class TestCompileTwoQubitGatesToNativeGates:
             )
 
     @pytest.mark.parametrize(
-        "comp_data, native_gate_set, layer_ind_lookup, expected_layer_ind_lookup",
+        ("comp_data", "native_gate_set", "layer_ind_lookup", "expected_layer_ind_lookup"),
         [
-            [
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9912,8 +9822,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CX})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9927,8 +9837,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CXSWAP})),
                 {0: 0},
                 {0: 0},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9942,8 +9852,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CZ})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 3, 2: 4},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9957,8 +9867,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CZSWAP})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 3, 2: 4},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9972,8 +9882,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CX})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 3, 2: 4},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -9987,8 +9897,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 NativeGateSet(two_qubit_gates=set({CXSWAP})),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 3, 2: 4},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -10004,8 +9914,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 4, 2: 5},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -10021,8 +9931,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 4, 2: 5},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
                     {(2, Qubit(0), "RX"): {"preceding": 5, "succeeding": 6}},
@@ -10041,8 +9951,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3},
                 {0: 1, 1: 4, 2: 5, 3: 6},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [H(0)], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [H(0)]},
                     {(3, Qubit(0), "RZ"): {"preceding": 5, "succeeding": 6}},
@@ -10061,8 +9971,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3, 4: 4},
                 {0: 1, 1: 4, 2: 5, 3: 6, 4: 7},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -10078,8 +9988,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2},
                 {0: 1, 1: 5, 2: 6},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -10095,8 +10005,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3},
                 {0: 0, 1: 2, 2: 6, 3: 7},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: []},
                     {},
@@ -10112,8 +10022,8 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3},
                 {0: 0, 1: 2, 2: 5, 3: 6},
-            ],
-            [
+            ),
+            (
                 CompilationData(
                     {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: []},
                     {(2, Qubit(0), "RX"): {"preceding": 5, "succeeding": 6}},
@@ -10134,7 +10044,7 @@ class TestCompileTwoQubitGatesToNativeGates:
                 ),
                 {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5},
                 {0: 1, 1: 4, 2: 5, 3: 7, 4: 10, 5: 11},
-            ],
+            ),
         ],
     )
     def test_shifts_following_layers_to_accommodate_new_unitaries(

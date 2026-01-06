@@ -8,17 +8,18 @@ experimental standard.
 
 from dataclasses import dataclass
 
-from deltakit_circuit import (after_reset_flip_probability,
-                              measurement_noise_profile)
+from deltakit_circuit import after_reset_flip_probability, measurement_noise_profile
 from deltakit_circuit.gates import TWO_QUBIT_GATES, OneQubitCliffordGate
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._leakage_noise_profiles import (
     idle_qubit_relaxation_noise_profile,
     one_qubit_clifford_gate_relaxation_noise_profile,
     qubit_reset_leakage_noise_profile,
     resonator_idle_qubit_relaxation_noise_profile,
     two_qubit_gate_leakage_noise_profile,
-    two_qubit_gate_relaxation_noise_profile)
+    two_qubit_gate_relaxation_noise_profile,
+)
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 

@@ -8,14 +8,16 @@ from __future__ import annotations
 
 from collections.abc import Collection, Iterable
 
+from bposd.css import css_code
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
-from deltakit_explorer.codes._css._stabiliser_helper_functions import \
-    pauli_gates_to_stim_pauli_string
-from deltakit_explorer.codes._stabiliser import Stabiliser
 from numpy.typing import NDArray
 from stim import PauliString, Tableau
-from bposd.css import css_code
+
+from deltakit_explorer.codes._css._stabiliser_helper_functions import (
+    pauli_gates_to_stim_pauli_string,
+)
+from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
 def paulistring_to_operator(

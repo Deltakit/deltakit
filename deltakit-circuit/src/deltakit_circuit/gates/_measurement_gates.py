@@ -4,15 +4,11 @@
 from __future__ import annotations
 
 import math
-from typing import ClassVar, get_args
 from collections.abc import Iterable, Mapping
+from typing import ClassVar, get_args
 
 import stim
-from deltakit_circuit.gates._abstract_gates import (
-    Gate,
-    OneQubitMeasurementGate,
-    PauliBasis,
-)
+
 from deltakit_circuit._qubit_identifiers import (
     MeasurementPauliProduct,
     Qubit,
@@ -20,6 +16,11 @@ from deltakit_circuit._qubit_identifiers import (
     U,
     _InvertiblePauliGate,
     _PauliGate,
+)
+from deltakit_circuit.gates._abstract_gates import (
+    Gate,
+    OneQubitMeasurementGate,
+    PauliBasis,
 )
 
 
@@ -345,9 +346,10 @@ class MPP(Gate[T]):
             | MeasurementPauliProduct[T]
         ),
         probability: float = 0.0,
+        *,
         tag: str | None = None,
     ):
-        super().__init__(tag)
+        super().__init__(tag=tag)
         if not 0 <= probability <= 1:
             msg = "Probability must be between zero and one."
             raise ValueError(msg)

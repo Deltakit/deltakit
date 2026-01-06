@@ -4,7 +4,7 @@ import stim
 
 
 @pytest.mark.parametrize(
-    "stim_circuit1, stim_circuit2",
+    ("stim_circuit1", "stim_circuit2"),
     [
         (
             stim.Circuit("I 0\nM 0\nDETECTOR rec[-1]"),

@@ -74,7 +74,9 @@ class DataString:
         Returns:
             DataString: object representing the data.
         """
-        with open(filename, "rb") as file:
+        if isinstance(filename, str):
+            filename = Path(filename)
+        with filename.open("rb") as file:
             return DataString(file.read())
 
     @staticmethod

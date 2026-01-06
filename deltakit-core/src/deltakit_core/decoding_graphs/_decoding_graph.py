@@ -6,22 +6,25 @@ from __future__ import annotations
 import math
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from dataclasses import dataclass
-from functools import cached_property
-from itertools import chain, tee
-from typing import ClassVar, Generic, TypeGuard, TypeVar, cast
 from collections.abc import (
     Callable,
     Iterable,
     Iterator,
     Mapping,
     Sequence,
+)
+from collections.abc import (
     Set as AbstractSet,
 )
+from dataclasses import dataclass
+from functools import cached_property
+from itertools import chain, tee
+from typing import ClassVar, Generic, TypeGuard, TypeVar, cast
 
 import networkx as nx
 import numpy as np
 import numpy.typing as npt
+
 from deltakit_core.decoding_graphs._data_qubits import (
     DecodingEdge,
     DecodingHyperEdge,

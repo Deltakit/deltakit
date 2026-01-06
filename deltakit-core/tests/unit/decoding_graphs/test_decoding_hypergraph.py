@@ -7,6 +7,8 @@ from itertools import combinations
 import numpy as np
 import numpy.typing as npt
 import pytest
+from pytest_lazy_fixtures import lf
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DecodingHyperGraph,
@@ -14,7 +16,6 @@ from deltakit_core.decoding_graphs import (
     EdgeRecord,
     OrderedSyndrome,
 )
-from pytest_lazy_fixtures import lf
 
 
 def decoding_hypergraph_with_hyperedges():
@@ -84,7 +85,7 @@ class TestDecodingHyperGraph:
         assert hypergraph.edge_records == reference_graph.edge_records
 
     @pytest.mark.parametrize(
-        "hypergraph, expected_edges",
+        ("hypergraph", "expected_edges"),
         [
             (
                 decoding_hypergraph_with_hyperedges(),
@@ -118,7 +119,7 @@ class TestDecodingHyperGraph:
         assert hypergraph_edges == expected_edges
 
     @pytest.mark.parametrize(
-        "hypergraph, expected_nodes",
+        ("hypergraph", "expected_nodes"),
         [
             (decoding_hypergraph_with_hyperedges(), {0, 1, 2, 3, 4, 5, 6}),
             (decoding_hypergraph_without_hyperedges(), {0, 1, 2, 3, 4, 5, 6}),
@@ -134,7 +135,7 @@ class TestDecodingHyperGraph:
         )
 
     @pytest.mark.parametrize(
-        "hypergraph, non_existent_hyperedge",
+        ("hypergraph", "non_existent_hyperedge"),
         [
             (
                 decoding_hypergraph_with_hyperedges(),
@@ -158,7 +159,7 @@ class TestDecodingHyperGraph:
             hypergraph.get_edge(non_existent_hyperedge)
 
     @pytest.mark.parametrize(
-        "graph, edge_dets, expected_record",
+        ("graph", "edge_dets", "expected_record"),
         [
             (
                 DecodingHyperGraph(
@@ -207,7 +208,7 @@ class TestDecodingHyperGraph:
         )
 
     @pytest.mark.parametrize(
-        "edge_ints, expected_boundary_ints",
+        ("edge_ints", "expected_boundary_ints"),
         [
             ([(0, 1, 2), (2, 3, 6), (1, 4, 5)], []),
             ([(0, 1), (2, 3), (5,), (5, 6)], [5]),
@@ -228,7 +229,7 @@ class TestDecodingHyperGraph:
         )
 
     @pytest.mark.parametrize(
-        "hypergraph, syndromes, expected_edges",
+        ("hypergraph", "syndromes", "expected_edges"),
         [
             (
                 decoding_hypergraph_without_hyperedges(),
@@ -260,7 +261,7 @@ class TestDecodingHyperGraph:
             assert incident_edges == expected_edge
 
     @pytest.mark.parametrize(
-        "hypergraph, expected_neighbours",
+        ("hypergraph", "expected_neighbours"),
         [
             (
                 decoding_hypergraph_without_hyperedges(),
@@ -280,7 +281,7 @@ class TestDecodingHyperGraph:
         assert neighbours == expected_neighbours
 
     @pytest.mark.parametrize(
-        "edge_data, detector_records, expected_boundary, expected_nx_edges",
+        ("edge_data", "detector_records", "expected_boundary", "expected_nx_edges"),
         [
             (
                 [(1, 2), (2, 3), (2,), (3,)],
@@ -354,7 +355,7 @@ class TestDecodingHyperGraph:
             hypergraph.to_nx_decoding_graph()
 
     @pytest.mark.parametrize(
-        "hypergraph, expected_parity_check_matrix",
+        ("hypergraph", "expected_parity_check_matrix"),
         [
             (DecodingHyperGraph([]), np.empty((0, 0), dtype=np.bool_)),
             (DecodingHyperGraph([(0,)]), np.array([[1]])),
