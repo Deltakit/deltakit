@@ -122,7 +122,7 @@ def plot_logical_error_probability_per_round(
     ax.plot(
         rounds_interpolated,
         lep_interpolated,
-        label=f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
+        label=f"Fit ε={leppr:.4g} ± {num_sigmas * leppr_stddev:.2g}",
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
@@ -141,8 +141,9 @@ def plot_logical_error_probability_per_round(
         rounds_interpolated,
         np.clip(lep_interpolated_low, 0, 1),
         np.clip(lep_interpolated_high, 0, 1),
-        color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        color=RIVERLANE_PLOT_COLOURS[1],
+        alpha=0.2,
+        label=f"Fit with {num_sigmas}σ"  # noqa: RUF001
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")

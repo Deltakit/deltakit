@@ -78,7 +78,7 @@ def plot_lambda(
         lep_per_round,
         yerr=lep_per_round_stddev,
         fmt=".",
-        color=RIVERLANE_PLOT_COLOURS[1],
+        color=RIVERLANE_PLOT_COLOURS[0],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
@@ -90,7 +90,7 @@ def plot_lambda(
     ax.plot(
         distances_interpolated,
         lambda_interpolated,
-        label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
+        label=f"Fit Λ={lambda_:.4g} ± {num_sigmas * lambda_stddev:.2g}",
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
@@ -110,7 +110,8 @@ def plot_lambda(
         lambda_interpolated_low,
         lambda_interpolated_high,
         color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        alpha=0.2,
+        label=f"Fit with {num_sigmas}σ"  # noqa: RUF001
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")
