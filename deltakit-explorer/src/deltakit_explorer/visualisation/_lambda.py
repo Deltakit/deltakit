@@ -66,11 +66,11 @@ def plot_lambda(
 
     lengths = {len(distances), len(lep_per_round)}
     if lep_per_round_stddev is not None:
-        lens.add(len(lep_per_round_stddev))
-    if len(lens) > 1:
+        lengths.add(len(lep_per_round_stddev))
+    if len(lengths) > 1:
         msg = (
             "The lengths of 'distances', 'lep_per_round' and 'lep_per_round_stddev' "
-            f"must be the same. Got the following lengths: {lens}."
+            f"must be the same. Got the following lengths: {lengths}."
         )
         raise ValueError(msg)
 
