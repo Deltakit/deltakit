@@ -3,6 +3,7 @@ import pytest
 from deltakit_circuit import Circuit, GateLayer, NoiseContext, Qubit
 from deltakit_circuit.gates import CX, MZ, RZ, H
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise import ToyNoise
 
 
@@ -27,7 +28,7 @@ class TestToyNoise:
         )
 
     @pytest.mark.parametrize(
-        "input_layer, expected_output_layers",
+        ("input_layer", "expected_output_layers"),
         [
             (
                 GateLayer([H(Qubit(1)), CX(0, 2)]),
@@ -77,7 +78,7 @@ class TestToyNoise:
             NoiseContext(circuit, layer)
         ) == [depolarize_1]
 
-    @pytest.mark.parametrize("toy_noise, str_val", [
+    @pytest.mark.parametrize(("toy_noise", "str_val"), [
         (ToyNoise(p=0.123), "toy_noise_1e-01"),
         (ToyNoise(p=0.123, p_measurement_flip=0.234), "toy_noise_1e-01_2e-01")
     ])

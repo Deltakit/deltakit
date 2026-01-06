@@ -632,7 +632,7 @@ def test_hash(empty_circuit: sp.Circuit):
         sp.ShiftCoordinates((1, 1, 1), tag="tag"),
     ],
 )
-def test_circuit_with_tag_exports(body) -> None:
+def test_circuit_with_tag_exports_does_not_raise(body) -> None:
     circuit_with_tags: sp.Circuit[int] = sp.Circuit()
     circuit_with_tags.append_layers([body])
     circuit_with_tags.as_stim_circuit()

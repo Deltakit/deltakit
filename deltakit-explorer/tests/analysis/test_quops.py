@@ -69,7 +69,7 @@ def test_predict_distance_for_quops_method_raises_when_quops_too_big():
 
 
 @pytest.mark.parametrize(
-    "lambda0, lambda_, distance, quops",
+    ("lambda0", "lambda_", "distance", "quops"),
     [
         (1.0e-3, 2.0, 11, 5819.090965902487),
         (1.0e-2, 1.5, 5, 68.30475477033615),
@@ -84,7 +84,7 @@ def test_predict_qoups_by_distance_constants(lambda0, lambda_, distance, quops):
 
 
 @pytest.mark.parametrize(
-    "lambda0, lambda_, distance, quops",
+    ("lambda0", "lambda_", "distance", "quops"),
     [
         (1.0e-3, 2.0, 11, 5800),
         (1.0e-2, 1.5, 1, 65),

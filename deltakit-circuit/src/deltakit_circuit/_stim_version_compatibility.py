@@ -1,14 +1,13 @@
-import importlib
-import importlib.metadata
 import warnings
+from importlib.metadata import PackageNotFoundError, version
 
 from packaging.version import Version
 
 
 def _get_stim_version() -> Version:
     try:
-        return Version(importlib.metadata.version("stim"))
-    except AttributeError:
+        return Version(version("stim"))
+    except PackageNotFoundError:
         warnings.warn(
             "Could not get the current version of 'stim'. Assuming 0.0.1.", stacklevel=1
         )

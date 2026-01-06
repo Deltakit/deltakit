@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+
 from deltakit_explorer.enums import DataFormat
 from deltakit_explorer.types import BinaryDataType, DataString, DecodingResult
 
@@ -127,7 +128,8 @@ def test_join_raises_on_nonaligned_rows(items):
             )
         )
         result[-1].predictions = predictions
-    with pytest.raises(ValueError):
+    msg = "all the input array dimensions except for the concatenation axis must match exactly"
+    with pytest.raises(ValueError, match=msg):
         DecodingResult.combine(result)
 
 

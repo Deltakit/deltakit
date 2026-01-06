@@ -1,6 +1,12 @@
 import pytest
-from deltakit_explorer.types._experiment_types import QECExperimentDefinition, QECExperimentType, QECECodeType, PauliBasis
-from deltakit_explorer.types._experiment_types import QECExperiment
+
+from deltakit_explorer.types._experiment_types import (
+    PauliBasis,
+    QECECodeType,
+    QECExperiment,
+    QECExperimentDefinition,
+    QECExperimentType,
+)
 
 
 def test_get_parameters_gql_string_none():

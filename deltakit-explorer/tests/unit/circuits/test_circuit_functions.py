@@ -1,14 +1,24 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import pytest
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              NoiseLayer, Observable, ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    NoiseLayer,
+    Observable,
+    ShiftCoordinates,
+)
 from deltakit_circuit.gates import CX, CZ, MZ, RZ, H, I, PauliBasis, S, X
 from deltakit_circuit.noise_channels import Depolarise2
-from deltakit_explorer.qpu._circuits import (merge_layers,
-                                             parallelise_disjoint_circuits,
-                                             parallelise_same_length_circuits,
-                                             remove_identities)
+
+from deltakit_explorer.qpu._circuits import (
+    merge_layers,
+    parallelise_disjoint_circuits,
+    parallelise_same_length_circuits,
+    remove_identities,
+)
 
 
 def single_stabiliser(circuit_spec: tuple[PauliBasis, str]):
@@ -45,7 +55,7 @@ def single_stabiliser(circuit_spec: tuple[PauliBasis, str]):
 
 class TestParalleliseDisjointCircuits:
     @pytest.mark.parametrize(
-        "circuits, expected_parallelised_circuit",
+        ("circuits", "expected_parallelised_circuit"),
         [
             (
                 [
@@ -114,7 +124,7 @@ class TestParalleliseDisjointCircuits:
         assert parallelised_circuit == expected_parallelised_circuit
 
     @pytest.mark.parametrize(
-        "circuits, expected_parallelised_circuit",
+        ("circuits", "expected_parallelised_circuit"),
         [
             (
                 [
@@ -245,7 +255,7 @@ class TestParalleliseDisjointCircuits:
         assert parallelised_circuit == expected_parallelised_circuit
 
     @pytest.mark.parametrize(
-        "circuits, expected_parallelised_circuit",
+        ("circuits", "expected_parallelised_circuit"),
         [
             (
                 [
@@ -441,7 +451,7 @@ class TestParalleliseDisjointCircuits:
 
 class TestParalleliseSameLengthCircuits:
     @pytest.mark.parametrize(
-        "circuits, expected_parallelised_circuit",
+        ("circuits", "expected_parallelised_circuit"),
         [
             (
                 [
@@ -541,7 +551,7 @@ class TestParalleliseSameLengthCircuits:
 
 class TestRemoveIdentities:
     @pytest.mark.parametrize(
-        "input_circuit, expected_output_circuit",
+        ("input_circuit", "expected_output_circuit"),
         [
             (
                 Circuit(
@@ -661,7 +671,7 @@ class TestRemoveIdentities:
 
 class TestMergeLayers:
     @pytest.mark.parametrize(
-        "input_circuit, expected_output_circuit",
+        ("input_circuit", "expected_output_circuit"),
         [
             (
                 Circuit(
@@ -721,7 +731,7 @@ class TestMergeLayers:
         assert merge_layers(input_circuit) == expected_output_circuit
 
     @pytest.mark.parametrize(
-        "input_circuit, expected_output_circuit",
+        ("input_circuit", "expected_output_circuit"),
         [
             (
                 Circuit(

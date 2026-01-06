@@ -9,9 +9,14 @@ experimental standard.
 from dataclasses import dataclass
 
 from deltakit_circuit import measurement_noise_profile
-from deltakit_circuit.gates import (TWO_QUBIT_GATES, OneQubitCliffordGate,
-                                    OneQubitMeasurementGate, OneQubitResetGate)
+from deltakit_circuit.gates import (
+    TWO_QUBIT_GATES,
+    OneQubitCliffordGate,
+    OneQubitMeasurementGate,
+    OneQubitResetGate,
+)
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 

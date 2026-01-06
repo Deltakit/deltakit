@@ -1,9 +1,16 @@
-import pytest
 import numpy as np
-from deltakit_explorer._utils._decorators import validate_and_split_decoding, validate_generation
-from deltakit_explorer.types._types import DetectionEvents, ObservableFlips, Decoder
+import pytest
+
+from deltakit_explorer._utils._decorators import (
+    validate_and_split_decoding,
+    validate_generation,
+)
 from deltakit_explorer.enums._api_enums import DecoderType, QECECodeType
-from deltakit_explorer.types._experiment_types import QECExperimentDefinition, CircuitParameters
+from deltakit_explorer.types._experiment_types import (
+    CircuitParameters,
+    QECExperimentDefinition,
+)
+from deltakit_explorer.types._types import Decoder, DetectionEvents, ObservableFlips
 
 
 @pytest.mark.parametrize("decoder_type", [DecoderType.MWPM, DecoderType.LCD, DecoderType.BP_OSD])
@@ -36,5 +43,5 @@ def test_validate_and_split_decoding_negative():
     dets = DetectionEvents(np.ones((10, 2)), "B8", 2)
     obs = ObservableFlips(np.ones((10, 2)), "B8", 2)
     decoder = Decoder(DecoderType.MWPM)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception, match="fail"):
         dummy(None, dets, obs, decoder, "CIRCUIT")
