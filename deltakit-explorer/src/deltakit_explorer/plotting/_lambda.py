@@ -109,7 +109,7 @@ def plot_lambda(
         distances_interpolated,
         lambda_interpolated_low,
         lambda_interpolated_high,
-        color=RIVERLANE_PLOT_COLOURS[0],
+        color=RIVERLANE_PLOT_COLOURS[1],
         alpha=0.2,
         label=f"Fit with {num_sigmas}σ"  # noqa: RUF001
     )
