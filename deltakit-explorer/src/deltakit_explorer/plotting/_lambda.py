@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis._lambda import LambdaResults
 
+
 def _lambda_interpolated(
     lambda0: float, lambda_: float, distances: npt.NDArray[numpy.int_]
 ) -> npt.NDArray[numpy.floating]:
