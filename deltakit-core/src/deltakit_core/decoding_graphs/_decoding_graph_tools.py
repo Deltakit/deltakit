@@ -4,12 +4,14 @@
 import decimal
 import json
 import math
+from collections.abc import Iterable
+from collections.abc import Set as AbstractSet
 from typing import no_type_check
-from collections.abc import Iterable, Set as AbstractSet
 
 import networkx as nx
 import numpy as np
-from deltakit_core.decoding_graphs import (
+
+from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,
     DecodingEdge,
     DecodingHyperGraph,

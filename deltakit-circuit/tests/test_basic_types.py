@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
+
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 
 

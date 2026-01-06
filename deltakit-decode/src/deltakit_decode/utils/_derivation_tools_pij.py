@@ -1,20 +1,27 @@
 # (c) Copyright Riverlane 2020-2025.
 
-from collections.abc import Callable
 import math
+from collections.abc import Callable
 from itertools import combinations
 
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge, DecodingHyperEdge,
-                                           DecodingHyperGraph, EdgeRecord,
-                                           HyperMultiGraph, NXDecodingGraph,
-                                           dem_to_decoding_graph_and_logicals,
-                                           dem_to_hypergraph_and_logicals)
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    DecodingHyperEdge,
+    DecodingHyperGraph,
+    EdgeRecord,
+    HyperMultiGraph,
+    NXDecodingGraph,
+    dem_to_decoding_graph_and_logicals,
+    dem_to_hypergraph_and_logicals,
+)
 
-from deltakit_decode.utils._derivation_tools import (_calculate_edge_prob_with_higher_degrees,
-                                                     _d1_formula,
-                                                     _n1_formula,
-                                                     _n2_formula)
+from deltakit_decode.utils._derivation_tools import (
+    _calculate_edge_prob_with_higher_degrees,
+    _d1_formula,
+    _n1_formula,
+    _n2_formula,
+)
 
 PijData = dict[frozenset[int], float]
 

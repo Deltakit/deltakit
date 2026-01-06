@@ -3,11 +3,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from itertools import chain
 from typing import TYPE_CHECKING, no_type_check
-from collections.abc import Callable, Iterable, Mapping, Sequence
 
+from deltakit_circuit._qubit_identifiers import Qubit, T
 from deltakit_circuit.gates import Gate, OneQubitCliffordGate, TwoOperandGate, _Gate
 from deltakit_circuit.gates._measurement_gates import (
     MPP,
@@ -27,7 +28,6 @@ from deltakit_circuit.noise_channels import (
     PauliZError,
     _NoiseChannel,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T
 
 if TYPE_CHECKING:  # pragma: no cover
     from deltakit_circuit._circuit import Circuit

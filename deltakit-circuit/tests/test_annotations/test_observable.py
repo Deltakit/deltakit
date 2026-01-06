@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
 import stim
+
 from deltakit_circuit import MeasurementRecord, Observable
 
 
@@ -15,7 +16,7 @@ def test_observable_measurements_only_contain_unique_measurement_records():
 
 
 @pytest.mark.parametrize(
-    "observable, expected_circuit",
+    ("observable", "expected_circuit"),
     [
         (
             Observable(0, MeasurementRecord(-1)),
@@ -35,7 +36,7 @@ def test_observable_stim_circuit_returns_expected_circuit(
 
 
 @pytest.mark.parametrize(
-    "observable, expected_repr",
+    ("observable", "expected_repr"),
     [
         (
             Observable(0, MeasurementRecord(-1)),
@@ -72,11 +73,11 @@ def test_all_measurement_record_indices_are_in_observable_stim_circuit(
 
 
 @pytest.mark.parametrize(
-    "observable,index",
-    (
-        [Observable(0, MeasurementRecord(-1)), 0],
-        [Observable(33, MeasurementRecord(-1)), 33],
-    ),
+    ("observable", "index"),
+    [
+        (Observable(0, MeasurementRecord(-1)), 0),
+        (Observable(33, MeasurementRecord(-1)), 33),
+    ],
 )
 def test_observable_index_read(observable: Observable, index: int, empty_circuit):
     observable.permute_stim_circuit(empty_circuit)

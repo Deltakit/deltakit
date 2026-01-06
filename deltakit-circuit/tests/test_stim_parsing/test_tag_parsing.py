@@ -22,7 +22,7 @@ from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOI
     reason="Feature added in Stim v1.15",
 )
 @pytest.mark.parametrize(
-    "instr_template,tag",
+    ("instr_template", "tag"),
     itertools.product(
         [
             *(f"{sqg.stim_string}[{{tag}}] 0" for sqg in ONE_QUBIT_GATES),

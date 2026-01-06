@@ -2,6 +2,7 @@
 from copy import copy
 
 import pytest
+
 from deltakit_circuit import Circuit, GateLayer
 from deltakit_circuit.gates import CX, H, X
 

@@ -1,11 +1,14 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge, NXCode,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome)
-from deltakit_decode.utils import (parse_stim_circuit,
-                                   VisDecodingGraph3D)
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    NXCode,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+)
+
+from deltakit_decode.utils import VisDecodingGraph3D, parse_stim_circuit
 
 
 @pytest.fixture(scope="module")

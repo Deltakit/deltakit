@@ -4,8 +4,10 @@ from itertools import product
 
 import numpy as np
 import pytest
-from deltakit_decode.analysis._empirical_decoding_error_distribution import \
-    EmpiricalDecodingErrorDistribution
+
+from deltakit_decode.analysis._empirical_decoding_error_distribution import (
+    EmpiricalDecodingErrorDistribution,
+)
 
 
 class TestEmpiricalDecodingErrorDistribution:
@@ -14,7 +16,7 @@ class TestEmpiricalDecodingErrorDistribution:
         EmpiricalDecodingErrorDistribution(5),
         EmpiricalDecodingErrorDistribution(1),
         EmpiricalDecodingErrorDistribution(12)
-    ], scope='function')
+    ])
     def empirical_decoding_error_distribution(
             self, request) -> EmpiricalDecodingErrorDistribution:
         return request.param
@@ -242,7 +244,7 @@ class TestEmpiricalDecodingErrorDistribution:
         for error in range(len(distr1)):
             assert distr1[error] == distr2[error]
 
-    @pytest.mark.parametrize("expected_errors_per_logical, error_distribution_dict", [
+    @pytest.mark.parametrize(('expected_errors_per_logical', 'error_distribution_dict'), [
         ([1, 3, 2],
          {(True, False, False): 1,
          (False, True, False): 3,
@@ -259,7 +261,7 @@ class TestEmpiricalDecodingErrorDistribution:
         distr = EmpiricalDecodingErrorDistribution.from_dict(error_distribution_dict)
         assert np.array_equal(distr.fails_per_logical, expected_errors_per_logical)
 
-    @pytest.mark.parametrize("expected_error_counts, error_distribution_dict", [
+    @pytest.mark.parametrize(('expected_error_counts', 'error_distribution_dict'), [
         ([5, 6, 9],
          {(True, False, False): 5,
          (False, True, False): 6,

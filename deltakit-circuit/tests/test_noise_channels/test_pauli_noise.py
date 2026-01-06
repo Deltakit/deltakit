@@ -2,6 +2,7 @@
 from itertools import combinations
 
 import pytest
+
 from deltakit_circuit import Qubit
 from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import (
@@ -11,10 +12,11 @@ from deltakit_circuit.noise_channels import (
     PauliYError,
     PauliZError,
 )
+from deltakit_circuit.noise_channels._abstract_noise_channels import ProbabilityError
 
 
 @pytest.mark.parametrize(
-    "noise_channel, expected_string",
+    ("noise_channel", "expected_string"),
     [
         (PauliXError, "X_ERROR"),
         (PauliYError, "Y_ERROR"),
@@ -30,22 +32,38 @@ def test_pauli_noise_channels_string_matches_expected_string(
 
 
 @pytest.mark.parametrize(
-    "noise_channel, bad_arguments",
+    ("noise_channel", "bad_arguments", "expected_exception"),
     [
-        (PauliXError, (4, 5)),
-        (PauliYError, [1, 2, 3, 4]),
-        (PauliZError, ()),
-        (PauliChannel1, ("A", "B", "C")),
-        (PauliChannel2, (4, 5, 6)),
+        (
+            PauliXError,
+            (4, 5),
+            TypeError(".*takes 3 positional arguments but 4 positional arguments.*"),
+        ),
+        (
+            PauliYError,
+            [1, 2, 3, 4],
+            TypeError(".*takes 3 positional arguments but 6 positional arguments.*"),
+        ),
+        (
+            PauliZError,
+            (),
+            TypeError(".*missing 1 required positional argument: 'probability'"),
+        ),
+        (
+            PauliChannel1,
+            ("A", "B", "C"),
+            TypeError("'<=' not supported between instances of 'int' and 'str'"),
+        ),
+        (PauliChannel2, (4, 5, 6), ProbabilityError()),
     ],
 )
 def test_channel_generator_from_prob_raises_error_with_wrong_args(
-    noise_channel, bad_arguments
+    noise_channel, bad_arguments, expected_exception: Exception
 ):
     # The ignore on the following line is needed because the exception raised in each
     # test cases may be different, and Exception is the only common parent class of all
     # of them.
-    with pytest.raises(Exception):  # noqa: B017
+    with pytest.raises(type(expected_exception), match=expected_exception.args[0]):
         noise_channel.generator_from_prob(*bad_arguments)([0, 1, 2, 4])
 
 
@@ -66,7 +84,7 @@ def test_stim_identifier_matches_expected_identifier_for_single_probability_nois
 
 
 @pytest.mark.parametrize(
-    "noise_channel, expected_repr",
+    ("noise_channel", "expected_repr"),
     [
         (PauliXError(Qubit(0), 0.02), "X_ERROR(Qubit(0), probability=0.02)"),
         (PauliYError(Qubit(1), 0.01), "Y_ERROR(Qubit(1), probability=0.01)"),
@@ -197,7 +215,7 @@ class TestPauliNoiseEquality:
         assert not error_class(0, 0.01).approx_equals(error_class(1, 0.01))
 
     @pytest.mark.parametrize(
-        "error_class1, error_class2",
+        ("error_class1", "error_class2"),
         combinations([PauliXError, PauliYError, PauliZError], 2),
     )
     def test_two_different_pauli_errors_on_the_same_qubits_are_not_equal(
@@ -209,7 +227,7 @@ class TestPauliNoiseEquality:
         assert hash(error1) != hash(error2)
 
     @pytest.mark.parametrize(
-        "error_class1, error_class2",
+        ("error_class1", "error_class2"),
         combinations([PauliXError, PauliYError, PauliZError], 2),
     )
     def test_two_different_pauli_errors_on_the_same_qubits_are_not_approx_equal(
@@ -373,7 +391,7 @@ def test_error_is_raised_if_constructing_pauli_channel_two_with_odd_number_of_qu
 
 
 @pytest.mark.parametrize(
-    "qubit1, qubit2", [(0, 0), (Qubit(3), Qubit(3)), ("a", "a"), (0, Qubit(0))]
+    ("qubit1", "qubit2"), [(0, 0), (Qubit(3), Qubit(3)), ("a", "a"), (0, Qubit(0))]
 )
 def test_error_is_raised_if_arguments_to_pauli_channel_2_are_the_same(qubit1, qubit2):
     with pytest.raises(

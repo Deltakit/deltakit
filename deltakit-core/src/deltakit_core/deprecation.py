@@ -1,7 +1,7 @@
 import functools
 import warnings
-from typing import ParamSpec, TypeVar, overload
 from collections.abc import Callable
+from typing import ParamSpec, TypeVar, overload
 
 from packaging.version import Version
 
