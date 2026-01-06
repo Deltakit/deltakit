@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy
 import numpy.typing as npt
 from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
@@ -11,17 +11,17 @@ from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
 
 
 def _lep_interpolated(
-    spam: float, leppr: float, rounds_interpolated: npt.NDArray[np.floating]
-) -> npt.NDArray[np.floating]:
+    spam: float, leppr: float, rounds_interpolated: npt.NDArray[numpy.floating]
+) -> npt.NDArray[numpy.floating]:
     y_interpolated = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
     return (1 - y_interpolated) / 2
 
 
 def plot_logical_error_probability_per_round(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
-    num_rounds: npt.NDArray[np.int_] | Sequence[int],
-    logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
-    logical_error_probability_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    num_rounds: npt.NDArray[numpy.int_] | Sequence[int],
+    logical_error_probability: npt.NDArray[numpy.float64] | Sequence[float],
+    logical_error_probability_stddev: npt.NDArray[numpy.float64] | Sequence[float] | None = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -97,12 +97,12 @@ def plot_logical_error_probability_per_round(
         )
         raise ValueError(msg)
 
-    isort = np.argsort(num_rounds)
-    num_rounds = np.asarray(num_rounds)[isort]
-    logical_error_probability = np.asarray(logical_error_probability)[isort]
+    isort = numpy.argsort(num_rounds)
+    num_rounds = numpy.asarray(num_rounds)[isort]
+    logical_error_probability = numpy.asarray(logical_error_probability)[isort]
     if logical_error_probability_stddev is not None:
         logical_error_probability_stddev = (
-            num_sigmas * np.asarray(logical_error_probability_stddev)[isort]
+            num_sigmas * numpy.asarray(logical_error_probability_stddev)[isort]
         )
 
     # Plot the logical error probabilities
@@ -117,7 +117,7 @@ def plot_logical_error_probability_per_round(
     # Plot the fitted logical error probability per round curve
     leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
     spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
-    rounds_interpolated = np.linspace(num_rounds[0], num_rounds[-1], 200)
+    rounds_interpolated = numpy.linspace(num_rounds[0], num_rounds[-1], 200)
     lep_interpolated = _lep_interpolated(spam, leppr, rounds_interpolated)
     ax.plot(
         rounds_interpolated,
@@ -139,8 +139,8 @@ def plot_logical_error_probability_per_round(
     )
     ax.fill_between(
         rounds_interpolated,
-        np.clip(lep_interpolated_low, 0, 1),
-        np.clip(lep_interpolated_high, 0, 1),
+        numpy.clip(lep_interpolated_low, 0, 1),
+        numpy.clip(lep_interpolated_high, 0, 1),
         color=RIVERLANE_PLOT_COLOURS[0],
         alpha=0.2
     )
