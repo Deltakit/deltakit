@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 import numpy.typing as npt
 from deltakit_core.constants import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
@@ -11,16 +11,16 @@ from deltakit_explorer.analysis._lambda import LambdaResults
 
 
 def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[numpy.int_]
-) -> npt.NDArray[numpy.floating]:
+    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_]
+) -> npt.NDArray[np.floating]:
     return lambda_**(-(distances + 1) / 2) / lambda0
 
 
 def plot_lambda(
     lambda_data: LambdaResults,
-    distances: npt.NDArray[numpy.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[numpy.float64] | Sequence[float],
-    lep_per_round_stddev: npt.NDArray[numpy.float64] | Sequence[float] | None = None,
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -66,11 +66,11 @@ def plot_lambda(
         )
         raise ValueError(msg)
 
-    isort = numpy.argsort(distances)
-    distances = numpy.asarray(distances)[isort]
-    lep_per_round = numpy.asarray(lep_per_round)[isort]
+    isort = np.argsort(distances)
+    distances = np.asarray(distances)[isort]
+    lep_per_round = np.asarray(lep_per_round)[isort]
     if lep_per_round_stddev is not None:
-        lep_per_round_stddev = num_sigmas * numpy.asarray(lep_per_round_stddev)[isort]
+        lep_per_round_stddev = num_sigmas * np.asarray(lep_per_round_stddev)[isort]
 
     # Plot the logical error probabilities per round
     ax.errorbar(
@@ -85,7 +85,7 @@ def plot_lambda(
     # Plot the fitted lambda curve
     lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
     lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
-    distances_interpolated = numpy.linspace(distances[0], distances[-1], 200)
+    distances_interpolated = np.linspace(distances[0], distances[-1], 200)
     lambda_interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
     ax.plot(
         distances_interpolated,
