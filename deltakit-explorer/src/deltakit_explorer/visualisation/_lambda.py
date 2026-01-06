@@ -26,7 +26,12 @@ def plot_lambda(
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
-    """
+    """Plot Λ-fitting data.
+
+    This function plots both the logical error-probability per round that has been used
+    to compute Λ, the associated error-rates if provided, and the resulting fit, showing
+    how close the fit is from actual data.
+
     Args:
         distances (npt.NDArray[numpy.int\\_] | Sequence[int]): The distances of the code.
         lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
@@ -53,6 +58,9 @@ def plot_lambda(
     if fig is None and ax is None:
         fig, ax = plt.subplots()
 
+    # These should be already checked by the above code, but type checkers are not able
+    # to infer that information, so including the asserts explicitly for type checkers
+    # to understand.
     assert ax is not None
     assert fig is not None
 
