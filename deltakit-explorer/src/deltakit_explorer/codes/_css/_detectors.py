@@ -7,13 +7,20 @@ import itertools
 import warnings
 from collections import defaultdict
 from collections.abc import Iterable as IterableC
+from collections.abc import Sequence
 from functools import reduce
 from typing import TYPE_CHECKING
-from collections.abc import Sequence
 
 import numpy as np
-from deltakit_circuit import (Circuit, Coordinate, Detector, MeasurementRecord,
-                              Qubit, ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Coordinate,
+    Detector,
+    MeasurementRecord,
+    Qubit,
+    ShiftCoordinates,
+)
+
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 if TYPE_CHECKING:

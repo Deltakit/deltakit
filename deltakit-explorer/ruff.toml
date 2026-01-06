@@ -2,6 +2,7 @@
 #
 # General and format configurations are repository-wide for the moment.
 extend = "../ruff.toml"
+include = ["src/deltakit_explorer/**/*.py", "tests/**/*.py"]
 
 [lint]
 ignore = [
@@ -14,6 +15,8 @@ ignore = [
     "PLR0915", # too many branches, arguments, statements
     "PLW1641", # Object does not implement `__hash__` method (fix later)
     "PLW2901", # Outer `for` loop variable `i` overwritten (fix later)
+    "PT011",   # pytest.raises is too broad, set the match parameter.
+    "PT030",   # pytest.warns is too broad, set the match parameter.
 ]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.

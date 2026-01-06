@@ -1,18 +1,19 @@
 import itertools
-
-import numpy
-import pytest
 from typing import Literal
+
+import numpy as np
+import pytest
 
 from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stddev
 
+
 @pytest.fixture
-def rng() -> numpy.random.Generator:
-    return numpy.random.default_rng(4957349587)
+def rng() -> np.random.Generator:
+    return np.random.default_rng(4957349587)
 
 class TestCalculateLambda:
     @pytest.mark.parametrize(
-        "method,distances,lambda_,lambda0,relative_stddev",
+        ("method", "distances", "lambda_", "lambda0", "relative_stddev"),
         itertools.product(
             ("d", "(d+1)/2", "direct"),
             ((5, 7, 9), (5, 9, 13), tuple(range(5, 50, 6))),
@@ -28,9 +29,9 @@ class TestCalculateLambda:
         lambda_: float,
         lambda0: float,
         relative_stddev: float,
-        rng: numpy.random.Generator,
+        rng: np.random.Generator,
     ) -> None:
-        lepprs = numpy.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
+        lepprs = np.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
         relative_stddevs = rng.normal(0, relative_stddev, size=len(distances))
         lepprs_stddev = (1 + relative_stddevs) * lepprs
         res = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev, method)
@@ -57,7 +58,7 @@ class TestCalculateLambda:
             calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
 
     @pytest.mark.parametrize(
-        "lamb,distances",
+        ("lamb", "distances"),
         itertools.product(
             (0.1, 0.5, 0.9, 1 - 1e-7, 1 + 1e-7, 1.1, 1.2, 1.3, 1.4),
             ([3, 5, 7], list(range(3, 20, 4))),
@@ -73,7 +74,7 @@ class TestCalculateLambda:
             calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
 
     @pytest.mark.parametrize(
-        "methods,distances,lambda_,lambda0,relative_stddev",
+        ("methods", "distances", "lambda_", "lambda0", "relative_stddev"),
         itertools.product(
             itertools.combinations(["d", "(d+1)/2", "direct"], 2),
             ((5, 7, 9), (5, 9, 13)),
@@ -89,10 +90,10 @@ class TestCalculateLambda:
         lambda_: float,
         lambda0: float,
         relative_stddev: float,
-        rng: numpy.random.Generator,
+        rng: np.random.Generator,
     ) -> None:
         m1, m2 = methods
-        lepprs = numpy.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
+        lepprs = np.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
         relative_stddevs = rng.normal(0, relative_stddev, size=len(distances))
         lepprs_stddev = (1 + relative_stddevs) * lepprs
         res1 = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev, m1)

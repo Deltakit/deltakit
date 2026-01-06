@@ -5,9 +5,13 @@ from pathlib import Path
 
 import pytest
 import stim
+
 from deltakit_explorer.data._data_analysis import (
-    get_binary_data_size, get_decoding_request_size_estimate,
-    get_decoding_response_size_estimate, get_simulation_response_size_estimate)
+    get_binary_data_size,
+    get_decoding_request_size_estimate,
+    get_decoding_response_size_estimate,
+    get_simulation_response_size_estimate,
+)
 from deltakit_explorer.enums import DataFormat
 
 

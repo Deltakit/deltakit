@@ -8,10 +8,13 @@ planar code.
 from enum import Enum
 
 from deltakit_circuit._basic_types import Coord2DDelta
-from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import \
-    RotatedPlanarCodeSchedules
-from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import \
-    UnrotatedPlanarCodeSchedules
+
+from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import (
+    RotatedPlanarCodeSchedules,
+)
+from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import (
+    UnrotatedPlanarCodeSchedules,
+)
 
 ScheduleClass = type[RotatedPlanarCodeSchedules] | type[UnrotatedPlanarCodeSchedules]
 

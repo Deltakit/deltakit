@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 from dataclasses import dataclass
 
+
 @dataclass
 class FakeResponse:
     """Fake response to support network-related tests"""

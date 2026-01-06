@@ -6,12 +6,13 @@ noise. `PhenomenologicalNoise` adds noise to `I` gates.
 to be Depolarise1, and adds measurement flip noise.
 """
 
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
 
 from deltakit_circuit import Qubit, measurement_noise_profile
 from deltakit_circuit.gates import I
 from deltakit_circuit.noise_channels import Depolarise1, OneQubitNoiseChannel
+
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 

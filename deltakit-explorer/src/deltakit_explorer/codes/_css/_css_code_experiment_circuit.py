@@ -7,22 +7,22 @@ circuit for a quantum memory experiment with a Calderbank-Shor-Steane
 
 from __future__ import annotations
 
-
-import deltakit_explorer
 import stim
 from deltakit_circuit import Circuit
 from deltakit_circuit.gates import PauliBasis
-from deltakit_explorer.codes._bivariate_bicycle_code import \
-    BivariateBicycleCode
+
+import deltakit_explorer
+from deltakit_explorer.codes._bivariate_bicycle_code import BivariateBicycleCode
 from deltakit_explorer.codes._css._experiment_circuit import experiment_circuit
 from deltakit_explorer.codes._css._stabiliser_code import StabiliserCode
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_planar_code import \
-    UnrotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_toric_code import \
-    UnrotatedToricCode
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
+from deltakit_explorer.codes._planar_code._unrotated_planar_code import (
+    UnrotatedPlanarCode,
+)
+from deltakit_explorer.codes._planar_code._unrotated_toric_code import (
+    UnrotatedToricCode,
+)
 from deltakit_explorer.codes._repetition_code import RepetitionCode
 from deltakit_explorer.enums import QECECodeType, QECExperimentType
 from deltakit_explorer.types import CircuitParameters, QECExperimentDefinition

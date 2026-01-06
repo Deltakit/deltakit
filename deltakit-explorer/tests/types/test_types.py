@@ -2,18 +2,28 @@
 from __future__ import annotations
 
 import pathlib
-from tempfile import TemporaryDirectory
 from dataclasses import dataclass
+from tempfile import TemporaryDirectory
 
 import numpy as np
 import pytest
 from deltakit_circuit.gates import PauliBasis
+
 from deltakit_explorer.enums import DataFormat, QECECodeType, QECExperimentType
-from deltakit_explorer.types import (BinaryDataType, CircuitParameters,
-                                     DataString, MatrixSpecifications,
-                                     PhysicalNoiseModel, QECExperiment,
-                                     QECExperimentDefinition, RAMData, Sizes,
-                                     TypedData, TypedDataFile, TypedDataString)
+from deltakit_explorer.types import (
+    BinaryDataType,
+    CircuitParameters,
+    DataString,
+    MatrixSpecifications,
+    PhysicalNoiseModel,
+    QECExperiment,
+    QECExperimentDefinition,
+    RAMData,
+    Sizes,
+    TypedData,
+    TypedDataFile,
+    TypedDataString,
+)
 from deltakit_explorer.types._types import JSONable
 
 
@@ -151,7 +161,8 @@ class TestInternalClasses:
             data.as_data_string(DataFormat.TEXT)
 
     def test_binary_data_raises_on_wrong_data(self):
-        with pytest.raises(ValueError):
+        msg = f"Not supported argument of type {str}"
+        with pytest.raises(ValueError, match=msg):
             BinaryDataType("some string")
 
 
@@ -201,7 +212,8 @@ class TestTypedDataString:
         assert ds.as_data_string() == "duck://30310a"
 
     def test_typed_data_string_from_data_raises(self):
-        with pytest.raises(ValueError):
+        msg = "Cannot extract binary data from .*"
+        with pytest.raises(ValueError, match=msg):
             TypedDataString.from_data(
                 TestTypedDataString.NewTypeData(DataFormat.B8, None)
             )
@@ -279,7 +291,8 @@ class TestQECExperiment:
         assert exp.sweep_bits.as_numpy().shape == (5000, 8)
 
     def test_qec_experiment_from_circuit_and_measurements_with_failed_sweeps_raises(self):
-        with pytest.raises(ValueError):
+        msg = "sweep_path and sweep_format should be both provided, or should both be None."
+        with pytest.raises(ValueError, match=msg):
             QECExperiment.from_circuit_and_measurements(
                 pathlib.Path("tests/resources/rep_code_mutated_default_noise_data.stim"),
                 pathlib.Path("tests/resources/rep_code_noisy_stim_dets.01"),
@@ -312,5 +325,6 @@ class TestJSONable:
 
     def test_jsonable_fails(self):
         obj = TestJSONable.DummyJSONable(b"1243")
-        with pytest.raises(ValueError):
+        msg = f"Object of type {bytes} is not a dataclass or serialisable object."
+        with pytest.raises(ValueError, match=msg):
             obj.to_json()

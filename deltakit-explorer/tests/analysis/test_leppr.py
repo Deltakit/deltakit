@@ -2,7 +2,7 @@ import itertools
 import re
 from math import sqrt
 
-import numpy
+import numpy as np
 import pytest
 
 from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
@@ -11,18 +11,18 @@ from deltakit_explorer.analysis._leppr import compute_logical_error_per_round
 
 class TestLEPPerRoundComputation:
     @pytest.mark.parametrize(
-        "leppr, spam_error",
+        ("leppr", "spam_error"),
         itertools.product((1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2)),
     )
     def test_on_synthetic_inputs(
         self,
         leppr: float,
         spam_error: float,
-        random_generator: numpy.random.Generator,
+        random_generator: np.random.Generator,
     ) -> None:
         f_0 = 1 - 2 * spam_error
-        rounds = numpy.arange(
-            2, numpy.ceil(numpy.log(0.3 / f_0) / numpy.log(1 - 2 * leppr)), 2
+        rounds = np.arange(
+            2, np.ceil(np.log(0.3 / f_0) / np.log(1 - 2 * leppr)), 2
         )
         fidelities = f_0 * (1 - 2 * leppr) ** rounds
         lep = (1 - fidelities) / 2
@@ -41,11 +41,11 @@ class TestLEPPerRoundComputation:
         assert isinstance(res.spam_error_stddev, float)
 
     @pytest.mark.parametrize(
-        "rounds", ([0, 1, 2, 3, 4, 3], [-2, 1, 1, 3, 3, 3], [4, 8, 4, 0, 5])
+        "rounds", [[0, 1, 2, 3, 4, 3], [-2, 1, 1, 3, 3, 3], [4, 8, 4, 0, 5]]
     )
     def test_raises_when_duplicated_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
-        nprounds = numpy.asarray(rounds)
+        nprounds = np.asarray(rounds)
         fidelities = f_0 * (1 - 2 * leppr) ** nprounds
         lep = (1 - fidelities) / 2
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
@@ -55,11 +55,11 @@ class TestLEPPerRoundComputation:
             compute_logical_error_per_round(nprounds, lep, lep_stddev)
 
     @pytest.mark.parametrize(
-        "rounds", ([0, 1, 2, 3, 4], [-1, 4, 5, 7], [8, 4, 0, 5, -1, -34])
+        "rounds", [[0, 1, 2, 3, 4], [-1, 4, 5, 7], [8, 4, 0, 5, -1, -34]]
     )
     def test_raises_when_invalid_round_number(self, rounds: list[int]) -> None:
         f_0, leppr = 0.999, 0.001
-        nprounds = numpy.asarray(rounds)
+        nprounds = np.asarray(rounds)
         fidelities = f_0 * (1 - 2 * leppr) ** nprounds
         lep = (1 - fidelities) / 2
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
@@ -115,10 +115,10 @@ class TestLEPPerRoundComputation:
 
     def test_warn_when_linear_fit_is_bad(self):
         f_0 = 1 - 0.01
-        rounds = numpy.arange(2, 61, 5)
+        rounds = np.arange(2, 61, 5)
         # Non-constant logical error probability per round that should trigger the R2
         # check.
-        leppr = numpy.array(
+        leppr = np.array(
             [
                 0.00485509,
                 0.00606816,

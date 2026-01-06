@@ -8,8 +8,9 @@ from collections.abc import Iterable, Sequence
 from deltakit_circuit import GateLayer, PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._basic_maps import PAULI_TO_CP
 from deltakit_circuit._qubit_identifiers import PauliGate
-from deltakit_explorer.codes._stabiliser import Stabiliser
 from stim import PauliString, Tableau
+
+from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
 def get_entangling_layer(

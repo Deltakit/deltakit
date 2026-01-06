@@ -6,8 +6,7 @@ stabiliser code circuits.
 from collections.abc import Iterable, Mapping, Sequence
 
 from deltakit_circuit import MeasurementRecord, Observable, Qubit
-from deltakit_circuit.gates import (ONE_QUBIT_MEASUREMENT_GATES,
-                                    _MeasurementGate)
+from deltakit_circuit.gates import ONE_QUBIT_MEASUREMENT_GATES, _MeasurementGate
 
 
 def _construct_observables(
