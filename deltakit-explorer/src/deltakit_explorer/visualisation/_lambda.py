@@ -64,7 +64,7 @@ def plot_lambda(
     assert ax is not None
     assert fig is not None
 
-    lens = {len(distances), len(lep_per_round)}
+    lengths = {len(distances), len(lep_per_round)}
     if lep_per_round_stddev is not None:
         lens.add(len(lep_per_round_stddev))
     if len(lens) > 1:
