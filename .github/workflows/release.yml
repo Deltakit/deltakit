@@ -23,120 +23,106 @@ on:
         type: boolean
 
 jobs:
-  build-wheel:
-    name: Build distribution
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project: [deltakit, deltakit-circuit, deltakit-core, deltakit-decode, deltakit-explorer]
+
+  # Build all deltakit wheels and sdists.
+  build_dists:
+    runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@v4
+      - name: Checking out the deltakit repository
+        uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build all deltakit packages wheels and sdists
+        run: uv build --no-sources --all-package
+
+      - name: Upload all deltakit packages wheels and sdists
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.10'
+          name: all-deltakit-dists
+          path: ./dist/*
+          # No need to keep these as they will be published in this workflow.
+          retention-days: 1
 
-      - name: Set working directory
-        id: workdir
-        run: echo "workdir=${{ matrix.project == 'deltakit' && '.' || format('./{0}', matrix.project) }}" >> $GITHUB_OUTPUT
-
-      - name: Build sdists and wheels
-        working-directory: ${{ steps.workdir.outputs.workdir }}
-        run: |
-          python -m pip install build
-          python -m build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: wheel-${{ matrix.project }}
-          path: ${{ steps.workdir.outputs.workdir }}/dist/*
-
-  test-wheel:
+  # To avoid creating unnecessary CI jobs, and because most packages are
+  # typically installed through `pip install deltakit`, this job does not test each deltakit
+  # package in isolation. Instead, it installs all of them and performs all tests suites in
+  # a single environment.
+  test_wheels:
     if: ${{ inputs.run_tests }}
-    name: Test imports on ${{ matrix.os }}-${{ matrix.arch }}
-    needs: [build-wheel]
-    runs-on: ${{ matrix.os }}
+    name: >-
+      Test wheels on ${{ matrix.os_arch.os }}-${{ matrix.os_arch.arch }}
+      (Python ${{ matrix.python-version }} '${{ matrix.dependency-resolution }}')
+    needs: build_dists
+    runs-on: ${{ matrix.os_arch.os }}
     strategy:
       fail-fast: false
       matrix:
-        arch: [x64, arm64]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        exclude:
+        os_arch:
           - os: ubuntu-latest
+            arch: x64
+          - os:	ubuntu-24.04-arm
             arch: arm64
           - os: windows-latest
+            arch: x64
+          - os: windows-11-arm
             arch: arm64
           - os: macos-latest
-            arch: x64
+            arch: arm64
+          # Not including Intel-based MacOS, should it be?
+          # - os: macos-15-intel
+          #   arch: x64
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        dependency-resolution: ['highest', 'lowest-direct']
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Checking out the deltakit repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Download dists
+        uses: actions/download-artifact@v4
         with:
-            python-version: ${{ matrix.python-version }}
-            architecture: ${{ matrix.arch }}
+          name: all-deltakit-dists
+          path: ./dist
 
-      - run: mkdir project
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: project
-          merge-multiple: true
-
-      - name: Test installs in Unix systems
-        if: matrix.os != 'windows-latest'
-        working-directory: ./project
+      - name: Setup venv
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install *py3-none-any.whl
-          python -c "import deltakit, deltakit_circuit, deltakit_core, deltakit_decode, deltakit_explorer"
+          uv sync --all-package --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          uv pip install ./dist/deltakit*.whl
 
-      - name: Test installs on Windows OS
-        if: matrix.os == 'windows-latest'
-        working-directory: ./project
-        shell: pwsh
-        run: |
-          python -m venv .venv
-          .venv\Scripts\activate.bat
-          pip install (Get-ChildItem *py3-none-any.whl).FullName
-          python -c "import deltakit, deltakit_circuit, deltakit_core, deltakit_decode, deltakit_explorer"
+      - name: Run pytest
+        run: uv run --python ${{ matrix.python-version }} --no-sync pytest ./ ./deltakit-*
+        working-directory: ./
 
-  test-sdist:
+
+  test_sdists:
     if: ${{ inputs.run_tests }}
-    name: Test imports after sdists installs
-    needs: [build-wheel]
-    runs-on: ubuntu-latest
+    name: Test sdists correctly imports
+    needs: build_dists
+    runs-on: ubuntu-slim
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Download dists
+        uses: actions/download-artifact@v4
         with:
-          python-version: '3.10'
+          name: all-deltakit-dists
+          path: ./dist
 
-      - run: mkdir project
-
-      - uses: actions/download-artifact@v4
-        with:
-          path: project
-          merge-multiple: true
-
-      - name: Test install and imports
-        working-directory: ./project
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pip install *.tar.gz
-          python -c "import deltakit, deltakit_circuit, deltakit_core, deltakit_decode, deltakit_explorer"
+      - name: Try to install the sdists
+        run: uv pip install ./dist/deltakit*.tar.gz
 
   publish:
     if: ${{ inputs.publish_to_pypi }}
     name: Publish Python distribution to PyPI
-    needs: [build-wheel, test-wheel, test-sdist]
-    runs-on: ubuntu-latest
+    needs: [test_wheels, test_sdists]
+    runs-on: ubuntu-slim
     strategy:
       fail-fast: false
       matrix:
@@ -147,68 +133,66 @@ jobs:
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        name: wheel-${{ matrix.project }}
-        path: dist/
-    - name: Publish distribution to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.project }}-dists
+          path: dist/
+      - name: Publish distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
     if: ${{ inputs.gh_release }}
-    name: >-
-      Sign the Python distribution with Sigstore
-      and upload them to GitHub Release
+    name: Sign the Python distribution with Sigstore and upload them to GitHub Release
     needs: [publish]
     runs-on: ubuntu-latest
     permissions:
       contents: write  # IMPORTANT: mandatory for making GitHub Releases
       id-token: write  # IMPORTANT: mandatory for sigstore
     steps:
-    - uses: actions/checkout@v4
-    - name: Download all the dists
-      uses: actions/download-artifact@v4
-      with:
-        path: dist/
-        merge-multiple: true
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v3.0.1
-      with:
-        inputs: >-
-          ./dist/*.tar.gz
-          ./dist/*.whl
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-          python-version: '3.10'
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: all-deltakit-dists
+          path: ./dist
 
-    - name: Extract latest version notes
-      run: python tools/extract_version_notes.py GH_RELEASE_NOTES.md
+      - name: Sign the dists with Sigstore
+        uses: sigstore/gh-action-sigstore-python@v3.0.1
+        with:
+          inputs: ./dist/*.tar.gz ./dist/*.whl
 
-    - name: Create GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      run: >-
-        gh release create
-        '${{ github.ref_name }}'
-        --repo '${{ github.repository }}'
-        --notes-file GH_RELEASE_NOTES.md
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.10'
 
-    - name: Package sdists/signatures together
-      run: |
-        cd dist
-        zip sdists.zip *.tar.gz
-        zip signatures.zip *.json
-        rm -f *.tar.gz *.json
-    - name: Upload artefact signatures to GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-      # Upload to GitHub Release using the `gh` CLI.
-      # `dist/` contains the built packages, and the
-      # sigstore-produced signatures and certificates.
-      run: >-
-        gh release upload
-        '${{ github.ref_name }}' dist/**
-        --repo '${{ github.repository }}'
+      - name: Extract latest version notes
+        run: python tools/extract_version_notes.py GH_RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create
+          '${{ github.ref_name }}'
+          --repo '${{ github.repository }}'
+          --notes-file GH_RELEASE_NOTES.md
+
+      - name: Package sdists/signatures together
+        run: |
+          cd dist
+          zip sdists.zip *.tar.gz
+          zip signatures.zip *.json
+          rm -f *.tar.gz *.json
+      - name: Upload artefact signatures to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        # Upload to GitHub Release using the `gh` CLI.
+        # `dist/` contains the built packages, and the
+        # sigstore-produced signatures and certificates.
+        run: >-
+          gh release upload
+          '${{ github.ref_name }}' dist/**
+          --repo '${{ github.repository }}'
