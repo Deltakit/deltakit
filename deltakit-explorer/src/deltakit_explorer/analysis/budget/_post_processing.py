@@ -1,9 +1,9 @@
 import warnings
 from collections.abc import Mapping, Sequence
 
-import numpy
+import numpy as np
 import numpy.typing as npt
-import pandas
+import pandas as pd
 
 from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundResults,
@@ -17,24 +17,24 @@ from deltakit_explorer.analysis._lambda import (
 
 
 def _filter_non_close_noise_parameters(
-    data: pandas.DataFrame,
-    noise_parameters: npt.NDArray[numpy.floating],
+    data: pd.DataFrame,
+    noise_parameters: npt.NDArray[np.floating],
     noise_parameter_names: Sequence[str],
-) -> pandas.DataFrame:
+) -> pd.DataFrame:
     """Return a filtered view over ``data`` such that all entries are close to the
     provided ``noise_parameters``."""
     ret = data
     for name, param in zip(noise_parameter_names, noise_parameters):
-        ret = ret[numpy.isclose(ret[f"noise_{name}"], param)]
+        ret = ret[np.isclose(ret[f"noise_{name}"], param)]
     return ret
 
 
 def compute_lambda_and_stddev_from_results(
-    xi: npt.NDArray[numpy.floating],
+    xi: npt.NDArray[np.floating],
     noise_parameter_names: Sequence[str],
     num_rounds_by_distance: Mapping[int, Sequence[int]],
-    data: pandas.DataFrame,
-) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
+    data: pd.DataFrame,
+) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
     """Compute Λ from ``data`` for all the provided noise parameters in ``xi``.
 
     This function assumes that the provided ``data`` has been generated with
@@ -62,8 +62,8 @@ def compute_lambda_and_stddev_from_results(
         msg = f"Expected a 2-dimensional array but got shape {xi.shape}."
         raise ValueError(msg)
     _, n = xi.shape
-    ret: npt.NDArray[numpy.floating] = numpy.zeros((1, n), dtype=numpy.float64)
-    stddev: npt.NDArray[numpy.floating] = numpy.zeros_like(ret)
+    ret: npt.NDArray[np.floating] = np.zeros((1, n), dtype=np.float64)
+    stddev: npt.NDArray[np.floating] = np.zeros_like(ret)
     for i in range(n):
         filtered_data = _filter_non_close_noise_parameters(
             data, xi[:, i], noise_parameter_names
@@ -75,7 +75,7 @@ def compute_lambda_and_stddev_from_results(
 
 def _compute_lambda_from_results(
     num_rounds_by_distance: Mapping[int, Sequence[int]],
-    data: pandas.DataFrame,
+    data: pd.DataFrame,
 ) -> LambdaResults:
     lepprs: list[float] = []
     leppr_stddevs: list[float] = []
@@ -90,10 +90,10 @@ def _compute_lambda_from_results(
 
 
 def _compute_logical_error_rate_per_round_from_results(
-    num_rounds: npt.NDArray[numpy.int_] | Sequence[int], data: pandas.DataFrame
+    num_rounds: npt.NDArray[np.int_] | Sequence[int], data: pd.DataFrame
 ) -> LogicalErrorProbabilityPerRoundResults:
-    num_fails: npt.NDArray[numpy.int_] | list[int] = []
-    num_shots: npt.NDArray[numpy.int_] | list[int] = []
+    num_fails: npt.NDArray[np.int_] | list[int] = []
+    num_shots: npt.NDArray[np.int_] | list[int] = []
     for nrounds in num_rounds:
         data_row = data.query(f"num_rounds == {nrounds}")
         nfails = data_row["fails"].to_numpy()[0]
@@ -101,15 +101,15 @@ def _compute_logical_error_rate_per_round_from_results(
         num_fails.append(nfails)
         num_shots.append(nshots)
     # Filter out 0 fails
-    non_zeros_mask = numpy.asarray(num_fails) != 0
-    if not numpy.all(non_zeros_mask):
+    non_zeros_mask = np.asarray(num_fails) != 0
+    if not np.all(non_zeros_mask):
         warnings.warn(
             "Found at least one sampling task with 0 fails. It will be ignored for "
             "logical error probability computation."
         )
-    num_rounds = numpy.asarray(num_rounds)[non_zeros_mask]
-    num_fails = numpy.asarray(num_fails)[non_zeros_mask]
-    num_shots = numpy.asarray(num_shots)[non_zeros_mask]
+    num_rounds = np.asarray(num_rounds)[non_zeros_mask]
+    num_fails = np.asarray(num_fails)[non_zeros_mask]
+    num_shots = np.asarray(num_shots)[non_zeros_mask]
 
     lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, num_shots)
     return compute_logical_error_per_round(num_rounds, lep, lep_stddev)

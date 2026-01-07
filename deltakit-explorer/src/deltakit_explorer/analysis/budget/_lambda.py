@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Sequence
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 from deltakit_decode.analysis import RunAllAnalysisEngine
 
@@ -19,7 +19,7 @@ from deltakit_explorer.analysis.budget._post_processing import (
 
 def compute_1_over_lambda_at(
     noise_model_type: type[NoiseInterface],
-    noise_model_parameters: npt.NDArray[numpy.floating] | Sequence[float],
+    noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
@@ -67,7 +67,7 @@ def compute_1_over_lambda_at(
         the estimation of 1 / Λ along with the standard deviation of the estimation as
         a 2-tuple.
     """
-    point = numpy.asarray(noise_model_parameters).reshape((-1, 1))
+    point = np.asarray(noise_model_parameters).reshape((-1, 1))
     decoder_managers = generate_decoder_managers_for_lambda(
         point,
         noise_model_type,
@@ -91,6 +91,6 @@ def compute_1_over_lambda_at(
         point, noise_model_type.parameter_names, num_rounds_by_distances, report
     )
     lambda_reciprocals = 1 / lambdas
-    lambda_reciprocal_stddevs = numpy.abs(lambda_stddevs / lambdas**2)
+    lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
 
     return float(lambda_reciprocals[0, 0]), float(lambda_reciprocal_stddevs[0, 0])

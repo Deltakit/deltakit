@@ -4,7 +4,7 @@ import itertools
 from collections.abc import Sequence
 from typing import ClassVar
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 import pytest
 from deltakit_circuit import Circuit
@@ -34,7 +34,7 @@ def get_noise_model_type(num_parameters: int) -> type[NoiseInterface]:
 
         def __init__(
             self,
-            noise_parameters: Sequence[float] | npt.NDArray[numpy.floating],
+            noise_parameters: Sequence[float] | npt.NDArray[np.floating],
             name: str | None = "simple",
         ):
             super().__init__(noise_parameters, name)
@@ -53,19 +53,19 @@ def get_noise_model_type(num_parameters: int) -> type[NoiseInterface]:
 
         @override
         @classmethod
-        def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
+        def is_valid(cls, parameters: npt.NDArray[np.floating]) -> str | None:
             return None
 
     return _NoiseModel
 
 
 @pytest.mark.parametrize(
-    "noise_model,memgen",
+    ("noise_model", "memgen"),
     itertools.product(
         [
             get_noise_model_type(1)([0.1]),
             get_noise_model_type(2)([0.1, 0.2]),
-            get_noise_model_type(100)(0.25 + numpy.arange(100) / 200),
+            get_noise_model_type(100)(0.25 + np.arange(100) / 200),
         ],
         [get_rotated_surface_code_memory_circuit],
     ),
@@ -84,12 +84,12 @@ def test_decoder_manager_has_metadata(
         assert isinstance(dm.metadata[f"noise_{noise_name}"], float)
 
 
-@pytest.mark.parametrize("n,m", [(1, 10), (11, 10)])
+@pytest.mark.parametrize(("n", "m"), [(1, 10), (11, 10)])
 class TestGenerateDecoderManagerForLambda:
     @pytest.fixture
     def xis(
-        self, random_generator: numpy.random.Generator, n: int, m: int
-    ) -> npt.NDArray[numpy.floating]:
+        self, random_generator: np.random.Generator, n: int, m: int
+    ) -> npt.NDArray[np.floating]:
         return random_generator.random((n, m)) * 0.1
 
     @pytest.fixture
@@ -97,9 +97,9 @@ class TestGenerateDecoderManagerForLambda:
         return get_noise_model_type(n)([0.01 for _ in range(n)])
 
     def test_generate_decoder_managers_for_lambda(
-        self, xis: npt.NDArray[numpy.floating], noise_model: NoiseInterface
+        self, xis: npt.NDArray[np.floating], noise_model: NoiseInterface
     ) -> None:
-        n, m = xis.shape
+        _n, m = xis.shape
         dms = generate_decoder_managers_for_lambda(
             xis, type(noise_model), {3: [6], 5: [6]}
         )

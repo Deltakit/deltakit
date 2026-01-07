@@ -8,12 +8,10 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import matplotlib
-import matplotlib.colors
 import matplotlib.pyplot as plt
-import numpy
+import numpy as np
 from adjustText import adjust_text
-from matplotlib.colors import to_rgb
+from matplotlib.colors import ColorConverter, to_rgb
 
 if TYPE_CHECKING:
     import numpy.typing as npt
@@ -43,7 +41,7 @@ _RIVERLANE_NEUTRAL_GREY = "#DBDBDB"
 def _scale_lightness(rgb: tuple[float, float, float] | str, scale_l: float):
     # From https://stackoverflow.com/a/60562502
     if isinstance(rgb, str):
-        rgb = matplotlib.colors.ColorConverter.to_rgb(rgb)
+        rgb = ColorConverter.to_rgb(rgb)
     # convert rgb to hls
     # Ignore E741 because "l" here is not really ambiguous and this function is small.
     h, l, s = colorsys.rgb_to_hls(*rgb)  # noqa: E741
@@ -94,10 +92,10 @@ def _draw_line_from_text_to_position(
 
 
 def plot_error_budget(
-    contributions: npt.NDArray[numpy.floating] | Sequence[float],
+    contributions: npt.NDArray[np.floating] | Sequence[float],
     contribution_descriptions: Sequence[str],
     contributions_stddev: (
-        npt.NDArray[numpy.floating] | Sequence[float | None] | None
+        npt.NDArray[np.floating] | Sequence[float | None] | None
     ) = None,
     fig: Figure | None = None,
     ax: Axes | None = None,

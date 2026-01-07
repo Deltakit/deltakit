@@ -1,7 +1,7 @@
 import math
 from collections.abc import Iterator, Mapping, Sequence
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
@@ -23,10 +23,10 @@ from deltakit_explorer.analysis.budget._post_processing import (
 
 
 def _variate_ith_parameter_by(
-    central_point: npt.NDArray[numpy.floating],
-    variations: npt.NDArray[numpy.floating],
+    central_point: npt.NDArray[np.floating],
+    variations: npt.NDArray[np.floating],
     i: int,
-) -> Iterator[npt.NDArray[numpy.floating]]:
+) -> Iterator[npt.NDArray[np.floating]]:
     """Returns versions of ``central_point`` where the ``i``-th parameter is
     successively replaced by values in ``variations``.
 
@@ -45,15 +45,15 @@ def _variate_ith_parameter_by(
     """
     central_point = central_point.reshape((-1, 1))
     variations = variations.reshape((-1,))
-    parameters = numpy.tile(central_point, (1, variations.size))
+    parameters = np.tile(central_point, (1, variations.size))
     parameters[i, :] = variations
     yield from parameters.T
 
 
 def _approximate_derivative_at_point_from_values(
-    x: npt.NDArray[numpy.floating],
-    y: npt.NDArray[numpy.floating],
-    stddevs: npt.NDArray[numpy.floating],
+    x: npt.NDArray[np.floating],
+    y: npt.NDArray[np.floating],
+    stddevs: npt.NDArray[np.floating],
     gradient_approximation_point: float,
     degree: int = 3,
 ) -> tuple[float, float]:
@@ -103,12 +103,12 @@ def _approximate_derivative_at_point_from_values(
         one-dimensional arrays) and the standard deviation of the estimate.
     """
     # Perform the approximation using the provided standard deviations
-    coefficients, cov = numpy.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
+    coefficients, cov = np.polyfit(x, y, deg=degree, cov="unscaled", w=1 / stddevs)
 
     # Flipping the coefficients and covariance matrix to have the index corresponding to
     # the degree (i.e., ``coefficients[i]`` is multiplying ``x**i`` in the polynomial
     # and ``cov[i,i]`` is the variance of ``coefficients[i]``).
-    coefficients, cov = numpy.flip(coefficients), numpy.flip(cov)
+    coefficients, cov = np.flip(coefficients), np.flip(cov)
 
     # Compute the derivative
     derivative = float(
@@ -125,7 +125,7 @@ def _approximate_derivative_at_point_from_values(
 
 
 def _get_variance_of_gradient_estimation_at_point(
-    cov: npt.NDArray[numpy.floating], c: float
+    cov: npt.NDArray[np.floating], c: float
 ) -> float:
     """Get the variance of the gradient estimation at the point ``c`` for a polynomial
     with uncertainties on its coefficients provided by the covariance matrix ``cov``.
@@ -145,7 +145,7 @@ def _get_variance_of_gradient_estimation_at_point(
     # the terms of the sum in a copy of the ``cov`` matrix.
     # We do not need to use the first row/column of the covariance matrix because it is
     # linked with the intersect, that is not used when computing the derivative.
-    derivative_cov = numpy.copy(cov[1:, 1:])
+    derivative_cov = np.copy(cov[1:, 1:])
     num_derivative_coefficients = derivative_cov.shape[0]
     # The original polynomial at ``x`` is given by
     #       sum(a[i] * x**i for i in range(0, n+1))
@@ -164,12 +164,12 @@ def _get_variance_of_gradient_estimation_at_point(
     # Finally, according to
     # https://en.wikipedia.org/wiki/Covariance#Covariance_of_linear_combinations,
     # the variance is given by the sum of the derivative covariance matrix above.
-    return float(numpy.sum(derivative_cov))
+    return float(np.sum(derivative_cov))
 
 
 def compute_1_over_lambda_gradient_at(
     noise_model_type: type[NoiseInterface],
-    noise_model_parameters: npt.NDArray[numpy.floating] | Sequence[float],
+    noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     noise_parameters_exploration_bounds: list[tuple[float, float]],
     num_points_per_parameters: int = 10,
@@ -181,7 +181,7 @@ def compute_1_over_lambda_gradient_at(
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
-) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
+) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
     """The gradient of 1 / Λ at the provided ``noise_model_parameters``.
 
     Args:
@@ -256,12 +256,12 @@ def compute_1_over_lambda_gradient_at(
 
     # Make sure that noise_model_parameters is a numpy array, even if a generic Sequence
     # is provided, as this is simpler for later.
-    noise_model_parameters = numpy.asarray(noise_model_parameters)
+    noise_model_parameters = np.asarray(noise_model_parameters)
 
     # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
     # This is performing a sweeping for each parameter individually.
-    central_point: npt.NDArray[numpy.floating] = noise_model_parameters.reshape((-1, 1))
-    xis: list[npt.NDArray[numpy.floating]] = [central_point.reshape((-1,))]
+    central_point: npt.NDArray[np.floating] = noise_model_parameters.reshape((-1, 1))
+    xis: list[npt.NDArray[np.floating]] = [central_point.reshape((-1,))]
     for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
         variations = discretisation_generator(
             minimum,
@@ -273,7 +273,7 @@ def compute_1_over_lambda_gradient_at(
         xis.extend(_variate_ith_parameter_by(central_point, variations, i))
 
     # Note: noise_parameters[:, 0] is always ``central_point``.
-    noise_parameters = numpy.asarray(xis).T
+    noise_parameters = np.asarray(xis).T
 
     # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
     # Prepare the computation by building the decoder managers.
@@ -308,7 +308,7 @@ def compute_1_over_lambda_gradient_at(
         report,
     )
     lambda_reciprocals = 1 / lambdas
-    lambda_reciprocal_stddevs = numpy.abs(lambda_stddevs / lambdas**2)
+    lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
 
     # We now have all the estimations of 1 / Λ, we can approximate the gradient
     # Note that ``noise_parameters``, ``lambda_reciprocals`` and
@@ -333,4 +333,4 @@ def compute_1_over_lambda_gradient_at(
         gradient.append(derivative)
         gradient_stddev.append(derivative_stddev)
 
-    return numpy.asarray(gradient), numpy.asarray(gradient_stddev)
+    return np.asarray(gradient), np.asarray(gradient_stddev)

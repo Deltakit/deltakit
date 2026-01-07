@@ -1,6 +1,6 @@
 from collections.abc import Mapping, Sequence
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 
 from deltakit_explorer.analysis.budget._discretisation import (
@@ -19,7 +19,7 @@ from deltakit_explorer.analysis.budget._memory import (
 
 def get_error_budget(
     noise_model_type: type[NoiseInterface],
-    noise_model_parameters: npt.NDArray[numpy.floating] | Sequence[float],
+    noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     noise_parameters_exploration_bounds: list[tuple[float, float]],
     num_points_per_parameters: int = 10,
@@ -31,7 +31,7 @@ def get_error_budget(
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
-) -> tuple[npt.NDArray[numpy.floating], npt.NDArray[numpy.floating]]:
+) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
     """Compute the error budget of the provided ``noise_model``.
 
     Args:
@@ -94,7 +94,7 @@ def get_error_budget(
     """
     # We will compute the gradient at the half point following the methodology outlined
     # in "Exponential suppression of bit or phase errors with cyclic error correction".
-    point = numpy.asarray(noise_model_parameters) / 2
+    point = np.asarray(noise_model_parameters) / 2
     # Evaluate the gradient.
     gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
         noise_model_type,
@@ -113,7 +113,7 @@ def get_error_budget(
     )
     # We computed the gradient at the point ``x / 2``, we can now apply it to the
     # original noise parameters to recover an estimate.
-    contributions = numpy.abs(gradient * noise_model_parameters)
-    stddevs = numpy.abs(gradient_stddev * noise_model_parameters)
+    contributions = np.abs(gradient * noise_model_parameters)
+    stddevs = np.abs(gradient_stddev * noise_model_parameters)
 
     return contributions, stddevs

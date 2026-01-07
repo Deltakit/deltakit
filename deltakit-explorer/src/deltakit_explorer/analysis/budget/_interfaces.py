@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from typing import ClassVar, Generic, TypeVar
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 
 Computation = TypeVar("Computation")
@@ -27,10 +27,10 @@ class NoiseInterface(ABC, Generic[Computation]):
 
     def __init__(
         self,
-        noise_parameters: Sequence[float] | npt.NDArray[numpy.floating],
+        noise_parameters: Sequence[float] | npt.NDArray[np.floating],
         name: str | None = None,
     ) -> None:
-        self._noise_parameters = numpy.asarray(noise_parameters)
+        self._noise_parameters = np.asarray(noise_parameters)
         self._name = name if name is not None else "_".join(self.parameter_names)
 
     @abstractmethod
@@ -38,7 +38,7 @@ class NoiseInterface(ABC, Generic[Computation]):
         """Apply the noise model represented by ``self`` to the provided computation."""
 
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[numpy.floating]) -> str | None:
+    def is_valid(cls, parameters: npt.NDArray[np.floating]) -> str | None:
         """Check if the provided ``parameters`` are valid for the noise model
         represented by ``cls``."""
         if parameters.size != cls.num_noise_parameters:
@@ -49,7 +49,7 @@ class NoiseInterface(ABC, Generic[Computation]):
         return None
 
     @property
-    def noise_parameters(self) -> npt.NDArray[numpy.floating]:
+    def noise_parameters(self) -> npt.NDArray[np.floating]:
         return self._noise_parameters
 
     def _get_index(self, parameter_name: str) -> int:

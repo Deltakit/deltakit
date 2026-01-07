@@ -2,7 +2,7 @@ import itertools
 from collections.abc import Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
@@ -61,7 +61,7 @@ def _generate_surface_code_memory_decoder_manager_wrapper(
 
 
 def generate_decoder_managers_for_lambda(
-    xi: npt.NDArray[numpy.floating],
+    xi: npt.NDArray[np.floating],
     noise_model_type: type[NoiseInterface],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     max_workers: int = 1,

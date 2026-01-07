@@ -1,6 +1,6 @@
 import itertools
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 import pytest
 
@@ -11,13 +11,13 @@ from deltakit_explorer.analysis.budget._discretisation import (
 )
 
 
-def _assert_is_linear(arr: npt.NDArray[numpy.floating]) -> None:
-    diff = numpy.abs(arr[1:] - arr[:-1])
-    numpy.testing.assert_allclose(diff - diff[0], 0, atol=1e-7)
+def _assert_is_linear(arr: npt.NDArray[np.floating]) -> None:
+    diff = np.abs(arr[1:] - arr[:-1])
+    np.testing.assert_allclose(diff - diff[0], 0, atol=1e-7)
 
 
 @pytest.mark.parametrize(
-    "a,b,c,num_points,degree",
+    ("a", "b", "c", "num_points", "degree"),
     itertools.product([-1, 0, 0.1], [1, 2], [0.5], [5, 10, 1000], [1, 2, 3]),
 )
 def test_linear_points(
@@ -25,12 +25,12 @@ def test_linear_points(
 ) -> None:
     ret = get_linear_points(a, b, c, num_points, degree)
     assert len(ret) == num_points
-    assert numpy.all(numpy.logical_and(a <= ret, ret <= b))
+    assert np.all(np.logical_and(a <= ret, ret <= b))
     _assert_is_linear(ret)
 
 
 @pytest.mark.parametrize(
-    "a,b,c,num_points,degree",
+    ("a", "b", "c", "num_points", "degree"),
     itertools.product([0.1, 0.5, 1.0], [1.1, 2.0, 5.0], [1.05], [5, 10], [1, 2, 3]),
 )
 def test_logarithmic_points(
@@ -39,12 +39,12 @@ def test_logarithmic_points(
     ret = get_logarithmic_points(a, b, c, num_points, degree)
     assert len(ret) == num_points
     eps = 1e-7
-    assert numpy.all(numpy.logical_and(a <= ret + eps, ret <= b + eps))
-    _assert_is_linear(numpy.log10(ret))
+    assert np.all(np.logical_and(a <= ret + eps, ret <= b + eps))
+    _assert_is_linear(np.log10(ret))
 
 
 @pytest.mark.parametrize(
-    "func,abc",
+    ("func", "abc"),
     itertools.product(
         [get_linear_points, get_logarithmic_points],
         [

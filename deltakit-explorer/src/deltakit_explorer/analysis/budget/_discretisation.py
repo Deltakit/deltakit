@@ -1,13 +1,13 @@
 from typing import Protocol
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 
 
 class GradientFitDiscretisationGenerator(Protocol):
     def __call__(
         self, a: float, b: float, c: float, num_points: int, degree: int, /
-    ) -> npt.NDArray[numpy.floating]:
+    ) -> npt.NDArray[np.floating]:
         """
         Find a good set of points to estimate the gradient at point ``c`` by fitting a
         polynomial of degree ``degree`` on the interval ``[a, b]``.
@@ -53,15 +53,15 @@ def _check_interval(a: float, b: float, c: float) -> None:
 
 def get_linear_points(
     a: float, b: float, c: float, num_points: int, _: int
-) -> npt.NDArray[numpy.floating]:
+) -> npt.NDArray[np.floating]:
     """Returns ``num_points`` linearly spaced between ``a`` and ``b``."""
     _check_interval(a, b, c)
-    return numpy.linspace(a, b, num_points)
+    return np.linspace(a, b, num_points)
 
 
 def get_logarithmic_points(
     a: float, b: float, c: float, num_points: int, _: int
-) -> npt.NDArray[numpy.floating]:
+) -> npt.NDArray[np.floating]:
     """Returns ``num_points`` logarithmically spaced between ``a`` and ``b``."""
     _check_interval(a, b, c)
     if a <= 0:
@@ -70,4 +70,4 @@ def get_logarithmic_points(
             f"Got [{a}, {b}]."
         )
         raise ValueError(msg)
-    return numpy.logspace(numpy.log10(a), numpy.log10(b), num_points, base=10)
+    return np.logspace(np.log10(a), np.log10(b), num_points, base=10)

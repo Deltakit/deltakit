@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-import numpy
+import numpy as np
 import numpy.typing as npt
 import pandas as pd
 import pytest
@@ -14,16 +14,16 @@ from deltakit_explorer.analysis.budget._post_processing import (
 @dataclass
 class ErrorBudgetingResults:
     data: pd.DataFrame
-    noise_parameters: npt.NDArray[numpy.floating]
+    noise_parameters: npt.NDArray[np.floating]
     parameter_names: list[str]
 
-    def to_tuple(self) -> tuple[pd.DataFrame, npt.NDArray[numpy.floating], list[str]]:
+    def to_tuple(self) -> tuple[pd.DataFrame, npt.NDArray[np.floating], list[str]]:
         return self.data, self.noise_parameters, self.parameter_names
 
 
 @pytest.fixture
-def error_parameters() -> npt.NDArray[numpy.floating]:
-    return numpy.array([5e-4, 4e-3, 5e-3, 5e-3, 5e-3])
+def error_parameters() -> npt.NDArray[np.floating]:
+    return np.array([5e-4, 4e-3, 5e-3, 5e-3, 5e-3])
 
 
 @pytest.fixture
@@ -32,7 +32,7 @@ def error_names() -> list[str]:
 
 
 @pytest.fixture
-def simulated_error_budgeting_data(error_parameters: npt.NDArray[numpy.floating], error_names: list[str]) -> ErrorBudgetingResults:
+def simulated_error_budgeting_data(error_parameters: npt.NDArray[np.floating], error_names: list[str]) -> ErrorBudgetingResults:
     _resources_folder = Path(__file__).parent.parent.parent / "resources"
     _data_file = _resources_folder / "error_budget_data.csv"
     data = pd.read_csv(_data_file)
@@ -54,7 +54,7 @@ def test_data_matches_csv(simulated_error_budgeting_data: ErrorBudgetingResults)
         strict=True,
     ):
         values = simulated_error_budgeting_data.data[f"noise_{noise_name}"]
-        assert numpy.any(numpy.isclose(values, noise_value))
+        assert np.any(np.isclose(values, noise_value))
 
 
 def test_filter_non_close_noise_parameters(
@@ -65,12 +65,12 @@ def test_filter_non_close_noise_parameters(
     data_frame = _filter_non_close_noise_parameters(data, parameters, names)
     filtered_columns_data_frame = data_frame[all_noises_index]
     for row in filtered_columns_data_frame.to_numpy():
-        numpy.testing.assert_allclose(row, parameters)
+        np.testing.assert_allclose(row, parameters)
 
 
 def test_filter_non_close_noise_parameters_random(
     simulated_error_budgeting_data: ErrorBudgetingResults,
-    random_generator: numpy.random.Generator,
+    random_generator: np.random.Generator,
 ) -> None:
     data, _, names = simulated_error_budgeting_data.to_tuple()
     all_noises_index = [f"noise_{name}" for name in names]
@@ -79,7 +79,7 @@ def test_filter_non_close_noise_parameters_random(
     data_frame = _filter_non_close_noise_parameters(data, random_parameters, names)
     filtered_columns_data_frame = data_frame[all_noises_index]
     for row in filtered_columns_data_frame.to_numpy():
-        numpy.testing.assert_allclose(row, random_parameters)
+        np.testing.assert_allclose(row, random_parameters)
 
 
 def test_compute_lambda_and_stddev_from_results():
