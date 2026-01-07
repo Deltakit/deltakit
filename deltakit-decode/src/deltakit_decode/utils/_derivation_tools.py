@@ -1,11 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 
-from collections.abc import Iterator
 import math
-from collections import defaultdict
+from collections import Counter, defaultdict
+from collections.abc import Collection, Generator, Iterable, Iterator, Sequence
 from itertools import chain, combinations, islice, product
-from collections import Counter
-from collections.abc import Collection, Generator, Iterable, Sequence
 from warnings import warn
 
 import numpy as np

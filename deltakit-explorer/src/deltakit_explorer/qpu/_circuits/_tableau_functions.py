@@ -5,25 +5,60 @@ using the stim Tableau.
 """
 # pylint: disable=too-many-lines,too-many-nested-blocks,too-many-branches,too-many-statements
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import reduce
 from operator import mul
-from collections.abc import Sequence
 
 import numpy as np
 import stim
 from deltakit_circuit import Circuit, GateLayer, Layer, Qubit
-from deltakit_circuit.gates import (CX, CXSWAP, CY, CZ, CZSWAP, ISWAP,
-                                    ISWAP_DAG, MEASUREMENT_GATE_MAPPING, MPP,
-                                    MRX, MRY, MRZ, MX, MY, MZ,
-                                    ONE_QUBIT_GATE_MAPPING, RESET_GATE_MAPPING,
-                                    RX, RY, RZ, S_DAG, SQRT_XX, SQRT_XX_DAG,
-                                    SQRT_YY, SQRT_YY_DAG, SQRT_ZZ, SQRT_ZZ_DAG,
-                                    TWO_QUBIT_GATE_MAPPING, XCX, XCY, XCZ, YCX,
-                                    YCY, YCZ, Gate, H, I, S)
-from deltakit_explorer.qpu._native_gate_set import (NativeGateSetAndTimes,
-                                                    OneQubitCliffordGate,
-                                                    TwoOperandGate)
+from deltakit_circuit.gates import (
+    CX,
+    CXSWAP,
+    CY,
+    CZ,
+    CZSWAP,
+    ISWAP,
+    ISWAP_DAG,
+    MEASUREMENT_GATE_MAPPING,
+    MPP,
+    MRX,
+    MRY,
+    MRZ,
+    MX,
+    MY,
+    MZ,
+    ONE_QUBIT_GATE_MAPPING,
+    RESET_GATE_MAPPING,
+    RX,
+    RY,
+    RZ,
+    S_DAG,
+    SQRT_XX,
+    SQRT_XX_DAG,
+    SQRT_YY,
+    SQRT_YY_DAG,
+    SQRT_ZZ,
+    SQRT_ZZ_DAG,
+    TWO_QUBIT_GATE_MAPPING,
+    XCX,
+    XCY,
+    XCZ,
+    YCX,
+    YCY,
+    YCZ,
+    Gate,
+    H,
+    I,
+    S,
+)
+
+from deltakit_explorer.qpu._native_gate_set import (
+    NativeGateSetAndTimes,
+    OneQubitCliffordGate,
+    TwoOperandGate,
+)
 
 # key: tuple of the form (gate's layer index, gate's qubit, gate's stim_string representation)
 # values: dictionary containing preceding and succeeding unitary block indices:

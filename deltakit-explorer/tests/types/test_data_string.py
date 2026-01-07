@@ -4,6 +4,7 @@ from __future__ import annotations
 from tempfile import TemporaryDirectory
 
 import pytest
+
 from deltakit_explorer.types import DataString
 
 

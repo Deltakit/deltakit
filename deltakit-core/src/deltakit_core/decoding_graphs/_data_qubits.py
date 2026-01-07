@@ -5,17 +5,19 @@ from __future__ import annotations
 
 import math
 from collections import Counter, UserDict
-from functools import cached_property
-from itertools import chain
-from typing import Any, Generic, TypeVar
 from collections.abc import (
     Collection,
     Iterable,
     Iterator,
     Mapping,
     Sequence,
+)
+from collections.abc import (
     Set as AbstractSet,
 )
+from functools import cached_property
+from itertools import chain
+from typing import Any, Generic, TypeVar
 
 from deltakit_core.decoding_graphs._syndromes import (
     Bit,
@@ -219,7 +221,7 @@ class DecodingEdge(DecodingHyperEdge):
 EdgeT = TypeVar("EdgeT", bound=DecodingHyperEdge)
 
 
-class OrderedDecodingEdges(Generic[EdgeT], Sequence[EdgeT], AbstractSet[EdgeT]):
+class OrderedDecodingEdges(Sequence[EdgeT], AbstractSet[EdgeT], Generic[EdgeT]):
     """Immutable ordered mod 2 set of decoding edges.
 
     All decoding edges are thought to be on the same decoding graph.

@@ -3,8 +3,7 @@
 # and can be removed, adjusting imports within other `deltakit_explorer` modules
 # accordingly.
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
-from deltakit_explorer.qpu._noise._phenomenological_noise import \
-    PhenomenologicalNoise
+from deltakit_explorer.qpu._noise._phenomenological_noise import PhenomenologicalNoise
 from deltakit_explorer.qpu._noise._sd6_noise_model import SD6Noise
 from deltakit_explorer.qpu._noise._si1000_noise import SI1000Noise
 from deltakit_explorer.qpu._noise._toy_noise import ToyNoise

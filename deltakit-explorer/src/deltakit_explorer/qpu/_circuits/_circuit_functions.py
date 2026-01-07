@@ -4,10 +4,18 @@ This module consists of individual circuit optimisation functions.
 """
 
 
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              NoiseLayer, Observable, ShiftCoordinates)
-from deltakit_circuit.gates import I
 import itertools
+
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    NoiseLayer,
+    Observable,
+    ShiftCoordinates,
+)
+from deltakit_circuit.gates import I
 
 # According to the purpose and business logic, content of this file
 # may violate pylint rules on cyclomatic complexity. Still, code

@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable, Iterable, Iterator
 from functools import reduce
 from itertools import chain, count, islice, product, repeat
 from math import prod
 from operator import itemgetter, mul
-from typing import Any, Generic, TypeVar, TypeAlias
-from collections.abc import Callable, Iterable, Iterator
+from typing import Any, Generic, TypeAlias, TypeVar
 
 import numpy.random as npr
 

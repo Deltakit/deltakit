@@ -4,13 +4,16 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from collections.abc import Iterable, Mapping
 from itertools import chain, permutations
 from typing import Generic
-from collections.abc import Iterable, Mapping
 
 import stim
+
+from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
 from deltakit_circuit._stim_identifiers import AppendArguments, NoiseStimIdentifier
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 from deltakit_circuit.noise_channels import (
     Leakage,
     Relax,
@@ -31,7 +34,6 @@ from deltakit_circuit.noise_channels._pauli_noise import (
     PauliYError,
     PauliZError,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T, U
 
 UNCORRELATED_NOISE_CHANNELS = (
     PauliXError,
@@ -166,9 +168,12 @@ class NoiseLayer(Generic[T]):
         for stim_string, targets, probabilities, tag in self._collect_noise_channels(
             qubit_mapping
         ):
-            stim_circuit.append(
-                stim_string, targets, probabilities, tag=tag if tag is not None else ""
+            kwargs = (
+                {"tag": tag}
+                if tag is not None and is_stim_tag_feature_available()
+                else {}
             )
+            stim_circuit.append(stim_string, targets, probabilities, **kwargs)
 
     def approx_equals(  # noqa: PLR0911
         self,

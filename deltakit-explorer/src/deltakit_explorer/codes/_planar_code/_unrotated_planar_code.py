@@ -5,13 +5,15 @@ This module stores an implementation of the unrotated planar code.
 
 import itertools
 
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
-from deltakit_explorer.codes._planar_code._planar_code import (PlanarCode,
-                                                               ScheduleType)
-from deltakit_explorer.codes._schedules import (ScheduleOrder,
-                                                UnrotatedPlanarCodeSchedules,
-                                                get_x_and_z_schedules)
+
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
+from deltakit_explorer.codes._schedules import (
+    ScheduleOrder,
+    UnrotatedPlanarCodeSchedules,
+    get_x_and_z_schedules,
+)
 
 
 class UnrotatedPlanarCode(PlanarCode):

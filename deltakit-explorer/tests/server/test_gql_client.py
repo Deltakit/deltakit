@@ -9,6 +9,7 @@ import gql.transport.exceptions
 import graphql
 import pytest
 import requests
+
 from deltakit_explorer._api._client import Client
 from deltakit_explorer._api._gql_client import GQLClient
 from deltakit_explorer.types._exceptions import ServerException

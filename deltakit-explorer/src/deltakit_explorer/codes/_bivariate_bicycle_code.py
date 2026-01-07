@@ -14,12 +14,12 @@ from itertools import product
 import galois
 import numpy as np
 import numpy.typing as npt
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from bposd.css import css_code
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
+
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
-
-from bposd.css import css_code
 
 
 def _find_anticommuting_pairs(
@@ -107,10 +107,10 @@ def _find_anticommuting_pairs(
 
     # convert from int back to binary array
     chosen_x_logs_as_vec = [
-        [int(bit) for bit in bin(op_as_int)[2:].zfill(n)] for op_as_int in chosen_x_logs
+        [int(bit) for bit in f"{op_as_int:b}".zfill(n)] for op_as_int in chosen_x_logs
     ]
     chosen_z_logs_as_vec = [
-        [int(bit) for bit in bin(op_as_int)[2:].zfill(n)] for op_as_int in chosen_z_logs
+        [int(bit) for bit in f"{op_as_int:b}".zfill(n)] for op_as_int in chosen_z_logs
     ]
     return chosen_x_logs_as_vec, chosen_z_logs_as_vec
 

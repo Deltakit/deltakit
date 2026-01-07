@@ -7,14 +7,14 @@ name = "deltakit-core"
 version = "0.5.1"
 description = "Deltakit (component deltakit-core)"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 
 authors = [{ name = "Deltakit Team", email = "deltakit@riverlane.com" }]
 
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -25,23 +25,69 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Quantum Computing",
   "Typing :: Typed",
 ]
+
 dependencies = [
-  "numpy>=1.26, <3.0",
-  "networkx>=3.1, <4.0",
-  "stim>=1.12.1, <2.0",
-  "typing_extensions>=4.0, <5.0",
-  "semver"
+  "numpy>=1.26",
+  "numpy~=2.1; python_version >= '3.13'",
+  "networkx~=3.1",
+  "stim~=1.11; python_version >= '3.10' and python_version < '3.12'",
+  "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
+  "stim~=1.15; python_version >= '3.13'",
+  "typing_extensions~=4.0",
+  "packaging>=25.0"
 ]
+
 
 [project.urls]
 Homepage = "https://github.com/Deltakit/deltakit"
-"Bug Tracker" = "https://github.com/Deltakit/deltakit/issues"
+Source = "https://github.com/Deltakit/deltakit"
+Documentation = "https://deltakit.riverlane.com/"
+Issues = "https://github.com/Deltakit/deltakit/issues"
 Changelog = "https://github.com/Deltakit/deltakit/releases"
 
-[tool.deptry.per_rule_ignores]
-DEP001 = ['lestim']
-DEP002 = ['types-networkx']  # needed to appease mypy
-DEP003 = ['deltakit_core']
+
+[dependency-groups]
+test = [
+  "pytest>=9.0",
+  "pytest-cov>=7.0",
+  "pytest-mock>=3.14",
+  "pytest-skip-slow>=0.0.5",
+  "pytest-lazy-fixtures>=1.0",
+]
+lint = [
+  "mypy~=1.17",
+  "ruff~=0.14",
+  "typos~=1.34",
+  "deptry~=0.23",
+  "types-networkx~=3.1",
+]
+security = [
+  "bandit~=1.8",
+  "ochrona~=2.0",
+  "pip-audit~=2.7"
+]
+dev = [
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "security" },
+]
+
+[tool.deptry]
+known_first_party = ["deltakit_core"]
+
+[tool.mypy]
+files = "src/**/*.py"
+# The below list of disabled checks should eventually be empty.
+disable_error_code = "arg-type,attr-defined"
+
+[[tool.mypy.overrides]]
+module = ["stim"]
+follow_untyped_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["./tests/"]

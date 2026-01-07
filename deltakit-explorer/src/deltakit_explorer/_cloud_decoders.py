@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 import deltakit_circuit
 import numpy as np
 import numpy.typing as npt
 import stim
+from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 if TYPE_CHECKING:
     from deltakit_core.decoding_graphs import OrderedDecodingEdges, OrderedSyndrome
@@ -11,7 +14,7 @@ if TYPE_CHECKING:
 from deltakit_explorer import Client, enums, types
 
 
-class _CloudDecoder:
+class _CloudDecoder(DecoderProtocol):
     """Decoder (Cloud-based).
 
     Parameters
@@ -105,10 +108,18 @@ class _CloudDecoder:
         )
         return decoding_result.predictions.as_numpy()
 
-    # use inherited `decode_to_boolean` and `decode_batch_to_full_correction`;
-    # they will raise `NotImplementedError`, too.
 
-    def decode_to_full_correction(self, syndrome: 'OrderedSyndrome') -> 'OrderedDecodingEdges':
+    def decode_batch_to_full_correction(
+        self, syndrome_batch: npt.NDArray[np.uint8]
+    ) -> npt.NDArray[np.uint8]:
+        raise NotImplementedError()
+
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
+        raise NotImplementedError()
+
+    def decode_to_full_correction(
+        self, syndrome: OrderedSyndrome
+    ) -> OrderedDecodingEdges:
         raise NotImplementedError()
 
     @property

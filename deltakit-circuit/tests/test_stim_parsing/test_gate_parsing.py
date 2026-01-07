@@ -1,11 +1,18 @@
 # (c) Copyright Riverlane 2020-2025.
-import deltakit_circuit as sp
+from importlib.metadata import version
+
 import pytest
 import stim
+from packaging.version import Version
+
+import deltakit_circuit as sp
 from deltakit_circuit._parse_stim import (
     _classify_pauli_target,
     parse_stim_gate_instruction,
 )
+
+CURRENT_STIM_VERSION = Version(version("stim"))
+STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 def test_probability_is_added_on_measurement_gates():
@@ -34,7 +41,7 @@ def test_error_is_raised_when_noise_class_is_passed_to_gate_parser():
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_gates",
+    ("stim_circuit", "expected_gates"),
     [
         (stim.Circuit("X 0 1 2 3 4"), [sp.gates.X(sp.Qubit(i)) for i in range(5)]),
         (
@@ -168,13 +175,6 @@ def test_error_is_raised_when_noise_class_is_passed_to_gate_parser():
                 sp.gates.CXSWAP(sp.Qubit(2), sp.Qubit(3)),
             ],
         ),
-        (
-            stim.Circuit("CZSWAP 0 1 2 3"),
-            [
-                sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
-                sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
-            ],
-        ),
     ],
 )
 def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltakit_circuit_circuit(
@@ -182,10 +182,22 @@ def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltaki
 ):
     expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
     assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
+    # Enable CZSWAP test if Stim > 1.13.0.
+    # TODO: If the condition is met, this part is
+    # executed for every test parameter. There should
+    # be a clause for executing once.
+    if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
+        stim_circuit = stim.Circuit("CZSWAP 0 1 2 3")
+        expected_gates = [
+            sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
+            sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
+        ]
+        expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
+        assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_deltakit_circuit_circuit",
+    ("stim_circuit", "expected_deltakit_circuit_circuit"),
     [
         (
             stim.Circuit("CX rec[-1] 0"),
@@ -218,7 +230,7 @@ def test_parsing_controlled_gates_with_measurement_records_gives_expected_deltak
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_deltakit_circuit_circuit",
+    ("stim_circuit", "expected_deltakit_circuit_circuit"),
     [
         (
             stim.Circuit("CX sweep[1] 0"),
@@ -251,7 +263,7 @@ def test_parsing_controlled_gates_with_sweep_bits_gives_expected_deltakit_circui
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         (
             stim.Circuit("X 1\nY 0"),
@@ -304,7 +316,7 @@ def test_parsing_multiple_gate_stim_circuit_returns_correct_deltakit_circuit_cir
 
 
 @pytest.mark.parametrize(
-    "stim_circuit, expected_circuit",
+    ("stim_circuit", "expected_circuit"),
     [
         (
             stim.Circuit("X 0 1 2 1 2"),

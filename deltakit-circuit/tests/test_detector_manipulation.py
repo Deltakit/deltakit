@@ -128,7 +128,7 @@ class TestDetectorTrimming:
         )
 
     @pytest.mark.parametrize(
-        "stim_circuit, detectors_to_remove, expected_stim_circuit",
+        ("stim_circuit", "detectors_to_remove", "expected_stim_circuit"),
         [
             (
                 stim.Circuit("""DETECTOR(3, 0) rec[-3]

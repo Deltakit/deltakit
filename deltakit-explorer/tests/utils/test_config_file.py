@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 import pytest
+
 from deltakit_explorer._utils import _utils as utils
 
 
@@ -28,7 +29,7 @@ def test_read_and_write_and_override_config_file(mocker):
     assert d == ({"TEST": "321test", "TEST1": "4"})
 
     # test that blank lines in file are ignored
-    with open(config_file, "a") as f:
+    with config_file.open("a") as f:
         f.write("\n")
     d = utils.read_persisted_variables(config_file)
     assert d == ({"TEST": "321test", "TEST1": "4"})

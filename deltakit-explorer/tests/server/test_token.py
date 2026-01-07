@@ -1,15 +1,17 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import os
-import pytest
 import random
 from pathlib import Path
-from tests.helpers._utils import FakeResponse
+
+import pytest
+
 from deltakit_explorer._api import _auth
 from deltakit_explorer._api._client import Client
 from deltakit_explorer._api._gql_client import GQLClient
 from deltakit_explorer._utils import _utils as utils
 from deltakit_explorer.types._exceptions import ServerException
+from tests.helpers._utils import FakeResponse
 
 
 class TestGQLClientTokenManipulations:

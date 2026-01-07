@@ -1,10 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-from pathlib import Path
 from collections.abc import Iterator
+from pathlib import Path
 
 import numpy as np
+
 from deltakit_core.decoding_graphs import Bitstring, OrderedSyndrome
 
 
@@ -13,7 +14,7 @@ def to_bytearray(data: Path | bytes) -> bytearray:
     a bytearray object. A key motivation for this is that np.unpackbits
     accepts bytearray but not bytes."""
     if isinstance(data, Path):
-        with open(data, "rb") as b8_data:
+        with data.open("rb") as b8_data:
             return bytearray(b8_data.read())
     return bytearray(data)
 
@@ -88,7 +89,7 @@ def syndromes_to_b8_file(
     """Given a syndrome generator, this will output them to file in the b8 format.
     Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
     """
-    with open(syndrome_b8_out, "wb") as b8_out_handle:
+    with syndrome_b8_out.open("wb") as b8_out_handle:
         b8_out_handle.writelines(
             bytes(np.packbits(syndrome.as_bitstring(detector_num), bitorder="little"))
             for syndrome in syndromes
@@ -103,7 +104,7 @@ def logical_flips_to_b8_file(
     efficient than the string-based 01 representation.
     Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
     """
-    with open(logical_flips_b8_out, "wb") as data_b8:
+    with logical_flips_b8_out.open("wb") as data_b8:
         data_b8.writelines(
             bytes(np.packbits(logical_flip, bitorder="little"))
             for logical_flip in logical_flips
@@ -122,7 +123,7 @@ def parse_01_to_logical_flips(
     Use logical_flips_to_b8_file on the result of this function to translate 01
     data to b8 data that can be decoded via the B8DecoderManager.
     """
-    with open(logical_flips_01_file, "r", encoding="utf-8") as logical_flips_handle:
+    with logical_flips_01_file.open("r", encoding="utf-8") as logical_flips_handle:
         for bit_string in logical_flips_handle.read().splitlines():
             yield tuple(char != "0" for char in bit_string)
 
@@ -139,6 +140,6 @@ def parse_01_to_syndromes(
     Use logical_flips_to_b8_file on the result of this function to translate 01
     data to b8 data that can be decoded via the B8DecoderManager.
     """
-    with open(logical_flips_01_file, "r", encoding="utf-8") as logical_flips_handle:
+    with logical_flips_01_file.open("r", encoding="utf-8") as logical_flips_handle:
         for bit_string in logical_flips_handle.read().splitlines():
             yield OrderedSyndrome([i for i, v in enumerate(bit_string) if v == "1"])

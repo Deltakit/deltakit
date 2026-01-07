@@ -6,9 +6,11 @@ from deltakit_circuit import GateLayer, PauliX, Qubit
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import MPP, MRX, MRY, MRZ, MX, MY, MZ, H, I
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1
+
 from deltakit_explorer.qpu._noise import PhenomenologicalNoise
-from deltakit_explorer.qpu._noise._phenomenological_noise import \
-    ToyPhenomenologicalNoise
+from deltakit_explorer.qpu._noise._phenomenological_noise import (
+    ToyPhenomenologicalNoise,
+)
 
 qubits = [Qubit(0), Qubit(17), Qubit(Coord2D(1, 1))]
 
@@ -30,7 +32,7 @@ class TestPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (
                 PhenomenologicalNoise(
@@ -59,7 +61,7 @@ class TestPhenomenologicalNoise:
         )
 
     @pytest.mark.parametrize(
-        "phenomenological_noise, probability",
+        ("phenomenological_noise", "probability"),
         [
             (lambda qubit: Depolarise1(qubit, 0.0), 0.0),
             (lambda qubit: Depolarise1(qubit, 0.001), 0.001),
@@ -84,7 +86,7 @@ class TestToyPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (ToyPhenomenologicalNoise(), 0.0),
             (ToyPhenomenologicalNoise(p=0.001), 0.001),

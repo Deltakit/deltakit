@@ -1,9 +1,15 @@
 import pytest
-from deltakit_circuit import (Circuit, GateLayer, NoiseContext, Qubit, gates,
-                              noise_channels)
+from deltakit_circuit import (
+    Circuit,
+    GateLayer,
+    NoiseContext,
+    Qubit,
+    gates,
+    noise_channels,
+)
+
 from deltakit_explorer.qpu import PhysicalNoise
-from deltakit_explorer.qpu._noise._noise_parameters import \
-    _idle_noise_from_t1_t2
+from deltakit_explorer.qpu._noise._noise_parameters import _idle_noise_from_t1_t2
 
 
 @pytest.fixture

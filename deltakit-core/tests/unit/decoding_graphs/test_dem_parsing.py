@@ -1,11 +1,12 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import chain
 from collections.abc import Iterable
+from itertools import chain
 from unittest.mock import MagicMock
 
-import stim
-
 import pytest
+import stim
+from pytest_mock import MockerFixture
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DemParser,
@@ -15,9 +16,7 @@ from deltakit_core.decoding_graphs import (
     LogicalsInEdges,
     observable_warning,
 )
-
 from deltakit_core.decoding_graphs._dem_parsing import CoordinateOffset, DetectorCounter
-from pytest_mock import MockerFixture
 
 
 class TestCoordinateOffset:
@@ -240,7 +239,7 @@ class TestDetectorRecorder:
         assert detector_recorder.detector_records == {1: DetectorRecord((0,), 0)}
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_records",
+        ("detector_error_model", "expected_detector_records"),
         [
             (
                 stim.DetectorErrorModel("detector(0, 1, 1) D0"),
@@ -281,7 +280,7 @@ class TestDetectorCounter:
         assert detector_counter.counter == {1: 1}
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_counts",
+        ("detector_error_model", "expected_detector_counts"),
         [
             (
                 stim.DetectorErrorModel(
@@ -320,7 +319,7 @@ class TestDetectorCounter:
         assert detector_counter.counter == expected_detector_counts
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_max",
+        ("detector_error_model", "expected_detector_max"),
         [
             (
                 stim.DetectorErrorModel(
@@ -387,7 +386,7 @@ class TestLogicalsInEdges:
         }
 
     @pytest.mark.parametrize(
-        "dem, detector_offset, expected_edge_records",
+        ("dem", "detector_offset", "expected_edge_records"),
         [
             (
                 stim.DetectorErrorModel("error(0.01) D0 D1"),
@@ -428,7 +427,7 @@ class TestLogicalsInEdges:
         assert error_handler._edge_records == expected_edge_records
 
     @pytest.mark.parametrize(
-        "dem, detector_offset, expected_logicals",
+        ("dem", "detector_offset", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel("error(0.01) D0 L0"),
@@ -473,7 +472,7 @@ class TestLogicalsInEdges:
         assert error_handler.logicals == expected_logicals
 
     @pytest.mark.parametrize(
-        "dem, expected_edges, expected_logicals",
+        ("dem", "expected_edges", "expected_logicals"),
         [
             (
                 dem_repeat(3, ["shift_detectors 4", "error(0.01) D0"]),

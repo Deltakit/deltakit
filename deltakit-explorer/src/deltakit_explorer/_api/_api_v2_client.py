@@ -3,29 +3,39 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, cast, TYPE_CHECKING
-from typing_extensions import override
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urljoin
 
 import numpy as np
 import numpy.typing as npt
 import requests
 import requests.adapters
+from typing_extensions import override
+
 if TYPE_CHECKING:
     import stim
 from deltakit_explorer._api._api_client import APIClient, APIEndpoints
-from deltakit_explorer._api._auth import (get_token,
-                                          https_verification_disabled,
-                                          set_token)
+from deltakit_explorer._api._auth import (
+    get_token,
+    https_verification_disabled,
+    set_token,
+)
 from deltakit_explorer._utils._logging import Logging
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._exceptions import ServerException
 from deltakit_explorer.types._experiment_types import QECExperimentDefinition
-from deltakit_explorer.types._types import (BinaryDataType, DataString,
-                                            Decoder, DecodingResult, DetectionEvents,
-                                            LeakageFlags, Measurements,
-                                            NoiseModel, ObservableFlips,
-                                            QubitCoordinateToDetectorMapping)
+from deltakit_explorer.types._types import (
+    BinaryDataType,
+    DataString,
+    Decoder,
+    DecodingResult,
+    DetectionEvents,
+    LeakageFlags,
+    Measurements,
+    NoiseModel,
+    ObservableFlips,
+    QubitCoordinateToDetectorMapping,
+)
 
 
 class JobStatus(Enum):

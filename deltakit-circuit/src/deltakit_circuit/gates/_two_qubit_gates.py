@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from typing import ClassVar, get_args
 
-from deltakit_circuit.gates._abstract_gates import ControlledGate, SymmetricTwoQubitGate
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T
+from deltakit_circuit.gates._abstract_gates import ControlledGate, SymmetricTwoQubitGate
 
 # pylint: disable=invalid-name
 

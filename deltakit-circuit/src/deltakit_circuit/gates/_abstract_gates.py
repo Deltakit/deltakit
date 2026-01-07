@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+from collections.abc import Generator, Mapping, Sequence
 from enum import Enum
 from typing import ClassVar, Generic, TypeVar, cast
-from collections.abc import Generator, Mapping, Sequence
 
 import stim
-from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
 from typing_extensions import Self
+
+from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
 
 
 class PauliBasis(Enum):
@@ -33,7 +34,7 @@ class Gate(ABC, Generic[T]):
 
     stim_string: ClassVar[str]
 
-    def __init__(self, tag: str | None = None) -> None:
+    def __init__(self, *, tag: str | None = None) -> None:
         super().__init__()
         self._tag = tag
 
@@ -92,8 +93,8 @@ class OneQubitGate(Gate[T]):
         The qubit that this gate acts on.
     """
 
-    def __init__(self, qubit: Qubit[T] | T, tag: str | None = None):
-        super().__init__(tag)
+    def __init__(self, qubit: Qubit[T] | T, *, tag: str | None = None):
+        super().__init__(tag=tag)
         self._qubit = Qubit(qubit) if not isinstance(qubit, Qubit) else qubit
 
     @property
@@ -177,9 +178,10 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         qubit: Qubit[T] | T,
         probability: float = 0.0,
         invert: bool = False,
+        *,
         tag: str | None = None,
     ):
-        super().__init__(qubit, tag)
+        super().__init__(qubit, tag=tag)
         if not 0 <= probability <= 1:
             msg = "Probability must be between zero and one."
             raise ValueError(msg)
@@ -292,8 +294,8 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     stim_string: ClassVar[str]
 
-    def __init__(self, operand1: UT | T, operand2: VT | T, tag: str | None = None):
-        super().__init__(tag)
+    def __init__(self, operand1: UT | T, operand2: VT | T, *, tag: str | None = None):
+        super().__init__(tag=tag)
         operand1 = cast(
             UT,
             operand1
@@ -337,7 +339,7 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     @classmethod
     def from_consecutive(
-        cls, pairs: Sequence[UT | VT | T], tag: str | None = None
+        cls, pairs: Sequence[UT | VT | T], *, tag: str | None = None
     ) -> Generator[Self, None, None]:
         """Yield an class instance for each pair in a flattened sequence of
         data.
@@ -428,9 +430,9 @@ class ControlledGate(TwoOperandGate[UT, VT]):
         The string that stim associates with this gate.
     """
 
-    def __init__(self, control: UT | T, target: VT | T, tag: str | None = None):
+    def __init__(self, control: UT | T, target: VT | T, *, tag: str | None = None):
         # pylint: disable=useless-super-delegation
-        super().__init__(control, target, tag)
+        super().__init__(control, target, tag=tag)
 
     @property
     def qubits(self) -> tuple[Qubit[T], ...]:

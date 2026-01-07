@@ -2,9 +2,11 @@
 """Tests for data qubits datastrucutres."""
 
 import math
-from collections.abc import Iterable, Set as AbstractSet
+from collections.abc import Iterable
+from collections.abc import Set as AbstractSet
 
 import pytest
+
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -78,14 +80,13 @@ class TestDecodingEdge:
         assert len(decoding_edge) == 2
 
     def test_decoding_edge_membership(self, decoding_edge: DecodingEdge):
-        assert (
-            decoding_edge.first in decoding_edge
-            and decoding_edge.second in decoding_edge
-        )
+        assert decoding_edge.first in decoding_edge
+        assert decoding_edge.second in decoding_edge
 
     def test_self_loop_decoding_edge_raises_value_error(self, random_generator):
         syndrome_a = random_generator.integers(100)
-        with pytest.raises(ValueError):
+        msg = "Invalid DecodingEdge between detectors [0-9]+ and [0-9]+."
+        with pytest.raises(ValueError, match=msg):
             DecodingEdge(syndrome_a, syndrome_a)
 
     def test_example_decoding_edge_string(self):
@@ -123,7 +124,7 @@ class TestEdgeRecord:
     """Tests for EdgeRecord object."""
 
     @pytest.mark.parametrize(
-        "weight, expected_p_err",
+        ("weight", "expected_p_err"),
         [
             (0, 0.5),
             (1, 0.26894),
@@ -147,7 +148,7 @@ class TestEdgeRecord:
         assert edgerecord["stock_edge_key"] == "val"
 
     @pytest.mark.parametrize(
-        "edge_dict, expected_edge_record",
+        ("edge_dict", "expected_edge_record"),
         [
             ({}, EdgeRecord()),
             ({"p_err": 0.5}, EdgeRecord(p_err=0.5)),
@@ -180,7 +181,7 @@ class TestEdgeRecord:
             EdgeRecord(p_err=invalid_perr).weight  # noqa: B018
 
     @pytest.mark.parametrize(
-        "perr, expected_weight",
+        ("perr", "expected_weight"),
         [
             (0.5, 0),
             (0.26894, 1),
@@ -267,7 +268,8 @@ class TestOrderedDecodingEdges:
         decoding_edge_a = DecodingEdge(3, 4)
         decoding_edge_b = DecodingEdge(6, 1)
         ordered_edges = OrderedDecodingEdges([decoding_edge_a, decoding_edge_b])
-        assert decoding_edge_a in ordered_edges and decoding_edge_b in ordered_edges
+        assert decoding_edge_a in ordered_edges
+        assert decoding_edge_b in ordered_edges
 
     def test_string_of_each_decoding_edge_is_in_string_of_ordered_collection(self):
         decoding_edge_a = DecodingEdge(3, 4)
@@ -275,10 +277,8 @@ class TestOrderedDecodingEdges:
         ordered_edges_string = str(
             OrderedDecodingEdges([decoding_edge_a, decoding_edge_b])
         )
-        assert (
-            str(decoding_edge_a) in ordered_edges_string
-            and str(decoding_edge_b) in ordered_edges_string
-        )
+        assert str(decoding_edge_a) in ordered_edges_string
+        assert str(decoding_edge_b) in ordered_edges_string
 
     @pytest.mark.parametrize(
         "edges",
@@ -305,7 +305,7 @@ class TestOrderedDecodingEdges:
         assert len(ordered_edges) == len(set(edges))
 
     @pytest.mark.parametrize(
-        "ordered_decoding_edges, edges, expected_bitstring",
+        ("ordered_decoding_edges", "edges", "expected_bitstring"),
         [
             (OrderedDecodingEdges([]), [], []),
             (
@@ -350,7 +350,7 @@ class TestOrderedDecodingEdges:
         assert ordered_decoding_edges.as_bitstring(edges) == expected_bitstring
 
     @pytest.mark.parametrize(
-        "indices, expected_decoding_edges",
+        ("indices", "expected_decoding_edges"),
         [
             ([], OrderedDecodingEdges()),
             (
@@ -426,7 +426,7 @@ class TestOrderedDecodingEdges:
 
 
 @pytest.mark.parametrize(
-    "errors, boundaries, expected_syndrome",
+    ("errors", "boundaries", "expected_syndrome"),
     [
         ([], set(), OrderedSyndrome()),
         ([], {1}, OrderedSyndrome()),

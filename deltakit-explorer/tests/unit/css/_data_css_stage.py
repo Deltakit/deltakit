@@ -1,15 +1,22 @@
 # (c) Copyright Riverlane 2020-2025.
 from dataclasses import dataclass
 
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              Observable, PauliX, PauliZ, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    Observable,
+    PauliX,
+    PauliZ,
+    Qubit,
+    ShiftCoordinates,
+)
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
-from deltakit_circuit.gates import (CX, CZ, MPP, MX, MZ, RX, RZ, SWAP, H, I, X,
-                                    Z)
+from deltakit_circuit.gates import CX, CZ, MPP, MX, MZ, RX, RZ, SWAP, H, I, X, Z
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 # creating a default value different from None to avoid tests expecting None to accidentally

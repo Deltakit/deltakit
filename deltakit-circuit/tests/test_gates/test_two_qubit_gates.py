@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
-from itertools import chain, permutations, product
 import itertools
+from itertools import chain, permutations, product
 
 import pytest
 import stim
@@ -52,7 +52,7 @@ SYMMETRIC_GATES = (
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate, expected_string",
+    ("two_qubit_gate", "expected_string"),
     [
         (gates.CX, "CX"),
         (gates.CXSWAP, "CXSWAP"),
@@ -85,7 +85,7 @@ def test_two_qubit_gate_stim_string_matches_expected_string(
 class TestFromConsecutive:
     @pytest.mark.parametrize("two_qubit_gate_type", gates.TWO_QUBIT_GATES)
     @pytest.mark.parametrize(
-        "iterable, expected_qubit_pairs",
+        ("iterable", "expected_qubit_pairs"),
         [
             (
                 range(6),
@@ -127,7 +127,7 @@ class TestFromConsecutive:
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate,tag",
+    ("two_qubit_gate", "tag"),
     itertools.product(CONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
 )
 def test_repr_of_controlled_gates_matches_expected_representation(
@@ -141,7 +141,7 @@ def test_repr_of_controlled_gates_matches_expected_representation(
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate,tag",
+    ("two_qubit_gate", "tag"),
     itertools.product(UNCONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
 )
 def test_repr_of_uncontrolled_gate_matches_expected_representation(
@@ -166,7 +166,7 @@ def test_error_is_raised_if_consecutive_data_has_an_odd_number_of_elements(
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate_class, operands",
+    ("two_qubit_gate_class", "operands"),
     chain(
         product(
             gates.TWO_QUBIT_GATES, [(Qubit(0), Qubit(0)), (0, Qubit(0)), ("a", "a")]
@@ -232,7 +232,7 @@ class TestEquality:
         assert two_qubit_gate(Qubit(0), Qubit(1)) != two_qubit_gate(Qubit(2), Qubit(3))
 
     @pytest.mark.parametrize(
-        "two_qubit_gate1, two_qubit_gate2", permutations(gates.TWO_QUBIT_GATES, 2)
+        ("two_qubit_gate1", "two_qubit_gate2"), permutations(gates.TWO_QUBIT_GATES, 2)
     )
     def test_different_two_qubit_gates_on_same_qubits_are_not_equal(
         self, two_qubit_gate1, two_qubit_gate2
@@ -243,7 +243,7 @@ class TestEquality:
 
     @pytest.mark.parametrize("two_qubit_gate", [gates.CX, gates.CY, gates.CZ])
     @pytest.mark.parametrize(
-        "control1, control2",
+        ("control1", "control2"),
         permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2),
     )
     def test_classically_controlled_gates_are_not_equal_if_control_is_different(
@@ -253,7 +253,7 @@ class TestEquality:
 
     @pytest.mark.parametrize("two_qubit_gate", [gates.XCZ, gates.YCZ])
     @pytest.mark.parametrize(
-        "target1, target2",
+        ("target1", "target2"),
         permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2),
     )
     def test_classically_targeted_gates_are_not_equal_if_target_is_different(
@@ -275,7 +275,7 @@ def test_stim_targets_method_returns_stim_gate_targets_when_input_is_qubits(
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate, sweep_bit_index",
+    ("two_qubit_gate", "sweep_bit_index"),
     [(gates.CX, 0), (gates.CY, 0), (gates.CZ, 0), (gates.XCZ, 1), (gates.YCZ, 1)],
 )
 def test_stim_targets_are_sweep_bits_when_given_to_gate(
@@ -291,7 +291,7 @@ def test_stim_targets_are_sweep_bits_when_given_to_gate(
 
 
 @pytest.mark.parametrize(
-    "two_qubit_gate, record_index",
+    ("two_qubit_gate", "record_index"),
     [(gates.CX, 0), (gates.CY, 0), (gates.CZ, 0), (gates.XCZ, 1), (gates.YCZ, 1)],
 )
 def test_stim_targets_are_measurement_records_when_given_to_gate(

@@ -11,9 +11,11 @@ from collections.abc import Collection, Iterable, Sequence
 from deltakit_circuit import Qubit
 from deltakit_circuit._basic_types import PauliBasis
 from deltakit_circuit._qubit_identifiers import PauliGate
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
-from deltakit_explorer.codes._css._stabiliser_helper_functions import \
-    pauli_gates_to_stim_pauli_string
+from deltakit_explorer.codes._css._stabiliser_helper_functions import (
+    pauli_gates_to_stim_pauli_string,
+)
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
