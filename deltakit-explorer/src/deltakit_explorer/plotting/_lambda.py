@@ -13,6 +13,19 @@ from deltakit_explorer.analysis._lambda import LambdaResults
 def _lambda_interpolated(
     lambda0: float, lambda_: float, distances: npt.NDArray[np.int_]
 ) -> npt.NDArray[np.floating]:
+    """Computes logical error probability per round that would be obtained with the
+    provided values.
+
+    Uses the formula ``ε = 1 / Λ_0 * Λ**(-(d + 1) / 2)`` where:
+
+    - ``ε`` is the logical error probability per round,
+    - ``Λ_0`` is a multiplicative constant,
+    - ``Λ`` is the error suppression factor,
+    - ``d`` is the distance of the code,
+
+    to estimate the logical error probability per round from the provided ``lambda_``
+    and ``lambda0`` on the provided list of ``distances``.
+    """
     return lambda_**(-(distances + 1) / 2) / lambda0
 
 

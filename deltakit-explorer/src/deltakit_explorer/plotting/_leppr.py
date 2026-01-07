@@ -13,8 +13,22 @@ from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
 def _lep_interpolated(
     spam: float, leppr: float, rounds_interpolated: npt.NDArray[np.floating]
 ) -> npt.NDArray[np.floating]:
-    y_interpolated = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
-    return (1 - y_interpolated) / 2
+    """Computes logical error that would be obtained with the provided values.
+
+    Uses the formula ``F = Fs * Fε**r`` where:
+
+    - ``F`` is the expected fidelity of the computation,
+    - ``Fs`` is the fidelity of SPAM-related operations,
+    - ``Fε`` is the fidelity of one quantum error-correction round,
+    - ``r`` is the number of quantum error-correction rounds performed.
+
+    Each fidelity is obtained from the respective error probability with the formula
+    ``f = (1 - 2 * e)`` where ``f`` is any of ``F``, ``Fs`` or ``Fε`` and ``e`` is any
+    of logical error probability, logical error probability of a SPAM or logical error
+    probability per round.
+    """
+    expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
+    return (1 - expected_fidelity) / 2
 
 
 def plot_logical_error_probability_per_round(
