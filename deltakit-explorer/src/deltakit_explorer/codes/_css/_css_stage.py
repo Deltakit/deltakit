@@ -5,22 +5,33 @@ of stage generation for quantum memory experiment using CSS codes.
 """
 
 import itertools
-from functools import cached_property
 from collections.abc import Iterable, Mapping, Sequence
+from functools import cached_property
 
 import stim
 from deltakit_circuit import Circuit, Coordinate, GateLayer, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
-from deltakit_circuit.gates import (MPP, MX, RX, I, OneQubitCliffordGate,
-                                    OneQubitMeasurementGate, OneQubitResetGate,
-                                    TwoOperandGate)
+from deltakit_circuit.gates import (
+    MPP,
+    MX,
+    RX,
+    I,
+    OneQubitCliffordGate,
+    OneQubitMeasurementGate,
+    OneQubitResetGate,
+    TwoOperandGate,
+)
+
 from deltakit_explorer.codes._css._detectors import (
     _calculate_detector_coordinates,
-    get_between_round_detectors_and_coordinate_shifts)
+    get_between_round_detectors_and_coordinate_shifts,
+)
 from deltakit_explorer.codes._css._observables import _construct_observables
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
-    _get_data_qubits_from_stabilisers, _transform_stabiliser,
-    get_entangling_layer)
+    _get_data_qubits_from_stabilisers,
+    _transform_stabiliser,
+    get_entangling_layer,
+)
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 

@@ -1,4 +1,5 @@
 import itertools
+from importlib.metadata import version
 
 import pytest
 import stim
@@ -17,7 +18,7 @@ from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOI
 
 
 @pytest.mark.skipif(
-    Version(stim.__version__) < Version("1.15"),
+    Version(version("stim")) < Version("1.15"),
     reason="Feature added in Stim v1.15",
 )
 @pytest.mark.parametrize(

@@ -33,7 +33,7 @@ body:
     attributes:
       label: Minimal Reproducible Example (MRE)
       description: |
-        Please provide a [MRE](https://en.wikipedia.org/wiki/Minimal_reproducible_example)
+        Please provide a [Minimal Reproducible Example](https://en.wikipedia.org/wiki/Minimal_reproducible_example)
         as a copy-pastable code snippet if possible. If not, describe steps to
         reproduce the behaviour. Please enclose code blocks within triple backticks.
       placeholder: |

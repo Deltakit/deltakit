@@ -5,10 +5,11 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from deltakit_core.deprecation import deprecated
 import numpy as np
 import numpy.typing as npt
+from deltakit_core.deprecation import deprecated
 from packaging.version import Version
+
 
 @deprecated(
     reason="A better function is now available.",

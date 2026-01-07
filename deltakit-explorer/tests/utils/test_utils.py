@@ -7,8 +7,9 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
-from deltakit_explorer._utils._utils import get_log_directory
+
 from deltakit_explorer._utils import _utils
+from deltakit_explorer._utils._utils import get_log_directory
 
 
 @pytest.fixture
@@ -66,7 +67,7 @@ def test_log_directory_env_variable_invalid_path():
 
     os.environ["LOG_DIRECTORY"] = "/invalid_path/!@#"
 
-    tmp = tempfile.mkdtemp()
+    tmp = Path(tempfile.mkdtemp())
     ret = os.getenv("TEMP", tmp)
     try:
         with mock.patch.object(Path, "cwd", return_value=Path(ret)):
@@ -76,7 +77,7 @@ def test_log_directory_env_variable_invalid_path():
             assert result == cwd
             assert result.is_dir()
     except Exception:
-        os.rmdir(tmp)
+        tmp.rmdir()
         raise
 
 def test_env_and_home_directory_unavailable():

@@ -10,6 +10,7 @@ from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
 from deltakit_circuit.gates import PauliBasis
+
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 

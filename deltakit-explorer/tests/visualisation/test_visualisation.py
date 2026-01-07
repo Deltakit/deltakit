@@ -4,10 +4,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import ClassVar
 
-import matplotlib
+import matplotlib as mpl
 import matplotlib.image as img
 import matplotlib.pyplot as plt
 import numpy as np
+
 from deltakit_explorer import visualisation
 from deltakit_explorer.types import QubitCoordinateToDetectorMapping
 
@@ -73,7 +74,7 @@ class TestVisualisation:
 
     def test_plot_defect_diagram(self, tmp_path):
         # force matplotlib to use different, windows-compatible backend
-        matplotlib.use("Agg")
+        mpl.use("Agg")
         plt.figure(figsize=(5, 5))
         dr = self.defect_rates[0].copy()
         dr.update(self.defect_rates[1])
@@ -97,7 +98,7 @@ class TestVisualisation:
 
     def test_plot_defect_diagram_shifted(self, tmp_path):
         # force matplotlib to use different, windows-compatible backend
-        matplotlib.use("Agg")
+        mpl.use("Agg")
         dr = self.defect_rates[0].copy()
         dr.update(self.defect_rates[1])
         dr = {(k[0] - 10, k[1] - 2): v for k, v in dr.items()}

@@ -31,7 +31,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Synchronisation of packages
+      - name: Package synchronisation
         run: uv sync --python 3.13 --resolution highest --group docs
 
       - name: Build documentation

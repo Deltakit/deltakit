@@ -18,8 +18,15 @@ from typing import Any, ClassVar
 import numpy as np
 import numpy.typing as npt
 import stim
-from deltakit_explorer.data._converter import (read_01, read_b8, read_csv,
-                                               write_01, write_b8, write_csv)
+
+from deltakit_explorer.data._converter import (
+    read_01,
+    read_b8,
+    read_csv,
+    write_01,
+    write_b8,
+    write_csv,
+)
 from deltakit_explorer.enums._api_enums import APIEndpoints, DataFormat, DecoderType
 from deltakit_explorer.types._data_string import DataString
 
@@ -302,7 +309,7 @@ class TypedDataFile(TypedData):
                 write_01(read_csv(file), string_builder)
                 return string_builder.getvalue()
         elif self.data_format == DataFormat.B8:
-            with open(self.content, "rb") as file:
+            with self.content.open("rb") as file:
                 string_builder = StringIO()
                 write_01(
                     read_b8(file, self.data_width), string_builder)
@@ -313,7 +320,7 @@ class TypedDataFile(TypedData):
 
     def as_b8_bytes(self) -> bytes:
         if self.data_format == DataFormat.B8:
-            with open(self.content, "rb") as file:
+            with self.content.open("rb") as file:
                 return file.read()
         elif self.data_format == DataFormat.CSV:
             with Path.open(self.content, encoding="utf-8") as file:
@@ -331,7 +338,7 @@ class TypedDataFile(TypedData):
 
     def as_numpy(self) -> npt.NDArray[np.uint8]:
         if self.data_format == DataFormat.B8:
-            with open(self.content, "rb") as file:
+            with self.content.open("rb") as file:
                 return np.array(
                     list(read_b8(file, self.data_width)), dtype=np.uint8)
         elif self.data_format == DataFormat.CSV:

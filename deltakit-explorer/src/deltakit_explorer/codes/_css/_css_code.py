@@ -9,21 +9,23 @@ from __future__ import annotations
 
 import itertools
 from collections import Counter
-from functools import cached_property
 from collections.abc import Collection, Iterable, Sequence
+from functools import cached_property
 
 import galois
 import numpy as np
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import PauliGate
 from deltakit_circuit.gates import MX, MZ, RX, RZ
+from numpy.typing import NDArray
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._css._stabiliser_code import StabiliserCode
 from deltakit_explorer.codes._logicals import (
     get_logical_operators_from_css_parity_check_matrices,
-    get_logical_operators_from_tableau)
+    get_logical_operators_from_tableau,
+)
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from numpy.typing import NDArray
 
 
 class CSSCode(StabiliserCode):

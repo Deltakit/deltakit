@@ -1,12 +1,33 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit.gates import (CX, CY, CZ, Gate, ISWAP, MEASUREMENT_GATES,
-                                    MY, ONE_QUBIT_GATES, RESET_GATES, RX, RY, RZ,
-                                    SQRT_X, SQRT_XX, TWO_QUBIT_GATES, H, I, X,
-                                    Y, Z)
-from deltakit_explorer.qpu._native_gate_set import (ExhaustiveGateSet,
-                                                    NativeGateSet,
-                                                    NativeGateSetAndTimes)
+from deltakit_circuit.gates import (
+    CX,
+    CY,
+    CZ,
+    ISWAP,
+    MEASUREMENT_GATES,
+    MY,
+    ONE_QUBIT_GATES,
+    RESET_GATES,
+    RX,
+    RY,
+    RZ,
+    SQRT_X,
+    SQRT_XX,
+    TWO_QUBIT_GATES,
+    Gate,
+    H,
+    I,
+    X,
+    Y,
+    Z,
+)
+
+from deltakit_explorer.qpu._native_gate_set import (
+    ExhaustiveGateSet,
+    NativeGateSet,
+    NativeGateSetAndTimes,
+)
 
 
 class TestNativeGateSetAndTimes:
@@ -75,7 +96,7 @@ class TestNativeGateSetAndTimes:
             NativeGateSetAndTimes(measurement_gates=input_gates)
 
     @pytest.mark.parametrize(
-        "gate, time, gate_type_attr",
+        ("gate", "time", "gate_type_attr"),
         [
             (SQRT_X, 2.0, "one_qubit_gates"),
             (SQRT_XX, 0.001, "two_qubit_gates"),
@@ -99,7 +120,7 @@ class TestNativeGateSetAndTimes:
             native_gate_set.add_gate(MY_GATE, 2.71)
 
     @pytest.mark.parametrize(
-        "gate, gate_type_attr",
+        ("gate", "gate_type_attr"),
         [
             (SQRT_X, "one_qubit_gates"),
             (SQRT_XX, "two_qubit_gates"),

@@ -7,11 +7,18 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 import stim
+
 from deltakit_explorer.enums._api_enums import APIEndpoints
-from deltakit_explorer.types import (Decoder, DecodingResult, DetectionEvents,
-                                     LeakageFlags, Measurements, NoiseModel,
-                                     ObservableFlips,
-                                     QubitCoordinateToDetectorMapping)
+from deltakit_explorer.types import (
+    Decoder,
+    DecodingResult,
+    DetectionEvents,
+    LeakageFlags,
+    Measurements,
+    NoiseModel,
+    ObservableFlips,
+    QubitCoordinateToDetectorMapping,
+)
 from deltakit_explorer.types._experiment_types import QECExperimentDefinition
 
 
