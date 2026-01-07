@@ -26,7 +26,12 @@ def plot_lambda(
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
-    """
+    """Plot Λ-fitting data.
+
+    This function plots both the logical error-probability per round that has been used
+    to compute Λ, the associated error-rates if provided, and the resulting fit, showing
+    how close the fit is from actual data.
+
     Args:
         distances (npt.NDArray[numpy.int\\_] | Sequence[int]): The distances of the code.
         lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
@@ -53,16 +58,19 @@ def plot_lambda(
     if fig is None and ax is None:
         fig, ax = plt.subplots()
 
+    # These should be already checked by the above code, but type checkers are not able
+    # to infer that information, so including the asserts explicitly for type checkers
+    # to understand.
     assert ax is not None
     assert fig is not None
 
-    lens = {len(distances), len(lep_per_round)}
+    lengths = {len(distances), len(lep_per_round)}
     if lep_per_round_stddev is not None:
-        lens.add(len(lep_per_round_stddev))
-    if len(lens) > 1:
+        lengths.add(len(lep_per_round_stddev))
+    if len(lengths) > 1:
         msg = (
             "The lengths of 'distances', 'lep_per_round' and 'lep_per_round_stddev' "
-            f"must be the same. Got the following lengths: {lens}."
+            f"must be the same. Got the following lengths: {lengths}."
         )
         raise ValueError(msg)
 
@@ -78,7 +86,7 @@ def plot_lambda(
         lep_per_round,
         yerr=lep_per_round_stddev,
         fmt=".",
-        color=RIVERLANE_PLOT_COLOURS[0],
+        color=RIVERLANE_PLOT_COLOURS[1],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
@@ -90,7 +98,7 @@ def plot_lambda(
     ax.plot(
         distances_interpolated,
         lambda_interpolated,
-        label=f"Fit Λ={lambda_:.4g} ± {num_sigmas * lambda_stddev:.2g}",
+        label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
@@ -109,9 +117,8 @@ def plot_lambda(
         distances_interpolated,
         lambda_interpolated_low,
         lambda_interpolated_high,
-        color=RIVERLANE_PLOT_COLOURS[1],
-        alpha=0.2,
-        label=f"Fit with {num_sigmas}σ"  # noqa: RUF001
+        color=RIVERLANE_PLOT_COLOURS[0],
+        alpha=0.2
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")
