@@ -7,7 +7,9 @@ from deltakit_explorer.analysis.budget._discretisation import (
     GradientFitDiscretisationGenerator,
     get_logarithmic_points,
 )
-from deltakit_explorer.analysis.budget._gradient import compute_1_over_lambda_gradient_at
+from deltakit_explorer.analysis.budget._gradient import (
+    compute_1_over_lambda_gradient_at,
+)
 from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,

@@ -1,5 +1,5 @@
-from collections.abc import Callable, Sequence
 import itertools
+from collections.abc import Callable, Sequence
 
 import numpy
 import numpy.typing as npt

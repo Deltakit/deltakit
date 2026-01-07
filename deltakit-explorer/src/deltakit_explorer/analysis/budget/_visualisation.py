@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import colorsys
+import warnings
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
-import warnings
 
 import matplotlib
 import matplotlib.colors

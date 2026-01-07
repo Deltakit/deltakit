@@ -2,7 +2,11 @@
 """Description of ``deltakit.explorer.analysis.budget`` namespace here."""
 
 from ._budget import get_error_budget
-from ._discretisation import GradientFitDiscretisationGenerator, get_linear_points, get_logarithmic_points
+from ._discretisation import (
+    GradientFitDiscretisationGenerator,
+    get_linear_points,
+    get_logarithmic_points,
+)
 from ._generation import generate_decoder_managers_for_lambda
 from ._gradient import compute_1_over_lambda_gradient_at
 from ._interfaces import NoiseInterface
