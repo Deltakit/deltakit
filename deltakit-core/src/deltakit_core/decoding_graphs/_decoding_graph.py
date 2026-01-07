@@ -472,8 +472,10 @@ class DecodingHyperGraph(HyperMultiGraph[DecodingHyperEdge]):
     def get_relevant_nodes(
         self, logicals: Iterable[set[DecodingHyperEdge]]
     ) -> set[int]:
-        """Return the nodes that have a hyperedge with a path to logical, ignoring
-        hyperedges to boundaries if applicable."""
+        """Return nodes that have a hyperedge with a path to logical.
+        
+        Hyperedges to boundaries are ignored if applicable.
+        """
         union_find: nx.utils.UnionFind = nx.utils.UnionFind()
         for edge in self.edges:
             union_find.union(*edge)
