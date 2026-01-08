@@ -239,3 +239,17 @@ allowed_tags = [
 
 [tool.deptry]
 extend_exclude = ["deltakit_*", "docs/", "tools/"]
+
+[tool.coverage.report]
+exclude_also = [
+    "raise NotImplementedError",
+    "return NotImplemented"
+]
+
+[tool.coverage.paths]
+source = [
+    "deltakit-circuit/src/deltakit_circuit",
+    "deltakit-core/src/deltakit_circuit",
+    "deltakit-circuit/src/deltakit_decode",
+    "deltakit-circuit/src/deltakit_explorer",
+]
