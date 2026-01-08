@@ -32,7 +32,7 @@ jobs:
         dependency-resolution: ['highest', 'lowest-direct']
     name: Test deltakit on ${{ matrix.python-version }} with ${{matrix.dependency-resolution}}
     env:
-      SHOULD_DO_COVERAGE: ${{ (matrix.python-version == '3.10') && (matrix.dependency-resolution == 'highest') }}
+      ENABLE_COVERAGE: ${{ (matrix.python-version == '3.10') && (matrix.dependency-resolution == 'highest') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -50,15 +50,15 @@ jobs:
           uv pip install ./dist/*.whl
       - name: Test deltakit
         env:
-          COVERAGE_ARGS: ${{env.SHOULD_DO_COVERAGE == 'true' && '--cov --cov-config pyproject.toml --cov-report term-missing' || ''}}
+          COVERAGE_ARGS: ${{env.ENABLE_COVERAGE == 'true' && '--cov --cov-config pyproject.toml --cov-report term-missing' || ''}}
         run: uv run --python ${{ matrix.python-version }} --no-sync pytest $COVERAGE_ARGS
       - name: Export coverage data to XML and report
-        if: ${{ env.SHOULD_DO_COVERAGE == 'true' }}
+        if: ${{ env.ENABLE_COVERAGE == 'true' }}
         run: |
           uv run --no-sync coverage xml
           uv run --no-sync coverage report
       - name: Printing coverage report as a message
-        if: ${{ env.SHOULD_DO_COVERAGE == 'true' }}
+        if: ${{ env.ENABLE_COVERAGE == 'true' }}
         uses: 5monkeys/cobertura-action@v13
         with:
           repo_token : ${{ secrets.GITHUB_TOKEN }}
