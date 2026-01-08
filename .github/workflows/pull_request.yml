@@ -69,7 +69,7 @@ jobs:
           show_missing: true
           link_missing_lines: true
           link_missing_lines_source_dir: ''
-          only_changed_files: true
+          only_changed_files: false
 
   # Perform static check on each deltakit project package.
   static-checks:
