@@ -114,7 +114,14 @@ files = "src/**/*.py"
 # for ruff configuration, see `ruff.toml`
 
 [tool.pytest.ini_options]
-testpaths = ["./tests/"]
+# By default, pytest should test all of deltakit, including sub-packages.
+testpaths = [
+  "./tests/",
+  "./deltakit-circuit/tests/",
+  "./deltakit-core/tests/",
+  "./deltakit-decode/tests/",
+  "./deltakit-explorer/tests/",
+]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 filterwarnings = ["error"]
