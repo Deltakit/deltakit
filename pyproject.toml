@@ -250,3 +250,4 @@ source_pkgs = [
   "deltakit_decode",
   "deltakit_explorer",
 ]
+relative_files = true
