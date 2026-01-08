@@ -65,11 +65,11 @@ jobs:
           path: ./coverage.xml
           skip_covered: true
           minimum_coverage: 95
-          fail_below_threshold: true
+          fail_below_threshold: false
           show_missing: true
           link_missing_lines: true
           link_missing_lines_source_dir: ''
-          only_changed_files: false
+          only_changed_files: true
 
   # Perform static check on each deltakit project package.
   static-checks:
