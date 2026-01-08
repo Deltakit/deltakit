@@ -253,7 +253,7 @@ source_pkgs = [
 ]
 relative_files = true
 
-[tool.coverage.path]
+[tool.coverage.paths]
 deltakit_circuit = ["deltakit-circuit/src/deltakit_circuit", ".venv/lib/python*/site-packages/deltakit_circuit"]
 deltakit_core = ["deltakit-core/src/deltakit_core", ".venv/lib/python*/site-packages/deltakit_core"]
 deltakit_decode = ["deltakit-decode/src/deltakit_decode", ".venv/lib/python*/site-packages/deltakit_decode"]
