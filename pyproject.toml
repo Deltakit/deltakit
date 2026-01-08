@@ -242,6 +242,7 @@ extend_exclude = ["deltakit_*", "docs/", "tools/"]
 
 [tool.coverage.report]
 exclude_also = ["raise NotImplementedError", "return NotImplemented"]
+skip_covered = true
 
 [tool.coverage.run]
 source_pkgs = [
