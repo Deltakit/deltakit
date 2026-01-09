@@ -7,7 +7,6 @@ from itertools import combinations
 import numpy as np
 import numpy.typing as npt
 import pytest
-from pytest_lazy_fixtures import lf
 
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
@@ -57,11 +56,14 @@ class TestDecodingHyperGraph:
         params=[
             decoding_hypergraph_with_hyperedges(),
             decoding_hypergraph_without_hyperedges(),
-            lf("random_hypergraph"),
+            "random_hypergraph",
         ]
     )
-    def example_hypergraph(self, request):
-        return request.param
+    def example_hypergraph(self, request: pytest.FixtureRequest):
+        param = request.param
+        if isinstance(param, str):
+            param = request.getfixturevalue(param)
+        return param
 
     @pytest.mark.parametrize(
         "edge_data",
@@ -379,3 +381,42 @@ class TestDecodingHyperGraph:
         assert decoding_graph.error_to_syndrome(
             [decoding_graph.edges[0]]
         ) == OrderedSyndrome({0, 1, 2})
+
+    @pytest.mark.parametrize(
+        ("edges", "logicals", "expected_relevant", "expected_trimmed"),
+        [
+            ([(0, 1), (1, 2)], [], set(), {0, 1, 2}),
+            ([(0,), (1, 2)], [{(0,)}], {0}, {1, 2}),
+            ([(0, 1), (1, 2), (3, 4)], [{(0, 1)}, {(0, 1)}], {0, 1, 2}, {3, 4}),
+            (
+                [(0, 1, 2), (10, 11), (20, 21, 22)],
+                [{(0, 1, 2), (10, 11)}],
+                {0, 1, 2, 10, 11},
+                {20, 21, 22},
+            ),
+            (
+                [(0, 1, 2), (3, 4, 5), (6, 7), (8, 9, 10)],
+                [{(0, 1, 2)}, {(8, 9, 10)}],
+                {0, 1, 2, 8, 9, 10},
+                {3, 4, 5, 6, 7},
+            ),
+            (
+                [(0, 1), (1, 2, 3), (3, 4), (10, 11, 12)],
+                [{(1, 2, 3)}],
+                {0, 1, 2, 3, 4},
+                {10, 11, 12},
+            ),
+        ],
+    )
+    def test_get_relevant_nodes(
+        self, edges, logicals, expected_relevant, expected_trimmed
+    ):
+        hyper_edges = [DecodingHyperEdge(e) for e in edges]
+        hg = DecodingHyperGraph(hyper_edges)
+        logicals = [
+            {DecodingHyperEdge(le) for le in logical_group}
+            for logical_group in logicals
+        ]
+        relevant = hg.get_relevant_nodes(logicals)
+        assert relevant == expected_relevant
+        assert (set(hg.nodes) - relevant) == expected_trimmed

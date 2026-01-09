@@ -425,9 +425,9 @@ class Bitstring:
     @overload
     def __getitem__(self, index: slice) -> Bitstring: ...
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int | slice) -> Bit | Bitstring:
         if isinstance(index, int):
-            return (self._bits >> index) & 1
+            return cast(Literal[0, 1], (self._bits >> index) & 1)
         if isinstance(index, slice):
             start, stop, _ = index.indices(len(self))
             mask = (1 << (stop - start)) - 1
@@ -537,21 +537,34 @@ class FixedWidthBitstring(Bitstring):
 
     def __iter__(self) -> Iterator[Bit]:
         yield from chain(
-            super().__iter__(), repeat(0, self._width - max(1, self._bits.bit_length()))
+            super().__iter__(),
+            cast(
+                Iterator[Literal[0]],
+                repeat(0, self._width - max(1, self._bits.bit_length())),
+            ),
         )
 
     def __reversed__(self) -> Iterator[Bit]:
         yield from chain(
-            repeat(0, self._width - max(1, self._bits.bit_length())),
+            cast(
+                Iterator[Literal[0]],
+                repeat(0, self._width - max(1, self._bits.bit_length())),
+            ),
             super().__reversed__(),
         )
 
     def __len__(self) -> int:
         return self._width
 
-    def __getitem__(self, index):
+    @overload
+    def __getitem__(self, index: int) -> Bit: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Bitstring: ...
+
+    def __getitem__(self, index: int | slice) -> Bit | Bitstring:
         if isinstance(index, int):
-            return (self._bits >> index) & 1
+            return cast(Literal[0, 1], (self._bits >> index) & 1)
         if isinstance(index, slice):
             start, stop, _ = index.indices(len(self))
             mask = (1 << (stop - start)) - 1
