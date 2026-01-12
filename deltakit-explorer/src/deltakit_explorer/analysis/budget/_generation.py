@@ -121,7 +121,7 @@ def generate_decoder_managers_for_lambda(
     # 2. Build an iterator on all the parameters we need to provide to the generation
     # method.
     total_circuits = (
-        sum(len(nrounds) for nrounds in num_rounds_by_distances.values()) * xi.shape[0]
+        sum(len(num_rounds) for num_rounds in num_rounds_by_distances.values()) * xi.shape[0]
     )
     # (distance: int, num_rounds: int)
     distance_and_rounds_iterator = itertools.chain.from_iterable(
