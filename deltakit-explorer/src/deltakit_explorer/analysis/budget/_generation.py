@@ -20,7 +20,7 @@ def _generate_surface_code_memory_decoder_manager(
     num_rounds: int,
     noise_model: NoiseInterface,
     memory_generator: MemoryGenerator,
-) -> StimDecoderManager | None:
+) -> StimDecoderManager:
     """Generate a decoder manager with a rotated planar code memory experiment.
 
     Args:
@@ -32,8 +32,7 @@ def _generate_surface_code_memory_decoder_manager(
             noiseless memory experiment generated within this function.
 
     Returns:
-        a decoder manager that can then be run using ``RunAllAnalysisEngine`` or
-        ``None`` if the problem is ill-formed.
+        a decoder manager that can then be run using ``RunAllAnalysisEngine``.
     """
     circuit = memory_generator(distance, num_rounds)
     noisy_circuit = noise_model.apply(circuit)
@@ -56,7 +55,7 @@ def _generate_surface_code_memory_decoder_manager(
 
 def _generate_surface_code_memory_decoder_manager_wrapper(
     data: tuple[int, int, NoiseInterface, MemoryGenerator],
-) -> StimDecoderManager | None:
+) -> StimDecoderManager:
     return _generate_surface_code_memory_decoder_manager(*data)
 
 
@@ -121,7 +120,8 @@ def generate_decoder_managers_for_lambda(
     # 2. Build an iterator on all the parameters we need to provide to the generation
     # method.
     total_circuits = (
-        sum(len(num_rounds) for num_rounds in num_rounds_by_distances.values()) * xi.shape[0]
+        sum(len(num_rounds) for num_rounds in num_rounds_by_distances.values())
+        * xi.shape[0]
     )
     # (distance: int, num_rounds: int)
     distance_and_rounds_iterator = itertools.chain.from_iterable(
@@ -147,22 +147,21 @@ def generate_decoder_managers_for_lambda(
             total=total_circuits,
             desc="Generating quantum circuits",
         ):
-            manager = _generate_surface_code_memory_decoder_manager(
-                distance, nrounds, noise_model, memgen
+            decoder_managers.append(
+                _generate_surface_code_memory_decoder_manager(
+                    distance, nrounds, noise_model, memgen
+                )
             )
-            assert manager is not None
-            decoder_managers.append(manager)
         return decoder_managers
     # Else, we might use several workers
     with ProcessPoolExecutor(max_workers=max_workers) as pool:
-        for manager in tqdm(
-            iterable=pool.map(
-                _generate_surface_code_memory_decoder_manager_wrapper,
-                parameters_iterator,
-            ),
-            total=total_circuits,
-            desc="Generating quantum circuits",
-        ):
-            assert manager is not None
-            decoder_managers.append(manager)
-        return decoder_managers
+        return list(
+            tqdm(
+                iterable=pool.map(
+                    _generate_surface_code_memory_decoder_manager_wrapper,
+                    parameters_iterator,
+                ),
+                total=total_circuits,
+                desc="Generating quantum circuits",
+            )
+        )
