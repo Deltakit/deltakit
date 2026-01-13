@@ -100,5 +100,12 @@ disable_error_code = "arg-type,assignment,attr-defined,dict-item,index,list-item
 module = ["stim"]
 follow_untyped_imports = true
 
+# The ldpc.mod2 stubs files contain syntax errors, and so make mypy fail earlier than expected
+# with a SyntaxError. Ignoring the whole module for mypy.
+[[tool.mypy.overrides]]
+module = ["ldpc.mod2"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
+
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
