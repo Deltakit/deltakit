@@ -222,10 +222,6 @@ deltakit-circuit/src/deltakit_circuit/_version.py
 docs/generated/
 docs/jupyter_execute
 
-# These get copied from the top-level directory
-docs/CONTRIBUTING.md
-docs/CODE_OF_CONDUCT.md
-
 # notebooks are copied there while building docs
 docs/explorer/google_qmem_experiment/
 docs/explorer/simulation/
