@@ -100,9 +100,5 @@ disable_error_code = "arg-type,assignment,attr-defined,dict-item,index,list-item
 module = ["stim"]
 follow_untyped_imports = true
 
-[[tool.mypy.overrides]]
-module = ["bposd.css"]
-ignore_missing_imports = true
-
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
