@@ -16,7 +16,7 @@ body:
       label: Contributor License Agreement (CLA) signature
       description: Please confirm the following before submitting
       options:
-        - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](../../docs/CONTRIBUTING.md).
+        - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
           required: true
 
   - type: textarea

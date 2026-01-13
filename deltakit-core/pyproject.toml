@@ -80,6 +80,9 @@ dev = [
 [tool.deptry]
 known_first_party = ["deltakit_core"]
 
+[tool.deptry.per_rule_ignores]
+DEP001 = ["lestim"]
+
 [tool.mypy]
 files = "src/**/*.py"
 # The below list of disabled checks should eventually be empty.
@@ -88,6 +91,10 @@ disable_error_code = "arg-type,attr-defined"
 [[tool.mypy.overrides]]
 module = ["stim"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["lestim"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]

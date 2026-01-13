@@ -1,4 +1,4 @@
-from deltakit_explorer.visualisation import *  # noqa: F403
+from deltakit_explorer.plotting import *  # noqa: F403
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]

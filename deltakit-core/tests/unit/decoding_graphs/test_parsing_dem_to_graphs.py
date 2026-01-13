@@ -3,7 +3,6 @@ import math
 
 import pytest
 import stim
-from pytest_lazy_fixtures import lf
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
@@ -614,19 +613,22 @@ class TestDemToDecodingHyperGraph:
 
 
 class TestDemToNXGraph:
-    """Test conversion from lestim detector error model to NXDecodingGraph via
+    """Test conversion from stim detector error model to NXDecodingGraph via
     the `dem_to_decoding_graph_and_logicals` function.
     """
 
     @pytest.fixture(
         params=[
             dem_nodes_edges_logicals_repetition_code_4_round_decomposed(),
-            lf("dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed"),
+            "dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed",
             dem_nodes_edges_logicals_RP_3x3_Z_2_round_decomposed(),
         ]
     )
-    def dem_nodes_edges_and_logicals(self, request):
-        return request.param
+    def dem_nodes_edges_and_logicals(self, request: pytest.FixtureRequest):
+        param = request.param
+        if isinstance(param, str):
+            param = request.getfixturevalue(param)
+        return param
 
     def test_nx_function_returns_expected_logicals(self, dem_nodes_edges_and_logicals):
         dem, _, _, expected_logicals = dem_nodes_edges_and_logicals
@@ -710,7 +712,7 @@ class TestDemToNXGraph:
 
 class TestExampleRPlanar3x3x1DemToDecodingGraph:
     """Integration test to verify that the RPlanar 3x3x1
-    lestim detector error model is correctly converted to a QECF NXDecodingGraph object.
+    stim detector error model is correctly converted to a QECF NXDecodingGraph object.
     """
 
     @pytest.fixture(scope="class")
