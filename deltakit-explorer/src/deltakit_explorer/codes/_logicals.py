@@ -8,9 +8,11 @@ from __future__ import annotations
 
 from collections.abc import Collection, Iterable
 
-from bposd.css import css_code
+import numpy as np
+import scipy
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
+from ldpc import mod2
 from numpy.typing import NDArray
 from stim import PauliString, Tableau
 
@@ -229,8 +231,7 @@ def get_logical_operators_from_css_parity_check_matrices(
         The logical operators, provided as a tuple of all the X logical operators
         at index 0 and all the Z logical operators at index 1.
     """
-    code = css_code(hx, hz)
-    x_logs, z_logs = code.compute_logicals()
+    x_logs, z_logs = css_code_compute_logicals(hx, hz)
 
     return tuple(
         {PauliX(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
@@ -239,3 +240,47 @@ def get_logical_operators_from_css_parity_check_matrices(
         {PauliZ(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
         for log_op in z_logs
     )
+
+
+def css_code_compute_logicals(
+    hx: NDArray[np.floating], hz: NDArray[np.floating]
+) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
+    """Drop-in replacement for calling bposd.css_code.compute_logicals.
+
+    Warning:
+        This function has been taken from the following repository following the MIT
+        licence: [bp_osd repository](https://github.com/quantumgizmos/bp_osd).
+
+        The following modifications were performed:
+            1. Add more detailed typing information (parameter types, return type).
+            2. Remove 2 lines of code that were not directly used by the method:
+                if self.K == np.nan:
+                    self.compute_dimension()
+            3. Change the names of the parameters of compute_lz to avoid a name clash.
+            4. Remove all the `self.`.
+            5. Add a docstring.
+
+        You can check the original version of this function at
+        [this permalink](https://github.com/quantumgizmos/bp_osd/blob/8894ec654b24ae875c07e5a361dcae9a77d748ce/src/bposd/css.py#L75).
+
+    Args:
+        hx: parity check matrix for the X code.
+        hz: parity check matrix for the Z code.
+
+    Returns:
+        a tuple ``(lx, lz)`` representing the X and Z logicals.
+    """
+    def compute_lz(_hx, _hz):
+        # lz logical operators
+        # lz\in ker{hx} AND \notin Im(Hz.T)
+
+        ker_hx = mod2.nullspace(_hx)  # compute the kernel basis of hx
+        # in the below we row reduce to find vectors in kx that are not in the image of hz.T.
+        log_stack = scipy.sparse.vstack([_hz, ker_hx])
+
+        rank_hz = mod2.rank(_hz)
+        pivots = mod2.pivot_rows(log_stack)[rank_hz:]
+
+        return log_stack[pivots]
+
+    return compute_lz(hz, hx), compute_lz(hx, hz)
