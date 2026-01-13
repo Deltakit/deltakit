@@ -49,7 +49,7 @@ dependencies = [
   "galois>=0.4.6,~=0.4",
   "typing_extensions~=4.0",
   "packaging>=25.0",
-  "ldpc>=0.1",
+  "ldpc~=2.0",
 ]
 
 [project.urls]
