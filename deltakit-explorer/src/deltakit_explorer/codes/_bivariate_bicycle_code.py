@@ -760,7 +760,7 @@ class BivariateBicycleCode(CSSCode):
         # X logicals are of the form X(f,0) and X(g,h), eq. (16)
         f_vecs, g_vecs, h_vecs = [], [], []
         for x_log in x_logs:
-            x_log_list = x_log.toarray().reshape(-1).tolist()
+            x_log_list = x_log.reshape(-1).tolist()
             half = len(x_log_list) // 2
             if all(x == 0 for x in x_log_list[half:]):
                 f_vecs.append(x_log_list[:half])

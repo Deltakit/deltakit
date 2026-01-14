@@ -9,7 +9,6 @@ from __future__ import annotations
 from collections.abc import Collection, Iterable
 
 import numpy as np
-import scipy
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
 from ldpc import mod2
@@ -262,6 +261,7 @@ def css_code_compute_logicals(
             4. Remove all the `self.`.
             5. Add a docstring.
             6. Add typing to the internal `compute_lz` function.
+            7. Only use dense matrices because the inputs are dense anyway.
 
         You can check the original version of this function at
         [this permalink](https://github.com/quantumgizmos/bp_osd/blob/8894ec654b24ae875c07e5a361dcae9a77d748ce/src/bposd/css.py#L75).
@@ -277,13 +277,16 @@ def css_code_compute_logicals(
         # lz logical operators
         # lz\in ker{hx} AND \notin Im(Hz.T)
 
-        ker_hx = mod2.nullspace(_hx)  # compute the kernel basis of hx
+        # compute the kernel basis of hx
+        # Note that because inputs are dense arrays, it is fine for every array to be dense in this
+        # function.
+        ker_hx = mod2.nullspace(_hx).todense()
         # Row reduce to find vectors in kx that are not in the image of hz.T.
-        log_stack = scipy.sparse.vstack([_hz, ker_hx], format="csr") # type: ignore[list-item]
+        log_stack = np.vstack([_hz, ker_hx])
 
         rank_hz = mod2.rank(_hz)
         pivots = mod2.pivot_rows(log_stack)[rank_hz:]
 
-        return log_stack[pivots]
+        return np.asarray(log_stack[pivots])
 
     return compute_lz(hz, hx), compute_lz(hx, hz)
