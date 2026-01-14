@@ -446,19 +446,19 @@ Description of ``deltakit.explorer.analysis`` namespace here.
     analysis.get_exp_fit
     analysis.get_lambda_fit
 
-.. _api-deltakit-explorer-visualisation:
+.. _api-deltakit-explorer-plotting:
 
-``deltakit.explorer.visualisation``
+``deltakit.explorer.plotting``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.visualisation`` namespace here.
+Description of ``deltakit.explorer.plotting`` namespace here.
 
 .. autosummary::
     :toctree: _build/generated/
 
-    visualisation.correlation_matrix
-    visualisation.defect_diagram
-    visualisation.defect_rates
+    plotting.correlation_matrix
+    plotting.defect_diagram
+    plotting.defect_rates
 
 .. _api-deltakit-explorer-codes:
 
