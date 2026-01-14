@@ -261,6 +261,7 @@ def css_code_compute_logicals(
             3. Change the names of the parameters of compute_lz to avoid a name clash.
             4. Remove all the `self.`.
             5. Add a docstring.
+            6. Add typing to the internal `compute_lz` function.
 
         You can check the original version of this function at
         [this permalink](https://github.com/quantumgizmos/bp_osd/blob/8894ec654b24ae875c07e5a361dcae9a77d748ce/src/bposd/css.py#L75).
@@ -272,13 +273,13 @@ def css_code_compute_logicals(
     Returns:
         a tuple ``(lx, lz)`` representing the X and Z logicals.
     """
-    def compute_lz(_hx, _hz):
+    def compute_lz(_hx: NDArray[np.floating], _hz: NDArray[np.floating]) -> NDArray[np.floating]:
         # lz logical operators
         # lz\in ker{hx} AND \notin Im(Hz.T)
 
         ker_hx = mod2.nullspace(_hx)  # compute the kernel basis of hx
         # Row reduce to find vectors in kx that are not in the image of hz.T.
-        log_stack = scipy.sparse.vstack([_hz, ker_hx])
+        log_stack = scipy.sparse.vstack([_hz, ker_hx]) # type: ignore[list-item]
 
         rank_hz = mod2.rank(_hz)
         pivots = mod2.pivot_rows(log_stack)[rank_hz:]
