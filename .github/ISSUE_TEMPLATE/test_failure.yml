@@ -11,7 +11,7 @@ body:
         ### 🧪 Test Failure Report
 
         Thanks for helping improve the project! Please fill out the form below.
-        
+
   - type: checkboxes
     id: cla-signature
     attributes:

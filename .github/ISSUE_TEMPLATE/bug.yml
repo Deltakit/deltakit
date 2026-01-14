@@ -27,7 +27,7 @@ body:
       options:
         - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
           required: true
-          
+
 
   - type: textarea
     id: bug-description
