@@ -279,7 +279,7 @@ def css_code_compute_logicals(
 
         ker_hx = mod2.nullspace(_hx)  # compute the kernel basis of hx
         # Row reduce to find vectors in kx that are not in the image of hz.T.
-        log_stack = scipy.sparse.vstack([_hz, ker_hx]) # type: ignore[list-item]
+        log_stack = scipy.sparse.vstack([_hz, ker_hx], format="csr") # type: ignore[list-item]
 
         rank_hz = mod2.rank(_hz)
         pivots = mod2.pivot_rows(log_stack)[rank_hz:]
