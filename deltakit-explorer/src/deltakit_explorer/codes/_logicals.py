@@ -247,15 +247,17 @@ def css_code_compute_logicals(
 ) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
     """Drop-in replacement for calling bposd.css_code.compute_logicals.
 
-    Warning:
-        This function has been taken from the following repository following the MIT
+    Note:
+        This function has been taken from the following repository under the MIT
         licence: [bp_osd repository](https://github.com/quantumgizmos/bp_osd).
 
         The following modifications were performed:
             1. Add more detailed typing information (parameter types, return type).
-            2. Remove 2 lines of code that were not directly used by the method:
+            2. Remove two lines of code that were not directly used by the method:
+                ```
                 if self.K == np.nan:
                     self.compute_dimension()
+                ```
             3. Change the names of the parameters of compute_lz to avoid a name clash.
             4. Remove all the `self.`.
             5. Add a docstring.
@@ -275,7 +277,7 @@ def css_code_compute_logicals(
         # lz\in ker{hx} AND \notin Im(Hz.T)
 
         ker_hx = mod2.nullspace(_hx)  # compute the kernel basis of hx
-        # in the below we row reduce to find vectors in kx that are not in the image of hz.T.
+        # Row reduce to find vectors in kx that are not in the image of hz.T.
         log_stack = scipy.sparse.vstack([_hz, ker_hx])
 
         rank_hz = mod2.rank(_hz)
