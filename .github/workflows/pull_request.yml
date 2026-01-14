@@ -6,9 +6,6 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened, labeled]
-    branches:
-      - main
-
 
 jobs:
   # Build deltakit wheels.
