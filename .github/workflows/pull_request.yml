@@ -94,36 +94,36 @@ jobs:
       - name: Setup venv
         run: uv sync --group=lint --group=security --package ${{ matrix.projects.project }}
       - name: Check for typos
-        run: uv run typos
+        run: uv run --no-sync typos
         working-directory: ./${{ matrix.projects.path }}
       - name: Run `ruff` syntax checker
-        run: uv run ruff check
+        run: uv run --no-sync ruff check
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `ruff` formatting
-        run: uv run ruff format --check
+        run: uv run --no-sync ruff format --check
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `mypy` type checker
-        run: uv run mypy
+        run: uv run --no-sync mypy
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `deptry` for dependency hygiene
-        run: uv run deptry .
+        run: uv run --no-sync deptry .
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `bandit` for code vulnerabilities
-        run: uv run bandit .
+        run: uv run --no-sync bandit .
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `ochrona` for dependency confusion and typos
-        run: uv run ochrona pyproject.toml
+        run: uv run --no-sync ochrona pyproject.toml
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `pip_audit` to check dependencies for known vulnerabilities
         # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
         # `nbconvert` is only used for documentation building on Linux.
         # Remove when https://github.com/jupyter/nbconvert/issues/2258 is fixed.
-        run: uv run pip-audit --ignore-vuln CVE-2025-53000
+        run: uv run --no-sync pip-audit --ignore-vuln CVE-2025-53000
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}

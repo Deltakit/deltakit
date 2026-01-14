@@ -47,11 +47,9 @@ dependencies = [
   "seaborn~=0.12",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",
-  # Needed for the moment to have the changes from https://github.com/quantumgizmos/bp_osd/pull/20
-  # until a new release including these changes lands on PyPI (https://pypi.org/project/bposd/).
-  "bposd @ git+https://github.com/quantumgizmos/bp_osd.git@8894ec654b24ae875c07e5a361dcae9a77d748ce",
   "typing_extensions~=4.0",
-  "packaging>=25.0"
+  "packaging>=25.0",
+  "ldpc~=2.2",
 ]
 
 [project.urls]
@@ -83,11 +81,7 @@ lint = [
   "deptry~=0.23",
   { include-group = "stubs" },
 ]
-security = [
-  "bandit~=1.8",
-  "ochrona~=2.0",
-  "pip-audit~=2.7"
-]
+security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
@@ -106,9 +100,12 @@ disable_error_code = "arg-type,assignment,attr-defined,dict-item,index,list-item
 module = ["stim"]
 follow_untyped_imports = true
 
+# The ldpc.mod2 stubs files contain syntax errors, and so make mypy fail earlier than expected
+# with a SyntaxError. Ignoring the whole module for mypy.
 [[tool.mypy.overrides]]
-module = ["bposd.css"]
-ignore_missing_imports = true
+module = ["ldpc.mod2"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
 
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
