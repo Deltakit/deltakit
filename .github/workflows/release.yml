@@ -52,27 +52,14 @@ jobs:
   test_wheels:
     if: ${{ inputs.run_tests }}
     name: >-
-      Test wheels on ${{ matrix.os_arch.os }}-${{ matrix.os_arch.arch }}
+      Test wheels on ${{ matrix.os }}
       (Python ${{ matrix.python-version }} '${{ matrix.dependency-resolution }}')
     needs: build_dists
-    runs-on: ${{ matrix.os_arch.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os_arch:
-          - os: ubuntu-latest
-            arch: x64
-          - os:	ubuntu-24.04-arm
-            arch: arm64
-          - os: windows-latest
-            arch: x64
-          - os: windows-11-arm
-            arch: arm64
-          - os: macos-latest
-            arch: arm64
-          # Not including Intel-based MacOS, should it be?
-          # - os: macos-15-intel
-          #   arch: x64
+        os: ['ubuntu-latest', 'windows-latest', 'macos-latest']
         python-version: ['3.10', '3.11', '3.12', '3.13']
         dependency-resolution: ['highest', 'lowest-direct']
     steps:
@@ -88,14 +75,20 @@ jobs:
           name: all-deltakit-dists
           path: ./dist
 
-      - name: Setup venv
+      - name: Setup venv (UNIX)
+        if: matrix.os != 'windows-latest'
         run: |
           uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
+          uv run --python ${{ matrix.python-version }} --no-sync pytest ./ ./deltakit-*
 
-      - name: Run pytest
-        run: uv run --python ${{ matrix.python-version }} --no-sync pytest ./ ./deltakit-*
-        working-directory: ./
+      - name: Setup venv + tests (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          cd dist
+          uv pip install (Get-ChildItem deltakit*.whl).FullName
+          uv run --python ${{ matrix.python-version }} --no-sync pytest . (Get-ChildItem deltakit-*).FullName
 
 
   test_sdists:
@@ -116,7 +109,9 @@ jobs:
           path: ./dist
 
       - name: Try to install the sdists
-        run: uv pip install ./dist/deltakit*.tar.gz
+        run: |
+          uv venv --clear
+          uv pip install ./dist/deltakit*.tar.gz
 
   publish:
     if: ${{ inputs.publish_to_pypi }}
@@ -145,7 +140,7 @@ jobs:
     if: ${{ inputs.gh_release }}
     name: Sign the Python distribution with Sigstore and upload them to GitHub Release
     needs: [publish]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: write  # IMPORTANT: mandatory for making GitHub Releases
       id-token: write  # IMPORTANT: mandatory for sigstore
