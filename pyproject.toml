@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit"
-version = "0.5.1"
+version = "0.6.0"
 description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -32,10 +32,10 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit~=0.5",
-  "deltakit-core~=0.5",
-  "deltakit-decode~=0.5",
-  "deltakit-explorer~=0.5",
+  "deltakit-circuit~=0.6",
+  "deltakit-core~=0.6",
+  "deltakit-decode~=0.6",
+  "deltakit-explorer~=0.6",
 ]
 
 [project.urls]
