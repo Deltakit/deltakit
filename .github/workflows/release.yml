@@ -35,7 +35,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Build all deltakit packages wheels and sdists
-        run: uv build --no-sources --all-package
+        run: uv build --no-sources --all-packages
 
       - name: Upload all deltakit packages wheels and sdists
         uses: actions/upload-artifact@v4
@@ -90,7 +90,7 @@ jobs:
 
       - name: Setup venv
         run: |
-          uv sync --all-package --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
 
       - name: Run pytest
