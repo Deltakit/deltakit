@@ -122,7 +122,7 @@ jobs:
     if: ${{ inputs.publish_to_pypi }}
     name: Publish Python distribution to PyPI
     needs: [test_wheels, test_sdists]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/${{ matrix.project }}
