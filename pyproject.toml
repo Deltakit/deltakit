@@ -82,7 +82,7 @@ docs = [
   "jupyter>=1.1",
   "ipykernel>=6.29",
 ]
-security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
+security = ["bandit~=1.8", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },

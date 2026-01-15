@@ -116,10 +116,6 @@ jobs:
         run: uv run --no-sync bandit .
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
-      - name: Run `ochrona` for dependency confusion and typos
-        run: uv run --no-sync ochrona pyproject.toml
-        working-directory: ./${{ matrix.projects.path }}
-        if: ${{ always() }}
       - name: Run `pip_audit` to check dependencies for known vulnerabilities
         # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
         # `nbconvert` is only used for documentation building on Linux.

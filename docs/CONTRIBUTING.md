@@ -122,7 +122,7 @@ task as defined in [`pixi.toml`](https://github.com/Deltakit/deltakit/blob/main/
 - `docs`: build documentation, serve documentation, and open in browser.
 - `build_docs`: build documentation (only)
 - `licenses <package>`: run `pip-licenses` to generate a list of PyPI dependency licenses
-- `ochrona`/`pip-audit`: check your installed environment for package versions with known security issues
+- `pip-audit`: check your installed environment for package versions with known security issues
 - `bandit`: perform static code analysis for security concerns with `bandit`
 - `check_pyproject <package>`: to validate `pyproject.toml`
 - `check_workflows`: to validate GHA workflows

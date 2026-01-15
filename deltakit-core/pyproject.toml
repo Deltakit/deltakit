@@ -39,7 +39,7 @@ dependencies = [
   "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
   "stim~=1.15; python_version >= '3.13'",
   "typing_extensions~=4.0",
-  "packaging>=25.0"
+  "packaging>=25.0",
 ]
 
 
@@ -66,11 +66,7 @@ lint = [
   "deptry~=0.23",
   "types-networkx~=3.1",
 ]
-security = [
-  "bandit~=1.8",
-  "ochrona~=2.0",
-  "pip-audit~=2.7"
-]
+security = ["bandit~=1.8", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
