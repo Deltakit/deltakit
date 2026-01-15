@@ -122,7 +122,7 @@ jobs:
     if: ${{ inputs.publish_to_pypi }}
     name: Publish Python distribution to PyPI
     needs: [test_wheels, test_sdists]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     environment:
       name: pypi
       url: https://pypi.org/p/${{ matrix.project }}
@@ -141,7 +141,7 @@ jobs:
     if: ${{ inputs.gh_release }}
     name: Sign the Python distribution with Sigstore and upload them to GitHub Release
     needs: [publish]
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       contents: write  # IMPORTANT: mandatory for making GitHub Releases
       id-token: write  # IMPORTANT: mandatory for sigstore
