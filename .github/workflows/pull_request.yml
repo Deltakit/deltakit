@@ -75,38 +75,6 @@ jobs:
           link_missing_lines_source_dir: ''
           only_changed_files: true
 
-  # Temporary CI job to test on windows
-  tests-wheels-windows:
-    needs: [build-wheels]
-    strategy:
-      matrix:
-        python-version: ['3.10']
-        dependency-resolution: ['lowest-direct']
-    name: Test deltakit on ${{ matrix.python-version }} with ${{matrix.dependency-resolution}}
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-      - name: Download wheels
-        uses: actions/download-artifact@v4
-        with:
-          name: deltakit-wheels
-          path: ./dist
-      - name: Setup and sync venv for testing deltakit
-        run: |
-          uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
-      - name: Install deltakit wheels
-        run: |
-          uv pip install (Get-ChildItem deltakit*.whl).FullName
-        working-directory: ./dist
-
-      - name: Test deltakit on windows
-        run: |
-          uv run --python ${{ matrix.python-version }} --no-sync pytest . (Get-ChildItem deltakit-*).FullName
-
-
   # Perform static check on each deltakit project package.
   static-checks:
     runs-on: ubuntu-latest
