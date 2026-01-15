@@ -16,7 +16,7 @@ def split_input_data_to_c64(
 
     The decoder input data could be measurements or syndromes.
     """
-    with output_path.open("w", encoding="ascii") as output_handle:
+    with output_path.open("w", newline="", encoding="ascii") as output_handle:
         cw = csv.writer(output_handle)
         for input_datum in input_data:
             words = [
