@@ -76,140 +76,39 @@ For introductory information about contributing to open source (e.g. using GitHu
 please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
 
 ### Development Environment and Common Tasks
-We recommend that contributors use [`pixi`](https://prefix.dev/) to manage their development
-environment and run tasks.
+We recommend that contributors use [`uv`](https://docs.astral.sh/uv/) to manage their development
+environment.
 
-After cloning the repository and [installing `pixi`](https://pixi.sh/latest/), navigate to
-the root directory of the repository in a terminal and install dependencies with `pixi install`.
-`pixi shell` activates a development virtual environment with editable installs of Deltakit
-packages so you can make changes and interact with the modified code.
-To deactivate the environment, run `exit`.
-
-```{dropdown} Linux/macOS users...
-Depending on system settings, you may experience a `Too many open files (os error 24) at path...`
-error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be
-resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`.
-```
-
-```{dropdown} Conda users...
-We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`.
-```
+After cloning the repository and [installing `uv`](https://docs.astral.sh/uv/#installation), navigate to
+the root directory of the repository in a terminal and install dependencies with `uv sync`. A new
+virtual environment will be created in `.venv` and will be used by any command pre-fixed by `uv run`.
 
 ```{dropdown} IDE users...
-This environment is also available in [several popular IDEs](https://pixi.sh/dev/integration/editor/vscode/).
-For instance, to set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
-variable to `"${workspaceFolder}/.pixi/envs/default/bin/python"` in `settings.json`.
+To set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
+variable to `"${workspaceFolder}/.venv/bin/python"` in `settings.json`. This environment will
+be checked and updated if needed at each `uv run` call.
 ```
 
-You can also perform important tasks with `pixi run`. For example:
+Packages have been defined for `uv`, so if you want to test a feature in isolation, you can
+use the `--package` flag of `uv`. For example:
 
-For instance:
-
-```python3
-pixi run tests deltakit-circuit
-pixi run lint deltakit-explorer
-pixi run docs
+```bash
+uv run --package deltakit-core --group test pytest deltakit-code
 ```
 
-`pixi` will automatically update or install the dependencies (`pixi install`) and perform the
-task as defined in [`pixi.toml`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml). Tasks include:
+will install the dependencies required for `deltakit-core` with the additional dependencies
+defined in the dependency group `test` and launch `pytest` within that newly created environment.
 
-- `lint <package>`: run `ruff check` on a package
-- `mypy <package>`: run `mypy` on a package
-- `tests <package>`: run tests on a package
-- `testmon`: run only changed tests / tests of changed code (after complete initial run)
-- `tests <package> --slow`: run *all* tests on a package, including slow tests
-- `docs`: build documentation, serve documentation, and open in browser.
-- `build_docs`: build documentation (only)
-- `licenses <package>`: run `pip-licenses` to generate a list of PyPI dependency licenses
-- `pip-audit`: check your installed environment for package versions with known security issues
-- `bandit`: perform static code analysis for security concerns with `bandit`
-- `check_pyproject <package>`: to validate `pyproject.toml`
-- `check_workflows`: to validate GHA workflows
-- `build <package>`: build wheels and sdist to `dist` directory
-- `spellcheck`: to look for common misspellings in Python code
-- `vale`: to look for documentation style (including spelling) issues in documentation files
-
-where `<package>` is the optional, hyphenated name of the desired Deltakit
-package.
+The continuous integration files are a good place to look for examples of using `uv` specifically
+for this project.
 
 `pre-commit` has been configured to perform several common tests before each commit.
-To enable `pre-commit`, run `pre-commit install` within a `pixi shell` (or
-`pixi run pre-commit install` otherwise).
-
-:::::{dropdown} Conda / Mamba / Poetry / Hatch / uv users...
-You are welcome to manage your development environment using tools other than `pixi`.
-
-::::{tab-set}
-:::{tab-item} Conda / Mamba
-:sync: tab1
-
-```bash
-# Create the virtual environment
-conda env create -f environment.yml
-
-# Activate the environment
-conda activate deltakit-conda
-
-# Run tests:
-pytest
-```
-:::
-
-:::{tab-item} Poetry
-:sync: tab2
-```bash
-# Install deltakit and developer dependencies
-poetry install --extras "dev"
-
-# Run tests:
-poetry run pytest
-```
-As shown, `pytest` is run outside of a poetry shell, hence the need for the
-`poetry run` prefix. If you have the `poetry shell` extension and activate it,
-the prefix is not needed.
-:::
-
-:::{tab-item} Hatch
-:sync: tab3
-```bash
-# Create environment
-hatch env create
-
-# Activate shell
-hatch shell
-
-# Run tests:
-pytest
-```
-:::
-
-:::{tab-item} uv
-:sync: tab4
-```bash
-# Install dependencies
-uv sync --extra dev
-
-# Run tests:
-uv run pytest
-```
-As shown, `pytest` is run outside of a virtual environment, hence the need for the
-`uv run` prefix. If you use virtual environments with `uv` and activate the new
-virtual environment, the prefix is not needed.
-:::
-
-::::
-
-There is not a designated task runner for use with tools other than `pixi`. Common
-commands besides `pytest` shown above  are `ruff check` for linting, `typos`
-to find typos, `mypy` for static type checking, and `pre-commit run -a`
-to run several pre-commit checks. For additional commands, see the `[tasks]`
-section of [`pixi.ini`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml).
+To enable `pre-commit`, run `uv run pre-commit install`. You might want to run
+`uv run pre-commit run -a` directly after installing the pre-commit hook so that the pre-commit
+environments are downloaded, installed and run before your first commit.
 
 Deltakit itself is compatible with Python 3.10+, but some of its dependencies currently
-require Python <3.14. If you run into difficulties associated with a Python version,
-consider configuring your package manager to use an earlier version of Python.
-:::::
+require Python <3.14.
 
 ### Code of Conduct
 When contributing, always follow our [code of conduct](CODE_OF_CONDUCT.md).
@@ -273,7 +172,7 @@ Decisions are made by consensus of participants in a GitHub issue or PR. In case
 [code owners](https://github.com/Deltakit/deltakit/blob/main/CODEOWNERS) have final authority.
 
 ### Code Formatting / Linting / Typing
-All packages except `deltakit-decode` use `ruff format`, all packages use `ruff check` to
+All packages use `ruff format`, all packages use `ruff check` to
 enforce linting rules, and all packages use `mypy` to enforce typing rules.
 See [`pyproject.toml`](https://github.com/Deltakit/deltakit/blob/main/pyproject.toml) for specific rules.
 
@@ -282,7 +181,6 @@ For more information about release processes, see the [Deltakit release procedur
 
 ### Security
 For more information about security, see the [Deltakit security policy](SECURITY.md).
-
 
 ### Contributor License Agreement
 First-time contributors will be asked to agree to a CLA. This will be automated using a GitHub

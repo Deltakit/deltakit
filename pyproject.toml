@@ -140,15 +140,7 @@ filterwarnings = [
 ]
 
 [tool.bandit]
-# './tools/vale.py' is for `pixi run bandit`; 'tools/vale.py' is for pre-commit
-exclude_dirs = [
-  '.github',
-  '.pixi',
-  '.tox',
-  '.venv',
-  './tools/vale.py',
-  'tools/vale.py',
-]
+exclude_dirs = ['.github', '.tox', '.venv', 'tools/vale.py']
 skips = [
   'B101',
   'B311',
@@ -261,7 +253,19 @@ source_pkgs = [
 relative_files = true
 
 [tool.coverage.paths]
-deltakit_circuit = ["deltakit-circuit/src/deltakit_circuit", ".venv/lib/python*/site-packages/deltakit_circuit"]
-deltakit_core = ["deltakit-core/src/deltakit_core", ".venv/lib/python*/site-packages/deltakit_core"]
-deltakit_decode = ["deltakit-decode/src/deltakit_decode", ".venv/lib/python*/site-packages/deltakit_decode"]
-deltakit_explorer = ["deltakit-explorer/src/deltakit_explorer", ".venv/lib/python*/site-packages/deltakit_explorer"]
+deltakit_circuit = [
+  "deltakit-circuit/src/deltakit_circuit",
+  ".venv/lib/python*/site-packages/deltakit_circuit",
+]
+deltakit_core = [
+  "deltakit-core/src/deltakit_core",
+  ".venv/lib/python*/site-packages/deltakit_core",
+]
+deltakit_decode = [
+  "deltakit-decode/src/deltakit_decode",
+  ".venv/lib/python*/site-packages/deltakit_decode",
+]
+deltakit_explorer = [
+  "deltakit-explorer/src/deltakit_explorer",
+  ".venv/lib/python*/site-packages/deltakit_explorer",
+]
