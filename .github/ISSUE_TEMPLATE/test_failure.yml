@@ -1,24 +1,23 @@
 name: Test failure report
 description: Create a test failure report
-title: "tests: <your description here>"
-labels: ["tests"]
+title: "test: <your title here>"
+labels: ["test"]
 assignees: []
 
 body:
   - type: markdown
     attributes:
       value: |
-        ### 🧪 Test Failure Report
 
-        Thanks for helping improve the project! Please fill out the form below.
+        Thank you for contributing to the improvement of Deltakit. Please fill out the following sections to report a test failure.
 
   - type: checkboxes
     id: cla-signature
     attributes:
-      label: Contributor License Agreement (CLA) signature
+      label: Contributor License Agreement
       description: Please confirm the following before submitting
       options:
-        - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
+        - label: A Contributor License Agreement signature is requested for any first PR contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
           required: true
 
   - type: textarea
@@ -26,24 +25,7 @@ body:
     attributes:
       label: Test Failure Summary
       description: |
-        ```
         Please copy-paste the failure summary produced by `pytest`.
-        ```
-    validations:
-      required: true
-
-  - type: textarea
-    id: failure-traceback
-    attributes:
-      label: Test Failure Details
-      description:  |
-        <details>
-
-        ```
-        Please copy-paste the failure details produced by `pytest`.
-        ```
-
-        </details>
     validations:
       required: true
 
