@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        
+
         Thank you for contributing to the improvement of Deltakit. Please fill out the following sections to report a bug.
 
         > [!NOTE] A bug is a disagreement between actual and documented behaviour, or an inaccurate error message.
@@ -32,7 +32,7 @@ body:
     attributes:
       label: Bug Description
       description: |
-        Please provide a succint description of the observed behaviour.
+        Please provide a succinct description of the observed behaviour.
     validations:
       required: true
 
