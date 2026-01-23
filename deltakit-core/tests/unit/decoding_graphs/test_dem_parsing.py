@@ -4,7 +4,11 @@ from itertools import chain
 from unittest.mock import MagicMock
 
 import pytest
-import stim
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 from pytest_mock import MockerFixture
 
 from deltakit_core.decoding_graphs import (
