@@ -36,7 +36,6 @@ dependencies = [
   "deltakit-core~=0.6",
   "deltakit-decode~=0.6",
   "deltakit-explorer~=0.6",
-  "deltakit-compile~=0.6",
 ]
 
 [project.urls]
