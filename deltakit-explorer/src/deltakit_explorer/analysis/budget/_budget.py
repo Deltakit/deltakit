@@ -1,4 +1,5 @@
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
@@ -18,6 +19,29 @@ from deltakit_explorer.analysis.budget._memory import (
 )
 
 
+@dataclass
+class ErrorBudgetResult:
+    """Result of an error budgeting computation.
+
+    Attributes:
+        contributions: contributions for each of the noise parameters to the error budget.
+        contribution_stddevs: estimation of the standard deviation of each of the ``contributions``.
+    """
+
+    contributions: tuple[float, ...]
+    contribution_stddevs: tuple[float, ...]
+
+    @property
+    def lambda_estimate(self) -> float:
+        """Returns the estimation of Λ according to the computed budget."""
+        return float(np.sum(self.contributions))
+
+    @property
+    def lambda_stddev_estimate(self) -> float:
+        """Returns an estimation of the standard deviation on Λ according to the computed budget."""
+        return float(np.sqrt(np.sum(np.asarray(self.contribution_stddevs) ** 2)))
+
+
 def get_error_budget(
     noise_model_type: type[NoiseInterface],
     noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
@@ -26,13 +50,14 @@ def get_error_budget(
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator
+    | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
     fitting_degree: int = 3,
     max_workers: int = 1,
-) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
+) -> ErrorBudgetResult:
     """Compute the error budget of the provided ``noise_model``.
 
     Args:
@@ -117,4 +142,6 @@ def get_error_budget(
     contributions = np.abs(gradient * noise_model_parameters)
     stddevs = np.abs(gradient_stddev * noise_model_parameters)
 
-    return contributions, stddevs
+    return ErrorBudgetResult(
+        tuple(map(float, contributions.ravel())), tuple(map(float, stddevs.ravel()))
+    )
