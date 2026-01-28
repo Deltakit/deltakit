@@ -44,7 +44,7 @@ We recommend to use [`uv`](https://docs.astral.sh/uv/) as project manager. To sy
 uv sync
 ```
 
-`uv` enables to configure and execute tasks using [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and commandcommand lines. 
+`uv` enables to configure and execute tasks using [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and commandcommand lines.
 
 ### Executing tests
 
@@ -56,7 +56,7 @@ The whole `deltakit` test suite can be executed using the following steps:
 uv sync --all-packages --python 3.12 --resolution lowest-direct --group test
 ```
 
-Here, [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) defines the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) to install the lowest possible version for all dependencies in the group. 
+Here, [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) defines the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) to install the lowest possible version for all dependencies in the group.
 
 2. Run the tests with the [Pytest](https://docs.pytest.org/en/stable/) framework:
 
