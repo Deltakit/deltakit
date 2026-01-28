@@ -107,7 +107,9 @@ def generate_decoder_managers_for_lambda(
     noise_parameters = xi.T
     # 1. Check input parameters
     for noise_parameter in noise_parameters:
-        if (message := noise_model_type.is_valid(noise_parameter)) is not None:
+        if (
+            message := noise_model_type.reason_for_invalidity(noise_parameter)
+        ) is not None:
             parameters = (
                 "[" + ", ".join(f"{float(v):.3g}" for v in noise_parameter) + "]"
             )

@@ -38,7 +38,7 @@ class NoiseInterface(ABC, Generic[Computation]):
         """Apply the noise model represented by ``self`` to the provided computation."""
 
     @classmethod
-    def is_valid(cls, parameters: npt.NDArray[np.floating]) -> str | None:
+    def reason_for_invalidity(cls, parameters: npt.NDArray[np.floating]) -> str | None:
         """Check if the provided ``parameters`` are valid for the noise model
         represented by ``cls``."""
         if parameters.size != cls.num_noise_parameters:

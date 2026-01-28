@@ -263,7 +263,7 @@ def plot_error_budget(
                 "Call to adjust_text failed. Labels will likely not be well positioned."
             )
         else:
-           texts, _ = ret
+            texts, _ = ret
     # Draw lines
     for target, text, colour in zip(nft_bar_centres, texts, nft_bar_colours):
         _draw_line_from_text_to_position(fig, ax, text, target, bar_top, colour, t=0)

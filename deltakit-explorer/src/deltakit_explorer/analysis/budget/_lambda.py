@@ -25,7 +25,8 @@ def inverse_lambda_at(
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator
+    | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     max_workers: int = 1,

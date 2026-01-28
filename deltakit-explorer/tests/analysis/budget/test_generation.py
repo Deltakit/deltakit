@@ -53,7 +53,9 @@ def get_noise_model_type(num_parameters: int) -> type[NoiseInterface]:
 
         @override
         @classmethod
-        def is_valid(cls, parameters: npt.NDArray[np.floating]) -> str | None:
+        def reason_for_invalidity(
+            cls, parameters: npt.NDArray[np.floating]
+        ) -> str | None:
             return None
 
     return _NoiseModel

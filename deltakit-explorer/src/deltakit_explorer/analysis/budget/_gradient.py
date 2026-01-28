@@ -176,7 +176,8 @@ def inverse_lambda_gradient_at(
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator
+    | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     discretisation_generator: GradientFitDiscretisationEnum = GradientFitDiscretisationEnum.LINEAR,

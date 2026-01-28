@@ -32,19 +32,22 @@ def error_names() -> list[str]:
 
 
 @pytest.fixture
-def simulated_error_budgeting_data(error_parameters: npt.NDArray[np.floating], error_names: list[str]) -> ErrorBudgetingResults:
+def simulated_error_budgeting_data(
+    error_parameters: npt.NDArray[np.floating], error_names: list[str]
+) -> ErrorBudgetingResults:
     _resources_folder = Path(__file__).parent.parent.parent / "resources"
     _data_file = _resources_folder / "error_budget_data.csv"
     data = pd.read_csv(_data_file)
-    return ErrorBudgetingResults(
-        data,
-        error_parameters, error_names
-    )
+    return ErrorBudgetingResults(data, error_parameters, error_names)
 
 
-def test_data_matches_csv(simulated_error_budgeting_data: ErrorBudgetingResults) -> None:
+def test_data_matches_csv(
+    simulated_error_budgeting_data: ErrorBudgetingResults,
+) -> None:
     """Test that the hard-coded parts in the data fixture agree with the CSV file."""
-    header_names: frozenset[str] = frozenset(simulated_error_budgeting_data.data.columns.values)
+    header_names: frozenset[str] = frozenset(
+        simulated_error_budgeting_data.data.columns.values
+    )
     for name in simulated_error_budgeting_data.parameter_names:
         assert f"noise_{name}" in header_names
 
