@@ -1,3 +1,4 @@
+from enum import Enum, auto
 from typing import Protocol
 
 import numpy as np
@@ -71,3 +72,20 @@ def get_logarithmic_points(
         )
         raise ValueError(msg)
     return np.logspace(np.log10(a), np.log10(b), num_points, base=10)
+
+
+class GradientFitDiscretisationEnum(GradientFitDiscretisationGenerator, Enum):
+    LINEAR = auto()
+    LOGARITHMIC = auto()
+
+    def __call__(
+        self, a: float, b: float, c: float, num_points: int, degree: int, /
+    ) -> npt.NDArray[np.floating]:
+        match self:
+            case GradientFitDiscretisationEnum.LINEAR:
+                return get_linear_points(a, b, c, num_points, degree)
+            case GradientFitDiscretisationEnum.LOGARITHMIC:
+                return get_logarithmic_points(a, b, c, num_points, degree)
+            case _:
+                msg = f"Discretisation {self} is not implemented yet."
+                raise NotImplementedError(msg)
