@@ -1,4 +1,4 @@
-# Contributing
+# Contributing to Deltakit
 
 ```{toctree}
 :hidden:
@@ -8,216 +8,256 @@ RELEASE
 SECURITY
 ```
 
-Thank you for considering a contribution to Deltakit!
-We accept many types of contributions (most of which don't even require
-writing code!) from anyone.
+Thank you for considering a contribution to Deltakit. We welcome contributions of many forms from anyone, most of which don't even require writing code. The sections below describe key definitions for contribution types and recommended processes to help guide you through contributing.
 
-## Types of Contributions
-### Issues
-#### Bug reports
-We define a "bug" as a discrepancy between documented and actual behaviour or
-an *inaccurate* error message. (If it's not a "bug", see {ref}`contributing-enhancement-requests`.)
-First, check to see if the bug has already been reported on the
-[issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
-If so, leave a comment; if not, create a
-[new bug report](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
+> For introductory information about contributing to open source projects, please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
 
-(contributing-enhancement-requests)=
+Prior to making a contribution, we kindly ask to review our [code of conduct](CODE_OF_CONDUCT.md).
 
-#### Enhancement Requests
-Other requests (besides bug reports) are also welcome!
-For instance, if the documentation needs improvement, if you disagree with
-documented behaviour, or if you are asking for a new feature, we'd appreciate
-your thoughts.
-First, check to see if a similar request already has an
-[open issue](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
-If so, leave a comment; if not, create a
-[new request](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
+## Reporting an issue
 
-#### Issue Participation
-Posting an issue is the much-appreciated first step, but there's lots more to do.
-Can you try reproducing a bug or finding out more about why it occurs? Can you
-help us reach consensus on the appropriate action to take to fix a bug or respond
-to a request? We welcome constructive participation in [issues](https://github.com/Deltakit/deltakit/issues/)
-that look interesting to you.
+Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
 
-### Pull Requests
+- **Bug reports**: A "bug" is defined as a discrepancy between documented and actual behaviour or an *inaccurate* error message. Bug reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
+- **Enhancement and feature requests**: Requests for improvements, enhancements, or new features are highly appreciated. Request reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
+- **Issue participation**: It is also possible to constructively participate in current [issues](https://github.com/Deltakit/deltakit/issues/) by reproducing bugs, investigating their causes, or contributing to discussions on best fixes and implementation designs.
 
-#### Bug Fixes
-Known bugs can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
-After reading the bug report carefully and reaching consensus on the appropriate fix,
-feel free to open a PR with the agreed-upon fix.
+## Submitting a Pull Request
 
-#### Enhancements
-Existing enhancement request can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
-After reading the request carefully and reaching consensus on the appropriate action,
-feel free to open a PR with a fix.
-Note that many enhancements don't require writing any code - documentation improvements
-are also appreciated!
+Resolving an issue is possible by submitting a Pull Request. The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle. Then, clone the fork locally:
 
-#### PR Review
-All PRs need review before they can be merged. Please share your expertise in
-[PRs](https://github.com/Deltakit/deltakit/pulls)
-that are up your alley.
-
-### Other
-#### Ask / Answer Questions
-Have a question about usage? Knowledgeable about our software and want to share your expertise?
-Please ask and answer usage questions on our [Q&A Discussion](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
-
-#### Social Media / Graphic Design / Fundraising
-We don't currently have recommendations about these types of contributions, but
-if you have ideas, please [contact us](mailto:deltakit@riverlane.com).
-
-## Procedures
-
-### Workflow
-For introductory information about contributing to open source (e.g. using GitHub, `git`),
-please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
-
-### Development Environment and Common Tasks
-We recommend that contributors use [`pixi`](https://prefix.dev/) to manage their development
-environment and run tasks.
-
-After cloning the repository and [installing `pixi`](https://pixi.sh/latest/), navigate to
-the root directory of the repository in a terminal and install dependencies with `pixi install`.
-`pixi shell` activates a development virtual environment with editable installs of Deltakit
-packages so you can make changes and interact with the modified code.
-To deactivate the environment, run `exit`.
-
-```{dropdown} Linux/macOS users...
-Depending on system settings, you may experience a `Too many open files (os error 24) at path...`
-error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be
-resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`.
+```sh
+git clone https://github.com/<GITHUB_HANDLE>/deltakit.git
 ```
 
-```{dropdown} Conda users...
-We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`.
+Next, navigate to your fork directory and add Deltakit original repository as `upstream`:
+
+```sh
+git remote add upstream https://github.com/Deltakit/deltakit.git
 ```
 
-```{dropdown} IDE users...
-This environment is also available in [several popular IDEs](https://pixi.sh/dev/integration/editor/vscode/).
-For instance, to set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
-variable to `"${workspaceFolder}/.pixi/envs/default/bin/python"` in `settings.json`.
+## Setup `deltakit` in development mode
+
+We recommend to use [`uv`](https://docs.astral.sh/uv/) as project manager. To sync the current project dependencies with the environment, simply run:
+
+```sh
+uv sync
 ```
 
-You can also perform important tasks with `pixi run`. For example:
+`uv` enables to configure and execute tasks using [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and commandcommand lines. 
 
-For instance:
+### Executing tests
 
-```python3
-pixi run tests deltakit-circuit
-pixi run lint deltakit-explorer
-pixi run docs
+The whole `deltakit` test suite can be executed using the following steps:
+
+1. First sync with the supported Python version of choice and the `test` dependency group:
+
+```sh
+uv sync --all-packages --python 3.12 --resolution lowest-direct --group test
 ```
 
-`pixi` will automatically update or install the dependencies (`pixi install`) and perform the
-task as defined in [`pixi.toml`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml). Tasks include:
+Here, [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) defines the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) to install the lowest possible version for all dependencies in the group. 
 
-- `lint <package>`: run `ruff check` on a package
-- `mypy <package>`: run `mypy` on a package
-- `tests <package>`: run tests on a package
-- `testmon`: run only changed tests / tests of changed code (after complete initial run)
-- `tests <package> --slow`: run *all* tests on a package, including slow tests
-- `docs`: build documentation, serve documentation, and open in browser.
-- `build_docs`: build documentation (only)
-- `licenses <package>`: run `pip-licenses` to generate a list of PyPI dependency licenses
-- `ochrona`/`pip-audit`: check your installed environment for package versions with known security issues
-- `bandit`: perform static code analysis for security concerns with `bandit`
-- `check_pyproject <package>`: to validate `pyproject.toml`
-- `check_workflows`: to validate GHA workflows
-- `build <package>`: build wheels and sdist to `dist` directory
-- `spellcheck`: to look for common misspellings in Python code
-- `vale`: to look for documentation style (including spelling) issues in documentation files
+2. Run the tests with the [Pytest](https://docs.pytest.org/en/stable/) framework:
 
-where `<package>` is the optional, hyphenated name of the desired Deltakit
-package.
-
-`pre-commit` has been configured to perform several common tests before each commit.
-To enable `pre-commit`, run `pre-commit install` within a `pixi shell` (or
-`pixi run pre-commit install` otherwise).
-
-:::::{dropdown} Conda / Mamba / Poetry / Hatch / uv users...
-You are welcome to manage your development environment using tools other than `pixi`.
-
-::::{tab-set}
-:::{tab-item} Conda / Mamba
-:sync: tab1
-
-```bash
-# Create the virtual environment
-conda env create -f environment.yml
-
-# Activate the environment
-conda activate deltakit-conda
-
-# Run tests:
-pytest
 ```
-:::
-
-:::{tab-item} Poetry
-:sync: tab2
-```bash
-# Install deltakit and developer dependencies
-poetry install --extras "dev"
-
-# Run tests:
-poetry run pytest
+uv run --python 3.12 --no-sync pytest
 ```
-As shown, `pytest` is run outside of a poetry shell, hence the need for the
-`poetry run` prefix. If you have the `poetry shell` extension and activate it,
-the prefix is not needed.
-:::
 
-:::{tab-item} Hatch
-:sync: tab3
-```bash
-# Create environment
-hatch env create
+### Building documentation
 
-# Activate shell
-hatch shell
+Similarly, the documentation can be built locally following the steps:
 
-# Run tests:
-pytest
+```sh
+uv sync --python 3.13 --resolution highest --group docs
 ```
-:::
 
-:::{tab-item} uv
-:sync: tab4
-```bash
-# Install dependencies
-uv sync --extra dev
+for syncing the environment, and:
 
-# Run tests:
-uv run pytest
+```sh
+uv run --no-sync sphinx-build -W -b html docs docs/_build/html
 ```
-As shown, `pytest` is run outside of a virtual environment, hence the need for the
-`uv run` prefix. If you use virtual environments with `uv` and activate the new
-virtual environment, the prefix is not needed.
-:::
 
-::::
+to build a HTML version of the documentation. It can then be visualised in any browser.
 
-There is not a designated task runner for use with tools other than `pixi`. Common
-commands besides `pytest` shown above  are `ruff check` for linting, `typos`
-to find typos, `mypy` for static type checking, and `pre-commit run -a`
-to run several pre-commit checks. For additional commands, see the `[tasks]`
-section of [`pixi.ini`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml).
+### Pre-commits
 
-Deltakit itself is compatible with Python 3.10+, but some of its dependencies currently
-require Python <3.14. If you run into difficulties associated with a Python version,
-consider configuring your package manager to use an earlier version of Python.
-:::::
+## General conventions for code development
 
-### Code of Conduct
-When contributing, always follow our [code of conduct](CODE_OF_CONDUCT.md).
+`deltakit` follows principles of [semantic versioning](https://semver.org/) and uses [semantic release](https://python-semantic-release.readthedocs.io/en/latest/) to automate the release process. This is based on parsing formatted issue and PR titles and commit messages according to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification
 
-### Order of Operations
-Contributors without commit privileges are asked to submit or comment on an
-[issue](https://github.com/Deltakit/deltakit/issues) before submitting
-a pull request.
+
+
+<!-- ### Bug Fixes -->
+<!-- Known bugs can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug). -->
+<!-- After reading the bug report carefully and reaching consensus on the appropriate fix, -->
+<!-- feel free to open a PR with the agreed-upon fix. -->
+
+<!-- ### Enhancements -->
+<!-- Existing enhancement request can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest). -->
+<!-- After reading the request carefully and reaching consensus on the appropriate action, -->
+<!-- feel free to open a PR with a fix. -->
+<!-- Note that many enhancements don't require writing any code - documentation improvements -->
+<!-- are also appreciated! -->
+
+<!-- ### PR Review -->
+<!-- All PRs need review before they can be merged. Please share your expertise in -->
+<!-- [PRs](https://github.com/Deltakit/deltakit/pulls) -->
+<!-- that are up your alley. -->
+
+<!-- ## Other -->
+
+<!-- ### Ask / Answer Questions -->
+<!-- Have a question about usage? Knowledgeable about our software and want to share your expertise? -->
+<!-- Please ask and answer usage questions on our [Q&A Discussion](https://github.com/Deltakit/deltakit/discussions/categories/q-a). -->
+
+<!-- ### Social Media / Graphic Design / Fundraising -->
+<!-- We don't currently have recommendations about these types of contributions, but -->
+<!-- if you have ideas, please [contact us](mailto:deltakit@riverlane.com). -->
+
+<!-- ## Procedures -->
+
+<!-- ### Development Environment and Common Tasks -->
+<!-- We recommend that contributors use [`pixi`](https://prefix.dev/) to manage their development -->
+<!-- environment and run tasks. -->
+
+<!-- After cloning the repository and [installing `pixi`](https://pixi.sh/latest/), navigate to -->
+<!-- the root directory of the repository in a terminal and install dependencies with `pixi install`. -->
+<!-- `pixi shell` activates a development virtual environment with editable installs of Deltakit -->
+<!-- packages so you can make changes and interact with the modified code. -->
+<!-- To deactivate the environment, run `exit`. -->
+
+<!-- ```{dropdown} Linux/macOS users... -->
+<!-- Depending on system settings, you may experience a `Too many open files (os error 24) at path...` -->
+<!-- error. This is [known issue](https://github.com/prefix-dev/pixi/issues/2626) that can easily be -->
+<!-- resolved by increasing the maximum number of open file descriptors; e.g., `ulimit -n 512`. -->
+<!-- ``` -->
+
+<!-- ```{dropdown} Conda users... -->
+<!-- We suggest deactivating any `conda` environments before using `pixi`. If the `conda` `base` environment activates by default whenever a terminal session is opened, you can turn it off with `conda config --set auto_activate_base false`. -->
+<!-- ``` -->
+
+<!-- ```{dropdown} IDE users... -->
+<!-- This environment is also available in [several popular IDEs](https://pixi.sh/dev/integration/editor/vscode/). -->
+<!-- For instance, to set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath` -->
+<!-- variable to `"${workspaceFolder}/.pixi/envs/default/bin/python"` in `settings.json`. -->
+<!-- ``` -->
+
+<!-- You can also perform important tasks with `pixi run`. For example: -->
+
+<!-- For instance: -->
+
+<!-- ```python3 -->
+<!-- pixi run tests deltakit-circuit -->
+<!-- pixi run lint deltakit-explorer -->
+<!-- pixi run docs -->
+<!-- ``` -->
+
+<!-- `pixi` will automatically update or install the dependencies (`pixi install`) and perform the -->
+<!-- task as defined in [`pixi.toml`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml). Tasks include: -->
+
+<!-- - `lint <package>`: run `ruff check` on a package -->
+<!-- - `mypy <package>`: run `mypy` on a package -->
+<!-- - `tests <package>`: run tests on a package -->
+<!-- - `testmon`: run only changed tests / tests of changed code (after complete initial run) -->
+<!-- - `tests <package> --slow`: run *all* tests on a package, including slow tests -->
+<!-- - `docs`: build documentation, serve documentation, and open in browser. -->
+<!-- - `build_docs`: build documentation (only) -->
+<!-- - `licenses <package>`: run `pip-licenses` to generate a list of PyPI dependency licenses -->
+<!-- - `ochrona`/`pip-audit`: check your installed environment for package versions with known security issues -->
+<!-- - `bandit`: perform static code analysis for security concerns with `bandit` -->
+<!-- - `check_pyproject <package>`: to validate `pyproject.toml` -->
+<!-- - `check_workflows`: to validate GHA workflows -->
+<!-- - `build <package>`: build wheels and sdist to `dist` directory -->
+<!-- - `spellcheck`: to look for common misspellings in Python code -->
+<!-- - `vale`: to look for documentation style (including spelling) issues in documentation files -->
+
+<!-- where `<package>` is the optional, hyphenated name of the desired Deltakit -->
+<!-- package. -->
+
+<!-- `pre-commit` has been configured to perform several common tests before each commit. -->
+<!-- To enable `pre-commit`, run `pre-commit install` within a `pixi shell` (or -->
+<!-- `pixi run pre-commit install` otherwise). -->
+
+<!-- :::::{dropdown} Conda / Mamba / Poetry / Hatch / uv users... -->
+<!-- You are welcome to manage your development environment using tools other than `pixi`. -->
+
+<!-- ::::{tab-set} -->
+<!-- :::{tab-item} Conda / Mamba -->
+<!-- :sync: tab1 -->
+
+<!-- ```bash -->
+<!-- # Create the virtual environment -->
+<!-- conda env create -f environment.yml -->
+
+<!-- # Activate the environment -->
+<!-- conda activate deltakit-conda -->
+
+<!-- # Run tests: -->
+<!-- pytest -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::{tab-item} Poetry -->
+<!-- :sync: tab2 -->
+<!-- ```bash -->
+<!-- # Install deltakit and developer dependencies -->
+<!-- poetry install --extras "dev" -->
+
+<!-- # Run tests: -->
+<!-- poetry run pytest -->
+<!-- ``` -->
+<!-- As shown, `pytest` is run outside of a poetry shell, hence the need for the -->
+<!-- `poetry run` prefix. If you have the `poetry shell` extension and activate it, -->
+<!-- the prefix is not needed. -->
+<!-- ::: -->
+
+<!-- :::{tab-item} Hatch -->
+<!-- :sync: tab3 -->
+<!-- ```bash -->
+<!-- # Create environment -->
+<!-- hatch env create -->
+
+<!-- # Activate shell -->
+<!-- hatch shell -->
+
+<!-- # Run tests: -->
+<!-- pytest -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::{tab-item} uv -->
+<!-- :sync: tab4 -->
+<!-- ```bash -->
+<!-- # Install dependencies -->
+<!-- uv sync --extra dev -->
+
+<!-- # Run tests: -->
+<!-- uv run pytest -->
+<!-- ``` -->
+<!-- As shown, `pytest` is run outside of a virtual environment, hence the need for the -->
+<!-- `uv run` prefix. If you use virtual environments with `uv` and activate the new -->
+<!-- virtual environment, the prefix is not needed. -->
+<!-- ::: -->
+
+<!-- :::: -->
+
+<!-- There is not a designated task runner for use with tools other than `pixi`. Common -->
+<!-- commands besides `pytest` shown above  are `ruff check` for linting, `typos` -->
+<!-- to find typos, `mypy` for static type checking, and `pre-commit run -a` -->
+<!-- to run several preuuummit checks. For additional commands, see the `[tasks]` -->
+<!-- section of [`pixi.ini`](https://github.com/Deltakit/deltakit/blob/main/pixi.toml). -->
+
+<!-- Deltakit itself is compatible with Python 3.10+, but some of its dependencies currently -->
+<!-- require Python <3.14. If you run into difficulties associated with a Python version, -->
+<!-- consider configuring your package manager to use an earlier version of Python. -->
+<!-- ::::: -->
+
+
+<!-- ### Order of Operations -->
+<!-- Contributors without commit privileges are asked to submit or comment on an -->
+<!-- [issue](https://github.com/Deltakit/deltakit/issues) before submitting -->
+<!-- a pull request. -->
 
 ### Issue / PR Titles / Commit Messages
 Our project uses [semantic versioning](https://semver.org/).
