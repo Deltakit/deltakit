@@ -2,6 +2,7 @@ from collections.abc import Mapping, Sequence
 
 import numpy as np
 import numpy.typing as npt
+from deltakit_circuit._circuit import Circuit
 
 from deltakit_explorer.analysis.budget._discretisation import (
     GradientFitDiscretisationGenerator,
@@ -25,7 +26,7 @@ def get_error_budget(
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,

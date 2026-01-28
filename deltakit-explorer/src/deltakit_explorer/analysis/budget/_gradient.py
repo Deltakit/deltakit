@@ -3,6 +3,7 @@ from collections.abc import Iterator, Mapping, Sequence
 
 import numpy as np
 import numpy.typing as npt
+from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
 from deltakit_explorer.analysis.budget._discretisation import (
@@ -15,6 +16,7 @@ from deltakit_explorer.analysis.budget._generation import (
 from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,
+    PreComputedMemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
 from deltakit_explorer.analysis.budget._post_processing import (
@@ -175,7 +177,7 @@ def compute_1_over_lambda_gradient_at(
     num_points_per_parameters: int = 10,
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     discretisation_generator: GradientFitDiscretisationGenerator = get_logarithmic_points,
@@ -253,6 +255,9 @@ def compute_1_over_lambda_gradient_at(
             f"num_points_per_parameters to at least {fitting_degree + 1}."
         )
         raise ValueError(msg)
+
+    if isinstance(memory_generator, Mapping):
+        memory_generator = PreComputedMemoryGenerator(memory_generator)
 
     # Make sure that noise_model_parameters is a numpy array, even if a generic Sequence
     # is provided, as this is simpler for later.

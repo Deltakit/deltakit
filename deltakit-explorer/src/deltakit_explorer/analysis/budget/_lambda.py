@@ -2,6 +2,7 @@ from collections.abc import Mapping, Sequence
 
 import numpy as np
 import numpy.typing as npt
+from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis import RunAllAnalysisEngine
 
 from deltakit_explorer.analysis.budget._generation import (
@@ -10,6 +11,7 @@ from deltakit_explorer.analysis.budget._generation import (
 from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,
+    PreComputedMemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
 from deltakit_explorer.analysis.budget._post_processing import (
@@ -23,7 +25,7 @@ def compute_1_over_lambda_at(
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
-    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
+    memory_generator: MemoryGenerator | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     max_workers: int = 1,
@@ -67,6 +69,9 @@ def compute_1_over_lambda_at(
         the estimation of 1 / Λ along with the standard deviation of the estimation as
         a 2-tuple.
     """
+    if isinstance(memory_generator, Mapping):
+        memory_generator = PreComputedMemoryGenerator(memory_generator)
+
     point = np.asarray(noise_model_parameters).reshape((-1, 1))
     decoder_managers = generate_decoder_managers_for_lambda(
         point,
