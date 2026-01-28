@@ -1,5 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
-"""Description of ``deltakit.explorer.analysis.budget`` namespace here."""
+"""Provide functions to perform error-budgeting estimations."""
 
 from ._budget import get_error_budget
 from ._discretisation import (
