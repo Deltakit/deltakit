@@ -104,11 +104,13 @@ def generate_decoder_managers_for_lambda(
         a list of decoder managers that can then be run using ``RunAllAnalysisEngine``.
     """
     # 0. Transposing to be able to iterate on different values.
-    xi = xi.T
+    noise_parameters = xi.T
     # 1. Check input parameters
-    for x in xi:
-        if (message := noise_model_type.is_valid(x)) is not None:
-            parameters = "[" + ", ".join(f"{float(v):.3g}" for v in x) + "]"
+    for noise_parameter in noise_parameters:
+        if (message := noise_model_type.is_valid(noise_parameter)) is not None:
+            parameters = (
+                "[" + ", ".join(f"{float(v):.3g}" for v in noise_parameter) + "]"
+            )
             msg = (
                 f"The provided parameters {parameters} are invalid for noise model "
                 f"{noise_model_type.__name__}. Reason is: '{message}'."
@@ -121,7 +123,7 @@ def generate_decoder_managers_for_lambda(
     # method.
     total_circuits = (
         sum(len(num_rounds) for num_rounds in num_rounds_by_distances.values())
-        * xi.shape[0]
+        * noise_parameters.shape[0]
     )
     # (distance: int, num_rounds: int)
     distance_and_rounds_iterator = itertools.chain.from_iterable(
@@ -133,7 +135,11 @@ def generate_decoder_managers_for_lambda(
         (d, nr, nm, memgen)
         for ((d, nr), nm), memgen in zip(
             itertools.product(
-                distance_and_rounds_iterator, (noise_model_type(x) for x in xi)
+                distance_and_rounds_iterator,
+                (
+                    noise_model_type(noise_parameter)
+                    for noise_parameter in noise_parameters
+                ),
             ),
             itertools.repeat(memory_generator),
             strict=False,
