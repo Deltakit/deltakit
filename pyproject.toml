@@ -100,7 +100,6 @@ members = [
   "deltakit-circuit",
   "deltakit-decode",
   "deltakit-explorer",
-  "deltakit-compile",
 ]
 
 [tool.uv.sources]
