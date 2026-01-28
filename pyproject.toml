@@ -73,7 +73,6 @@ docs = [
   "sphinxawesome-theme>=5.3",
   "sphinx-autodoc-typehints>=3.0",
   "sphinx-copybutton>=0.5",
-  "pip-licenses>=5.0",
   "sphinx-design>=0.6",
   "sphinx-autobuild>=2024.10.3",
   "myst-parser>=4.0",
@@ -91,6 +90,9 @@ dev = [
   # other
   "pre-commit~=4.2",
   "validate-pyproject~=0.24.1",
+]
+release = [
+  "pip-licenses>=5.0",
   "python-semantic-release~=10.2",
 ]
 
