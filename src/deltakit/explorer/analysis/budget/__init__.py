@@ -2,7 +2,6 @@ from deltakit_explorer.analysis.budget import (
     GradientFitDiscretisationGenerator,
     MemoryGenerator,
     NoiseInterface,
-    compute_1_over_lambda_at,
     compute_1_over_lambda_gradient_at,
     compute_lambda_and_stddev_from_results,
     generate_decoder_managers_for_lambda,
@@ -10,6 +9,7 @@ from deltakit_explorer.analysis.budget import (
     get_linear_points,
     get_logarithmic_points,
     get_rotated_surface_code_memory_circuit,
+    inverse_lambda_at,
     plot_error_budget,
 )
 
@@ -17,7 +17,6 @@ __all__ = [
     "GradientFitDiscretisationGenerator",
     "MemoryGenerator",
     "NoiseInterface",
-    "compute_1_over_lambda_at",
     "compute_1_over_lambda_gradient_at",
     "compute_lambda_and_stddev_from_results",
     "generate_decoder_managers_for_lambda",
@@ -25,5 +24,6 @@ __all__ = [
     "get_linear_points",
     "get_logarithmic_points",
     "get_rotated_surface_code_memory_circuit",
+    "inverse_lambda_at",
     "plot_error_budget",
 ]

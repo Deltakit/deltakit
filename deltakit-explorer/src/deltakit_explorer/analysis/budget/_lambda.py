@@ -19,7 +19,7 @@ from deltakit_explorer.analysis.budget._post_processing import (
 )
 
 
-def compute_1_over_lambda_at(
+def inverse_lambda_at(
     noise_model_type: type[NoiseInterface],
     noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
