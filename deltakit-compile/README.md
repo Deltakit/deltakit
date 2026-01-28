@@ -18,8 +18,6 @@
 
 [python-badge]: https://img.shields.io/pypi/pyversions/deltakit
 
-
-
 [typing-badge]: https://img.shields.io/pypi/types/deltakit
 [typing-link]: https://typing.python.org/
 
