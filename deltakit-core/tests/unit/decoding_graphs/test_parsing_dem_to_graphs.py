@@ -2,7 +2,11 @@
 import math
 
 import pytest
-import stim
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,

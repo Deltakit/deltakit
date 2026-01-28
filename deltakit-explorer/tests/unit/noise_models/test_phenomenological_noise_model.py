@@ -78,6 +78,10 @@ class TestPhenomenologicalNoise:
         assert len(noise_model.gate_noise) == 1
         assert noise_model.gate_noise[0](MockNoiseContext()) == expected_noise_channel
 
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            PhenomenologicalNoise(0.01)
+
 class TestToyPhenomenologicalNoise:
     def test_noise_profiles_are_initialised_to_empty_lists(self):
         noise_model = ToyPhenomenologicalNoise()
@@ -115,3 +119,7 @@ class TestToyPhenomenologicalNoise:
         noise_model = ToyPhenomenologicalNoise(p=0.1)
         gate_t = type(gate)
         assert noise_model.measurement_flip[gate_t](gate).probability == 0.1
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            ToyPhenomenologicalNoise(0.01)

@@ -16,7 +16,7 @@ from deltakit_explorer.qpu._noise._noise_parameters import (
 )
 
 
-@dataclass
+@dataclass(kw_only=True)
 class PhysicalNoise(NoiseParameters):
     r"""Gets gate noise parameters given physical gate data
 

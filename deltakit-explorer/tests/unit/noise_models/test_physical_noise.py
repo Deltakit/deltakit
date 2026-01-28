@@ -83,3 +83,8 @@ class TestPhysicalNoise:
         noise_channel_reference = _idle_noise_from_t1_t2(noise_params['t1'], noise_params['t2'])(noise_context, t)
         assert isinstance(noise_channel_result, noise_channels.PauliChannel1)
         assert noise_channel_result.probabilities == noise_channel_reference.probabilities
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            PhysicalNoise(0.01)
+

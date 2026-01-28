@@ -1,7 +1,10 @@
 # (c) Copyright Riverlane 2020-2025.
 from collections import defaultdict
 
-import stim
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 
 from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,

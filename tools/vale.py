@@ -3,7 +3,7 @@
 import subprocess
 from pathlib import Path
 
-EXCLUDE_DIRS = {".github", ".pixi", ".pytest_cache"}
+EXCLUDE_DIRS = {".github", ".pytest_cache"}
 INCLUDE_EXTS = {".md", ".rst", ".py"}
 
 files = [

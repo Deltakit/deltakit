@@ -16,7 +16,7 @@ from deltakit_circuit.noise_channels import Depolarise1, OneQubitNoiseChannel
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class PhenomenologicalNoise(NoiseParameters):
     """
     Class for capturing phenomenological noise.
@@ -40,7 +40,7 @@ class PhenomenologicalNoise(NoiseParameters):
             )
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ToyPhenomenologicalNoise(PhenomenologicalNoise):
     """
     Class for capturing a phenomenological noise model with simple input parameters.

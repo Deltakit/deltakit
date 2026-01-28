@@ -5,7 +5,11 @@ import math
 from typing import Literal
 
 import pytest
-import stim
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 from pytest_mock.plugin import MockerFixture
 
 from deltakit_core.decoding_graphs import (

@@ -84,3 +84,7 @@ class TestToyNoise:
     ])
     def test_toy_noise_str(self, toy_noise, str_val):
         assert str(toy_noise) == str_val
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            ToyNoise(0.01)

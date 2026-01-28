@@ -313,7 +313,7 @@ Decisions are made by consensus of participants in a GitHub issue or PR. In case
 [code owners](https://github.com/Deltakit/deltakit/blob/main/CODEOWNERS) have final authority.
 
 ### Code Formatting / Linting / Typing
-All packages except `deltakit-decode` use `ruff format`, all packages use `ruff check` to
+All packages use `ruff format`, all packages use `ruff check` to
 enforce linting rules, and all packages use `mypy` to enforce typing rules.
 See [`pyproject.toml`](https://github.com/Deltakit/deltakit/blob/main/pyproject.toml) for specific rules.
 
@@ -322,7 +322,6 @@ For more information about release processes, see the [Deltakit release procedur
 
 ### Security
 For more information about security, see the [Deltakit security policy](SECURITY.md).
-
 
 ### Contributor License Agreement
 First-time contributors will be asked to agree to a CLA. This will be automated using a GitHub

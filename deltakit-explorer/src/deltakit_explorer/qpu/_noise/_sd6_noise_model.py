@@ -15,7 +15,7 @@ from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SD6Noise(NoiseParameters):
     """
     The standard depolarising noise model as seen in QEC literature, e.g.:

@@ -103,3 +103,7 @@ class TestSI1000Noise:
     ])
     def test_si1000_str(self, si1000_noise, str_val):
         assert str(si1000_noise) == str_val
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            SI1000Noise(0.01)
