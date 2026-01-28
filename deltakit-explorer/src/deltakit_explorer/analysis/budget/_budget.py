@@ -10,7 +10,7 @@ from deltakit_explorer.analysis.budget._discretisation import (
     get_logarithmic_points,
 )
 from deltakit_explorer.analysis.budget._gradient import (
-    compute_1_over_lambda_gradient_at,
+    inverse_lambda_gradient_at,
 )
 from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
@@ -122,7 +122,7 @@ def get_error_budget(
     # https://doi.org/10.1038/s41586-021-03588-y (Supplementary materials, Section VIII.C.).
     point = np.asarray(noise_model_parameters) / 2
     # Evaluate the gradient.
-    gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
+    gradient, gradient_stddev = inverse_lambda_gradient_at(
         noise_model_type,
         point,
         num_rounds_by_distances,

@@ -169,7 +169,7 @@ def _get_variance_of_gradient_estimation_at_point(
     return float(np.sum(derivative_cov))
 
 
-def compute_1_over_lambda_gradient_at(
+def inverse_lambda_gradient_at(
     noise_model_type: type[NoiseInterface],
     noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
