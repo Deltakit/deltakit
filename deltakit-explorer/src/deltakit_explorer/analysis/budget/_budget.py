@@ -93,8 +93,8 @@ def get_error_budget(
         of the noise parameters of the provided ``noise_model`` along with their
         associated standard deviations.
     """
-    # We will compute the gradient at the half point following the methodology outlined
-    # in "Exponential suppression of bit or phase errors with cyclic error correction".
+    # We will compute the gradient at the half point following the methodology outlined in
+    # https://doi.org/10.1038/s41586-021-03588-y (Supplementary materials, Section VIII.C.).
     point = np.asarray(noise_model_parameters) / 2
     # Evaluate the gradient.
     gradient, gradient_stddev = compute_1_over_lambda_gradient_at(
