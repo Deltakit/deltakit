@@ -74,7 +74,7 @@ def get_logarithmic_points(
     return np.logspace(np.log10(a), np.log10(b), num_points, base=10)
 
 
-class GradientFitDiscretisationEnum(GradientFitDiscretisationGenerator, Enum):
+class GradientFitDiscretisationEnum(Enum):
     LINEAR = auto()
     LOGARITHMIC = auto()
 
