@@ -33,6 +33,16 @@ from deltakit_core.decoding_graphs._data_qubits import (
 from deltakit_core.decoding_graphs._syndromes import DetectorRecord, OrderedSyndrome
 
 
+def _is_decoding_edge_and_edge_record(
+    data: DecodingEdge | tuple[int, ...] | tuple[DecodingEdge, EdgeRecord],
+) -> TypeGuard[tuple[DecodingEdge, EdgeRecord]]:
+    return (
+        not isinstance(data, DecodingEdge)
+        and isinstance(data[0], DecodingEdge)
+        and isinstance(data[-1], EdgeRecord)
+    )
+
+
 def _is_decoding_hyper_edge_and_edge_record(
     data: DecodingHyperEdge | tuple[int, ...] | tuple[DecodingHyperEdge, EdgeRecord],
 ) -> TypeGuard[tuple[DecodingHyperEdge, EdgeRecord]]:
@@ -459,14 +469,47 @@ class DecodingHyperGraph(HyperMultiGraph[DecodingHyperEdge]):
     def error_to_syndrome(self, edges: Iterable[DecodingHyperEdge]) -> OrderedSyndrome:
         return OrderedSyndrome(symptom for symptom in chain.from_iterable(edges))
 
+    def get_relevant_nodes(
+        self, logicals: Iterable[set[DecodingHyperEdge]]
+    ) -> set[int]:
+        """Return nodes that have a hyperedge with a path to logical.
 
-@dataclass
+        Hyperedges to boundaries are ignored if applicable.
+        """
+        union_find: nx.utils.UnionFind = nx.utils.UnionFind()
+        for edge in self.edges:
+            union_find.union(*edge)
+
+        relevant_nodes: set[int] = set()
+        components: list[set[int]] = list(union_find.to_sets())
+        for logical in logicals:
+            relevant_nodes.update(chain.from_iterable(logical))
+            for component in components:
+                if any(component.intersection(edge) for edge in logical):
+                    relevant_nodes.update(component)
+        return relevant_nodes
+
+
+@dataclass(frozen=True)
 class DecodingCode:
-    """Convenience class encapsulating
-    the hypergraph and logicals."""
+    """Convenience class encapsulating the annotated hypergraph and logicals."""
 
     hypergraph: DecodingHyperGraph
     logicals: HyperLogicals
+
+    def to_nx_code(self) -> NXCode:
+        """Lower hypergraph to graph, if there are no hyper edges."""
+        graph = self.hypergraph.to_nx_decoding_graph()
+        return NXCode(
+            graph=graph,
+            logicals=[
+                {
+                    edge.to_decoding_edge(next(iter(graph.boundaries)))
+                    for edge in edge_set
+                }
+                for edge_set in self.logicals
+            ],
+        )
 
 
 class _QECNX(nx.Graph):
@@ -556,7 +599,7 @@ class NXGraph(HyperMultiGraph[AnyEdgeT], Generic[NXGraphT, AnyEdgeT]):
     def get_relevant_nodes(self, logicals: Iterable[set[DecodingEdge]]) -> set[int]:
         """Return the nodes that have an edge with a path to logical that
         is not via the boundary"""
-        components = nx.connected_components(self.no_boundary_view)
+        components = list(nx.connected_components(self.no_boundary_view))
         relevant_nodes: set[int] = set()
         for logical in logicals:
             relevant_nodes.update(chain.from_iterable(logical))
@@ -680,10 +723,10 @@ class NXDecodingMultiGraph(NXGraph[_QECNXMG, tuple[DecodingEdge, int]]):
             if isinstance(data, DecodingEdge):
                 edge = data
                 edge_record = EdgeRecord()
-            elif isinstance(data, tuple) and isinstance(data[1], int):
+            elif _is_tuple_of_ints(data):
                 edge = DecodingEdge(*data)
                 edge_record = EdgeRecord()
-            elif isinstance(data, tuple) and isinstance(data[1], EdgeRecord):
+            elif _is_decoding_edge_and_edge_record(data):
                 edge, edge_record = data
             else:
                 msg = f"Unsupported data type for edge {data}"

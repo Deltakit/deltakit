@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit"
-version = "0.5.1"
+version = "0.6.0"
 description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -32,10 +32,10 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit~=0.5",
-  "deltakit-core~=0.5",
-  "deltakit-decode~=0.5",
-  "deltakit-explorer~=0.5",
+  "deltakit-circuit~=0.6",
+  "deltakit-core~=0.6",
+  "deltakit-decode~=0.6",
+  "deltakit-explorer~=0.6",
 ]
 
 [project.urls]
@@ -82,7 +82,7 @@ docs = [
   "jupyter>=1.1",
   "ipykernel>=6.29",
 ]
-security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
+security = ["bandit~=1.8", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
@@ -111,24 +111,36 @@ deltakit-explorer = { workspace = true }
 [tool.mypy]
 files = "src/**/*.py"
 
+# The ldpc.mod2 stubs files contain syntax errors, and so make mypy fail earlier than expected
+# with a SyntaxError. Ignoring the whole module for mypy.
+[[tool.mypy.overrides]]
+module = ["ldpc.mod2"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
+
 # for ruff configuration, see `ruff.toml`
 
 [tool.pytest.ini_options]
-testpaths = ["./tests/"]
+# By default, pytest should test all of deltakit, including sub-packages.
+testpaths = [
+  "./tests/",
+  "./deltakit-circuit/tests/",
+  "./deltakit-core/tests/",
+  "./deltakit-decode/tests/",
+  "./deltakit-explorer/tests/",
+]
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
-filterwarnings = ["error"]
+filterwarnings = [
+  "error",
+  # Note: the below line ignore a specific warning about changes in multiprocessing.
+  # This warning is only raised by a few tests in deltakit-decode. This is a temporary
+  # fix.
+  "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks in the child.:DeprecationWarning",
+]
 
 [tool.bandit]
-# './tools/vale.py' is for `pixi run bandit`; 'tools/vale.py' is for pre-commit
-exclude_dirs = [
-  '.github',
-  '.pixi',
-  '.tox',
-  '.venv',
-  './tools/vale.py',
-  'tools/vale.py',
-]
+exclude_dirs = ['.github', '.tox', '.venv', 'tools/vale.py']
 skips = [
   'B101',
   'B311',
@@ -227,3 +239,34 @@ allowed_tags = [
 
 [tool.deptry]
 extend_exclude = ["deltakit_*", "docs/", "tools/"]
+
+[tool.coverage.report]
+exclude_also = ["raise NotImplementedError", "return NotImplemented"]
+skip_covered = true
+
+[tool.coverage.run]
+source_pkgs = [
+  "deltakit_circuit",
+  "deltakit_core",
+  "deltakit_decode",
+  "deltakit_explorer",
+]
+relative_files = true
+
+[tool.coverage.paths]
+deltakit_circuit = [
+  "deltakit-circuit/src/deltakit_circuit",
+  ".venv/lib/python*/site-packages/deltakit_circuit",
+]
+deltakit_core = [
+  "deltakit-core/src/deltakit_core",
+  ".venv/lib/python*/site-packages/deltakit_core",
+]
+deltakit_decode = [
+  "deltakit-decode/src/deltakit_decode",
+  ".venv/lib/python*/site-packages/deltakit_decode",
+]
+deltakit_explorer = [
+  "deltakit-explorer/src/deltakit_explorer",
+  ".venv/lib/python*/site-packages/deltakit_explorer",
+]

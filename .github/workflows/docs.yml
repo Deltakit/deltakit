@@ -35,6 +35,6 @@ jobs:
         run: uv sync --python 3.13 --resolution highest --group docs
 
       - name: Build documentation
-        run: uv run sphinx-build -W -b html docs docs/_build/html
+        run: uv run --no-sync sphinx-build -W -b html docs docs/_build/html
         env:
           DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}

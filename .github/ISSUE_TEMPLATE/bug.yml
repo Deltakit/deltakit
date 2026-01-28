@@ -19,6 +19,16 @@ body:
         > Please use the [test failure form](https://github.com/Deltakit/deltakit/issues/new?template=test_failure.yml)
         > if you're a contributor seeing a test failure in main, either locally or on CI.
 
+  - type: checkboxes
+    id: cla-signature
+    attributes:
+      label: Contributor License Agreement (CLA) signature
+      description: Please confirm the following before submitting
+      options:
+        - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
+          required: true
+
+
   - type: textarea
     id: bug-description
     attributes:

@@ -23,7 +23,7 @@ from deltakit_explorer.qpu._noise._leakage_noise_profiles import (
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SI1000Noise(NoiseParameters):
     """
     Superconducting inspired noise model from: https://arxiv.org/abs/2108.10457.

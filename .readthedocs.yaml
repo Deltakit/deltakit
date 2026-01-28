@@ -8,5 +8,5 @@ version: 2
 build:
   os: ubuntu-24.04
   commands:
-    - curl -sSf https://pixi.sh/install.sh | sh
-    - /home/docs/.pixi/bin/pixi run sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - uv run --python 3.13 --resolution highest --group docs sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html

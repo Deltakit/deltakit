@@ -24,6 +24,16 @@ from deltakit_core.decoding_graphs._decoding_graph import (
     NXDecodingMultiGraph,
     NXLogicals,
 )
+from deltakit_core.decoding_graphs._dem_parsing import (
+    DemParser,
+    DetectorCounter,
+    dem_to_decoding_graph_and_logicals,
+)
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 
 
 def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
@@ -114,6 +124,62 @@ def is_single_connected_component(graph: NXDecodingGraph) -> bool:
         True if the graph contains a single connected component False otherwise.
     """
     return nx.number_connected_components(graph.no_boundary_view) == 1
+
+
+def parse_stim_circuit(
+    stim_circuit: stim.Circuit,
+) -> tuple[NXDecodingGraph, list[set[DecodingEdge]], stim.Circuit]:
+    """Parse a Stim file into a decoding graph and the relevant logicals.
+
+    Parameters
+    ----------
+    stim_circuit : stim.Circuit
+        Input Stim circuit to parse.
+
+    Returns
+    -------
+    Tuple[NXDecodingGraph, List[Set[DecodingEdge]], stim.Circuit]
+        The decoding graph, the logicals, and the Stim circuit. The Stim
+        circuit will be unchanged.
+    """
+
+    dem = stim_circuit_to_graph_dem(stim_circuit)
+    graph, logicals = dem_to_decoding_graph_and_logicals(dem)
+    return graph, logicals, stim_circuit
+
+
+def stim_circuit_to_graph_dem(
+    stim_circuit: stim.Circuit, approximate_disjoint_errors: bool = True
+) -> stim.DetectorErrorModel:
+    """For a given stim circuit, return the graph-like detector error model.
+    If the non-decomposed DEM is graph-like, that will be returned. Otherwise,
+    the decomposed DEM will be returned.
+
+    Parameters
+    ----------
+    stim_circuit : stim.Circuit
+        Stim circuit to get the DEM for
+    approximate_disjoint_errors : bool, optional
+        Iff True, disjoint error approximations will be allowed.
+    """
+    dem = stim_circuit.detector_error_model(
+        decompose_errors=False, approximate_disjoint_errors=approximate_disjoint_errors
+    )
+
+    detector_counter = DetectorCounter()
+    DemParser(
+        detector_counter,
+        lambda detector, detector_offset, coordinate_offset: None,  # noqa: ARG005
+    ).parse(dem)
+
+    max_num_detectors_for_graph_like: int = 2
+    if detector_counter.max_num_detectors() > max_num_detectors_for_graph_like:
+        dem = stim_circuit.detector_error_model(
+            decompose_errors=True,
+            approximate_disjoint_errors=approximate_disjoint_errors,
+        )
+
+    return dem
 
 
 @no_type_check

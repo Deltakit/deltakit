@@ -168,3 +168,8 @@ class TestSD6NoiseModel:
     def test_sd6_noise_str(self):
         noise_model = SD6Noise(p=0.123)
         assert str(noise_model) == 'sd6_noise_1e-01'
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            SD6Noise(0.01)
+

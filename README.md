@@ -1,7 +1,6 @@
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Python versions][python-badge]][pypi-link]
-[![Pixi][pixi-badge]][pixi-link]
 [![Typing][typing-badge]][typing-link]
 [![License: Apache 2.0][license-badge]][license-link]
 [![SemVer][semver-badge]][semver-link]
@@ -17,9 +16,6 @@
 [pypi-link]: https://pypi.org/project/deltakit/
 
 [python-badge]: https://img.shields.io/pypi/pyversions/deltakit
-
-[pixi-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json
-[pixi-link]: https://pixi.sh
 
 [typing-badge]: https://img.shields.io/pypi/types/deltakit
 [typing-link]: https://typing.python.org/
@@ -168,10 +164,10 @@ print(circuit)
 There are various ways to contribute to `deltakit`:
 
 - **Submitting issues:** To submit bug reports or feature requests, please use our [issue tracker](https://github.com/Deltakit/deltakit/issues).
-- **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](CONTRIBUTING.md).
-- **Security:** For any security concern, please see our [security policy](SECURITY.md).
+- **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](./docs/CONTRIBUTING.md).
+- **Security:** For any security concern, please see our [security policy](./docs/SECURITY.md).
 
-Before making a contribution, please review our [code of conduct](CODE_OF_CONDUCT.md).
+> Note: Any contribution will require a Contribution Licence Agreement signature when a Pull Request is created. The recommended contributing workflow is detailed in our [contributing guidelines](./docs/CONTRIBUTING.md).
 
 ## License
 

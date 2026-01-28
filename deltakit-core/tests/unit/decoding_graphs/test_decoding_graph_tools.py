@@ -1,5 +1,12 @@
 # (c) Copyright Riverlane 2020-2025.
+from pathlib import Path
+
 import pytest
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
@@ -11,12 +18,18 @@ from deltakit_core.decoding_graphs import (
     OrderedDecodingEdges,
 )
 from deltakit_core.decoding_graphs._decoding_graph_tools import (
+    compute_graph_distance,
+    graph_to_json,
     has_contiguous_nodes,
     hypergraph_to_weighted_edge_list,
     inverse_logical_at_boundary,
     is_logical_along_boundary,
     is_single_connected_component,
+    nx_graph_from_json,
+    parse_stim_circuit,
     single_boundary_is_last_node,
+    stim_circuit_to_graph_dem,
+    unweight_graph,
     worst_case_num_detectors,
 )
 
@@ -140,7 +153,9 @@ def test_decoding_graph_with_single_boundary_as_last_node():
         NXDecodingGraph.from_edge_list([(0, 1), (2, 3)], boundaries=()),
     ],
 )
-def test_decoding_graph_with_wrong_number_of_boundaries_is_not_single_boundary(graph):
+def test_decoding_graph_with_wrong_number_of_boundaries_is_not_single_boundary(
+    graph: NXDecodingGraph,
+) -> None:
     assert not single_boundary_is_last_node(graph)
 
 
@@ -218,6 +233,108 @@ def decoding_graph_and_logicals_hyper_multi():
     return graph, [frozenset([(l0, 0), (l1, 0)])]
 
 
+class TestGraphToJSON:
+    reference_data_dir = Path("tests") / "reference_data" / "json"
+
+    @pytest.mark.parametrize(
+        ("graph_logicals", "reference_json_filename"),
+        [
+            (
+                decoding_graph_logicals_no_boundaries(),
+                "graph_logicals_no_boundaries.json",
+            ),
+            (
+                decoding_graph_no_logicals_boundaries_16(),
+                "graph_no_logicals_boundaries_16.json",
+            ),
+            (
+                decoding_graph_logicals_boundaries_20(),
+                "graph_logicals_boundaries_20.json",
+            ),
+            ((NXDecodingGraph.from_edge_list([]), []), "empty_graph.json"),
+            (decoding_graph_and_logical_weighted(), "weighted_graph.json"),
+            (decoding_graph_and_logicals_hyper_multi(), "graph_hyper_multi.json"),
+        ],
+    )
+    def test_graph_to_json_matches_reference_output(
+        self,
+        graph_logicals: tuple[NXDecodingGraph, list[frozenset[DecodingEdge]]],
+        reference_json_filename: str,
+    ) -> None:
+        computed_json = graph_to_json(*graph_logicals)
+        with (self.reference_data_dir / reference_json_filename).open(
+            "r", encoding="utf-8"
+        ) as json_handle:
+            expected_json = json_handle.read().strip()
+        assert computed_json == expected_json
+        # nx graph from json works only for NXDecoding graphs
+        if isinstance(graph_logicals[0], NXDecodingGraph):
+            reconstructed_graph, reconstructed_logicals = nx_graph_from_json(
+                expected_json
+            )
+            graph, logicals = graph_logicals
+            assert set(reconstructed_graph.nodes) == set(graph.nodes)
+            assert set(reconstructed_graph.edges) == set(graph.edges)
+            assert all(
+                log == rec_log
+                for log, rec_log in zip(logicals, reconstructed_logicals, strict=True)
+            )
+
+    def test_2_boundary_graph_to_json_raises_exception(self):
+        graph = NXDecodingGraph.from_edge_list(
+            [(i, (i + 1) % 17) for i in range(17)], boundaries=[16, 8]
+        )
+        logicals = [[(4, 5)]]
+        with pytest.raises(
+            ValueError, match="JSON graph representation supports maximum one boundary"
+        ):
+            graph_to_json(graph, logicals)
+
+    @pytest.fixture(
+        scope="class",
+        params=[
+            "surface_code:rotated_memory_x",
+            "surface_code:unrotated_memory_z",
+        ],
+    )
+    def stim_circuit(self, request):
+        distance = 5
+        return stim.Circuit.generated(
+            request.param,
+            distance=distance,
+            rounds=distance,
+            after_clifford_depolarization=0.01,
+            before_measure_flip_probability=0.01,
+            before_round_data_depolarization=0.01,
+        )
+
+    def test_full_graph_to_json_on_code_tasks_matches_original_graph(
+        self, stim_circuit
+    ):
+        graph, logicals, _ = parse_stim_circuit(stim_circuit)
+        json_str = graph_to_json(graph, logicals, full=True)
+        reconstructed_graph, reconstructed_logicals = nx_graph_from_json(json_str)
+        assert set(reconstructed_graph.nodes) == set(graph.nodes)
+        assert set(reconstructed_graph.edges) == set(graph.edges)
+        assert all(
+            log == rec_log
+            for log, rec_log in zip(logicals, reconstructed_logicals, strict=True)
+        )
+        assert reconstructed_graph.detector_records == graph.detector_records
+        assert reconstructed_graph.edge_records == graph.edge_records
+
+    def test_graph_to_json_on_code_tasks_matches_original_graph(self, stim_circuit):
+        graph, logicals, _ = parse_stim_circuit(stim_circuit)
+        json_str = graph_to_json(graph, logicals)
+        reconstructed_graph, reconstructed_logicals = nx_graph_from_json(json_str)
+        assert set(reconstructed_graph.nodes) == set(graph.nodes)
+        assert set(reconstructed_graph.edges) == set(graph.edges)
+        assert all(
+            log == rec_log
+            for log, rec_log in zip(logicals, reconstructed_logicals, strict=True)
+        )
+
+
 class TestInverseLogical:
     @pytest.fixture(
         scope="class",
@@ -235,7 +352,7 @@ class TestInverseLogical:
 
     @staticmethod
     def get_all_edges_to_boundaries(decoding_graph: NXDecodingGraph):
-        all_edges_to_boundaries = set()
+        all_edges_to_boundaries: set[DecodingEdge] = set()
         for boundary in decoding_graph.boundaries:
             all_edges_to_boundaries.update(decoding_graph.incident_edges(boundary))
         return all_edges_to_boundaries
@@ -382,3 +499,121 @@ def test_worst_case_num_detectors_returns_0_for_1_target_logical_error():
         ]
     )
     assert worst_case_num_detectors(graph, 1) == 0
+
+
+def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
+    stim_rep_code = stim.Circuit.generated(
+        "repetition_code:memory",
+        distance=5,
+        rounds=5,
+        after_clifford_depolarization=0.1,
+    )
+
+    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") == -1
+
+
+@pytest.mark.parametrize(
+    "code_task",
+    [
+        "surface_code:rotated_memory_x",
+        "surface_code:unrotated_memory_z",
+    ],
+)
+def test_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(code_task: str) -> None:
+    stim_rep_code = stim.Circuit.generated(
+        code_task, distance=5, rounds=5, after_clifford_depolarization=0.1
+    )
+
+    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") != -1
+
+
+@pytest.mark.parametrize(
+    "code_task",
+    [
+        "surface_code:rotated_memory_x",
+        "surface_code:unrotated_memory_z",
+    ],
+)
+@pytest.mark.parametrize("distance", [3, 5, 7])
+def test_compute_graph_distance(code_task: str, distance: int) -> None:
+    stim_circ = stim.Circuit.generated(
+        code_task,
+        distance=distance,
+        rounds=distance,
+        after_clifford_depolarization=0.01,
+        before_measure_flip_probability=0.01,
+        before_round_data_depolarization=0.01,
+    )
+    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    assert compute_graph_distance(graph, logicals) == distance
+
+
+@pytest.mark.parametrize(
+    "code_task",
+    [
+        "surface_code:rotated_memory_x",
+        "surface_code:unrotated_memory_z",
+    ],
+)
+@pytest.mark.parametrize("distance", [3, 5, 7])
+def test_compute_graph_weighted_distance(code_task: str, distance: int) -> None:
+    stim_circ = stim.Circuit.generated(
+        code_task,
+        distance=distance,
+        rounds=distance,
+        after_clifford_depolarization=0.01,
+        before_measure_flip_probability=0.01,
+        before_round_data_depolarization=0.01,
+    )
+    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    computed_distance = compute_graph_distance(graph, logicals, weighted=True)
+    assert isinstance(computed_distance, float)
+    min_weight = min(record.weight for record in graph.edge_records.values())
+    max_weight = max(record.weight for record in graph.edge_records.values())
+    assert computed_distance >= min_weight * distance
+    assert computed_distance <= max_weight * distance
+
+
+REFERENCE_DATA_DIR = Path(__file__).parent.parent.parent / "reference_data"
+
+
+@pytest.mark.parametrize(
+    ("circuit_path", "expected_distance"),
+    [
+        (Path("stim/circuit_logical_off_boundary.stim"), 3),
+        (Path("stim/circuit_two_equivalent_logicals.stim"), 3),
+        (Path("stim/circuit_multi_logicals.stim"), 3),
+    ],
+)
+def test_compute_graph_distance_from_file(
+    circuit_path: Path, expected_distance: int
+) -> None:
+    stim_circ = stim.Circuit.from_file(REFERENCE_DATA_DIR / circuit_path)
+    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    assert compute_graph_distance(graph, logicals) == expected_distance
+
+
+@pytest.mark.parametrize(
+    "code_task",
+    [
+        "surface_code:rotated_memory_x",
+        "surface_code:unrotated_memory_z",
+    ],
+)
+def test_unweight_graph(code_task: str) -> None:
+    distance = 5
+    stim_circ = stim.Circuit.generated(
+        code_task,
+        distance=distance,
+        rounds=distance,
+        after_clifford_depolarization=0.01,
+        before_measure_flip_probability=0.01,
+        before_round_data_depolarization=0.01,
+    )
+    unweighted_graph, _, stim_circ = parse_stim_circuit(stim_circ)
+    unweight_graph(unweighted_graph)
+    assert all(
+        record["weight"] == 1 for record in unweighted_graph.edge_records.values()
+    )
+    # check that p_err property is set so that the computed weight is also the same
+    assert all(record.weight == 1 for record in unweighted_graph.edge_records.values())

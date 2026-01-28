@@ -175,6 +175,28 @@ def edge_list_node_list_and_decoding_multi_graph_layered_with_boundaries():
     )
 
 
+def two_line_of_6_decoding_graph_and_non_contiguous_logicals():
+    edge_list = [
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (5, 6),
+        (7, 8),
+        (8, 9),
+        (9, 10),
+        (10, 11),
+        (11, 12),
+    ]
+    logicals = [
+        OrderedDecodingEdges(),
+        OrderedDecodingEdges.from_syndrome_indices([(1, 2)]),
+        OrderedDecodingEdges(),
+        OrderedDecodingEdges.from_syndrome_indices([(8, 9)]),
+    ]
+    return NXDecodingGraph.from_edge_list(edge_list), logicals
+
+
 def line_of_6_decoding_graph_and_logicals():
     edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
     logicals = [
@@ -339,6 +361,7 @@ class TestAnyNXBasedGraph:
             decoding_multigraph_and_empty_logicals(),
             line_of_6_decoding_graph_connected_by_boundary_and_logicals(),
             line_of_6_decoding_multigraph_connected_by_boundary_and_logicals(),
+            two_line_of_6_decoding_graph_and_non_contiguous_logicals(),
         ]
     )
     def decoding_graph_and_logicals(self, request):

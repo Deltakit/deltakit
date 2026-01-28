@@ -14,11 +14,11 @@ from itertools import product
 import galois
 import numpy as np
 import numpy.typing as npt
-from bposd.css import css_code
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
 
 from deltakit_explorer.codes._css._css_code import CSSCode
+from deltakit_explorer.codes._logicals import css_code_compute_logicals
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
@@ -754,14 +754,13 @@ class BivariateBicycleCode(CSSCode):
             and commute otherwise.
         """
         # get a subset of logicals from css_code, and compute the rest
-        code = css_code(self.m_Hx, self.m_Hz)
-        x_logs, _ = code.compute_logicals()
+        x_logs, _ = css_code_compute_logicals(self.m_Hx, self.m_Hz)
 
         # get f and g,h from X logicals
         # X logicals are of the form X(f,0) and X(g,h), eq. (16)
         f_vecs, g_vecs, h_vecs = [], [], []
         for x_log in x_logs:
-            x_log_list = x_log.toarray().reshape(-1).tolist()
+            x_log_list = x_log.reshape(-1).tolist()
             half = len(x_log_list) // 2
             if all(x == 0 for x in x_log_list[half:]):
                 f_vecs.append(x_log_list[:half])

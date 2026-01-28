@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit-explorer"
-version = "0.5.1"
+version = "0.6.0"
 description = "Deltakit (component deltakit-explorer)"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -32,9 +32,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-core~=0.5",
-  "deltakit-circuit~=0.5",
-  "deltakit-decode~=0.5",
+  "deltakit-core~=0.6",
+  "deltakit-circuit~=0.6",
+  "deltakit-decode~=0.6",
   "gql[requests]~=3.5",
   "graphql_core~=3.2",
   "numpy~=2.0",
@@ -47,14 +47,12 @@ dependencies = [
   "seaborn~=0.12",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",
-  # Needed for the moment to have the changes from https://github.com/quantumgizmos/bp_osd/pull/20
-  # until a new release including these changes lands on PyPI (https://pypi.org/project/bposd/).
-  "bposd @ git+https://github.com/quantumgizmos/bp_osd.git@8894ec654b24ae875c07e5a361dcae9a77d748ce",
   "typing_extensions~=4.0",
   "packaging>=25.0",
   "adjustText~=1.3",
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
+  "ldpc~=2.2",
 ]
 
 [project.urls]
@@ -86,7 +84,7 @@ lint = [
   "deptry~=0.23",
   { include-group = "stubs" },
 ]
-security = ["bandit~=1.8", "ochrona~=2.0", "pip-audit~=2.7"]
+security = ["bandit~=1.8", "pip-audit~=2.7"]
 dev = [
   { include-group = "test" },
   { include-group = "lint" },
@@ -105,9 +103,12 @@ disable_error_code = "arg-type,assignment,attr-defined,dict-item,index,list-item
 module = ["stim"]
 follow_untyped_imports = true
 
+# The ldpc.mod2 stubs files contain syntax errors, and so make mypy fail earlier than expected
+# with a SyntaxError. Ignoring the whole module for mypy.
 [[tool.mypy.overrides]]
-module = ["bposd.css"]
-ignore_missing_imports = true
+module = ["ldpc.mod2"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
 
 [[tool.mypy.overrides]]
 module = ["adjustText"]

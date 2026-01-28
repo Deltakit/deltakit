@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025..
 import importlib.metadata
 
-from deltakit_explorer import analysis, visualisation
+from deltakit_explorer import analysis
 from deltakit_explorer._api._client import Client
 from deltakit_explorer._utils._logging import Logging
 

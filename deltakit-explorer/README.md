@@ -3,7 +3,6 @@
 [![docs - here!][docs-badge]][docs-link]
 [![PyPI][pypi-badge]][pypi-link]
 [![Python versions][python-badge]][pypi-link]
-[![Pixi][pixi-badge]][pixi-link]
 [![Typing][typing-badge]][typing-link]
 [![License: Apache 2.0][license-badge]][license-link]
 [![SemVer][semver-badge]][semver-link]
@@ -18,9 +17,6 @@
 [pypi-link]: https://pypi.org/project/deltakit/
 
 [python-badge]: https://img.shields.io/pypi/pyversions/deltakit
-
-[pixi-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json
-[pixi-link]: https://pixi.sh
 
 [typing-badge]: https://img.shields.io/pypi/types/deltakit
 [typing-link]: https://typing.python.org/

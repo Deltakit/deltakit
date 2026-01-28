@@ -66,7 +66,7 @@ def _idle_noise_from_t1_t2(
     return _get_idle_noise
 
 
-@dataclass
+@dataclass(kw_only=True)
 class NoiseParameters:
     """
     Dataclass to capture a noise model for a quantum computer.

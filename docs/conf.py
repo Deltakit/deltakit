@@ -7,18 +7,7 @@
 # -- Path setup --------------------------------------------------------------
 from __future__ import annotations
 
-import os
-import shutil
-
 import deltakit
-
-# -- Copy top-level files ------
-# AFAICT, Sphinx can't see these unless we move them over
-for filename in ["CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]:
-    old = os.path.join("..", filename)
-    new = os.path.join(".", filename)
-    # if not os.path.exists(new):
-    shutil.copyfile(old, new)
 
 # -- Project information -----------------------------------------------------
 

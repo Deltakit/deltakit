@@ -3,7 +3,11 @@ import tempfile
 from pathlib import Path
 
 import pytest
-import stim
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
 
 from deltakit_core.data_formats import (
     b8_to_logical_flip,

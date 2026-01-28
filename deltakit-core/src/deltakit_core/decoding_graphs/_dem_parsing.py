@@ -10,7 +10,11 @@ from collections.abc import Iterable, Iterator
 from itertools import chain, zip_longest
 from typing import Generic, Protocol, TypeVar, cast
 
-import stim
+try:
+    import lestim as stim
+except ImportError:
+    import stim
+
 
 from deltakit_core.decoding_graphs._data_qubits import (
     DecodingEdge,

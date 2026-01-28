@@ -20,7 +20,7 @@ from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ToyNoise(NoiseParameters):
     """
     A noise model specified only by two parameters.
