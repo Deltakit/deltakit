@@ -4,6 +4,10 @@
 
 ## v0.6.1 (2026-01-29)
 
+- Include deltakit-compile into release process.
+
+## v0.6.1 (2026-01-29)
+
 ### Bug Fixes
 
 - Make NoiseParameters fields keyword-only ([#194](https://github.com/Deltakit/deltakit/pull/194),
