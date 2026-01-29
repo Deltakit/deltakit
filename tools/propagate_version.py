@@ -1,5 +1,5 @@
 """
-This module is used by the "release" pixi task in order to propagate the version in the
+This module is used by the release process in order to propagate the version in the
 toml file of the top-level project into the toml files of the sub-projects in the
 monorepo.
 """
