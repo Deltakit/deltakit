@@ -91,7 +91,7 @@ The generated documentation can then be viewed in any web browser.
 [`pre-commit`](https://pre-commit.com/) is configured to run a set of common checks before each commit. To enable it, run the following command in your local repository:
 
 ```sh
-pre-commit install
+uv run pre-commit install
 ```
 
 ## General guidelines for code development
