@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit-compile"
-version = "0.6.1"
+version = "0.6.2"
 description = "Deltakit (component deltakit-compile)"
 readme = "README.md"
 requires-python = ">=3.10"
