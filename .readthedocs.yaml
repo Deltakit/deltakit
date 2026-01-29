@@ -7,6 +7,9 @@ version: 2
 # Set the OS, Python version, and other tools you might need
 build:
   os: ubuntu-24.04
+  tools:
+    python: "3.13"
   commands:
-    - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - uv run --python 3.13 --resolution highest --group docs sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
+    - pip install uv
+    - uv sync --resolution highest --group docs
+    - uv run --resolution highest --group docs sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
