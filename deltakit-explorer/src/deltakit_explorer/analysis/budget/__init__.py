@@ -9,7 +9,6 @@ from ._discretisation import (
 )
 from ._generation import generate_decoder_managers_for_lambda
 from ._gradient import inverse_lambda_gradient_at
-from ._interfaces import NoiseInterface
 from ._lambda import inverse_lambda_at
 from ._memory import MemoryGenerator, get_rotated_surface_code_memory_circuit
 from ._post_processing import compute_lambda_and_stddev_from_results

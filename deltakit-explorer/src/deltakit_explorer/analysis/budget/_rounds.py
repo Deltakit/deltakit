@@ -1,5 +1,8 @@
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
+import numpy as np
+import numpy.typing as npt
+from deltakit_circuit._circuit import Circuit
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
 
@@ -7,7 +10,6 @@ from deltakit_explorer.analysis import (
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
 from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
-from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
@@ -15,7 +17,8 @@ from deltakit_explorer.analysis.budget._memory import (
 
 
 def compute_ideal_rounds_for_noise_model_and_distance(
-    noise_model: NoiseInterface,
+    noise_model: Callable[[Circuit, npt.NDArray[np.floating]], Circuit],
+    noise_parameters: npt.NDArray[np.floating] | Sequence[float],
     distance: int,
     max_shots: int,
     batch_size: int,
@@ -34,7 +37,11 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     using a memory experiment as returned by the provided ``memory_generator``.
 
     Args:
-        noise_model (NoiseInterface): noise model to benchmark.
+        noise_model (Callable[[Circuit, npt.NDArray[np.floating]], Circuit]): a callable
+            adding noise to the provided circuit, according to the parameters provided.
+        noise_parameters (npt.NDArray[numpy.floating] | Sequence[float]): valid
+            parameters to forward to ``noise_model`` representing the point at which the
+            ideal number of rounds should be computed.
         distance (int): code distance for which we want to have the ideal numbers of
             rounds to estimate the logical error probability per round.
         max_shots (int): maximum number of shots performed by the simulations in this
@@ -71,11 +78,14 @@ def compute_ideal_rounds_for_noise_model_and_distance(
         probability for ``y`` rounds that is above the ``0.2`` heuristic threshold.
     """
 
+    # Ensure that noise_parameters is a numpy array.
+    noise_parameters = np.asarray(noise_parameters)
+
     def generate_surface_code_memory_and_run(
         num_rounds: int,
     ) -> tuple[int, int]:
         circuit = memory_generator(distance, num_rounds)
-        noisy_circuit = noise_model.apply(circuit)
+        noisy_circuit = noise_model(circuit, noise_parameters)
         decoder, decoder_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(
             noisy_circuit
         )

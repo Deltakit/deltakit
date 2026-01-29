@@ -1,4 +1,4 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 
 import numpy as np
 import numpy.typing as npt
@@ -8,7 +8,6 @@ from deltakit_decode.analysis import RunAllAnalysisEngine
 from deltakit_explorer.analysis.budget._generation import (
     generate_decoder_managers_for_lambda,
 )
-from deltakit_explorer.analysis.budget._interfaces import NoiseInterface
 from deltakit_explorer.analysis.budget._memory import (
     MemoryGenerator,
     PreComputedMemoryGenerator,
@@ -20,8 +19,8 @@ from deltakit_explorer.analysis.budget._post_processing import (
 
 
 def inverse_lambda_at(
-    noise_model_type: type[NoiseInterface],
-    noise_model_parameters: npt.NDArray[np.floating] | Sequence[float],
+    noise_model: Callable[[Circuit, npt.NDArray[np.floating]], Circuit],
+    noise_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     num_shots: int = 10_000_000,
     batch_size: int = 10_000,
@@ -30,6 +29,7 @@ def inverse_lambda_at(
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
     max_workers: int = 1,
+    noise_parameter_names: Sequence[str] | None = None,
 ) -> tuple[float, float]:
     """Compute 1 / Λ.
 
@@ -41,11 +41,11 @@ def inverse_lambda_at(
         checks and optimisations.
 
     Args:
-        noise_model_type (type[NoiseInterface]): type of the noise model to estimate the
-            gradient of.
-        noise_model_parameters (npt.NDArray[numpy.floating] | Sequence[float]): valid
-            parameters to instantiate the type provided as ``noise_model_type``
-            representing the point at which the gradient should be computed.
+        noise_model (Callable[[Circuit, npt.NDArray[np.floating]], Circuit]): a callable
+            adding noise to the provided circuit, according to the parameters provided.
+        noise_parameters (npt.NDArray[numpy.floating] | Sequence[float]): valid
+            parameters to forward to ``noise_model`` representing the point at which the
+            gradient should be computed.
         num_rounds_by_distances (Mapping[int, Sequence[int]]): a mapping from each code
             distance that should be tested to the number of rounds that should be
             sampled in order to estimate the logical error-probability per round, to
@@ -65,6 +65,9 @@ def inverse_lambda_at(
             less failures, for example if ``num_shots`` shots have been performed.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
+        noise_parameter_names: if provided, human-readable names for each of the
+            provided ``noise_parameters``. Defaults to the noise parameter index (i.e.,
+            "0", "1", ...).
 
     Returns:
         the estimation of 1 / Λ along with the standard deviation of the estimation as
@@ -73,13 +76,18 @@ def inverse_lambda_at(
     if isinstance(memory_generator, Mapping):
         memory_generator = PreComputedMemoryGenerator(memory_generator)
 
-    point = np.asarray(noise_model_parameters).reshape((-1, 1))
+    point = np.asarray(noise_parameters).reshape((-1, 1))
+
+    if noise_parameter_names is None:
+        noise_parameter_names = [str(i) for i in range(point.size)]
+
     decoder_managers = generate_decoder_managers_for_lambda(
         point,
-        noise_model_type,
+        noise_model,
         num_rounds_by_distances,
         max_workers,
         memory_generator=memory_generator,
+        noise_parameter_names=noise_parameter_names,
     )
     engine = RunAllAnalysisEngine(
         experiment_name="Estimating 1 / Λ",
@@ -94,7 +102,7 @@ def inverse_lambda_at(
     )
     report = engine.run()
     lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
-        point, noise_model_type.parameter_names, num_rounds_by_distances, report
+        point, noise_parameter_names, num_rounds_by_distances, report
     )
     lambda_reciprocals = 1 / lambdas
     lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
