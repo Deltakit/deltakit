@@ -83,7 +83,3 @@ def test_filter_non_close_noise_parameters_random(
     filtered_columns_data_frame = data_frame[all_noises_index]
     for row in filtered_columns_data_frame.to_numpy():
         np.testing.assert_allclose(row, random_parameters)
-
-
-def test_compute_lambda_and_stddev_from_results():
-    pass
