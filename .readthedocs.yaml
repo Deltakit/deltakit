@@ -13,7 +13,7 @@ build:
     - |
       curl -s -o /dev/null -w "%{http_code}" \
       -H "Authorization: Bearer $DELTAKIT_TOKEN" \
-      -k https://deltakit.riverlane.com/proxy/api/health/ | grep -q 200
+      -k https://deltakit.riverlane.com/proxy/api/health/ | grep -q 200 && echo "Token valid"
     - pip install uv
     - uv sync --resolution highest --group docs
     - uv run --no-sync sphinx-build -W -T -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
