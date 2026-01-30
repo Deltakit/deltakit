@@ -14,6 +14,8 @@ from deltakit_core.decoding_graphs._data_qubits import (
     errors_to_syndrome,
 )
 from deltakit_core.decoding_graphs._decoding_graph import (
+    _QECNX,
+    _QECNXMG,
     AnyEdgeT,
     DecodingCode,
     DecodingGraphT,
@@ -77,6 +79,7 @@ from deltakit_core.decoding_graphs._hypergraph_annotations_tools import (
 )
 from deltakit_core.decoding_graphs._hypergraph_decomposition import decompositions
 from deltakit_core.decoding_graphs._syndromes import (
+    Bit,
     Bitstring,
     DetectorRecord,
     FixedWidthBitstring,
@@ -98,7 +101,10 @@ from deltakit_core.decoding_graphs._windowing_utils import (
 
 # List only public members in `__all__`.
 __all__ = [
+    "_QECNX",
+    "_QECNXMG",
     "AnyEdgeT",
+    "Bit",
     "Bitstring",
     "CoordinateOffset",
     "DecodingCode",

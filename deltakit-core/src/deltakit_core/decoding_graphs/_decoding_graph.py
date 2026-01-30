@@ -19,7 +19,7 @@ from collections.abc import (
 from dataclasses import dataclass
 from functools import cached_property
 from itertools import chain, tee
-from typing import ClassVar, Generic, TypeGuard, TypeVar, cast
+from typing import Any, ClassVar, Generic, TypeGuard, TypeVar, cast
 
 import networkx as nx
 import numpy as np
@@ -207,7 +207,7 @@ class DecodingHyperMultiGraph(HyperMultiGraph[tuple[DecodingHyperEdge, int]]):
         self._edge_records = edge_records
 
     @cached_property
-    def _nodes_in_edges(self):
+    def _nodes_in_edges(self) -> set[int]:
         return {node for edge, _ in self._edges for node in edge}
 
     @property
@@ -367,7 +367,7 @@ class DecodingHyperGraph(HyperMultiGraph[DecodingHyperEdge]):
         self._nodes_in_detector_records = set(self._detector_records.keys())
 
     @cached_property
-    def _nodes_in_edges(self):
+    def _nodes_in_edges(self) -> set[int]:
         return set(chain.from_iterable(self._edges))
 
     @property
@@ -476,7 +476,7 @@ class DecodingHyperGraph(HyperMultiGraph[DecodingHyperEdge]):
 
         Hyperedges to boundaries are ignored if applicable.
         """
-        union_find: nx.utils.UnionFind = nx.utils.UnionFind()
+        union_find: nx.utils.UnionFind[int] = nx.utils.UnionFind()
         for edge in self.edges:
             union_find.union(*edge)
 
@@ -536,7 +536,7 @@ class NXGraph(HyperMultiGraph[AnyEdgeT], Generic[NXGraphT, AnyEdgeT]):
     """
 
     def __init__(self, graph: NXGraphT, boundaries: Iterable[int] = frozenset()):
-        self._graph = nx.freeze(graph)
+        self._graph: NXGraphT = nx.freeze(graph)
         self._boundaries = frozenset(boundaries)
         if any(boundary not in self.nodes for boundary in self.boundaries):
             msg = f"Boundaries {boundaries} are not in nodes {self.nodes}."
@@ -546,7 +546,7 @@ class NXGraph(HyperMultiGraph[AnyEdgeT], Generic[NXGraphT, AnyEdgeT]):
             i in self.boundaries for i in range(max_index + 1)
         )
 
-    def __getstate__(self):
+    def __getstate__(self) -> dict[str, Any]:
         inner_state = self.__dict__.copy()
         if "no_boundary_view" in inner_state:
             del inner_state["no_boundary_view"]
@@ -579,7 +579,7 @@ class NXGraph(HyperMultiGraph[AnyEdgeT], Generic[NXGraphT, AnyEdgeT]):
         return dict(self.graph.nodes.data(data=True))
 
     @property
-    def adj(self) -> nx.coreviews.MultiAdjacencyView:
+    def adj(self) -> nx.coreviews.AdjacencyView[int, int, dict[str, Any]]:
         """
         Graph adjacency object holding the neighbours of each node.
         The returned object is a mappable that holds for each node
