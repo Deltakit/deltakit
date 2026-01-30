@@ -62,7 +62,9 @@ class TestGenerateDecoderManagerForLambda:
     ) -> None:
         _n, m = xis.shape
         parameter_names = [f"param{i}" for i in range(m)]
-        dms = generate_decoder_managers_for_lambda(xis, noise_model, {3: [6], 5: [6]})
+        dms = generate_decoder_managers_for_lambda(
+            xis, noise_model, {3: [6], 5: [6]}, noise_parameter_names=parameter_names
+        )
         assert len(dms) == 2 * m
         for dm in dms:
             assert "distance" in dm.metadata
