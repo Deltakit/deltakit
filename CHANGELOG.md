@@ -2,6 +2,10 @@
 
 <!-- version list -->
 
+## v0.6.2 (2026-01-29)
+
+- Include deltakit-compile into release process.
+
 ## v0.6.1 (2026-01-29)
 
 ### Bug Fixes

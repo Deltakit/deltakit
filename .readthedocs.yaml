@@ -7,6 +7,13 @@ version: 2
 # Set the OS, Python version, and other tools you might need
 build:
   os: ubuntu-24.04
+  tools:
+    python: "3.13"
   commands:
-    - curl -LsSf https://astral.sh/uv/install.sh | sh
-    - uv run --python 3.13 --resolution highest --group docs sphinx-build -T -W -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
+    - |
+      curl -s -o /dev/null -w "%{http_code}" \
+      -H "Authorization: Bearer $DELTAKIT_TOKEN" \
+      -k https://deltakit.riverlane.com/proxy/api/health/ | grep -q 200 && echo "Token valid"
+    - pip install uv
+    - uv sync --resolution highest --group docs
+    - uv run --no-sync sphinx-build -W -T -b html -d _build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
