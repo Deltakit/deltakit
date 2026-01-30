@@ -55,17 +55,17 @@ class TestGenerateDecoderManagerForLambda:
     def xis(
         self, random_generator: np.random.Generator, n: int, m: int
     ) -> npt.NDArray[np.floating]:
-        return random_generator.random((n, m)) * 0.1
+        return random_generator.random((m, n)) * 0.1
 
     def test_generate_decoder_managers_for_lambda(
         self, xis: npt.NDArray[np.floating]
     ) -> None:
-        _n, m = xis.shape
+        m, n = xis.shape
         parameter_names = [f"param{i}" for i in range(m)]
         dms = generate_decoder_managers_for_lambda(
             xis, noise_model, {3: [6], 5: [6]}, noise_parameter_names=parameter_names
         )
-        assert len(dms) == 2 * m
+        assert len(dms) == 2 * n
         for dm in dms:
             assert "distance" in dm.metadata
             assert isinstance(dm.metadata["distance"], int)
