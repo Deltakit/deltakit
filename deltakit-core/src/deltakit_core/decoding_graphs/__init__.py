@@ -50,6 +50,8 @@ from deltakit_core.decoding_graphs._decoding_graph_tools import (
     worst_case_num_detectors,
 )
 from deltakit_core.decoding_graphs._dem_parsing import (
+    DH,
+    EH,
     CoordinateOffset,
     DemParser,
     DetectorCounter,
@@ -101,6 +103,8 @@ from deltakit_core.decoding_graphs._windowing_utils import (
 
 # List only public members in `__all__`.
 __all__ = [
+    "DH",
+    "EH",
     "_QECNX",
     "_QECNXMG",
     "AnyEdgeT",
