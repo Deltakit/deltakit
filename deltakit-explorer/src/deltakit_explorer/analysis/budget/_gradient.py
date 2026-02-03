@@ -7,7 +7,7 @@ from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
 from deltakit_explorer.analysis.budget._discretisation import (
-    GradientFitDiscretisationEnum,
+    DiscretisationStrategy,
 )
 from deltakit_explorer.analysis.budget._generation import (
     generate_decoder_managers_for_lambda,
@@ -179,7 +179,7 @@ def inverse_lambda_gradient_at(
     | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
-    discretisation_generator: GradientFitDiscretisationEnum = GradientFitDiscretisationEnum.LINEAR,
+    discretisation_generator: DiscretisationStrategy = DiscretisationStrategy.LINEAR,
     fitting_degree: int = 3,
     max_workers: int = 1,
     noise_parameter_names: Sequence[str] | None = None,

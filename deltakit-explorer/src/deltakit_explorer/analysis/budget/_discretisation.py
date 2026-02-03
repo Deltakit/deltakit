@@ -74,17 +74,22 @@ def get_logarithmic_points(
     return np.logspace(np.log10(a), np.log10(b), num_points, base=10)
 
 
-class GradientFitDiscretisationEnum(Enum):
+class DiscretisationStrategy(Enum):
+    """Strategy to use to generate discretisation point for fitting a noisy function
+    with a polynomial."""
+
     LINEAR = auto()
+    """Linearly spaced points between the discretisation space boundaries."""
     LOGARITHMIC = auto()
+    """Logarithmically spaced points between the discretisation space boundaries."""
 
     def __call__(
         self, a: float, b: float, c: float, num_points: int, degree: int, /
     ) -> npt.NDArray[np.floating]:
         match self:
-            case GradientFitDiscretisationEnum.LINEAR:
+            case DiscretisationStrategy.LINEAR:
                 return get_linear_points(a, b, c, num_points, degree)
-            case GradientFitDiscretisationEnum.LOGARITHMIC:
+            case DiscretisationStrategy.LOGARITHMIC:
                 return get_logarithmic_points(a, b, c, num_points, degree)
             case _:
                 msg = f"Discretisation {self} is not implemented yet."

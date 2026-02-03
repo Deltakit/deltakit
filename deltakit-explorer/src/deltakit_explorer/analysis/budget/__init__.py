@@ -3,7 +3,7 @@
 
 from ._budget import get_error_budget
 from ._discretisation import (
-    GradientFitDiscretisationEnum,
+    DiscretisationStrategy,
     get_linear_points,
     get_logarithmic_points,
 )

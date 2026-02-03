@@ -1,5 +1,5 @@
 from deltakit_explorer.analysis.budget import (
-    GradientFitDiscretisationEnum,
+    DiscretisationStrategy,
     MemoryGenerator,
     compute_lambda_and_stddev_from_results,
     generate_decoder_managers_for_lambda,
