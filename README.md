@@ -167,7 +167,8 @@ There are various ways to contribute to `deltakit`:
 - **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](./docs/CONTRIBUTING.md).
 - **Security:** For any security concern, please see our [security policy](./docs/SECURITY.md).
 
-> Note: Any contribution will require a Contribution Licence Agreement signature when a Pull Request is created. The recommended contributing workflow is detailed in our [contributing guidelines](./docs/CONTRIBUTING.md).
+> [!NOTE]
+> Any contribution will require a Contribution Licence Agreement signature when a Pull Request is created. The recommended contributing workflow is detailed in our [contributing guidelines](./docs/CONTRIBUTING.md).
 
 ## License
 

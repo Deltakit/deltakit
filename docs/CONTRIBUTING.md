@@ -1,4 +1,4 @@
-# Contributing
+# Contributing to Deltakit
 
 ```{toctree}
 :hidden:
@@ -8,180 +8,148 @@ RELEASE
 SECURITY
 ```
 
-Thank you for considering a contribution to Deltakit!
-We accept many types of contributions (most of which don't even require
-writing code!) from anyone.
+Thank you for considering a contribution to Deltakit. We welcome contributions of many forms from anyone, most of which don't even require writing code. The sections below describe key definitions for contribution types and recommended processes to help guide you through contributing.
 
-## Types of Contributions
-### Issues
-#### Bug reports
-We define a "bug" as a discrepancy between documented and actual behaviour or
-an *inaccurate* error message. (If it's not a "bug", see {ref}`contributing-enhancement-requests`.)
-First, check to see if the bug has already been reported on the
-[issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
-If so, leave a comment; if not, create a
-[new bug report](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
+> For introductory information about contributing to open source projects, please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
 
-(contributing-enhancement-requests)=
+Prior to making a contribution, we kindly ask to review our [code of conduct](CODE_OF_CONDUCT.md).
 
-#### Enhancement Requests
-Other requests (besides bug reports) are also welcome!
-For instance, if the documentation needs improvement, if you disagree with
-documented behaviour, or if you are asking for a new feature, we'd appreciate
-your thoughts.
-First, check to see if a similar request already has an
-[open issue](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
-If so, leave a comment; if not, create a
-[new request](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
+## Reporting an issue
 
-#### Issue Participation
-Posting an issue is the much-appreciated first step, but there's lots more to do.
-Can you try reproducing a bug or finding out more about why it occurs? Can you
-help us reach consensus on the appropriate action to take to fix a bug or respond
-to a request? We welcome constructive participation in [issues](https://github.com/Deltakit/deltakit/issues/)
-that look interesting to you.
+Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
 
-### Pull Requests
+- **Bug reports**: A "bug" is defined as a discrepancy between documented and actual behaviour or an *inaccurate* error message. Bug reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
+- **Enhancement and feature requests**: Requests for improvements, enhancements, or new features are highly appreciated. Request reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
+- **Issue participation**: It is also possible to constructively participate in current [issues](https://github.com/Deltakit/deltakit/issues/) by reproducing bugs, investigating their causes, or contributing to discussions on best fixes and implementation designs.
 
-#### Bug Fixes
-Known bugs can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug).
-After reading the bug report carefully and reaching consensus on the appropriate fix,
-feel free to open a PR with the agreed-upon fix.
+## Submitting a Pull Request
 
-#### Enhancements
-Existing enhancement request can be found on the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Arequest).
-After reading the request carefully and reaching consensus on the appropriate action,
-feel free to open a PR with a fix.
-Note that many enhancements don't require writing any code - documentation improvements
-are also appreciated!
+Issues can be resolved by submitting a Pull Request (PR). The recommended workflow is to first fork the main branch using the GitHub interface (via the Fork button in the top-right corner). This creates a new repository under your GitHub account, prefixed with your GitHub handle.Resolving an issue is possible by submitting a Pull Request (PR). The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle. 
 
-#### PR Review
-All PRs need review before they can be merged. Please share your expertise in
-[PRs](https://github.com/Deltakit/deltakit/pulls)
-that are up your alley.
+Clone your fork locally:
 
-### Other
-#### Ask / Answer Questions
-Have a question about usage? Knowledgeable about our software and want to share your expertise?
-Please ask and answer usage questions on our [Q&A Discussion](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
-
-#### Social Media / Graphic Design / Fundraising
-We don't currently have recommendations about these types of contributions, but
-if you have ideas, please [contact us](mailto:deltakit@riverlane.com).
-
-## Procedures
-
-### Workflow
-For introductory information about contributing to open source (e.g. using GitHub, `git`),
-please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
-
-### Development Environment and Common Tasks
-We recommend that contributors use [`uv`](https://docs.astral.sh/uv/) to manage their development
-environment.
-
-After cloning the repository and [installing `uv`](https://docs.astral.sh/uv/#installation), navigate to
-the root directory of the repository in a terminal and install dependencies with `uv sync`. A new
-virtual environment will be created in `.venv` and will be used by any command pre-fixed by `uv run`.
-
-```{dropdown} IDE users...
-To set up the Python interpreter in VS Code, you can set the `python.defaultInterpreterPath`
-variable to `"${workspaceFolder}/.venv/bin/python"` in `settings.json`. This environment will
-be checked and updated if needed at each `uv run` call.
+```sh
+git clone https://github.com/<GITHUB_HANDLE>/deltakit.git
 ```
 
-Packages have been defined for `uv`, so if you want to test a feature in isolation, you can
-use the `--package` flag of `uv`. For example:
+Navigate to the cloned repository and add the original Deltakit repository as the `upstream` remote:
 
-```bash
-uv run --package deltakit-core --group test pytest deltakit-code
+```sh
+git remote add upstream https://github.com/Deltakit/deltakit.git
 ```
 
-will install the dependencies required for `deltakit-core` with the additional dependencies
-defined in the dependency group `test` and launch `pytest` within that newly created environment.
+After completing your development work, push your changes to your fork and open a Pull Request against the upstream repository for review by the code owners. For the best contribution experience, we recommend setting up your local repository in development mode and following the development guidelines outlined below.
 
-The continuous integration files are a good place to look for examples of using `uv` specifically
-for this project.
+## Setup `deltakit` in development mode
 
-`pre-commit` has been configured to perform several common tests before each commit.
-To enable `pre-commit`, run `uv run pre-commit install`. You might want to run
-`uv run pre-commit run -a` directly after installing the pre-commit hook so that the pre-commit
-environments are downloaded, installed and run before your first commit.
+We recommend using [`uv`](https://docs.astral.sh/uv/) as the project manager. To synchronise the project dependencies with your environment, simply run:
 
-Deltakit itself is compatible with Python 3.10+, but some of its dependencies currently
-require Python <3.14.
+```sh
+uv sync
+```
 
-### Code of Conduct
-When contributing, always follow our [code of conduct](CODE_OF_CONDUCT.md).
+in your local repository. `uv` also allows you to configure and run tasks via [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and command-line interfaces as illustrated next.
 
-### Order of Operations
-Contributors without commit privileges are asked to submit or comment on an
-[issue](https://github.com/Deltakit/deltakit/issues) before submitting
-a pull request.
+### Executing tests
 
-### Issue / PR Titles / Commit Messages
-Our project uses [semantic versioning](https://semver.org/).
-In particular, we use [semantic release](https://python-semantic-release.readthedocs.io/en/latest/)
-to automate our releases. Consequently, please format your issue/PR titles and commit messages
-according to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
-specification with the following exceptions:
+The complete `deltakit` test suite can be run by following these steps:
 
-- Use `bug` as the prefix for a bug-report issue;
- `fix` is reserved for PRs/commits that resolve a bug.
-- Use `request` as the prefix for a request;
-  more descriptive prefixes (`feat`/`perf`) are used for PRs/commits.
+1. Sync the environment using a supported Python version and include the `test` dependency group:
 
-Other commit *types* that we recognise include `release` (for work relating to release tooling
-and/or releases) and `dev` (for development work that doesn't fit in another category), but
-typically these types will only be used by package maintainers.
+```sh
+uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+```
 
-### Rebasing / Force-Pushing
-During PR review, please refrain from rebasing and force-pushing to your branch.
-If needed, feel free to add revert or merge commits; always use regular pushes.
-This ensures that reviewers can easily see what has changed since their last review.
-Once the PR has been approved but before it is merged, you'll have the opportunity
-to do an interactive rebase (e.g. to improve commit history), or we can squash merge.
+The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
 
-### Inline Comment / Suggested Change Resolution
-PR contributors are asked to leave inline comments unresolved so *reviewers* can confirm
-that their comments have been addressed. (Reviewers, kindly resolve your own comments once
-you have checked them!) Exception: reviewers are encouraged to make use of the "Add a suggestion"
-feature, and contributors are encouraged to make use of the
-["Add suggestion to batch" and "Commit suggestions"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request)
-features; these comments will automatically be resolved when the suggestions are committed.
+2. Execute the tests using the [Pytest](https://docs.pytest.org/en/stable/) framework:
 
-### License / Use of Artificial Intelligence
-Our project uses the [Apache 2.0 license](https://github.com/Deltakit/deltakit/blob/main/LICENSE). Please ensure that your contributions
-are consistent with that license. If you're unsure, please ask in an issue before posting
-content that may not be compatible with our project.
-Note that large language models (LLMs) may be trained on and can potentially reproduce
-content that is incompatible with our license. If an LLM or similar has influenced your
-contribution, please describe how so we can ensure that our project remains free of
-license-incompatible content.
+```sh
+uv run --group test pytest
+```
 
-### Continuous Integration (CI) Usage
+### Building documentation
+
+Similarly, the documentation can be built locally following the steps:
+
+1. First, sync the environment with the `docs` dependency group:
+
+```sh
+uv sync --python 3.13 --resolution highest --group docs
+```
+
+2. Then build the HTML documentation:
+
+```sh
+uv run --group docs sphinx-build -W -b html docs docs/_build/html
+```
+
+The generated documentation can then be viewed in any web browser.
+
+### Pre-commit
+
+[`pre-commit`](https://pre-commit.com/) is configured to run a set of common checks before each commit. To enable it, run the following command in your local repository:
+
+```sh
+uv run pre-commit install
+```
+
+## General guidelines for code development
+
+`deltakit` follows the principles of [semantic versioning](https://semver.org/) and uses [semantic release](https://python-semantic-release.readthedocs.io/en/latest/) to automate its release process. Releases are driven by structured issue and PR titles, as well as commit messages, which are parsed according to the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
+### Issue and PR titles - commit messages
+
+Please format issue and PR titles, as well as commit messages, in accordance with the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification, with the following exceptions:
+
+- Use `bug` as the prefix for bug report issues; the `fix` prefix is reserved for PRs and commits that resolve a bug.
+- Use `request` as the prefix for requests; more specific prefixes such as `feat` or `perf` should be used for the corresponding PRs and commits.
+
+Additional commit types recognised by the project include `release` (for changes related to release tooling or the release process) and `dev` (for development work that does not fit another category). These types are generally intended for use by package maintainers.
+
+### Rebasing and force-Pushing
+
+During PR review, please avoid rebasing or force-pushing to your branch. If changes are needed, feel free to add revert or merge commits and always use regular pushes. This allows reviewers to easily track what has changed since their last review.
+
+Once the PR has been approved but before it is merged, you may perform an interactive rebase (for example, to clean up the commit history), or code owners can merge the PR using a squash merge.
+
+### Inline comment and suggested change resolution
+
+PR contributors are invited to leave inline review comments unresolved so that reviewers can verify their feedback has been addressed. Reviewers are expected to resolve their own comments once you’ve confirmed the changes.
+
+An exception applies when using GitHub’s “Add a suggestion” feature. Contributors are encouraged to use the ["Add suggestion to batch" and "Commit suggestions"](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/incorporating-feedback-in-your-pull-request) options; comments associated with committed suggestions will be resolved automatically.
+
+### License and use of artificial intelligence
+
+This project is licensed under the [Apache 2.0 license](https://github.com/Deltakit/deltakit/blob/main/LICENSE). Please ensure that all contributions are compatible with this license. If you are unsure, we encourage you to open an issue to ask for clarification before submitting any content that may not be license-compatible.
+
+Please also note that large language models (LLMs) may be trained on, and can sometimes reproduce, material that is incompatible with our license. If an LLM or similar tool influenced your contribution, please describe how it was used so we can verify license compliance.
+
+### Continuous integration (CI) usage
+
 Please use our CI services responsibly. Since CI re-runs on every push to a pull request branch,
 please avoid repeated pushes of small commits.
 
-### Minimum Supported Dependencies
+### Minimum supported dependencies
+
 The project follows [SPEC 0](https://scientific-python.org/specs/spec-0000/). Roughly, this
 means that we will support Python versions for three years and other core dependencies for
 two years.
 
-### Decision Making / Governance
+### Decision making and governance
+
 Decisions are made by consensus of participants in a GitHub issue or PR. In case of disagreement,
 [code owners](https://github.com/Deltakit/deltakit/blob/main/CODEOWNERS) have final authority.
 
-### Code Formatting / Linting / Typing
-All packages use `ruff format`, all packages use `ruff check` to
-enforce linting rules, and all packages use `mypy` to enforce typing rules.
-See [`pyproject.toml`](https://github.com/Deltakit/deltakit/blob/main/pyproject.toml) for specific rules.
-
 ### Release
+
 For more information about release processes, see the [Deltakit release procedure](RELEASE.md).
 
 ### Security
+
 For more information about security, see the [Deltakit security policy](SECURITY.md).
 
 ### Contributor License Agreement
-First-time contributors will be asked to agree to a CLA. This will be automated using a GitHub
-app shortly; in the meantime, please [contact us](mailto:deltakit@riverlane.com).
+
+First-time contributors will be asked to agree to a CLA. This is automated using a GitHub
+app for open PR.

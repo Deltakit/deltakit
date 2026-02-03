@@ -24,7 +24,7 @@ from typing_extensions import Self
 Bit = Literal[0, 1]
 
 
-class DetectorRecord(UserDict):
+class DetectorRecord(UserDict[str, Any]):
     """Dictionary for recording information about a detector.
     String attributes for arbitrary values.
     Coordinate and time given as special data that is always
@@ -39,17 +39,17 @@ class DetectorRecord(UserDict):
     """
 
     def __init__(
-        self, spatial_coord: tuple[float | int, ...] = (), time: int = 0, **kwargs
+        self, spatial_coord: tuple[float | int, ...] = (), time: int = 0, **kwargs: Any
     ) -> None:
         super().__init__(spatial_coord=spatial_coord, time=time, **kwargs)
 
     @property
-    def spatial_coord(self) -> tuple[float, ...]:
+    def spatial_coord(self) -> tuple[float | int, ...]:
         """Spatial coordinate of this detector."""
         return self.data["spatial_coord"]
 
     @spatial_coord.setter
-    def spatial_coord(self, value: tuple[float, ...]):
+    def spatial_coord(self, value: tuple[float | int, ...]):
         self.data["spatial_coord"] = value
 
     @property
@@ -58,11 +58,11 @@ class DetectorRecord(UserDict):
         return self.data["time"]
 
     @time.setter
-    def time(self, value: int):
+    def time(self, value: int) -> None:
         self.data["time"] = value
 
     @property
-    def full_coord(self) -> tuple[float, ...]:
+    def full_coord(self) -> tuple[float | int, ...]:
         """Return the full coordinate for this detector, which is given in the form
         spatial coordinates then time coordinate.
         """
@@ -142,8 +142,13 @@ class OrderedSyndrome(Sequence[int], AbstractSet[int]):
     def __len__(self) -> int:
         return len(self._detectors)
 
-    def __getitem__(self, index):
-        return self._as_tuple.__getitem__(index)
+    @overload
+    def __getitem__(self, index: int) -> int: ...
+    @overload
+    def __getitem__(self, index: slice) -> tuple[int, ...]: ...
+
+    def __getitem__(self, index: int | slice) -> int | tuple[int, ...]:
+        return self._as_tuple[index]
 
     def __contains__(self, x: object) -> bool:
         return self._detectors.__contains__(x)
@@ -312,7 +317,7 @@ class Bitstring:
         self._bits = value
 
     @classmethod
-    def from_bits(cls, bits: Iterable[Bit]):
+    def from_bits(cls, bits: Iterable[Bit]) -> Self:
         """Create a bitstring from a list of bits. The bits are
         assumed to be in little endian form, i.e. the lsb is the first item
         in the iterable.
@@ -326,7 +331,7 @@ class Bitstring:
         return cls(value)
 
     @classmethod
-    def from_bytes(cls, bytes_: Collection[SupportsIndex]):
+    def from_bytes(cls, bytes_: Collection[SupportsIndex]) -> Self:
         """Create a bitstring from a collection of bytes. For example, a numpy array of
         uint8s. Assumed to be in little endian form.
 
@@ -336,7 +341,7 @@ class Bitstring:
         return cls(int.from_bytes(bytes_, byteorder="little"))
 
     @classmethod
-    def from_indices(cls, indices: Iterable[int]):
+    def from_indices(cls, indices: Iterable[int]) -> Self:
         """Create a bitstring from a list of non-zero indices.
 
         >>> Bitstring.from_indices([0, 2, 5])
@@ -443,7 +448,7 @@ class Bitstring:
     def __len__(self) -> int:
         return max(1, self._bits.bit_length())
 
-    def __index__(self):
+    def __index__(self) -> int:
         return self._bits
 
     def __repr__(self) -> str:
@@ -466,14 +471,14 @@ class FixedWidthBitstring(Bitstring):
         self._width = width
 
     @classmethod
-    def from_indices(cls, indices: Iterable[int]):
+    def from_indices(cls, indices: Iterable[int]) -> Self:
         value = 0
         for index in indices:
             value |= 1 << index
         return cls(value.bit_length(), value)
 
     @classmethod
-    def from_bits(cls, bits: Iterable[Bit]):
+    def from_bits(cls, bits: Iterable[Bit]) -> Self:
         value = 0
         # Use variable shadowing in case the enumerate block is never entered
         bit_num = -1
@@ -482,10 +487,10 @@ class FixedWidthBitstring(Bitstring):
         return cls(bit_num + 1, value)
 
     @classmethod
-    def from_bytes(cls, bytes_: Collection[SupportsIndex]):
+    def from_bytes(cls, bytes_: Collection[SupportsIndex]) -> Self:
         return cls(len(bytes_) * 8, int.from_bytes(bytes_, byteorder="little"))
 
-    def change_width(self, new_width: int):
+    def change_width(self, new_width: int) -> None:
         """Change the width of this bitstring internally. If the new width is
         less than the current width then any excess bits will be removed.
         """
@@ -560,9 +565,9 @@ class FixedWidthBitstring(Bitstring):
     def __getitem__(self, index: int) -> Bit: ...
 
     @overload
-    def __getitem__(self, index: slice) -> Bitstring: ...
+    def __getitem__(self, index: slice) -> FixedWidthBitstring: ...
 
-    def __getitem__(self, index: int | slice) -> Bit | Bitstring:
+    def __getitem__(self, index: int | slice) -> Bit | FixedWidthBitstring:
         if isinstance(index, int):
             return cast(Literal[0, 1], (self._bits >> index) & 1)
         if isinstance(index, slice):

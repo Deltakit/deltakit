@@ -1,6 +1,6 @@
 name: Bug report
-description: Create a report to help us improve
-title: "bug: <your description here>"
+description: Create a bug report to help us improve
+title: "bug: <your title here>"
 labels: ["bug"]
 assignees: []
 
@@ -8,12 +8,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        ### 🐛 Bug Report
 
-        Thanks for helping improve the project! Please fill out the form below.
+        Thank you for contributing to the improvement of Deltakit. Please fill out the following sections to report a bug.
 
-        > 💡 **Note:** A bug is a disagreement between actual and documented behaviour, or an inaccurate error message.
-        > Please file a [request](https://github.com/Deltakit/deltakit/issues/new?template=request.md) if the
+        > [!NOTE] A bug is a disagreement between actual and documented behaviour, or an inaccurate error message.
+        > Please file a [request from](https://github.com/Deltakit/deltakit/issues/new?template=request.md) if the
         > documentation does not define the expected behaviour, if you disagree with the documented behaviour, or if you
         > are asking for a new feature or performance improvement.
         > Please use the [test failure form](https://github.com/Deltakit/deltakit/issues/new?template=test_failure.yml)
@@ -22,26 +21,25 @@ body:
   - type: checkboxes
     id: cla-signature
     attributes:
-      label: Contributor License Agreement (CLA) signature
+      label: Contributor License Agreement
       description: Please confirm the following before submitting
       options:
-        - label: A CLA signature is requested for any first contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
+        - label: A Contributor Licence Agreement signature is required for any first PR contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
           required: true
-
 
   - type: textarea
     id: bug-description
     attributes:
       label: Bug Description
       description: |
-        A description of the bug.
+        Please provide a succinct description of the observed behaviour.
     validations:
       required: true
 
   - type: textarea
     id: minimal-example
     attributes:
-      label: Minimal Reproducible Example (MRE)
+      label: Minimal Reproducible Example
       description: |
         Please provide a [Minimal Reproducible Example](https://en.wikipedia.org/wiki/Minimal_reproducible_example)
         as a copy-pastable code snippet if possible. If not, describe steps to
@@ -67,4 +65,4 @@ body:
     id: additional-context
     attributes:
       label: Additional context
-      description: Add any other context about the problem here.
+      description: Add any other context about the bug reported here.

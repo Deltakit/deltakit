@@ -10,6 +10,8 @@ from collections.abc import Iterable, Iterator
 from itertools import chain, zip_longest
 from typing import Generic, Protocol, TypeVar, cast
 
+from typing_extensions import Self
+
 try:
     import lestim as stim
 except ImportError:
@@ -29,10 +31,10 @@ from deltakit_core.decoding_graphs._decoding_graph import (
 from deltakit_core.decoding_graphs._syndromes import DetectorRecord
 
 
-class CoordinateOffset(tuple):  # noqa: PLW1641
+class CoordinateOffset(tuple[int | float, ...]):  # noqa: PLW1641
     """Class to track the coordinate offset in a Detector Error Model."""
 
-    def __new__(cls, offset: Iterable[float | int] = ()):
+    def __new__(cls, offset: Iterable[float | int] = ()) -> Self:
         return super().__new__(cls, offset)
 
     def __add__(self, other: object) -> CoordinateOffset:
@@ -95,7 +97,7 @@ class DetectorRecorder(DetectorHandler):
         detector: stim.DemInstruction,
         detector_offset: int,
         coordinate_offset: CoordinateOffset,
-    ):
+    ) -> None:
         detector_index = (
             detector_offset + cast(list[stim.DemTarget], detector.targets_copy())[0].val
         )
@@ -185,7 +187,7 @@ class LogicalsInEdges(ErrorHandler):
         model."""
         return self._logicals
 
-    def __call__(self, error: stim.DemInstruction, detector_offset: int):
+    def __call__(self, error: stim.DemInstruction, detector_offset: int) -> None:
         for vertices, p_err, logicals in collect_edges(error, detector_offset):
             edge = DecodingHyperEdge(vertices)
             self._edge_records[edge] = EdgeRecord(p_err=p_err)
@@ -238,7 +240,7 @@ class DemParser(Generic[EH, DH]):
         """Get the logical observable handler for this DEM parser."""
         return self._observable_handler
 
-    def parse(self, detector_error_model: stim.DetectorErrorModel):
+    def parse(self, detector_error_model: stim.DetectorErrorModel) -> None:
         """Parse a detector error model using the given error and detector
         handlers. The class keeps track of the detector and coordinate offsets.
 
@@ -346,7 +348,7 @@ def dem_to_decoding_graph_and_logicals(
         set() for _ in range(dem.num_observables)
     ]
 
-    def error_handler(error: stim.DemInstruction, detector_offset: int):
+    def error_handler(error: stim.DemInstruction, detector_offset: int) -> None:
         """Type of error handler for constructing decoding graph and
         logical edges from error instructions."""
         degree_target = 2
@@ -382,7 +384,7 @@ def dem_to_decoding_graph_and_logicals(
         detector: stim.DemInstruction,
         detector_offset: int,
         coordinate_offset: CoordinateOffset,
-    ):
+    ) -> None:
         """Type of detector handler for adding coordinate annotated detectors
         to the decoding graph."""
         detector_index = (

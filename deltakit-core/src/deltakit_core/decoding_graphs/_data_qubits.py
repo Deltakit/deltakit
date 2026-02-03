@@ -19,6 +19,8 @@ from functools import cached_property
 from itertools import chain
 from typing import Any, Generic, TypeVar
 
+from typing_extensions import overload
+
 from deltakit_core.decoding_graphs._syndromes import (
     Bit,
     DetectorRecord,
@@ -26,7 +28,7 @@ from deltakit_core.decoding_graphs._syndromes import (
 )
 
 
-class EdgeRecord(UserDict):
+class EdgeRecord(UserDict[str, Any]):
     """Dictionary for recording information about an edge.
     String attributes for arbitrary values. Error probability
     given as special data that is always defined.
@@ -37,7 +39,7 @@ class EdgeRecord(UserDict):
         Probability of the error mechanism, by default 0.0.
     """
 
-    def __init__(self, p_err: float = 0.0, **kwargs):
+    def __init__(self, p_err: float = 0.0, **kwargs: Any):
         super().__init__(p_err=p_err, **kwargs)
         self.data["weight"] = self.weight
 
@@ -133,7 +135,7 @@ class DecodingHyperEdge(Collection[int]):
     def __repr__(self) -> str:
         return str(tuple(self.vertices))
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return self._hash
 
     def __eq__(self, other: object) -> bool:
@@ -257,7 +259,9 @@ class OrderedDecodingEdges(Sequence[EdgeT], AbstractSet[EdgeT], Generic[EdgeT]):
             [edge for edge, count in edge_counts.items() if count % 2 == 1]
         )
 
-    def append(self, other: OrderedDecodingEdges, mod_2_filter: bool = False):
+    def append(
+        self, other: OrderedDecodingEdges[EdgeT], mod_2_filter: bool = False
+    ) -> None:
         """Appeds edges from another set of OrderedDecodingEdges."""
         # pylint: disable=protected-access
         if mod_2_filter:
@@ -273,7 +277,9 @@ class OrderedDecodingEdges(Sequence[EdgeT], AbstractSet[EdgeT], Generic[EdgeT]):
         """
         return tuple(self._decoding_edges)
 
-    def __add__(self, other: OrderedDecodingEdges) -> OrderedDecodingEdges:
+    def __add__(
+        self, other: OrderedDecodingEdges[EdgeT]
+    ) -> OrderedDecodingEdges[EdgeT]:
         result = OrderedDecodingEdges(self._decoding_edges.keys(), mod_2_filter=False)
         result.append(other)
         return result
@@ -281,8 +287,13 @@ class OrderedDecodingEdges(Sequence[EdgeT], AbstractSet[EdgeT], Generic[EdgeT]):
     def __len__(self) -> int:
         return len(self._decoding_edges)
 
-    def __getitem__(self, index):
-        return self._as_tuple.__getitem__(index)
+    @overload
+    def __getitem__(self, index: int) -> EdgeT: ...
+    @overload
+    def __getitem__(self, index: slice) -> tuple[EdgeT, ...]: ...
+
+    def __getitem__(self, index: int | slice) -> EdgeT | tuple[EdgeT, ...]:
+        return self._as_tuple[index]
 
     def __contains__(self, x: object) -> bool:
         return self._decoding_edges.__contains__(x)

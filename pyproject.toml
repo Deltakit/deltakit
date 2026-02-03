@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit"
-version = "0.6.0"
+version = "0.6.2"
 description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -73,7 +73,6 @@ docs = [
   "sphinxawesome-theme>=5.3",
   "sphinx-autodoc-typehints>=3.0",
   "sphinx-copybutton>=0.5",
-  "pip-licenses>=5.0",
   "sphinx-design>=0.6",
   "sphinx-autobuild>=2024.10.3",
   "myst-parser>=4.0",
@@ -91,6 +90,10 @@ dev = [
   # other
   "pre-commit~=4.2",
   "validate-pyproject~=0.24.1",
+]
+release = [
+  "tomlkit~=0.14",
+  "pip-licenses>=5.0",
   "python-semantic-release~=10.2",
 ]
 
@@ -100,6 +103,7 @@ members = [
   "deltakit-circuit",
   "deltakit-decode",
   "deltakit-explorer",
+  "deltakit-compile",
 ]
 
 [tool.uv.sources]
@@ -107,6 +111,7 @@ deltakit-core = { workspace = true }
 deltakit-circuit = { workspace = true }
 deltakit-decode = { workspace = true }
 deltakit-explorer = { workspace = true }
+deltakit-compile = { workspace = true }
 
 [tool.mypy]
 files = "src/**/*.py"
@@ -152,6 +157,8 @@ locale = 'en-gb'
 [tool.typos.default.extend-words]
 # Don't correct "iy" - often used in the context of "probability of an IY operation"
 iy = "iy"
+iz = "iz"
+IZ = "IZ"
 anc = "anc"
 BA = "BA"
 youre = "you're"
