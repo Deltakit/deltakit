@@ -157,6 +157,8 @@ locale = 'en-gb'
 [tool.typos.default.extend-words]
 # Don't correct "iy" - often used in the context of "probability of an IY operation"
 iy = "iy"
+iz = "iz"
+IZ = "IZ"
 anc = "anc"
 BA = "BA"
 youre = "you're"
