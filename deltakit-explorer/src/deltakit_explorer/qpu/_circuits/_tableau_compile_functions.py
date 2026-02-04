@@ -796,7 +796,7 @@ def _compile_comp_data(
 
             # Note that CXSWAP is the only non-symmetric gate from the iSWAP
             # class, at least in stim currently.
-            if two_qubit_gate_to_compile in (CXSWAP,):
+            if two_qubit_gate_to_compile == CXSWAP:
                 gate_to_intm_dict = GATE_TO_CZSWAP_DICT
                 intm_to_target_dict = CZSWAP_TO_GATE_DICT
             else:

@@ -52,7 +52,7 @@ def validate_and_split_decoding(func):
         noisy_stim_circuit: str | stim.Circuit,
         leakage_flags: LeakageFlags | None = None,
     ):
-        if decoder.decoder_type in {DecoderType.LCD} and leakage_flags is not None:
+        if decoder.decoder_type == DecoderType.LCD and leakage_flags is not None:
             Logging.warn(
                 "Leakage-aware decoding has a heavy initialisation part. "
                 "Big tasks may be cancelled by server timeout.",
@@ -143,7 +143,7 @@ def validate_generation(func):
                     uid="decorator",
                 )
         if (
-            experiment_definition.code_type in {QECECodeType.BIVARIATE_BICYCLE}
+            experiment_definition.code_type == QECECodeType.BIVARIATE_BICYCLE
             and parameters is not None
             and parameters.matrix_specifications is not None
         ):
