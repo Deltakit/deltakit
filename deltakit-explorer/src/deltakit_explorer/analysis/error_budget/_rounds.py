@@ -10,7 +10,7 @@ from deltakit_explorer.analysis import (
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
 from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )

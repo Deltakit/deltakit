@@ -6,7 +6,7 @@ import numpy.typing as npt
 import pandas as pd
 import pytest
 
-from deltakit_explorer.analysis.budget._post_processing import (
+from deltakit_explorer.analysis.error_budget._post_processing import (
     _filter_non_close_noise_parameters,
 )
 

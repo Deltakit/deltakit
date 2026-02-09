@@ -5,7 +5,7 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
-from deltakit_explorer.analysis.budget._gradient import (
+from deltakit_explorer.analysis.error_budget._gradient import (
     _approximate_derivative_at_point_from_values,
     _variate_ith_parameter_by,
 )

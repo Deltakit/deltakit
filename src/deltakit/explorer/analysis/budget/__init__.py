@@ -1,4 +1,4 @@
-from deltakit_explorer.analysis.budget import (
+from deltakit_explorer.analysis.error_budget import (
     DiscretisationStrategy,
     MemoryGenerator,
     compute_lambda_and_stddev_from_results,

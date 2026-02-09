@@ -5,13 +5,13 @@ import numpy as np
 import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 
-from deltakit_explorer.analysis.budget._discretisation import (
+from deltakit_explorer.analysis.error_budget._discretisation import (
     DiscretisationStrategy,
 )
-from deltakit_explorer.analysis.budget._gradient import (
+from deltakit_explorer.analysis.error_budget._gradient import (
     inverse_lambda_gradient_at,
 )
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )

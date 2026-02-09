@@ -5,15 +5,15 @@ import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis import RunAllAnalysisEngine
 
-from deltakit_explorer.analysis.budget._generation import (
+from deltakit_explorer.analysis.error_budget._generation import (
     generate_decoder_managers_for_lambda,
 )
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     PreComputedMemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
-from deltakit_explorer.analysis.budget._post_processing import (
+from deltakit_explorer.analysis.error_budget._post_processing import (
     compute_lambda_and_stddev_from_results,
 )
 
@@ -36,7 +36,7 @@ def inverse_lambda_at(
     Warning:
         This is a helper function to compute 1 / Λ when you need a **single**
         evaluation.
-        For error budgeting, :func:`~deltakit_explorer.analysis.budget.get_error_budget`
+        For error budgeting, :func:`~deltakit_explorer.analysis.error_budget.get_error_budget`
         will be able to parallelise more efficiently, while also performing several
         checks and optimisations.
 

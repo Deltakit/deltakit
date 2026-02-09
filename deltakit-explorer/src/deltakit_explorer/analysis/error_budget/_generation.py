@@ -9,7 +9,7 @@ from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
 from tqdm import tqdm
 
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )

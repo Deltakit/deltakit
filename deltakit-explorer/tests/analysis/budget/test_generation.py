@@ -7,11 +7,11 @@ from deltakit_circuit import Circuit
 from deltakit_circuit._noise_factory import NoiseProfile
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1
 
-from deltakit_explorer.analysis.budget._generation import (
+from deltakit_explorer.analysis.error_budget._generation import (
     _generate_surface_code_memory_decoder_manager,
     generate_decoder_managers_for_lambda,
 )
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     get_rotated_surface_code_memory_circuit,
 )
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters

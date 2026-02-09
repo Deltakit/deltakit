@@ -6,18 +6,18 @@ import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
-from deltakit_explorer.analysis.budget._discretisation import (
+from deltakit_explorer.analysis.error_budget._discretisation import (
     DiscretisationStrategy,
 )
-from deltakit_explorer.analysis.budget._generation import (
+from deltakit_explorer.analysis.error_budget._generation import (
     generate_decoder_managers_for_lambda,
 )
-from deltakit_explorer.analysis.budget._memory import (
+from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     PreComputedMemoryGenerator,
     get_rotated_surface_code_memory_circuit,
 )
-from deltakit_explorer.analysis.budget._post_processing import (
+from deltakit_explorer.analysis.error_budget._post_processing import (
     compute_lambda_and_stddev_from_results,
 )
 
