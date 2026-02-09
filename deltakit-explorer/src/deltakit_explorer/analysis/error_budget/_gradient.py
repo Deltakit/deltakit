@@ -182,7 +182,6 @@ def inverse_lambda_gradient_at(
     discretisation_generator: DiscretisationStrategy = DiscretisationStrategy.LINEAR,
     fitting_degree: int = 3,
     max_workers: int = 1,
-    noise_parameter_names: Sequence[str] | None = None,
 ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
     """The gradient of 1 / Λ at the provided ``noise_model_parameters``.
 
@@ -238,9 +237,6 @@ def inverse_lambda_gradient_at(
             accuracy and resulting standard deviation.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
-        noise_parameter_names: if provided, human-readable names for each of the
-            provided ``noise_parameters``. Defaults to the noise parameter index (i.e.,
-            "0", "1", ...).
 
     Returns:
         the error-budgeting result, which consists of an array of contributions for each
@@ -262,11 +258,12 @@ def inverse_lambda_gradient_at(
     if isinstance(memory_generator, Mapping):
         memory_generator = PreComputedMemoryGenerator(memory_generator)
 
-    if noise_parameter_names is None:
-        noise_parameter_names = [str(i) for i in range(len(noise_parameters))]
     # Make sure that noise_model_parameters is a numpy array, even if a generic Sequence
     # is provided, as this is simpler for later.
     noise_model_parameters = np.asarray(noise_parameters)
+    # Create unique identifiers for noise parameters that will be used to discriminate between them
+    # in the CSV file storing the simulation results.
+    noise_parameter_names = [str(i) for i in range(len(noise_parameters))]
 
     # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
     # This is performing a sweeping for each parameter individually.

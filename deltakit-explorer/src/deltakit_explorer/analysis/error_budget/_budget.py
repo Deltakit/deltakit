@@ -55,7 +55,6 @@ def get_error_budget(
     discretisation_generator: DiscretisationStrategy = DiscretisationStrategy.LINEAR,
     fitting_degree: int = 3,
     max_workers: int = 1,
-    noise_parameter_names: Sequence[str] | None = None,
 ) -> ErrorBudgetResult:
     """Compute the error budget of the provided ``noise_model``.
 
@@ -111,9 +110,6 @@ def get_error_budget(
             accuracy and resulting standard deviation.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
-        noise_parameter_names: if provided, human-readable names for each of the
-            provided ``noise_parameters``. Defaults to the noise parameter index (i.e.,
-            "0", "1", ...).
 
     Returns:
         the error-budgeting result, which consists of an array of contributions for each
@@ -123,8 +119,6 @@ def get_error_budget(
     # We will compute the gradient at the half point following the methodology outlined in
     # https://doi.org/10.1038/s41586-021-03588-y (Supplementary materials, Section VIII.C.).
     point = np.asarray(noise_parameters) / 2
-    if noise_parameter_names is None:
-        noise_parameter_names = [str(i) for i in range(point.size)]
     # Evaluate the gradient.
     gradient, gradient_stddev = inverse_lambda_gradient_at(
         noise_model,
@@ -140,7 +134,6 @@ def get_error_budget(
         discretisation_generator,
         fitting_degree,
         max_workers,
-        noise_parameter_names,
     )
     # We computed the gradient at the point ``x / 2``, we can now apply it to the
     # original noise parameters to recover an estimate.

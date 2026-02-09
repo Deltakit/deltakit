@@ -28,9 +28,7 @@ def inverse_lambda_at(
     | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
     lep_target_rse: float = 1e-4,
     lep_computation_min_fails: int = 10,
-    max_workers: int = 1,
-    noise_parameter_names: Sequence[str] | None = None,
-) -> tuple[float, float]:
+    max_workers: int = 1,) -> tuple[float, float]:
     """Compute 1 / Λ.
 
     Warning:
@@ -65,9 +63,6 @@ def inverse_lambda_at(
             less failures, for example if ``num_shots`` shots have been performed.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
-        noise_parameter_names: if provided, human-readable names for each of the
-            provided ``noise_parameters``. Defaults to the noise parameter index (i.e.,
-            "0", "1", ...).
 
     Returns:
         the estimation of 1 / Λ along with the standard deviation of the estimation as
@@ -78,8 +73,9 @@ def inverse_lambda_at(
 
     point = np.asarray(noise_parameters).reshape((-1, 1))
 
-    if noise_parameter_names is None:
-        noise_parameter_names = [str(i) for i in range(point.size)]
+    # Create unique identifiers for noise parameters that will be used to discriminate between them
+    # in the CSV file storing the simulation results.
+    noise_parameter_names = [str(i) for i in range(point.size)]
 
     decoder_managers = generate_decoder_managers_for_lambda(
         point,
