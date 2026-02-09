@@ -66,7 +66,7 @@ def _approximate_derivative_at_point_from_values(
 
     This algorithm is used to use as much as possible the standard deviation information
     and to avoid non-linear behaviour at the extremities of the interval containing all
-    values in ``x`` to affect too much the gradient.
+    values in ``x`` to affect the gradient too much.
 
     Warning:
         This function will work better if ``gradient_approximation_point`` is close to

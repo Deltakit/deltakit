@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
@@ -38,6 +40,18 @@ class ErrorBudgetResult:
     def lambda_stddev_estimate(self) -> float:
         """Returns an estimation of the standard deviation on Λ according to the computed budget."""
         return float(np.sqrt(np.sum(np.asarray(self.contribution_stddevs) ** 2)))
+
+    @staticmethod
+    def from_gradient(
+        gradient: npt.NDArray[np.floating],
+        gradient_stddevs: npt.NDArray[np.floating],
+        noise_parameters: npt.NDArray[np.floating],
+    ) -> ErrorBudgetResult:
+        contributions = np.abs(gradient * noise_parameters)
+        stddevs = np.abs(gradient_stddevs * noise_parameters)
+        return ErrorBudgetResult(
+            tuple(map(float, contributions.ravel())), tuple(map(float, stddevs.ravel()))
+        )
 
 
 def get_error_budget(
@@ -135,11 +149,6 @@ def get_error_budget(
         fitting_degree,
         max_workers,
     )
-    # We computed the gradient at the point ``x / 2``, we can now apply it to the
-    # original noise parameters to recover an estimate.
-    contributions = np.abs(gradient * noise_parameters)
-    stddevs = np.abs(gradient_stddev * noise_parameters)
-
-    return ErrorBudgetResult(
-        tuple(map(float, contributions.ravel())), tuple(map(float, stddevs.ravel()))
+    return ErrorBudgetResult.from_gradient(
+        gradient, gradient_stddev, np.asarray(noise_parameters)
     )
