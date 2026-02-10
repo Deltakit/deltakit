@@ -174,6 +174,26 @@ def generate_sweep_parameters(
     noise_parameters_exploration_bounds: list[tuple[float, float]],
     fitting_parameters: FittingParameters = FittingParameters(),
 ) -> npt.NDArray[np.floating]:
+    """Generate multiple copies of the provided ``central_point`` with one parameter changed.
+
+    Each parameter is changed according to the fitting strategy. The resulting array will contain
+    copies of ``central_point`` where, for each copy, only a single entry is different from
+    ``central_point``. The value of that entry, and the number of variations, depends on the
+    provided ``fitting_parameters``.
+
+    Args:
+        central_point: point that should be copied and modified in the resulting array.
+        noise_parameters_exploration_bounds: bounds for each parameters, that will impact the values
+            that are inserted in the returned array.
+        fitting_parameters: parameters of the fitting task that will control how many variations are
+            inserted for each parameters and how the values of these variations will be obtained.
+
+    Returns:
+        An array of shape
+        ``(fitting_parameters.num_points_per_parameters * central_point.size, central_point.size)``
+        that contains as rows variations of ``central_point`` where a single parameter has been
+        changed each time.
+    """
     # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
     # This is performing a sweeping for each parameter individually.
     xis: list[npt.NDArray[np.floating]] = [central_point.reshape((-1,))]
@@ -195,6 +215,34 @@ def get_decoding_result(
     sampling_parameters: SamplingParameters = SamplingParameters(),
     memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
 ) -> pd.DataFrame:
+    """Construct, sample and decode the experiments represented by the input parameters
+    and returns statistics on the success rate of each experiment.
+
+    Experiments to run are given by the provided ``noise_model``,
+    ``sweep_noise_parameters``, ``num_rounds_by_distances``, ``memory_generator``.
+
+    Args:
+        noise_model: noise model to use to annotate noise instructions on the circuits.
+        sweep_noise_parameters: parameters to use for the noise model. Should be the array
+            returned when calling ``generate_sweep_parameters``.
+        noise_parameter_names: identifiers for each noise parameter, used to identify
+            results in the returned statistics.
+        num_rounds_by_distances (Mapping[int, Sequence[int]]): a mapping from each code
+            distance that should be tested to the number of rounds that should be
+            sampled in order to estimate the logical error-probability per round, to
+            ultimately get 1 / Λ.
+        fitting_parameters: additional parameters relating to how the gradient is
+            estimated.
+        sampling_parameters: additional parameters relating to the sampling tasks used to
+            estimate 1 / Λ indirectly.
+        memory_generator: a callable that can generate a memory experiment. The resulting
+            circuit will go through the provided ``noise_model`` for different values of
+            the noise parameters.
+
+    Returns:
+        A pandas DataFrame containing the statistics resulting from sampling the provided
+        experiments.
+    """
     # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
     # Prepare the computation by building the decoder managers.
     decoder_managers = generate_decoder_managers_for_lambda(
@@ -232,6 +280,26 @@ def get_lambda_gradient(
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     fitting_parameters: FittingParameters = FittingParameters(),
 ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
+    """Post-process the provided ``report`` to compute an estimation of the gradient of 1 / Λ.
+
+    Args:
+        report: statistics returned by ``get_decoding_results``.
+        central_point: point at which the gradient of 1 / Λ should be estimated.
+        sweep_noise_parameters: parameters to use for the noise model. Should be the array
+            returned when calling ``generate_sweep_parameters``.
+        noise_parameter_names: identifiers for each noise parameter, used to identify
+            results in the returned statistics.
+        num_rounds_by_distances (Mapping[int, Sequence[int]]): a mapping from each code
+            distance that should be tested to the number of rounds that should be
+            sampled in order to estimate the logical error-probability per round, to
+            ultimately get 1 / Λ.
+        fitting_parameters: additional parameters relating to how the gradient is
+            estimated.
+
+    Returns:
+        a tuple ``(gradient, stddev)`` containing the estimation of the gradient at the
+        provided ``central_point`` and the standard deviation of the estimation.
+    """
     # Post-process the results to get all the estimations for 1 / Λ
     lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
         sweep_noise_parameters, noise_parameter_names, num_rounds_by_distances, report
