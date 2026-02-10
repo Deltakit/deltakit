@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit-decode"
-version = "0.7.0"
+version = "0.7.1"
 description = "Deltakit (component deltakit-decode)"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -32,8 +32,8 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit~=0.6",
-  "deltakit-core~=0.6",
+  "deltakit-circuit>=0.7.1",
+  "deltakit-core>=0.7.1",
   "numpy>=1.26",
   "networkx~=3.1",
   "seaborn~=0.12",

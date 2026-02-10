@@ -2,6 +2,13 @@
 
 <!-- version list -->
 
+## v0.7.1 (2026-02-10)
+
+### Features
+
+- Fix dependencies of deltakit subpackages.
+
+
 ## v0.7.0 (2026-02-10)
 
 ### Features

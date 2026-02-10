@@ -42,11 +42,11 @@
 | debugpy                       | 1.8.19      | MIT License                                                                                      |
 | decorator                     | 5.2.1       | BSD License                                                                                      |
 | defusedxml                    | 0.7.1       | Python Software Foundation License                                                               |
-| deltakit                      | 0.6.2       | Apache-2.0                                                                                       |
-| deltakit-circuit              | 0.6.2       | Apache-2.0                                                                                       |
-| deltakit-core                 | 0.6.2       | Apache-2.0                                                                                       |
-| deltakit-decode               | 0.6.2       | Apache-2.0                                                                                       |
-| deltakit-explorer             | 0.6.2       | Apache-2.0                                                                                       |
+| deltakit                      | 0.7.1       | Apache-2.0                                                                                       |
+| deltakit-circuit              | 0.7.1       | Apache-2.0                                                                                       |
+| deltakit-core                 | 0.7.1       | Apache-2.0                                                                                       |
+| deltakit-decode               | 0.7.1       | Apache-2.0                                                                                       |
+| deltakit-explorer             | 0.7.1       | Apache-2.0                                                                                       |
 | deptry                        | 0.24.0      | MIT License                                                                                      |
 | dill                          | 0.4.0       | BSD License                                                                                      |
 | distlib                       | 0.4.0       | Python Software Foundation License                                                               |

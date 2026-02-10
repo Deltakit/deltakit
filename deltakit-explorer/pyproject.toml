@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit-explorer"
-version = "0.7.0"
+version = "0.7.1"
 description = "Deltakit (component deltakit-explorer)"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
@@ -32,9 +32,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-core~=0.6",
-  "deltakit-circuit~=0.6",
-  "deltakit-decode~=0.6",
+  "deltakit-core>=0.7.1",
+  "deltakit-circuit>=0.7.1",
+  "deltakit-decode>=0.7",
   "gql[requests]~=3.5",
   "graphql_core~=3.2",
   "numpy~=2.0",
