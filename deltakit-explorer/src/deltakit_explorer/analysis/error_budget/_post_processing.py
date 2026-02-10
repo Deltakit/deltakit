@@ -93,13 +93,13 @@ def _compute_logical_error_rate_per_round_from_results(
     num_rounds: npt.NDArray[np.int_] | Sequence[int], data: pd.DataFrame
 ) -> LogicalErrorProbabilityPerRoundResults:
     num_fails: npt.NDArray[np.int_] | list[int] = []
-    num_shots: npt.NDArray[np.int_] | list[int] = []
+    max_shots: npt.NDArray[np.int_] | list[int] = []
     for nrounds in num_rounds:
         data_row = data.query(f"num_rounds == {nrounds}")
         nfails = data_row["fails"].to_numpy()[0]
         nshots = data_row["shots"].to_numpy()[0]
         num_fails.append(nfails)
-        num_shots.append(nshots)
+        max_shots.append(nshots)
     # Filter out 0 fails
     non_zeros_mask = np.asarray(num_fails) != 0
     if not np.all(non_zeros_mask):
@@ -109,7 +109,7 @@ def _compute_logical_error_rate_per_round_from_results(
         )
     num_rounds = np.asarray(num_rounds)[non_zeros_mask]
     num_fails = np.asarray(num_fails)[non_zeros_mask]
-    num_shots = np.asarray(num_shots)[non_zeros_mask]
+    max_shots = np.asarray(max_shots)[non_zeros_mask]
 
-    lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, num_shots)
+    lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, max_shots)
     return compute_logical_error_per_round(num_rounds, lep, lep_stddev)

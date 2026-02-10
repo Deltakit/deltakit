@@ -22,7 +22,7 @@ def inverse_lambda_at(
     noise_model: Callable[[Circuit, npt.NDArray[np.floating]], Circuit],
     noise_parameters: npt.NDArray[np.floating] | Sequence[float],
     num_rounds_by_distances: Mapping[int, Sequence[int]],
-    num_shots: int = 10_000_000,
+    max_shots: int = 10_000_000,
     batch_size: int = 10_000,
     memory_generator: MemoryGenerator
     | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
@@ -48,7 +48,7 @@ def inverse_lambda_at(
             distance that should be tested to the number of rounds that should be
             sampled in order to estimate the logical error-probability per round, to
             ultimately get 1 / Λ.
-        num_shots (int): maximum number of shots per sampling task. A sampling task may
+        max_shots (int): maximum number of shots per sampling task. A sampling task may
             stop with a lower number of samples if additional conditions are met, see
             ``lep_target_rse`` or ``lep_computation_min_fails`` for more details.
         batch_size (int): number of sampling experiments that are submitted per batch.
@@ -56,11 +56,11 @@ def inverse_lambda_at(
             experiment. The resulting circuit will go through the provided
             ``noise_model`` for different values of the noise parameters.
         lep_target_rse (float): target relative standard error under which a sampling
-            task is considered precise enough and can be stopped before ``num_shots``
+            task is considered precise enough and can be stopped before ``max_shots``
             sampling tasks have returned.
         lep_computation_min_fails (int): minimum number of failures that should be
             witnessed before stopping a sampling task. A sampling task may stop with
-            less failures, for example if ``num_shots`` shots have been performed.
+            less failures, for example if ``max_shots`` shots have been performed.
         max_workers (int): max number of parallel processes used by the function.
             Default to 1 which means fully sequential.
 
@@ -88,7 +88,7 @@ def inverse_lambda_at(
     engine = RunAllAnalysisEngine(
         experiment_name="Estimating 1 / Λ",
         decoder_managers=decoder_managers,
-        max_shots=num_shots,
+        max_shots=max_shots,
         batch_size=batch_size,
         # Early stopping when we have a low-enough standard deviation
         loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(

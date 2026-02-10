@@ -47,6 +47,7 @@ class ErrorBudgetResult:
         gradient_stddevs: npt.NDArray[np.floating],
         noise_parameters: npt.NDArray[np.floating],
     ) -> ErrorBudgetResult:
+        """Create an instance from gradient and noise parameters."""
         contributions = np.abs(gradient * noise_parameters)
         stddevs = np.abs(gradient_stddevs * noise_parameters)
         return ErrorBudgetResult(
@@ -60,7 +61,7 @@ def get_error_budget(
     num_rounds_by_distances: Mapping[int, Sequence[int]],
     noise_parameters_exploration_bounds: list[tuple[float, float]],
     num_points_per_parameters: int = 10,
-    num_shots: int = 10_000_000,
+    max_shots: int = 10_000_000,
     batch_size: int = 10_000,
     memory_generator: MemoryGenerator
     | Mapping[int, Mapping[int, Circuit]] = get_rotated_surface_code_memory_circuit,
@@ -93,14 +94,14 @@ def get_error_budget(
             noise_parameters_exploration_bounds[i][1]``). Ideally, the lower (resp.
             upper) bound provided must be such that the logical error probability when
             replacing the parameter with its lower (resp. upper) bound is above
-            ``100 / num_shots`` to ensure enough fails are observed with ``num_shots``
+            ``100 / max_shots`` to ensure enough fails are observed with ``max_shots``
             shots (resp. below ``1 / 2`` to ensure that we can compute the logical error
             probability per round).
         num_points_per_parameters (int): number of different values to try for each
             noise parameter. Corresponds to the number of points that will be used to
             fit a degree ``fitting_degree`` polynomial. As such, should be greater than
             ``fitting_degree + 1``.
-        num_shots (int): maximum number of shots per sampling task. A sampling task may
+        max_shots (int): maximum number of shots per sampling task. A sampling task may
             stop with a lower number of samples if additional conditions are met, see
             ``lep_target_rse`` or ``lep_computation_min_fails`` for more details.
         batch_size (int): number of sampling experiments that are submitted per batch.
@@ -108,11 +109,11 @@ def get_error_budget(
             experiment. The resulting circuit will go through the provided
             ``noise_model`` for different values of the noise parameters.
         lep_target_rse (float): target relative standard error under which a sampling
-            task is considered precise enough and can be stopped before ``num_shots``
+            task is considered precise enough and can be stopped before ``max_shots``
             sampling tasks have returned.
         lep_computation_min_fails (int): minimum number of failures that should be
             witnessed before stopping a sampling task. A sampling task may stop with less
-            failures, for example if ``num_shots`` shots have been performed.
+            failures, for example if ``max_shots`` shots have been performed.
         discretisation_generator (GradientFitDiscretisationGenerator): a callable
             generating points that can be used to compute 1 / Λ on different values and
             fit a degree ``fitting_degree`` polynomial. Default to logarithmically
@@ -140,7 +141,7 @@ def get_error_budget(
         num_rounds_by_distances,
         noise_parameters_exploration_bounds,
         num_points_per_parameters,
-        num_shots,
+        max_shots,
         batch_size,
         memory_generator,
         lep_target_rse,
