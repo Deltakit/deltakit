@@ -69,7 +69,7 @@
 </tr>
 </table>
 
-For more detailed information, check out the [Deltakit documentation](https://deltakit-docs.riverlane.com/en/docs/).
+For more detailed information, check out the [Deltakit documentation](https://deltakit-docs.riverlane.com).
 
 For any usage questions or comments, visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
 

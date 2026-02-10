@@ -281,8 +281,8 @@ def defect_rates(
                     range(1, len(defect_rate) + 1),
                     defect_rate, color="#006f62", alpha=0.3
                 )
-    w2_detectors = np.mean(w2_avg if w2_avg else [[]], axis=0)
-    w4_detectors = np.mean(w4_avg if w4_avg else [[]], axis=0)
+    w2_detectors = np.mean(w2_avg or [[]], axis=0)
+    w4_detectors = np.mean(w4_avg or [[]], axis=0)
     plt.plot(
         range(1, len(w4_detectors) + 1),
         w4_detectors,
