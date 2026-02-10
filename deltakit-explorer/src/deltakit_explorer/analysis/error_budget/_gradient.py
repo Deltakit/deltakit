@@ -3,6 +3,7 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 
 import numpy as np
 import numpy.typing as npt
+import pandas as pd
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
@@ -168,6 +169,101 @@ def _get_variance_of_gradient_estimation_at_point(
     return float(np.sum(derivative_cov))
 
 
+def generate_sweep_parameters(
+    central_point: npt.NDArray[np.floating],
+    noise_parameters_exploration_bounds: list[tuple[float, float]],
+    fitting_parameters: FittingParameters = FittingParameters(),
+) -> npt.NDArray[np.floating]:
+    # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
+    # This is performing a sweeping for each parameter individually.
+    xis: list[npt.NDArray[np.floating]] = [central_point.reshape((-1,))]
+    for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
+        variations = fitting_parameters.get_discretisation(
+            minimum, maximum, central_point[i]
+        )
+        xis.extend(_variate_ith_parameter_by(central_point, variations, i))
+
+    return np.asarray(xis).T
+
+
+def get_decoding_result(
+    noise_model: Callable[[Circuit, npt.NDArray[np.floating]], Circuit],
+    sweep_noise_parameters: npt.NDArray[np.floating],
+    noise_parameter_names: list[str],
+    num_rounds_by_distances: Mapping[int, Sequence[int]],
+    fitting_parameters: FittingParameters = FittingParameters(),
+    sampling_parameters: SamplingParameters = SamplingParameters(),
+    memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
+) -> pd.DataFrame:
+    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
+    # Prepare the computation by building the decoder managers.
+    decoder_managers = generate_decoder_managers_for_lambda(
+        sweep_noise_parameters,
+        noise_model,
+        num_rounds_by_distances,
+        sampling_parameters.max_workers,
+        memory_generator=memory_generator,
+        noise_parameter_names=noise_parameter_names,
+    )
+
+    # Start the computation
+    num_parameters = sweep_noise_parameters.shape[0]
+    num_points = num_parameters * fitting_parameters.num_points_per_parameters
+    engine = RunAllAnalysisEngine(
+        experiment_name=f"Estimating Λ on {num_points} points",
+        decoder_managers=decoder_managers,
+        max_shots=sampling_parameters.max_shots,
+        batch_size=sampling_parameters.batch_size,
+        # Early stopping when we have a low-enough standard deviation
+        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
+            sampling_parameters.lep_target_rse,
+            sampling_parameters.lep_computation_min_fails,
+        ),
+        num_parallel_processes=sampling_parameters.max_workers,
+    )
+    return engine.run()
+
+
+def get_lambda_gradient(
+    report: pd.DataFrame,
+    central_point: npt.NDArray[np.floating],
+    sweep_noise_parameters: npt.NDArray[np.floating],
+    noise_parameter_names: list[str],
+    num_rounds_by_distances: Mapping[int, Sequence[int]],
+    fitting_parameters: FittingParameters = FittingParameters(),
+) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
+    # Post-process the results to get all the estimations for 1 / Λ
+    lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
+        sweep_noise_parameters, noise_parameter_names, num_rounds_by_distances, report
+    )
+    lambda_reciprocals = 1 / lambdas
+    lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
+
+    # We now have all the estimations of 1 / Λ, we can approximate the gradient
+    # Note that ``noise_parameters``, ``lambda_reciprocals`` and
+    # ``lambda_reciprocal_stddevs`` have the same shapes: a 2-dimensional array with
+    # values as columns. Additionally, the first column corresponds to the exact point
+    # at which we want the gradient and each following group of
+    # ``num_points_per_parameters`` columns correspond to the variation of one
+    # parameter.
+    gradient: list[float] = []
+    gradient_stddev: list[float] = []
+    for npi, noise_parameter in enumerate(central_point):
+        start = 1 + fitting_parameters.num_points_per_parameters * npi
+        end = 1 + fitting_parameters.num_points_per_parameters * (npi + 1)
+        # Index 0 is ``central_point``, so it can be included in all estimations.
+        column_indices = [0, *list(range(start, end))]
+        x = sweep_noise_parameters[npi, column_indices]
+        y = lambda_reciprocals[0, column_indices]
+        stddevs = lambda_reciprocal_stddevs[0, column_indices]
+        derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
+            x, y, stddevs, noise_parameter, degree=fitting_parameters.fitting_degree
+        )
+        gradient.append(derivative)
+        gradient_stddev.append(derivative_stddev)
+    return np.asarray(gradient), np.asarray(gradient_stddev)
+
+
 def inverse_lambda_gradient_at(
     noise_model: Callable[[Circuit, npt.NDArray[np.floating]], Circuit],
     noise_parameters: npt.NDArray[np.floating] | Sequence[float],
@@ -232,76 +328,27 @@ def inverse_lambda_gradient_at(
     # in the CSV file storing the simulation results.
     noise_parameter_names = [str(i) for i in range(len(noise_parameters))]
 
-    # Getting the points on which we will estimate 1 / Λ into ``noise_parameters``.
-    # This is performing a sweeping for each parameter individually.
     central_point: npt.NDArray[np.floating] = noise_model_parameters.reshape((-1, 1))
-    xis: list[npt.NDArray[np.floating]] = [central_point.reshape((-1,))]
-    for i, (minimum, maximum) in enumerate(noise_parameters_exploration_bounds):
-        variations = fitting_parameters.get_discretisation(
-            minimum, maximum, central_point[i]
-        )
-        xis.extend(_variate_ith_parameter_by(central_point, variations, i))
-
-    # Note: noise_parameters[:, 0] is always ``central_point``.
-    noise_parameters = np.asarray(xis).T
-
-    # ``noise_parameters`` contains all the noise parameters we want to evaluate 1 / Λ.
-    # Prepare the computation by building the decoder managers.
-    decoder_managers = generate_decoder_managers_for_lambda(
-        noise_parameters,
+    # Generate the noise parameters at which we will compute Λ.
+    sweep_noise_parameters = generate_sweep_parameters(
+        central_point, noise_parameters_exploration_bounds, fitting_parameters
+    )
+    # Sample on these noise parameters.
+    report = get_decoding_result(
         noise_model,
+        sweep_noise_parameters,
+        noise_parameter_names,
         num_rounds_by_distances,
-        sampling_parameters.max_workers,
-        memory_generator=memory_generator,
-        noise_parameter_names=noise_parameter_names,
+        fitting_parameters,
+        sampling_parameters,
+        memory_generator,
     )
-
-    # Start the computation
-    num_points = (
-        noise_model_parameters.size * fitting_parameters.num_points_per_parameters
+    # Compute the gradient of Λ from the sampling results.
+    return get_lambda_gradient(
+        report,
+        central_point,
+        sweep_noise_parameters,
+        noise_parameter_names,
+        num_rounds_by_distances,
+        fitting_parameters,
     )
-    engine = RunAllAnalysisEngine(
-        experiment_name=f"Estimating Λ on {num_points} points",
-        decoder_managers=decoder_managers,
-        max_shots=sampling_parameters.max_shots,
-        batch_size=sampling_parameters.batch_size,
-        # Early stopping when we have a low-enough standard deviation
-        loop_condition=RunAllAnalysisEngine.loop_until_observable_rse_below_threshold(
-            sampling_parameters.lep_target_rse,
-            sampling_parameters.lep_computation_min_fails,
-        ),
-        num_parallel_processes=sampling_parameters.max_workers,
-    )
-    report = engine.run()
-
-    # Post-process the results to get all the estimations for 1 / Λ
-    lambdas, lambda_stddevs = compute_lambda_and_stddev_from_results(
-        noise_parameters, noise_parameter_names, num_rounds_by_distances, report
-    )
-    lambda_reciprocals = 1 / lambdas
-    lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
-
-    # We now have all the estimations of 1 / Λ, we can approximate the gradient
-    # Note that ``noise_parameters``, ``lambda_reciprocals`` and
-    # ``lambda_reciprocal_stddevs`` have the same shapes: a 2-dimensional array with
-    # values as columns. Additionally, the first column corresponds to the exact point
-    # at which we want the gradient and each following group of
-    # ``num_points_per_parameters`` columns correspond to the variation of one
-    # parameter.
-    gradient: list[float] = []
-    gradient_stddev: list[float] = []
-    for npi, noise_parameter in enumerate(central_point):
-        start = 1 + fitting_parameters.num_points_per_parameters * npi
-        end = 1 + fitting_parameters.num_points_per_parameters * (npi + 1)
-        # Index 0 is ``central_point``, so it can be included in all estimations.
-        column_indices = [0, *list(range(start, end))]
-        x = noise_parameters[npi, column_indices]
-        y = lambda_reciprocals[0, column_indices]
-        stddevs = lambda_reciprocal_stddevs[0, column_indices]
-        derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
-            x, y, stddevs, noise_parameter, degree=fitting_parameters.fitting_degree
-        )
-        gradient.append(derivative)
-        gradient_stddev.append(derivative_stddev)
-
-    return np.asarray(gradient), np.asarray(gradient_stddev)

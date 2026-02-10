@@ -16,7 +16,7 @@ class FittingParameters:
     Corresponds to the number of points that will be used to fit a degree ``fitting_degree``
     polynomial. As such, should be greater than ``fitting_degree + 1``.
     """
-    discretisation_strategy: DiscretisationStrategy= DiscretisationStrategy.LOGARITHMIC
+    discretisation_strategy: DiscretisationStrategy = DiscretisationStrategy.LOGARITHMIC
     """A strategy to generate points that will be used to compute 1 / Λ on different
     values and fit a degree ``fitting_degree`` polynomial.
 
@@ -42,8 +42,13 @@ class FittingParameters:
             )
             raise ValueError(msg)
 
-    def get_discretisation(self, a: float, b: float, c: float) -> npt.NDArray[np.floating]:
-        return self.discretisation_strategy(a, b, c, self.num_points_per_parameters, self.fitting_degree)
+    def get_discretisation(
+        self, a: float, b: float, c: float
+    ) -> npt.NDArray[np.floating]:
+        return self.discretisation_strategy(
+            a, b, c, self.num_points_per_parameters, self.fitting_degree
+        )
+
 
 @dataclass(frozen=True)
 class SamplingParameters:

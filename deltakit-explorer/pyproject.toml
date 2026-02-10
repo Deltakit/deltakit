@@ -76,6 +76,7 @@ stubs = [
   "scipy-stubs~=1.15",
   "types-tqdm~=4.66",
   "types-requests~=2.32",
+  "pandas-stubs>=2.2.2",
 ]
 lint = [
   "mypy~=1.17",
