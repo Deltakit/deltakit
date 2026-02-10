@@ -1,6 +1,8 @@
 from deltakit_explorer.analysis.error_budget import (
     DiscretisationStrategy,
+    FittingParameters,
     MemoryGenerator,
+    SamplingParameters,
     compute_lambda_and_stddev_from_results,
     generate_decoder_managers_for_lambda,
     get_error_budget,

@@ -17,7 +17,7 @@ from deltakit_explorer.analysis._quops import (
     predict_quops_at_distance,
 )
 
-from . import budget
+from . import error_budget
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]
