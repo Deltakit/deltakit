@@ -261,7 +261,7 @@ def _compile_reset_and_meas_to_native_gates(
     Parameters
     ----------
     comp_data : CompilationData
-        Circuit to compile in the form of CompilationData.
+        Circuit to compile in the form of CompilationData. This will be mutated.
     native_gate_set : NativeGateSetAndTimes
         Native gate set to compile to.
     comp_dict : TableauDict
@@ -271,6 +271,7 @@ def _compile_reset_and_meas_to_native_gates(
     layer_index_lookup : Dict[int, int]
         Dictionary with keys of the original layer indices, and values being their adjusted
         indices accounting for the addition of unitary gates during the compilation process.
+        This will be mutated.
 
     Returns
     -------
@@ -469,7 +470,7 @@ def _compile_two_qubit_gates_to_native_gates(
     Parameters
     ----------
     comp_data : CompilationData
-        Circuit to compile in the form of CompilationData.
+        Circuit to compile in the form of CompilationData. This will be mutated.
     native_gate_set : NativeGateSetAndTimes
         Native gate set to compile to.
     comp_dict : TableauDict
@@ -479,6 +480,7 @@ def _compile_two_qubit_gates_to_native_gates(
     layer_index_lookup : Dict[int, int]
         Dictionary with keys of the original layer indices, and values being their adjusted
         indices accounting for the addition of unitary gates during the compilation process.
+        This will be mutated.
 
     Returns
     -------
@@ -636,10 +638,11 @@ def _compile_comp_data(
     Parameters
     ----------
     comp_data : CompilationData
-        Circuit to compile, in CompilationData form.
+        Circuit to compile, in CompilationData form. This will be mutated by the compilation process.
     layer_index_lookup : Dict[int, int]
         Accompanying layer index lookup dictionary, used to ensure
         gates added for compilation do not clash in layers.
+        This will be mutated by the compilation process
     native_gate_set : NativeGateSetAndTimes
         Native gate set to try compiling to.
     comp_dict : TableauDict

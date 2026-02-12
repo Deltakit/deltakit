@@ -89,7 +89,7 @@ dev = [
   { include-group = "security" },
   # other
   "pre-commit~=4.2",
-  "validate-pyproject~=0.24.1",
+  "validate-pyproject>=0.24.1,<0.26.0",
 ]
 release = [
   "tomlkit~=0.14",
