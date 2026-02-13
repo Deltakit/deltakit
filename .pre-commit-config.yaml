@@ -77,3 +77,8 @@ repos:
     rev: v1.7.9
     hooks:
       - id: actionlint
+
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.8.3
+    hooks:
+      - id: pydoclint

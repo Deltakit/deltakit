@@ -65,6 +65,7 @@ lint = [
   "typos~=1.34",
   "deptry~=0.23",
   "types-networkx~=3.1",
+  "pydoclint~=0.8",
 ]
 security = ["bandit~=1.8", "pip-audit~=2.7"]
 dev = [
@@ -94,3 +95,16 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
+
+[tool.pydoclint]
+style = 'google'
+exclude = '\.git|\.venv.*'
+# We do not want type hints to be duplicated in docstrings.
+arg-type-hints-in-docstring = false
+check-return-types = false
+check-yield-types = false
+# Ensure that Google style is used
+check-style-mismatch = true
+# For the moment, we have a baseline of documentation format errors. Eventually, this will
+# be removed.
+baseline = ".pydoclint_baseline.txt"

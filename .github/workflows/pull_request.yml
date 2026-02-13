@@ -104,6 +104,10 @@ jobs:
         run: uv run --no-sync ruff format --check
         working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
+      - name: Run `pydoclint` documentation formatting
+        run: uv run --no-sync pydoclint .
+        working-directory: ./${{ matrix.projects.path }}
+        if: ${{ always() }}
       - name: Run `mypy` type checker
         run: uv run --no-sync mypy
         working-directory: ./${{ matrix.projects.path }}
