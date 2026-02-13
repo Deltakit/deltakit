@@ -143,30 +143,12 @@ def _get_variance_of_gradient_estimation_at_point(
         The variance of the gradient estimation at point ``c``.
     """
     # From https://en.wikipedia.org/wiki/Covariance#Covariance_of_linear_combinations we
-    # have an easy formula for the variance involving the covariance matrix. We build
-    # the terms of the sum in a copy of the ``cov`` matrix.
-    # We do not need to use the first row/column of the covariance matrix because it is
-    # linked with the intersect, that is not used when computing the derivative.
-    derivative_cov = np.copy(cov[1:, 1:])
-    num_derivative_coefficients = derivative_cov.shape[0]
-    # The original polynomial at ``x`` is given by
-    #       sum(a[i] * x**i for i in range(0, n+1))
-    # Its derivative is then given by
-    #       sum(a[i+1] * (i+1) * x**i for i in range(0, n))
-    # Removing a[0] from a (and so shifting its indexing by 1, which is what we just did
-    # with the covariance matrix above) we have the derivative given by
-    #       sum(a[i] * (i+1) * x**i for i in range(0, n))
-    # When evaluating the gradient at the point c, the degree i coefficient of the
-    # derivative (that is ``a[i]`` above or equivalently the degree (i+1) coefficient of
-    # the original polynomial) is multiplied by (i + 1) * c**i. We can ignore (i.e., not
-    # change) the degree 0 as the factor is (0 + 1) * c**0 = 1.
-    for i in range(1, num_derivative_coefficients):
-        derivative_cov[i, :] *= (i + 1) * c**i
-        derivative_cov[:, i] *= (i + 1) * c**i
-    # Finally, according to
-    # https://en.wikipedia.org/wiki/Covariance#Covariance_of_linear_combinations,
-    # the variance is given by the sum of the derivative covariance matrix above.
-    return float(np.sum(derivative_cov))
+    # have an easy formula for the variance involving the covariance matrix.
+    n = cov.shape[0]
+    coeff_matrix = np.array(
+        [[(i + 1) * (j + 1) * c ** (i + j) for i in range(n - 1)] for j in range(n - 1)]
+    )
+    return float(np.sum(coeff_matrix * cov[1:, 1:]))
 
 
 def generate_sweep_parameters(
