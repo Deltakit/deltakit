@@ -105,6 +105,8 @@ check-return-types = false
 check-yield-types = false
 # Ensure that Google style is used
 check-style-mismatch = true
+# Short docstrings are an open door for circumventing the linter.
+skip-checking-short-docstrings = false
 # For the moment, we have a baseline of documentation format errors. Eventually, this will
 # be removed.
 baseline = ".pydoclint_baseline.txt"
