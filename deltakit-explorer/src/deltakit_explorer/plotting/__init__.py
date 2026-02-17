@@ -3,6 +3,7 @@
 
 from deltakit_explorer.plotting._lambda import plot_lambda
 from deltakit_explorer.plotting._leppr import plot_logical_error_probability_per_round
+from deltakit_explorer.plotting._surface_code_patch import draw_surface_code_patch
 from deltakit_explorer.plotting._visualisation import (
                                                             correlation_matrix,
                                                             defect_diagram,
