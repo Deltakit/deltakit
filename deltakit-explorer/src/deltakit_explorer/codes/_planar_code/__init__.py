@@ -6,7 +6,7 @@ __init__.py file is a historical artefact and can be removed, adjusting
 imports within other `deltakit_explorer` modules accordingly.
 """
 
-from deltakit_explorer.codes._planar_code._planar_code import ScheduleType
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
 from deltakit_explorer.codes._planar_code._unrotated_planar_code import (
     UnrotatedPlanarCode,

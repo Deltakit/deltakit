@@ -397,7 +397,7 @@ class PlanarCode(CSSCode, ABC):
                 reverse=True,
             )
         )
-    def draw_patch(self, filename:str, backend:str|None, unrotated_code:bool) -> None:
+    def draw_patch(self, filename:str, backend:str|None="matplotlib", unrotated_code:bool=False) -> None:
         draw_code(self, filename=filename, backend=backend, unrotated_code=unrotated_code)
 
     @cached_property

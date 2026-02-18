@@ -19,7 +19,6 @@ from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import 
     UnrotatedPlanarCodeSchedules,
 )
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.plotting._visualisation import draw_code
 
 
 class UnrotatedToricCode(PlanarCode):
@@ -157,5 +156,5 @@ class UnrotatedToricCode(PlanarCode):
 
         return (x_logicals, z_logicals)
 
-    def draw_patch(self, filename:str, backend:str|None=None, unrotated_code:bool=True) -> None:
-        draw_code(self, filename=filename, backend=backend, unrotated_code=unrotated_code)
+    def draw_patch(self, filename:str, backend:str|None='matplotlib', unrotated_code:bool=True) -> None:
+        super().draw_patch(self, filename=filename, backend=backend, unrotated_code=unrotated_code)

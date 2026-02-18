@@ -53,8 +53,8 @@ dependencies = [
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
   "ldpc~=2.2",
-  "plotly",
 ]
+
 
 
 [project.urls]

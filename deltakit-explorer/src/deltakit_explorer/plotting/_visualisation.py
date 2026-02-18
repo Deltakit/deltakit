@@ -8,10 +8,10 @@ from collections.abc import Collection, Iterable, Sequence
 from itertools import chain
 from pathlib import Path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-import plotly.tools as tls
 import seaborn as sns
 from deltakit_circuit import PauliX
 from matplotlib.lines import Line2D
@@ -19,7 +19,7 @@ from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
 from numpy import arctan2, argsort, array, int8
 
-from deltakit_explorer.codes._planar_code._planar_code import PlanarCode
+from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.enums._basic_enums import DrawingColours
 from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
@@ -306,7 +306,15 @@ def defect_rates(
     return plt
 
 
-def draw_code(code:PlanarCode, filename:str, backend:str='plotly', unrotated_code:bool=False) -> None:
+def draw_code(code:CSSCode, filename:str, backend:str='matplotlib', unrotated_code:bool=False) -> None:
+    if backend=="pgf":
+        mpl.use("pgf")
+        mpl.rcParams.update({
+            "pgf.texsystem": "pdflatex",
+            "font.family": "serif",
+            "text.usetex": True,
+            "pgf.rcfonts": False,
+        })
     fig, ax = plt.subplots(nrows=1, ncols=1)
 
     all_qubit_x_coords = [qubit.unique_identifier.x for qubit in code.qubits]
@@ -487,9 +495,8 @@ def draw_code(code:PlanarCode, filename:str, backend:str='plotly', unrotated_cod
         if backend == "matplotlib":
             fig.savefig(filename, bbox_extra_artists=(legend,), bbox_inches="tight")
             plt.close(fig)
-        elif backend == "plotly":
-            plotly_fig = tls.mpl_to_plotly(fig)
-            plotly_fig.write_image(filename + ".pdf")
+        elif backend == "pgf":
+            plt.savefig(filename + ".pgf",  bbox_extra_artists=(legend,), bbox_inches="tight")
         elif backend == "svg":
             fig.savefig(filename + ".svg", bbox_extra_artists=(legend,), bbox_inches="tight")
             plt.close(fig)
