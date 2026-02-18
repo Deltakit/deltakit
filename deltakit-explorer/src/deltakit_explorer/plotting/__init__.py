@@ -7,6 +7,7 @@ from deltakit_explorer.plotting._visualisation import (
                                                             correlation_matrix,
                                                             defect_diagram,
                                                             defect_rates,
+                                                            draw_code,
 )
 
 # List only public members in `__all__`.

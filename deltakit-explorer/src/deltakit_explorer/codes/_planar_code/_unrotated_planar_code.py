@@ -170,5 +170,5 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
-    def draw_patch(self, filename: str | None = None, unrotated_code: bool = True) -> None:
-        return super().draw_patch(filename, unrotated_code)
+    def draw_patch(self, filename: str | None = None, backend:str|None=None, unrotated_code: bool = True) -> None:
+        return super().draw_patch(filename, backend, unrotated_code)
