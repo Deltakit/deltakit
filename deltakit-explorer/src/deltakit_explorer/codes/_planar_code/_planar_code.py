@@ -7,6 +7,7 @@ import warnings
 from abc import ABC, abstractmethod
 from enum import Enum
 from functools import cached_property
+from typing import Literal
 
 import numpy as np
 from deltakit_circuit import PauliX, PauliZ, Qubit
@@ -397,7 +398,7 @@ class PlanarCode(CSSCode, ABC):
                 reverse=True,
             )
         )
-    def draw_patch(self, filename:str, backend:str|None="matplotlib", unrotated_code:bool=False) -> None:
+    def draw_patch(self, filename: str | None = None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code: bool = False) -> None:
         draw_code(self, filename=filename, backend=backend, unrotated_code=unrotated_code)
 
     @cached_property

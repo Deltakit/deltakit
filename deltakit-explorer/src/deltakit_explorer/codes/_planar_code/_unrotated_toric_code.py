@@ -5,6 +5,7 @@ represents two logical qubits.
 """
 
 import itertools
+from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
@@ -156,5 +157,5 @@ class UnrotatedToricCode(PlanarCode):
 
         return (x_logicals, z_logicals)
 
-    def draw_patch(self, filename:str, backend:str|None='matplotlib', unrotated_code:bool=True) -> None:
+    def draw_patch(self, filename: str | None = None, backend:Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code: bool = True) -> None:
         super().draw_patch(self, filename=filename, backend=backend, unrotated_code=unrotated_code)

@@ -7,6 +7,7 @@ from __future__ import annotations
 from collections.abc import Collection, Iterable, Sequence
 from itertools import chain
 from pathlib import Path
+from typing import Literal
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -17,7 +18,6 @@ from deltakit_circuit import PauliX
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
-from numpy import arctan2, argsort, array, int8
 
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.enums._basic_enums import DrawingColours
@@ -306,7 +306,7 @@ def defect_rates(
     return plt
 
 
-def draw_code(code:CSSCode, filename:str, backend:str='matplotlib', unrotated_code:bool=False) -> None:
+def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code:bool=False) -> None:
     if backend=="pgf":
         mpl.use("pgf")
         mpl.rcParams.update({
@@ -387,11 +387,11 @@ def draw_code(code:CSSCode, filename:str, backend:str='matplotlib', unrotated_co
                 ]
 
         # Re order data qubit coords for polygon drawing
-        ordered_data_qubit_y_coords: npt.NDArray[int8] = array(data_qubit_y_coords)
-        ordered_data_qubit_x_coords: npt.NDArray[int8] = array(data_qubit_x_coords)
+        ordered_data_qubit_y_coords: npt.NDArray[np.int8] = np.array(data_qubit_y_coords)
+        ordered_data_qubit_x_coords: npt.NDArray[np.int8] = np.array(data_qubit_x_coords)
 
-        order = argsort(
-            arctan2(
+        order = np.argsort(
+            np.arctan2(
                 ordered_data_qubit_y_coords - ordered_data_qubit_y_coords.mean(),
                 ordered_data_qubit_x_coords - ordered_data_qubit_x_coords.mean(),
             )
@@ -492,7 +492,7 @@ def draw_code(code:CSSCode, filename:str, backend:str='matplotlib', unrotated_co
         output_directory = Path(filename)
         if not output_directory.exists():
             output_directory.parent.mkdir(parents=True, exist_ok=True)
-        if backend == "matplotlib":
+        if backend == "matplotlib" or backend is None:
             fig.savefig(filename, bbox_extra_artists=(legend,), bbox_inches="tight")
             plt.close(fig)
         elif backend == "pgf":

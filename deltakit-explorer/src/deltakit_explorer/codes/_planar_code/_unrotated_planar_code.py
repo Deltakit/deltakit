@@ -4,6 +4,7 @@ This module stores an implementation of the unrotated planar code.
 """
 
 import itertools
+from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
@@ -170,5 +171,5 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
-    def draw_patch(self, filename: str | None = None, backend:str|None = 'matplotlib', unrotated_code: bool = True) -> None:
+    def draw_patch(self, filename: str | None = None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code: bool = True) -> None:
         return super().draw_patch(filename, backend, unrotated_code)
