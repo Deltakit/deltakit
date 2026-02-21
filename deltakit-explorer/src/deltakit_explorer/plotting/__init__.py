@@ -8,6 +8,13 @@ from deltakit_explorer.plotting._visualisation import (
                                                             defect_diagram,
                                                             defect_rates,
 )
+from deltakit_explorer.plotting.plotting import plot
+from deltakit_explorer.plotting.results import (
+                                                            LambdaPlot,
+                                                            LEPPRPlot,
+                                                            compute_lambda_plot,
+                                                            compute_leppr_plot,
+)
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]

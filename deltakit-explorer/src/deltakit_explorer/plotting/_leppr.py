@@ -8,27 +8,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
-
-
-def _lep_interpolated(
-    spam: float, leppr: float, rounds_interpolated: npt.NDArray[np.floating]
-) -> npt.NDArray[np.floating]:
-    """Computes logical error that would be obtained with the provided values.
-
-    Uses the formula ``F = Fs * Fε**r`` where:
-
-    - ``F`` is the expected fidelity of the computation,
-    - ``Fs`` is the fidelity of SPAM-related operations,
-    - ``Fε`` is the fidelity of one quantum error-correction round,
-    - ``r`` is the number of quantum error-correction rounds performed.
-
-    Each fidelity is obtained from the respective error probability with the formula
-    ``f = (1 - 2 * e)`` where ``f`` is any of ``F``, ``Fs`` or ``Fε`` and ``e`` is any
-    of logical error probability, logical error probability of a SPAM or logical error
-    probability per round.
-    """
-    expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
-    return (1 - expected_fidelity) / 2
+from deltakit_explorer.plotting.results import LEPPRPlot, compute_leppr_plot
 
 
 def plot_logical_error_probability_per_round(
@@ -128,33 +108,26 @@ def plot_logical_error_probability_per_round(
         color=RIVERLANE_PLOT_COLOURS[0],
         label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
     )
+
+    # Compute the interpolated fit data using the result type
+    leppr_plot: LEPPRPlot = compute_leppr_plot(
+        leppr_data, num_rounds, num_sigmas=num_sigmas
+    )
+
     # Plot the fitted logical error probability per round curve
     leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
-    spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
-    rounds_interpolated = np.linspace(num_rounds[0], num_rounds[-1], 200)
-    lep_interpolated = _lep_interpolated(spam, leppr, rounds_interpolated)
     ax.plot(
-        rounds_interpolated,
-        lep_interpolated,
+        leppr_plot.rounds,
+        leppr_plot.interpolated,
         label=f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
     # Add error band to logical error probability per round curve
-    lep_interpolated_low = _lep_interpolated(
-        spam - num_sigmas * spam_stddev,
-        leppr - num_sigmas * leppr_stddev,
-        rounds_interpolated
-    )
-    lep_interpolated_high = _lep_interpolated(
-        spam + num_sigmas * spam_stddev,
-        leppr + num_sigmas * leppr_stddev,
-        rounds_interpolated
-    )
     ax.fill_between(
-        rounds_interpolated,
-        np.clip(lep_interpolated_low, 0, 1),
-        np.clip(lep_interpolated_high, 0, 1),
+        leppr_plot.rounds,
+        leppr_plot.lower_boundary,
+        leppr_plot.upper_boundary,
         color=RIVERLANE_PLOT_COLOURS[0],
         alpha=0.2
     )

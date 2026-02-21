@@ -8,25 +8,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis._lambda import LambdaResults
-
-
-def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_]
-) -> npt.NDArray[np.floating]:
-    """Computes logical error probability per round that would be obtained with the
-    provided values.
-
-    Uses the formula ``ε = 1 / Λ_0 * Λ**(-(d + 1) / 2)`` where:
-
-    - ``ε`` is the logical error probability per round,
-    - ``Λ_0`` is a multiplicative constant,
-    - ``Λ`` is the error suppression factor,
-    - ``d`` is the distance of the code,
-
-    to estimate the logical error probability per round from the provided ``lambda_``
-    and ``lambda0`` on the provided list of ``distances``.
-    """
-    return lambda_**(-(distances + 1) / 2) / lambda0
+from deltakit_explorer.plotting.results import LambdaPlot, compute_lambda_plot
 
 
 def plot_lambda(
@@ -46,11 +28,21 @@ def plot_lambda(
     how close the fit is from actual data.
 
     Args:
+        lambda_data (LambdaResults): Results from
+            :func:`~deltakit_explorer.analysis.calculate_lambda_and_lambda_stddev`.
         distances (npt.NDArray[numpy.int\\_] | Sequence[int]): The distances of the code.
         lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
             The logical error probabilities per round.
-        lep_stddev_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
+        lep_per_round_stddev (npt.NDArray[numpy.float64] | Sequence[float] | None):
             The standard deviation of the logical error probabilities per round.
+            If None, no error bars will be plotted. Default is None.
+        num_sigmas (int): number of sigmas to consider when plotting error bars.
+        fig (Figure | None, optional):
+            a matplotlib Figure object to plot on. If None, a new figure will be created.
+            Default is None.
+        ax (Axes | None, optional):
+            a matplotlib Axes object to plot on. If None, a new axes will be created.
+            Default is None.
 
     Returns:
         tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
@@ -103,33 +95,25 @@ def plot_lambda(
         label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
+    # Compute the interpolated fit data using the result type
+    lambda_plot: LambdaPlot = compute_lambda_plot(
+        lambda_data, distances, num_sigmas=num_sigmas
+    )
+
     # Plot the fitted lambda curve
     lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
-    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
-    distances_interpolated = np.linspace(distances[0], distances[-1], 200)
-    lambda_interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
     ax.plot(
-        distances_interpolated,
-        lambda_interpolated,
+        lambda_plot.distances,
+        lambda_plot.interpolated,
         label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
     # Add error band to lambda curve
-    lambda_interpolated_low = _lambda_interpolated(
-        lambda0 - num_sigmas * lambda0_stddev,
-        lambda_ - num_sigmas * lambda_stddev,
-        distances_interpolated
-    )
-    lambda_interpolated_high = _lambda_interpolated(
-        lambda0 + num_sigmas * lambda0_stddev,
-        lambda_ + num_sigmas * lambda_stddev,
-        distances_interpolated
-    )
     ax.fill_between(
-        distances_interpolated,
-        lambda_interpolated_low,
-        lambda_interpolated_high,
+        lambda_plot.distances,
+        lambda_plot.lower_boundary,
+        lambda_plot.upper_boundary,
         color=RIVERLANE_PLOT_COLOURS[0],
         alpha=0.2
     )
