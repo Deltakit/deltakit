@@ -7,30 +7,11 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis._lambda import LambdaResults
-
-
-def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_]
-) -> npt.NDArray[np.floating]:
-    """Computes logical error probability per round that would be obtained with the
-    provided values.
-
-    Uses the formula ``ε = 1 / Λ_0 * Λ**(-(d + 1) / 2)`` where:
-
-    - ``ε`` is the logical error probability per round,
-    - ``Λ_0`` is a multiplicative constant,
-    - ``Λ`` is the error suppression factor,
-    - ``d`` is the distance of the code,
-
-    to estimate the logical error probability per round from the provided ``lambda_``
-    and ``lambda0`` on the provided list of ``distances``.
-    """
-    return lambda_**(-(distances + 1) / 2) / lambda0
+from deltakit_explorer.plotting.result import LambdaResults
 
 
 def plot_lambda(
-    lambda_data: LambdaResults,
+    lambda_results: LambdaResults,
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
@@ -46,11 +27,15 @@ def plot_lambda(
     how close the fit is from actual data.
 
     Args:
+        lambda_results (LambdaResults): Object that contains the results data
         distances (npt.NDArray[numpy.int\\_] | Sequence[int]): The distances of the code.
         lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
             The logical error probabilities per round.
-        lep_stddev_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
+        lep_per_round_stddev (npt.NDArray[np.float64] | Sequence[float] | None):
             The standard deviation of the logical error probabilities per round.
+        num_sigmas (int):
+        fig (Figure):
+        ax (Axes):
 
     Returns:
         tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
@@ -104,30 +89,21 @@ def plot_lambda(
     )
 
     # Plot the fitted lambda curve
-    lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
-    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
-    distances_interpolated = np.linspace(distances[0], distances[-1], 200)
-    lambda_interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
+    lambda_results.distance_grid = np.linspace(distances[0], distances[-1], 200)
+    lambda_interpolated = lambda_results._interpolate()
+
     ax.plot(
-        distances_interpolated,
+        lambda_results.distance_grid,
         lambda_interpolated,
-        label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
+        label=f"Fit, Λ={lambda_results.lambda_:.4f} ± {num_sigmas * lambda_results.lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
         color=RIVERLANE_PLOT_COLOURS[1]
     )
 
-    # Add error band to lambda curve
-    lambda_interpolated_low = _lambda_interpolated(
-        lambda0 - num_sigmas * lambda0_stddev,
-        lambda_ - num_sigmas * lambda_stddev,
-        distances_interpolated
-    )
-    lambda_interpolated_high = _lambda_interpolated(
-        lambda0 + num_sigmas * lambda0_stddev,
-        lambda_ + num_sigmas * lambda_stddev,
-        distances_interpolated
-    )
+    lambda_interpolated_low, lambda_interpolated_high = lambda_results._interpolate_error(num_sigmas=num_sigmas)
+
+
     ax.fill_between(
-        distances_interpolated,
+        lambda_results.distance_grid,
         lambda_interpolated_low,
         lambda_interpolated_high,
         color=RIVERLANE_PLOT_COLOURS[0],
