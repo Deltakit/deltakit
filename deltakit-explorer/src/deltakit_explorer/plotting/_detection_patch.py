@@ -39,7 +39,7 @@ from matplotlib.figure import Figure
 class DetectionProbabilityPatchResult:
     """Result type for detection probability on patch visualization.
 
-    This dataclass holds all the necessary data for visualizing detection
+    This dataclass holds all the necessary data for plotting detection
     probabilities (defect rates) on a QEC code patch.
 
     Attributes:
