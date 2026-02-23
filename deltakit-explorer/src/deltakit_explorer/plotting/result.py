@@ -1,11 +1,26 @@
-from dataclasses import dataclass
-
 import numpy as np
 import numpy.typing as npt
+from abs import ABC, abstractmethod
 
 
-@dataclass(frozen=False)
-class LambdaPlotResults:
+class InterpolationPlot(ABC):
+    def __init__(self):
+        return
+
+    @abstractmethod
+    def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
+        self.distance_grid = distance_grid
+
+    @abstractmethod
+    def _interpolate(self):
+        return
+
+    @abstractmethod
+    def _interpolate_results(self):
+        return
+
+
+class LambdaPlotResults(InterpolationPlot):
     """Named-tuple-like class containing computation results from
     :func:`calculate_lambda_and_lambda_stddev`.
 
@@ -29,6 +44,9 @@ class LambdaPlotResults:
     lambda_interpolated: npt.NDArray[np.floating]
     lambda_interpolated_low: npt.NDArray[np.floating]
     lambda_interpolated_high: npt.NDArray[np.floating]
+
+    def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
+        self.distance_grid = distance_grid
 
     def _interpolate(
         self,
@@ -83,8 +101,7 @@ class LambdaPlotResults:
         return self.lambda_interpolated_low, self.lambda_interpolated_high
 
 
-@dataclass(frozen=False)
-class LepprPlotResult:
+class LepprPlotResult(InterpolationPlot):
     """The dataclass that contains the information for plotting of the
     Logical Error Probability Per Round.
 
@@ -107,6 +124,9 @@ class LepprPlotResult:
     lep_interpolated: npt.NDArray[np.floating]
     lep_interpolated_low: npt.NDArray[np.floating]
     lep_interpolated_high: npt.NDArray[np.floating]
+
+    def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
+        self.distance_grid = distance_grid
 
     def _interpolate(
         self,

@@ -28,8 +28,8 @@ def plot_lambda(
 
     Args:
         lambda_results (LambdaResults): Object that contains the results data
-        distances (npt.NDArray[numpy.int\\_] | Sequence[int]): The distances of the code.
-        lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
+        distances (npt.NDArray[np.int\\_] | Sequence[int]): The distances of the code.
+        lep_per_round (npt.NDArray[np.float64] | Sequence[float]):
             The logical error probabilities per round.
         lep_per_round_stddev (npt.NDArray[np.float64] | Sequence[float] | None):
             The standard deviation of the logical error probabilities per round.
