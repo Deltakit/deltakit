@@ -7,14 +7,16 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.plotting.result import LogicalErrorProbabilityPerRoundResults
+from deltakit_explorer.plotting.result import LepprPlotResult
 
 
 def plot_logical_error_probability_per_round(
-    leppr_results: LogicalErrorProbabilityPerRoundResults,
+    leppr_results: LepprPlotResult,
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
-    logical_error_probability_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    logical_error_probability_stddev: (
+        npt.NDArray[np.float64] | Sequence[float] | None
+    ) = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -98,7 +100,6 @@ def plot_logical_error_probability_per_round(
             num_sigmas * np.asarray(logical_error_probability_stddev)[isort]
         )
 
-
     # Plot the logical error probabilities
     ax.errorbar(
         num_rounds,
@@ -106,28 +107,30 @@ def plot_logical_error_probability_per_round(
         yerr=logical_error_probability_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[0],
-        label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
     leppr_results.distance_grid = np.linspace(num_rounds[0], num_rounds[-1], 200)
-    lep_interpolated = leppr_results._interpolate()
+    lep_interpolated = leppr_results._interpolate(leppr_results, leppr_results, leppr_results)
 
     # Plot the fitted logical error probability per round curve
     ax.plot(
         leppr_results.distance_grid,
         lep_interpolated,
         label=f"Fit, ε={leppr_results.leppr:.4f} ± {num_sigmas * leppr_results.leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
-        color=RIVERLANE_PLOT_COLOURS[1]
+        color=RIVERLANE_PLOT_COLOURS[1],
     )
 
-    lep_interpolated_low, lep_interpolated_high  = leppr_results._interpolate_error(num_sigmas)
+    lep_interpolated_low, lep_interpolated_high = leppr_results._interpolate_error(
+        num_sigmas
+    )
 
     ax.fill_between(
         leppr_results.distance_grid,
         np.clip(lep_interpolated_low, 0, 1),
         np.clip(lep_interpolated_high, 0, 1),
         color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        alpha=0.2,
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")

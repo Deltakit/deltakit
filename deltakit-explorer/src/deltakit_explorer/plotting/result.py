@@ -4,8 +4,8 @@ import numpy as np
 import numpy.typing as npt
 
 
-@dataclass(frozen=True)
-class LambdaResults:
+@dataclass(frozen=False)
+class LambdaPlotResults:
     """Named-tuple-like class containing computation results from
     :func:`calculate_lambda_and_lambda_stddev`.
 
@@ -25,12 +25,17 @@ class LambdaResults:
     lambda_stddev: float
     lambda0: float
     lambda0_stddev: float
-    distance_grid:npt.NDArray[np.int_]
-    lambda_interpolated:npt.NDArray[np.floating]
-    lambda_interpolated_low:npt.NDArray[np.floating]
-    lambda_interpolated_high:npt.NDArray[np.floating]
+    distance_grid: npt.NDArray[np.int_]
+    lambda_interpolated: npt.NDArray[np.floating]
+    lambda_interpolated_low: npt.NDArray[np.floating]
+    lambda_interpolated_high: npt.NDArray[np.floating]
 
-    def _interpolate(self, lambda_:float|None=None, lambda_0:float|None=None, distance_grid:npt.NDArray[np.int_]|None=None) -> npt.NDArray[np.floating]:
+    def _interpolate(
+        self,
+        lambda_: float | None = None,
+        lambda_0: float | None = None,
+        distance_grid: npt.NDArray[np.int_] | None = None,
+    ) -> npt.NDArray[np.floating]:
         """Computes logical error probability per round that would be obtained with the
         provided values.
 
@@ -43,94 +48,116 @@ class LambdaResults:
 
         to estimate the logical error probability per round from the provided ``lambda_``
         and ``lambda0`` on the provided list of ``distance_grid``.
-
         Args:
-            lambda_: (float | None): - error suppression factor
-            lambda_0: (float | None): -  multiplicative constant
-            distance_grid: (npt.NDArray[np.int_] | None) - distance of the code
-
+            lambda_: (float | None): - error suppression factor.
+            lambda_0: (float | None): -  multiplicative constant.
+            distance_grid: (npt.NDArray[np.int_] | None) - distance of the code.
         Returns:
-            List of interpolated points
+            npt.NDArray[np.floating]: List of interpolated points.
         """
-        if isinstance(lambda_, None) and isinstance(distance_grid, None) and isinstance(lambda_0, None):
-            lambda_ = self.lambda_
-            lambda_0 = self.lambda0
-            distance_grid = self.distance_grid
-        self.lambda_interpolated =  (lambda_**(-(distance_grid + 1) / 2)) / lambda_0
+        self.lambda_interpolated = (lambda_ ** (-(distance_grid + 1) / 2)) / lambda_0
         return self.lambda_interpolated
 
-    def _interpolate_error(self, num_sigmas:int|None=3) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
-        """Function for the producing the error band 
-        
+    def _interpolate_error(
+        self, num_sigmas: int | None = 3
+    ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
+        """Function for the producing the error band.
+
         Args:
-            num_sigmas: (int|None): - standard deviation
+            num_sigmas: (int|None): - standard deviation.
+
         Returns:
-            Upper and Lower bounds 
+            tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]: -  Upper and Lower bounds.
         """
         self.lambda_interpolated_low = self._interpolate(
             self.lambda0 - num_sigmas * self.lambda0_stddev,
             self.lambda_ - num_sigmas * self.lambda_stddev,
-            self.distance_grid
+            self.distance_grid,
         )
 
         self.lambda_interpolated_high = self._interpolate(
             self.lambda0 + num_sigmas * self.lambda0_stddev,
             self.lambda_ + num_sigmas * self.lambda_stddev,
-            self.distance_grid
+            self.distance_grid,
         )
         return self.lambda_interpolated_low, self.lambda_interpolated_high
 
 
-@dataclass(frozen=True)
-class LogicalErrorProbabilityPerRoundResults:
-    """Named-tuple-like class containing computation results from
-    :func:`compute_logical_error_per_round`.
+@dataclass(frozen=False)
+class LepprPlotResult:
+    """The dataclass that contains the information for plotting of the
+    Logical Error Probability Per Round.
 
     Attributes:
         leppr (float): Logical Error Probability Per Round (LEPPR).
         leppr_stddev (float): LEPPR standard deviation.
         spam_error (float): computed SPAM error probability.
         spam_error_stddev (float): SPAM error probability standard deviation.
-        distance_grid (npt.NDArray[np.int_]):
-        lep_interpolated (npt.NDArray[np.floating]):
-        lep_interpolated_low (npt.NDArray[np.floating]):
-        lep_interpolated_high (npt.NDArray[np.floating]):
+        distance_grid (npt.NDArray[np.int_]): The distance of the code.
+        lep_interpolated (npt.NDArray[np.floating]): Interpolated values.
+        lep_interpolated_low (npt.NDArray[np.floating]): Lower bound of interpolated values.
+        lep_interpolated_high (npt.NDArray[np.floating]): Higher bounds of interpolated value.
     """
 
     leppr: float
     leppr_stddev: float
     spam_error: float
     spam_error_stddev: float
-    distance_grid:npt.NDArray[np.int_]
-    lep_interpolated:npt.NDArray[np.floating]
-    lep_interpolated_low:npt.NDArray[np.floating]
-    lep_interpolated_high:npt.NDArray[np.floating]
+    distance_grid: npt.NDArray[np.int_]
+    lep_interpolated: npt.NDArray[np.floating]
+    lep_interpolated_low: npt.NDArray[np.floating]
+    lep_interpolated_high: npt.NDArray[np.floating]
 
-    def _interpolate(self, spam:float|None, leppr:float|None, distance_grid:npt.NDArray[np.int_]|None) -> npt.NDArray[np.floating]:
+    def _interpolate(
+        self,
+        spam: float | None,
+        leppr: float | None,
+        distance_grid: npt.NDArray[np.int_] | None,
+    ) -> npt.NDArray[np.floating]:
+        """Computes logical error that would be obtained with the provided values.
 
-        if isinstance(spam, None) and isinstance(leppr, None) and isinstance(distance_grid, None):
-            spam = self.spam_error
-            leppr = self.leppr
-            rounds_interpolated = self.distance_grid
+        Uses the formula ``F = Fs * Fε**r`` where:
 
-        expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
+        - ``F`` is the expected fidelity of the computation,
+        - ``Fs`` is the fidelity of SPAM-related operations,
+        - ``Fε`` is the fidelity of one quantum error-correction round,
+        - ``r`` is the number of quantum error-correction rounds performed.
+
+        Each fidelity is obtained from the respective error probability with the formula
+        ``f = (1 - 2 * e)`` where ``f`` is any of ``F``, ``Fs`` or ``Fε`` and ``e`` is any
+        of logical error probability, logical error probability of a SPAM or logical error
+        probability per round.
+
+        Args:
+            spam: (float | None): - SPAM error.
+            leppr: (float | None): - logical error probability per run.
+            distance_grid: (npt.NDArray[np.int_] | None) - distance of the code.
+
+        Returns:
+            npt.NDArray[np.floating]: List of interpolated points.
+        """
+        expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** distance_grid
         self.lep_interpolated = (1 - expected_fidelity) / 2
         return self.lep_interpolated
 
-    def _interpolate_error(self, num_sigmas:int=3) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
-        """Function for the producing the error band 
-        
+    def _interpolate_error(
+        self, num_sigmas: int = 3
+    ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
+        """Function for the producing the error band.
         Args:
-            num_sigmas: (int|None): - standard deviation
+            num_sigmas: (int|None): - standard deviation.
+
         Returns:
-            Upper and Lower bounds 
+            tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]: Upper and Lower bounds.
         """
-        self.lep_interpolated_low =  self._interpolate(self.spam_error - num_sigmas * self.spam_error_stddev,
-                                self.leppr - num_sigmas * self.leppr_stddev,
-                                self.distance_grid
-                            )
-        self.lep_interpolated_high =  self._interpolate(self.spam_error + num_sigmas * self.spam_error_stddev,
-                                self.leppr + num_sigmas * self.leppr_stddev,
-                                self.distance_grid
-                            )
+        self.lep_interpolated_low = self._interpolate(
+            self.spam_error - num_sigmas * self.spam_error_stddev,
+            self.leppr - num_sigmas * self.leppr_stddev,
+            self.distance_grid,
+        )
+        self.lep_interpolated_high = self._interpolate(
+            self.spam_error + num_sigmas * self.spam_error_stddev,
+            self.leppr + num_sigmas * self.leppr_stddev,
+            self.distance_grid,
+        )
         return self.lep_interpolated_low, self.lep_interpolated_high

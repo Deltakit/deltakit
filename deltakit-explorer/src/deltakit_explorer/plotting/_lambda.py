@@ -7,11 +7,11 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.plotting.result import LambdaResults
+from deltakit_explorer.plotting.result import LambdaPlotResults
 
 
 def plot_lambda(
-    lambda_results: LambdaResults,
+    lambda_results: LambdaPlotResults,
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
@@ -85,29 +85,32 @@ def plot_lambda(
         yerr=lep_per_round_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
-        label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
     # Plot the fitted lambda curve
     lambda_results.distance_grid = np.linspace(distances[0], distances[-1], 200)
-    lambda_interpolated = lambda_results._interpolate()
+    lambda_interpolated = lambda_results._interpolate(
+        lambda_results.lambda_, lambda_results.lambda_0, lambda_results.distance_grid
+    )
 
     ax.plot(
         lambda_results.distance_grid,
         lambda_interpolated,
         label=f"Fit, Λ={lambda_results.lambda_:.4f} ± {num_sigmas * lambda_results.lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
-        color=RIVERLANE_PLOT_COLOURS[1]
+        color=RIVERLANE_PLOT_COLOURS[1],
     )
 
-    lambda_interpolated_low, lambda_interpolated_high = lambda_results._interpolate_error(num_sigmas=num_sigmas)
-
+    lambda_interpolated_low, lambda_interpolated_high = (
+        lambda_results._interpolate_error(num_sigmas=num_sigmas)
+    )
 
     ax.fill_between(
         lambda_results.distance_grid,
         lambda_interpolated_low,
         lambda_interpolated_high,
         color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        alpha=0.2,
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")
