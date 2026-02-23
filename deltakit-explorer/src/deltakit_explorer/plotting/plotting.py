@@ -28,7 +28,7 @@ def plot(
     - :class:`~deltakit_explorer.plotting.results.LEPPRPlot` → renders the
       logical error probability per round fit curve with error bands.
 
-    This enables consumers to compute the plot data separately (via
+    This enables users to compute the plot data separately (via
     :func:`~deltakit_explorer.plotting.results.compute_lambda_plot` or
     :func:`~deltakit_explorer.plotting.results.compute_leppr_plot`) and then
     render with a single call.
