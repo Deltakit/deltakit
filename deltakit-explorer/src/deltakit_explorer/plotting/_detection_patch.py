@@ -212,7 +212,7 @@ def plot_detection_probability_patch(
 ) -> tuple[Figure, Axes]:
     """Plot detection probability on QEC code patch.
 
-    Creates a heatmap visualization of detection probabilities (defect rates)
+    Creates a heatmap plot of detection probabilities (defect rates)
     overlaid on the QEC code patch structure. The visualization style follows
     Figure 2 in https://www.nature.com/articles/s41586-022-05434-1
 
