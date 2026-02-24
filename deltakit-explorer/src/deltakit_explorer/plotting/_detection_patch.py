@@ -5,25 +5,12 @@ This module provides visualization tools for plotting detection probability
 (defect rate) on QEC code patches, particularly for rotated surface codes.
 The visualization style follows Figure 2 in
 https://www.nature.com/articles/s41586-022-05434-1
-
-Physics background (validated with quantum_forge MCP):
-- Detectors in a rotated surface code are assigned to stabilizer plaquettes.
-- A detector fires when a measurement outcome differs from its expected value,
-  indicating a defect (error syndrome) at that plaquette location.
-- Detection probability = P(detector fires) = defect rate per plaquette.
-  This is a well-defined classical post-processing observable: counts of
-  detector firings divided by total shots.
-- Averaging/variance over rounds is statistically sound; each round is an
-  independent syndrome measurement cycle on the same physical qubits.
-- No unitarity or no-cloning concerns: this is classical measurement processing.
-- Heatmap representation is appropriate — it visualises a spatial distribution
-  of a real-valued scalar (probability) per plaquette, matching Fig 2 of the
-  Google Nature paper (Λ ≈ 3.8 at p=0.001 for d=5 surface code).
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 from typing import Literal
 
 import matplotlib.pyplot as plt
@@ -33,6 +20,47 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
+
+
+class AggregationMethod(str, Enum):
+    """Methods for aggregating detection probabilities across rounds."""
+    PER_ROUND = "per_round"
+    AVERAGE = "average"
+    MEDIAN = "median"
+    VARIANCE = "variance"
+
+
+class QecCodeType(str, Enum):
+    """Supported QEC code types for visualization."""
+    ROTATED_SURFACE = "rotated_surface"
+    SURFACE = "surface"
+    COLOR = "color"
+
+
+@dataclass
+class DetectorDistribution:
+    """Coupled distribution of detector probabilities and their topological coordinates."""
+    detection_prob: npt.NDArray[np.float64]
+    detector_coords: npt.NDArray[np.float64]
+
+    def __post_init__(self) -> None:
+        """Validate the coupled probability and coordinate data."""
+        if self.detection_prob.ndim not in (2, 3):
+            msg = (
+                f"detection_prob must be 2D or 3D array, "
+                f"got {self.detection_prob.ndim}D"
+            )
+            raise ValueError(msg)
+
+        if self.detector_coords.ndim != 2 or self.detector_coords.shape[1] != 2:
+            msg = (
+                f"detector_coords must be 2D array with shape (n_detectors, 2), "
+                f"got {self.detector_coords.shape}"
+            )
+            raise ValueError(msg)
+            
+        if np.any((self.detection_prob < 0.0) | (self.detection_prob > 1.0)):
+            raise ValueError("All detection probabilities must lie in [0, 1].")
 
 
 @dataclass
@@ -69,10 +97,9 @@ class DetectionProbabilityPatchResult:
     """
 
     grid_shape: tuple[int, int]
-    detection_prob: npt.NDArray[np.float64]
-    detector_coords: npt.NDArray[np.float64]
+    distribution: DetectorDistribution
     rounds: npt.NDArray[np.int_] | None = None
-    aggregation: Literal["per_round", "average", "median", "variance"] = "average"
+    aggregation: AggregationMethod | Literal["per_round", "average", "median", "variance"] = AggregationMethod.AVERAGE
 
     def __post_init__(self) -> None:
         """Validate the data structure after initialisation."""
@@ -80,36 +107,18 @@ class DetectionProbabilityPatchResult:
         if len(self.grid_shape) != 2:
             msg = f"grid_shape must be a tuple of (rows, cols), got {self.grid_shape}"
             raise ValueError(msg)
-
-        # Validate detection_prob dimensions
-        if self.detection_prob.ndim not in (2, 3):
-            msg = (
-                f"detection_prob must be 2D or 3D array, "
-                f"got {self.detection_prob.ndim}D"
-            )
-            raise ValueError(msg)
-
-        # Validate detector_coords shape — allow empty (0, 2) arrays
-        if self.detector_coords.ndim != 2 or self.detector_coords.shape[1] != 2:
-            msg = (
-                f"detector_coords must be 2D array with shape (n_detectors, 2), "
-                f"got {self.detector_coords.shape}"
-            )
-            raise ValueError(msg)
-
-        # Validate aggregation mode
-        valid_aggregations = {"per_round", "average", "median", "variance"}
-        if self.aggregation not in valid_aggregations:
-            msg = (
-                f"aggregation must be one of {valid_aggregations}, "
-                f"got '{self.aggregation}'"
-            )
+            
+        # Convert literal aggregation to Enum
+        if isinstance(self.aggregation, str):
+            self.aggregation = AggregationMethod(self.aggregation)
+        elif not isinstance(self.aggregation, AggregationMethod):
+            msg = f"aggregation must be an AggregationMethod or valid string, got {self.aggregation}"
             raise ValueError(msg)
 
 
 def aggregate_detection_probability(
     detection_prob_3d: npt.NDArray[np.float64],
-    method: Literal["average", "median", "variance"] = "average",
+    method: AggregationMethod | Literal["average", "median", "variance"] = AggregationMethod.AVERAGE,
 ) -> npt.NDArray[np.float64]:
     """Aggregate detection probability over rounds.
 
@@ -136,15 +145,6 @@ def aggregate_detection_probability(
 
     Raises:
         ValueError: If method is not recognized or input has wrong dimensions.
-
-    Example:
-        >>> import numpy as np
-        >>> data_3d = np.random.rand(10, 5, 5)  # 10 rounds, 5x5 grid
-        >>> avg = aggregate_detection_probability(data_3d, 'average')
-        >>> print(avg.shape)
-        (5, 5)
-        >>> med = aggregate_detection_probability(data_3d, 'median')
-        >>> var = aggregate_detection_probability(data_3d, 'variance')
     """
     if detection_prob_3d.ndim != 3:
         msg = (
@@ -153,12 +153,16 @@ def aggregate_detection_probability(
         )
         raise ValueError(msg)
 
-    if method == "average":
+    if isinstance(method, str):
+        method = AggregationMethod(method)
+
+    if method == AggregationMethod.AVERAGE:
         return np.mean(detection_prob_3d, axis=0)
-    if method == "median":
+    if method == AggregationMethod.MEDIAN:
         return np.median(detection_prob_3d, axis=0)
-    if method == "variance":
+    if method == AggregationMethod.VARIANCE:
         return np.var(detection_prob_3d, axis=0)
+    
     msg = (
         f"Unknown aggregation method: '{method}'. "
         f"Must be one of ['average', 'median', 'variance']"
@@ -198,7 +202,7 @@ def create_inset_axes(
 
 def plot_detection_probability_patch(
     detection_data: DetectionProbabilityPatchResult,
-    code_type: Literal["rotated_surface", "surface", "color"] = "rotated_surface",
+    code_type: QecCodeType | Literal["rotated_surface", "surface", "color"] = QecCodeType.ROTATED_SURFACE,
     *,
     round_index: int | None = None,
     colorbar: bool = True,
@@ -342,13 +346,15 @@ def plot_detection_probability_patch(
         bounds = inset_bounds if inset_bounds is not None else (0.65, 0.65, 0.3, 0.3)
         ax = create_inset_axes(fig, ax, bounds=bounds)
 
-    # These asserts satisfy type checkers (values guaranteed non-None at this point)
     assert ax is not None
     assert fig is not None
 
+    if isinstance(code_type, str):
+        code_type = QecCodeType(code_type)
+
     # Extract data from detection_data
-    detection_prob = detection_data.detection_prob
-    detector_coords = detection_data.detector_coords
+    detection_prob = detection_data.distribution.detection_prob
+    detector_coords = detection_data.distribution.detector_coords
     grid_shape = detection_data.grid_shape
 
     # Handle per-round data
@@ -382,13 +388,10 @@ def plot_detection_probability_patch(
         )
         raise ValueError(msg)
 
-    # Determine colour scale: normalise from 0 to 120% of max probability
-    # (extra headroom keeps the highest-probability plaquettes clearly visible)
     prob_max = float(np.max(detection_prob))
     vmax = prob_max * 1.2 if prob_max > 0 else 0.1
     norm = Normalize(vmin=0.0, vmax=vmax)
 
-    # Draw the heatmap using imshow
     im = ax.imshow(
         detection_prob,
         cmap=cmap,
@@ -398,7 +401,6 @@ def plot_detection_probability_patch(
         interpolation="nearest",
     )
 
-    # Colorbar — only for standalone (non-inset) plots
     if colorbar and not inset:
         cbar = fig.colorbar(im, ax=ax, shrink=0.8, pad=0.02)
         cbar.set_label("Detection Probability", fontsize=10)
@@ -419,33 +421,29 @@ def plot_detection_probability_patch(
             linewidths=0.5,
         )
 
-    # Labels and title — skip for inset plots to avoid clutter
     if not inset:
         ax.set_xlabel("X Coordinate", fontsize=11)
         ax.set_ylabel("Y Coordinate", fontsize=11)
 
-        # Build descriptive title from aggregation mode and code type
-        title_parts = [f"Detection Probability — {detection_data.aggregation.title()}"]
+        agg_val = detection_data.aggregation.value if isinstance(detection_data.aggregation, AggregationMethod) else detection_data.aggregation
+        title_parts = [f"Detection Probability — {str(agg_val).title()}"]
         if round_index is not None:
             title_parts.append(f"(Round {round_index})")
-        title_parts.append(f"[{code_type.replace('_', ' ').title()}]")
+        code_val = code_type.value if hasattr(code_type, "value") else str(code_type)
+        title_parts.append(f"[{code_val.replace('_', ' ').title()}]")
 
         ax.set_title(" ".join(title_parts), fontsize=12, fontweight="bold")
 
-    # Subtle grid lines aligned with heatmap cells
     if show_grid:
         ax.grid(True, alpha=0.3, linestyle="--", linewidth=0.5, color="gray")
 
-    # Detector legend — only for standalone plots
     if show_detectors and len(detector_coords) > 0 and not inset:
         ax.legend(loc="upper right", fontsize=9, framealpha=0.9)
 
-    # Tick marks at cell boundaries; hide tick labels for clean look
     ax.set_xticks(np.arange(-0.5, grid_shape[1], 1))
     ax.set_yticks(np.arange(-0.5, grid_shape[0], 1))
     ax.tick_params(axis="both", which="both", labelbottom=False, labelleft=False)
 
-    # Axis limits — match imshow extent exactly
     ax.set_xlim(-0.5, grid_shape[1] - 0.5)
     ax.set_ylim(-0.5, grid_shape[0] - 0.5)
 
@@ -453,6 +451,9 @@ def plot_detection_probability_patch(
 
 
 __all__ = [
+    "AggregationMethod",
+    "QecCodeType",
+    "DetectorDistribution",
     "DetectionProbabilityPatchResult",
     "aggregate_detection_probability",
     "create_inset_axes",
