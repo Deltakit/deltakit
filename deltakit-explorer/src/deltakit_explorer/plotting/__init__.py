@@ -7,10 +7,7 @@ from deltakit_explorer.plotting._visualisation import (
     defect_rates,
 )
 from deltakit_explorer.plotting.plotting import interpolation_plot
-from deltakit_explorer.plotting.result import (
-    LambdaResults,
-    LogicalErrorProbabilityPerRoundResults,
-)
+from deltakit_explorer.plotting.result import LambdaPlotResults, LepprPlotResult
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]

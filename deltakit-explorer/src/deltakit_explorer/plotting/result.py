@@ -1,25 +1,25 @@
+from abc import ABC
+from dataclasses import dataclass
+
 import numpy as np
 import numpy.typing as npt
-from abs import ABC, abstractmethod
 
 
 class InterpolationPlot(ABC):
     def __init__(self):
         return
 
-    @abstractmethod
     def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
         self.distance_grid = distance_grid
 
-    @abstractmethod
     def _interpolate(self):
         return
 
-    @abstractmethod
     def _interpolate_results(self):
         return
 
 
+@dataclass
 class LambdaPlotResults(InterpolationPlot):
     """Named-tuple-like class containing computation results from
     :func:`calculate_lambda_and_lambda_stddev`.
@@ -40,18 +40,15 @@ class LambdaPlotResults(InterpolationPlot):
     lambda_stddev: float
     lambda0: float
     lambda0_stddev: float
-    distance_grid: npt.NDArray[np.int_]
-    lambda_interpolated: npt.NDArray[np.floating]
-    lambda_interpolated_low: npt.NDArray[np.floating]
-    lambda_interpolated_high: npt.NDArray[np.floating]
-
-    def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
-        self.distance_grid = distance_grid
+    distance_grid: npt.NDArray[np.int_] | None = None
+    lambda_interpolated: npt.NDArray[np.floating] | None = None
+    lambda_interpolated_low: npt.NDArray[np.floating] | None = None
+    lambda_interpolated_high: npt.NDArray[np.floating] | None = None
 
     def _interpolate(
         self,
         lambda_: float | None = None,
-        lambda_0: float | None = None,
+        lambda0: float | None = None,
         distance_grid: npt.NDArray[np.int_] | None = None,
     ) -> npt.NDArray[np.floating]:
         """Computes logical error probability per round that would be obtained with the
@@ -68,12 +65,12 @@ class LambdaPlotResults(InterpolationPlot):
         and ``lambda0`` on the provided list of ``distance_grid``.
         Args:
             lambda_: (float | None): - error suppression factor.
-            lambda_0: (float | None): -  multiplicative constant.
+            lambda0: (float | None): -  multiplicative constant.
             distance_grid: (npt.NDArray[np.int_] | None) - distance of the code.
         Returns:
             npt.NDArray[np.floating]: List of interpolated points.
         """
-        self.lambda_interpolated = (lambda_ ** (-(distance_grid + 1) / 2)) / lambda_0
+        self.lambda_interpolated = (lambda_ ** (-(distance_grid + 1) / 2)) / lambda0
         return self.lambda_interpolated
 
     def _interpolate_error(
@@ -101,6 +98,7 @@ class LambdaPlotResults(InterpolationPlot):
         return self.lambda_interpolated_low, self.lambda_interpolated_high
 
 
+@dataclass
 class LepprPlotResult(InterpolationPlot):
     """The dataclass that contains the information for plotting of the
     Logical Error Probability Per Round.
@@ -120,13 +118,10 @@ class LepprPlotResult(InterpolationPlot):
     leppr_stddev: float
     spam_error: float
     spam_error_stddev: float
-    distance_grid: npt.NDArray[np.int_]
-    lep_interpolated: npt.NDArray[np.floating]
-    lep_interpolated_low: npt.NDArray[np.floating]
-    lep_interpolated_high: npt.NDArray[np.floating]
-
-    def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
-        self.distance_grid = distance_grid
+    distance_grid: npt.NDArray[np.int_] | None = None
+    lep_interpolated: npt.NDArray[np.floating] | None = None
+    lep_interpolated_low: npt.NDArray[np.floating] | None = None
+    lep_interpolated_high: npt.NDArray[np.floating] | None = None
 
     def _interpolate(
         self,
