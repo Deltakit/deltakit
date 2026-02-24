@@ -12,52 +12,8 @@ from deltakit_explorer.analysis._lambda import LambdaResults
 from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
 
 
-@dataclass(frozen=True)
-class LambdaPlot:
-    """Result type holding the data needed to plot a Lambda fit.
-
-    Attributes:
-        distances: Interpolated distance grid for the fit curve.
-        interpolated: Interpolated logical error probability per round values
-            along the distance grid.
-        lower_boundary: Lower boundary of the error band (computed from
-            ``lambda - num_sigmas * lambda_stddev`` and
-            ``lambda0 - num_sigmas * lambda0_stddev``).
-        upper_boundary: Upper boundary of the error band (computed from
-            ``lambda + num_sigmas * lambda_stddev`` and
-            ``lambda0 + num_sigmas * lambda0_stddev``).
-    """
-
-    distances: npt.NDArray[np.floating]
-    interpolated: npt.NDArray[np.floating]
-    lower_boundary: npt.NDArray[np.floating]
-    upper_boundary: npt.NDArray[np.floating]
-
-
-@dataclass(frozen=True)
-class LEPPRPlot:
-    """Result type holding the data needed to plot a LEPPR fit.
-
-    Attributes:
-        rounds: Interpolated rounds grid for the fit curve.
-        interpolated: Interpolated logical error probability values along the
-            rounds grid.
-        lower_boundary: Lower boundary of the error band (computed from
-            ``leppr - num_sigmas * leppr_stddev`` and
-            ``spam - num_sigmas * spam_stddev``).
-        upper_boundary: Upper boundary of the error band (computed from
-            ``leppr + num_sigmas * leppr_stddev`` and
-            ``spam + num_sigmas * spam_stddev``).
-    """
-
-    rounds: npt.NDArray[np.floating]
-    interpolated: npt.NDArray[np.floating]
-    lower_boundary: npt.NDArray[np.floating]
-    upper_boundary: npt.NDArray[np.floating]
-
-
 def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_]
+    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_ | np.floating]
 ) -> npt.NDArray[np.floating]:
     """Computes logical error probability per round that would be obtained with the
     provided values.
@@ -73,51 +29,6 @@ def _lambda_interpolated(
     and ``lambda0`` on the provided list of ``distances``.
     """
     return lambda_**(-(distances + 1) / 2) / lambda0
-
-
-def compute_lambda_plot(
-    lambda_data: LambdaResults,
-    distances: npt.NDArray[np.int_],
-    *,
-    num_sigmas: int = 3,
-    num_points: int = 200,
-) -> LambdaPlot:
-    """Compute the interpolated Lambda fit curve and its error band.
-
-    Args:
-        lambda_data (LambdaResults): Results from
-            :func:`~deltakit_explorer.analysis.calculate_lambda_and_lambda_stddev`.
-        distances (npt.NDArray[numpy.int\\_]): The code distances used for
-            interpolation. The interpolated grid will span from ``min(distances)``
-            to ``max(distances)``.
-        num_sigmas (int): Number of standard deviations for the error band.
-            Defaults to 3.
-        num_points (int): Number of interpolation points. Defaults to 200.
-
-    Returns:
-        LambdaPlot: The interpolated fit data with error boundaries.
-    """
-    lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
-    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
-
-    distances_interpolated = np.linspace(distances[0], distances[-1], num_points)
-    interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
-    lower_boundary = _lambda_interpolated(
-        lambda0 - num_sigmas * lambda0_stddev,
-        lambda_ - num_sigmas * lambda_stddev,
-        distances_interpolated,
-    )
-    upper_boundary = _lambda_interpolated(
-        lambda0 + num_sigmas * lambda0_stddev,
-        lambda_ + num_sigmas * lambda_stddev,
-        distances_interpolated,
-    )
-    return LambdaPlot(
-        distances=distances_interpolated,
-        interpolated=interpolated,
-        lower_boundary=lower_boundary,
-        upper_boundary=upper_boundary,
-    )
 
 
 def _lep_interpolated(
@@ -141,27 +52,142 @@ def _lep_interpolated(
     return (1 - expected_fidelity) / 2
 
 
-def compute_leppr_plot(
+@dataclass(frozen=True)
+class Interpolated:
+    """Base class for interpolated plotting data."""
+
+    interpolated: npt.NDArray[np.floating]
+    lower_boundary: npt.NDArray[np.floating]
+    upper_boundary: npt.NDArray[np.floating]
+    fit_label: str
+
+    def __post_init__(self) -> None:
+        """Validate that all arrays have the same shape and data ranges."""
+        if not (self.interpolated.shape == self.lower_boundary.shape == self.upper_boundary.shape):
+            msg = "All arrays must have the same shape."
+            raise ValueError(msg)
+
+        # Check that provided interpolated is within [0, 1]
+        # boundaries are also within [0, 1]
+        # Since the fit could technically exceed it slightly or we just want to warn/clip.
+        # Provided `interpolated` is within `[0, 1)`, boundaries are also within `[0, 1)`.
+        if not (np.all(self.interpolated >= 0) and np.all(self.interpolated <= 1)):
+            msg = "Interpolated values must be within [0, 1]"
+            raise ValueError(msg)
+        if not (np.all(self.lower_boundary >= 0) and np.all(self.lower_boundary <= 1)):
+            msg = "Lower boundary values must be within [0, 1]"
+            raise ValueError(msg)
+        if not (np.all(self.upper_boundary >= 0) and np.all(self.upper_boundary <= 1)):
+            msg = "Upper boundary values must be within [0, 1]"
+            raise ValueError(msg)
+
+
+@dataclass(frozen=True)
+class LambdaResult(Interpolated):
+    """Result type holding the data needed to plot a Lambda fit.
+
+    Attributes:
+        distances: Interpolated distance grid for the fit curve.
+        interpolated: Interpolated logical error probability per round values
+            along the distance grid.
+        lower_boundary: Lower boundary of the error band.
+        upper_boundary: Upper boundary of the error band.
+        fit_label: The label to use for the fit curve.
+    """
+
+    distances: npt.NDArray[np.floating]
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not np.all(self.distances > 0):
+            msg = "Distances must be positive."
+            raise ValueError(msg)
+
+
+def _lambda_interpolate(
+    lambda_data: LambdaResults,
+    distances: npt.NDArray[np.int_],
+    *,
+    num_sigmas: int = 3,
+    num_points: int = 200,
+) -> LambdaResult:
+    """Compute the interpolated Lambda fit curve and its error band.
+
+    Args:
+        lambda_data: Results from calculate_lambda_and_lambda_stddev.
+        distances: The code distances used for interpolation.
+        num_sigmas: Number of standard deviations for the error band. Default 3.
+        num_points: Number of interpolation points. Default 200.
+
+    Returns:
+        The interpolated fit data with error boundaries.
+    """
+    lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
+    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
+
+    distances_interpolated = np.linspace(distances[0], distances[-1], num_points)
+    interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
+    lower_boundary = _lambda_interpolated(
+        lambda0 - num_sigmas * lambda0_stddev,
+        lambda_ - num_sigmas * lambda_stddev,
+        distances_interpolated,
+    )
+    upper_boundary = _lambda_interpolated(
+        lambda0 + num_sigmas * lambda0_stddev,
+        lambda_ + num_sigmas * lambda_stddev,
+        distances_interpolated,
+    )
+
+    fit_label = f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+
+    return LambdaResult(
+        distances=distances_interpolated,
+        interpolated=np.clip(interpolated, 0, 1),
+        lower_boundary=np.clip(lower_boundary, 0, 1),
+        upper_boundary=np.clip(upper_boundary, 0, 1),
+        fit_label=fit_label,
+    )
+
+
+@dataclass(frozen=True)
+class LEPPRResult(Interpolated):
+    """Result type holding the data needed to plot a LEPPR fit.
+
+    Attributes:
+        rounds: Interpolated rounds grid for the fit curve.
+        interpolated: Interpolated logical error probability values along the
+            rounds grid.
+        lower_boundary: Lower boundary of the error band.
+        upper_boundary: Upper boundary of the error band.
+        fit_label: The label to use for the fit curve.
+    """
+
+    rounds: npt.NDArray[np.floating]
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not np.all(self.rounds > 0):
+            msg = "Rounds must be positive."
+            raise ValueError(msg)
+
+
+def _leppr_interpolate(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[np.int_],
     *,
     num_sigmas: int = 3,
     num_points: int = 200,
-) -> LEPPRPlot:
+) -> LEPPRResult:
     """Compute the interpolated LEPPR fit curve and its error band.
 
     Args:
-        leppr_data (LogicalErrorProbabilityPerRoundResults): Results from
-            :func:`~deltakit_explorer.analysis.compute_logical_error_per_round`.
-        num_rounds (npt.NDArray[numpy.int\\_]): The number of rounds used for
-            interpolation. The interpolated grid will span from ``min(num_rounds)``
-            to ``max(num_rounds)``.
-        num_sigmas (int): Number of standard deviations for the error band.
-            Defaults to 3.
-        num_points (int): Number of interpolation points. Defaults to 200.
+        leppr_data: Results from compute_logical_error_per_round.
+        num_rounds: The number of rounds used for interpolation.
+        num_sigmas: Number of standard deviations for the error band. Default 3.
+        num_points: Number of interpolation points. Default 200.
 
     Returns:
-        LEPPRPlot: The interpolated fit data with error boundaries.
+        The interpolated fit data with error boundaries.
     """
     leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
     spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
@@ -178,9 +204,13 @@ def compute_leppr_plot(
         leppr + num_sigmas * leppr_stddev,
         rounds_interpolated,
     )
-    return LEPPRPlot(
+
+    fit_label = f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+
+    return LEPPRResult(
         rounds=rounds_interpolated,
-        interpolated=interpolated,
+        interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
+        fit_label=fit_label,
     )

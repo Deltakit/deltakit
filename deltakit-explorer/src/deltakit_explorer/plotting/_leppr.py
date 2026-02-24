@@ -8,7 +8,8 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
-from deltakit_explorer.plotting.results import LEPPRPlot, compute_leppr_plot
+from deltakit_explorer.plotting.plotting import plot
+from deltakit_explorer.plotting.results import _leppr_interpolate
 
 
 def plot_logical_error_probability_per_round(
@@ -24,28 +25,26 @@ def plot_logical_error_probability_per_round(
     """Plot the logical error probability per round data and the fitted curve.
 
     Args:
-        leppr_data (LogicalErrorProbabilityPerRoundResults):
-            Data class containing logical error probability per round fit results.
-        num_rounds (npt.NDArray[numpy.int_] | Sequence[int]):
-            a sequence of integers representing the number of rounds used to get the
-            corresponding results in ``num_failed_shots`` and ``num_shots``.
-        logical_error_probability (npt.NDArray[numpy.float64] | Sequence[float]):
-            a sequence of floats representing the logical error probabilities
-            corresponding to the number of rounds in ``num_rounds``.
-        logical_error_probability_stddev (npt.NDArray[numpy.float64] | Sequence[float] | None, optional):
-            a sequence of floats representing the standard deviation of the logical
-            error probabilities corresponding to the number of rounds in ``num_rounds``.
-            If None, no error bars will be plotted. Default is None.
-        num_sigmas (int): number of sigmas to consider when plotting error bars.
-        fig (Figure | None, optional):
-            a matplotlib Figure object to plot on. If None, a new figure will be created.
-            Default is None.
-        ax (Axes | None, optional):
-            a matplotlib Axes object to plot on. If None, a new axes will be created.
-            Default is None.
+        leppr_data: Data class containing logical error probability per round
+            fit results.
+        num_rounds: a sequence of integers representing the number of rounds
+            used to get the corresponding results in ``num_failed_shots`` and
+            ``num_shots``.
+        logical_error_probability: a sequence of floats representing the logical
+            error probabilities corresponding to the number of rounds in
+            ``num_rounds``.
+        logical_error_probability_stddev: a sequence of floats representing the
+            standard deviation of the logical error probabilities corresponding
+            to the number of rounds in ``num_rounds``. If None, no error bars
+            will be plotted. Default is None.
+        num_sigmas: number of sigmas to consider when plotting error bars.
+        fig: a matplotlib Figure object to plot on. If None, a new figure
+            will be created. Default is None.
+        ax: a matplotlib Axes object to plot on. If None, a new axes will
+            be created. Default is None.
 
     Returns:
-        tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
+        The matplotlib Figure and Axes objects containing the plot.
 
     Example:
 
@@ -109,32 +108,10 @@ def plot_logical_error_probability_per_round(
         label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
-    # Compute the interpolated fit data using the result type
-    leppr_plot: LEPPRPlot = compute_leppr_plot(
+    leppr_result = _leppr_interpolate(
         leppr_data, num_rounds, num_sigmas=num_sigmas
     )
 
-    # Plot the fitted logical error probability per round curve
-    leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
-    ax.plot(
-        leppr_plot.rounds,
-        leppr_plot.interpolated,
-        label=f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
-        color=RIVERLANE_PLOT_COLOURS[1]
-    )
-
-    # Add error band to logical error probability per round curve
-    ax.fill_between(
-        leppr_plot.rounds,
-        leppr_plot.lower_boundary,
-        leppr_plot.upper_boundary,
-        color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
-    )
-
-    ax.set_title("Logical Error Probability Per Round Fit")
-    ax.set_xlabel("Rounds")
-    ax.set_ylabel("Logical Error Probability")
-    ax.legend()
+    plot(leppr_result, fig=fig, ax=ax)
 
     return fig, ax

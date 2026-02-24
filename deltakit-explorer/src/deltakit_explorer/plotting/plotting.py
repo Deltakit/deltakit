@@ -8,11 +8,14 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.plotting.results import LEPPRPlot, LambdaPlot
+from deltakit_explorer.plotting.results import (
+    LambdaResult,
+    LEPPRResult,
+)
 
 
 def plot(
-    result: LambdaPlot | LEPPRPlot,
+    result: LambdaResult | LEPPRResult,
     *,
     fig: Figure | None = None,
     ax: Axes | None = None,
@@ -23,25 +26,25 @@ def plot(
     This function inspects the type of ``result`` and calls the appropriate
     rendering logic:
 
-    - :class:`~deltakit_explorer.plotting.results.LambdaPlot` → renders the
+    - :class:`~deltakit_explorer.plotting.results.LambdaResult` → renders the
       error-suppression factor Λ fit curve with error bands.
-    - :class:`~deltakit_explorer.plotting.results.LEPPRPlot` → renders the
+    - :class:`~deltakit_explorer.plotting.results.LEPPRResult` → renders the
       logical error probability per round fit curve with error bands.
 
     This enables users to compute the plot data separately (via
-    :func:`~deltakit_explorer.plotting.results.compute_lambda_plot` or
-    :func:`~deltakit_explorer.plotting.results.compute_leppr_plot`) and then
+    :meth:`~deltakit_explorer.plotting.results._lambda_interpolate` or
+    :meth:`~deltakit_explorer.plotting.results._leppr_interpolate`) and then
     render with a single call.
 
     Args:
-        result (LambdaPlot | LEPPRPlot): The precomputed plot data.
-        fig (Figure | None, optional): An existing matplotlib Figure. If None,
+        result: The precomputed plot data.
+        fig: An existing matplotlib Figure. If None,
             a new figure will be created. Default is None.
-        ax (Axes | None, optional): An existing matplotlib Axes. If None, a new
+        ax: An existing matplotlib Axes. If None, a new
             axes will be created. Default is None.
 
     Returns:
-        tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
+        The matplotlib Figure and Axes objects containing the plot.
 
     Raises:
         ValueError: If ``fig`` and ``ax`` are not both None or both set, or if
@@ -50,15 +53,15 @@ def plot(
     Examples:
         Plotting a Lambda fit curve::
 
-            from deltakit_explorer.plotting.results import compute_lambda_plot
-            lambda_plot = compute_lambda_plot(lambda_data, distances)
-            fig, ax = plot(lambda_plot)
+            from deltakit_explorer.plotting.results import _lambda_interpolate
+            lambda_result = _lambda_interpolate(lambda_data, distances)
+            fig, ax = plot(lambda_result)
 
         Plotting a LEPPR fit curve::
 
-            from deltakit_explorer.plotting.results import compute_leppr_plot
-            leppr_plot = compute_leppr_plot(leppr_data, num_rounds)
-            fig, ax = plot(leppr_plot)
+            from deltakit_explorer.plotting.results import _leppr_interpolate
+            leppr_result = _leppr_interpolate(leppr_data, num_rounds)
+            fig, ax = plot(leppr_result)
     """
     if (fig is None) ^ (ax is None):
         msg = "The 'fig' and 'ax' parameters should either be both None or both set."
@@ -70,26 +73,26 @@ def plot(
     assert ax is not None
     assert fig is not None
 
-    if isinstance(result, LambdaPlot):
-        _plot_lambda(result, fig, ax)
-    elif isinstance(result, LEPPRPlot):
-        _plot_leppr(result, fig, ax)
+    if isinstance(result, LambdaResult):
+        _plot_lambda(result, ax)
+    elif isinstance(result, LEPPRResult):
+        _plot_leppr(result, ax)
     else:
         msg = (
             f"Unsupported result type: {type(result).__name__}. "
-            "Expected LambdaPlot or LEPPRPlot."
+            "Expected LambdaResult or LEPPRResult."
         )
         raise ValueError(msg)
 
     return fig, ax
 
 
-def _plot_lambda(result: LambdaPlot, fig: Figure, ax: Axes) -> None:
+def _plot_lambda(result: LambdaResult, ax: Axes) -> None:
     """Render a :class:`LambdaPlot` on the given axes."""
     ax.plot(
         result.distances,
         result.interpolated,
-        label="Λ fit",
+        label=result.fit_label,
         color=RIVERLANE_PLOT_COLOURS[1],
     )
     ax.fill_between(
@@ -105,12 +108,12 @@ def _plot_lambda(result: LambdaPlot, fig: Figure, ax: Axes) -> None:
     ax.legend()
 
 
-def _plot_leppr(result: LEPPRPlot, fig: Figure, ax: Axes) -> None:
-    """Render a :class:`LEPPRPlot` on the given axes."""
+def _plot_leppr(result: LEPPRResult, ax: Axes) -> None:
+    """Render a :class:`LogicalErrorProbabilityPerRoundPlot` on the given axes."""
     ax.plot(
         result.rounds,
         result.interpolated,
-        label="LEPPR fit",
+        label=result.fit_label,
         color=RIVERLANE_PLOT_COLOURS[1],
     )
     ax.fill_between(
