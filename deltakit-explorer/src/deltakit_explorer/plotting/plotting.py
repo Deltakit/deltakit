@@ -180,6 +180,7 @@ def _(
 
     Example:
         fig, ax = plot_lambda(
+            result = LambdaResult,
             distances = [5, 7, 9],
             lep_per_round = [0.15, 0.1, 0.05],
             lep_stddev_per_round = [0.01, 0.008, 0.005],
