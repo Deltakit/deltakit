@@ -26,7 +26,7 @@ def _lambda_interpolated(
     to estimate the logical error probability per round from the provided ``lambda_``
     and ``lambda0`` on the provided list of ``distances``.
     """
-    return lambda_**(-(distances + 1) / 2) / lambda0
+    return lambda_ ** (-(distances + 1) / 2) / lambda0
 
 
 def plot_lambda(
@@ -100,7 +100,7 @@ def plot_lambda(
         yerr=lep_per_round_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
-        label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
     # Plot the fitted lambda curve
@@ -112,26 +112,26 @@ def plot_lambda(
         distances_interpolated,
         lambda_interpolated,
         label=f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
-        color=RIVERLANE_PLOT_COLOURS[1]
+        color=RIVERLANE_PLOT_COLOURS[1],
     )
 
     # Add error band to lambda curve
     lambda_interpolated_low = _lambda_interpolated(
         lambda0 - num_sigmas * lambda0_stddev,
         lambda_ - num_sigmas * lambda_stddev,
-        distances_interpolated
+        distances_interpolated,
     )
     lambda_interpolated_high = _lambda_interpolated(
         lambda0 + num_sigmas * lambda0_stddev,
         lambda_ + num_sigmas * lambda_stddev,
-        distances_interpolated
+        distances_interpolated,
     )
     ax.fill_between(
         distances_interpolated,
         lambda_interpolated_low,
         lambda_interpolated_high,
         color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        alpha=0.2,
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")

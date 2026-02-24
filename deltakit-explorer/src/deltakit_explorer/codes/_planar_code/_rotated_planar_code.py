@@ -4,6 +4,7 @@ This module stores an implementation of the rotated planar code.
 """
 # pylint: disable=too-many-branches, too-many-boolean-expressions
 import itertools
+from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
@@ -16,6 +17,7 @@ from deltakit_explorer.codes._schedules._schedule_order import (
     ScheduleOrder,
     get_x_and_z_schedules,
 )
+from deltakit_explorer.plotting._visualisation import _draw_code
 
 
 class RotatedPlanarCode(PlanarCode):
@@ -100,9 +102,7 @@ class RotatedPlanarCode(PlanarCode):
     ):
         self._horizontal_bump_with_top_left = horizontal_bump_with_top_left
         self._top_bumps_are_z = top_bumps_are_z
-        self._x_type_has_N_shape = (  # pylint: disable=invalid-name
-            top_bumps_are_z
-        )
+        self._x_type_has_N_shape = top_bumps_are_z  # pylint: disable=invalid-name
         x_schedule, z_schedule = get_x_and_z_schedules(
             RotatedPlanarCodeSchedules,
             schedule_order,
@@ -238,3 +238,11 @@ class RotatedPlanarCode(PlanarCode):
             if self._top_bumps_are_z
             else ((vert_op,), (horiz_op,))
         )
+
+    def draw_patch(
+        self,
+        filename: str | None = None,
+        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        unrotated_code: bool = False,
+    ) -> None:
+        return _draw_code(self, filename, backend, unrotated_code)

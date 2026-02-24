@@ -35,7 +35,9 @@ def plot_logical_error_probability_per_round(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
-    logical_error_probability_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    logical_error_probability_stddev: (
+        npt.NDArray[np.float64] | Sequence[float] | None
+    ) = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -126,7 +128,7 @@ def plot_logical_error_probability_per_round(
         yerr=logical_error_probability_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[0],
-        label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities (±{num_sigmas}σ)",  # noqa: RUF001
     )
     # Plot the fitted logical error probability per round curve
     leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
@@ -137,26 +139,26 @@ def plot_logical_error_probability_per_round(
         rounds_interpolated,
         lep_interpolated,
         label=f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)",  # noqa: RUF001
-        color=RIVERLANE_PLOT_COLOURS[1]
+        color=RIVERLANE_PLOT_COLOURS[1],
     )
 
     # Add error band to logical error probability per round curve
     lep_interpolated_low = _lep_interpolated(
         spam - num_sigmas * spam_stddev,
         leppr - num_sigmas * leppr_stddev,
-        rounds_interpolated
+        rounds_interpolated,
     )
     lep_interpolated_high = _lep_interpolated(
         spam + num_sigmas * spam_stddev,
         leppr + num_sigmas * leppr_stddev,
-        rounds_interpolated
+        rounds_interpolated,
     )
     ax.fill_between(
         rounds_interpolated,
         np.clip(lep_interpolated_low, 0, 1),
         np.clip(lep_interpolated_high, 0, 1),
         color=RIVERLANE_PLOT_COLOURS[0],
-        alpha=0.2
+        alpha=0.2,
     )
 
     ax.set_title("Logical Error Probability Per Round Fit")

@@ -15,6 +15,7 @@ from deltakit_explorer.codes._schedules import (
     UnrotatedPlanarCodeSchedules,
     get_x_and_z_schedules,
 )
+from deltakit_explorer.plotting._visualisation import _draw_code
 
 
 class UnrotatedPlanarCode(PlanarCode):
@@ -77,7 +78,9 @@ class UnrotatedPlanarCode(PlanarCode):
     ):
         # coordinates of the bottom left vertex of the rectangle
         (self._x0, self._y0) = (0, 0)
-        x_schedule, z_schedule = get_x_and_z_schedules(UnrotatedPlanarCodeSchedules, schedule_order)
+        x_schedule, z_schedule = get_x_and_z_schedules(
+            UnrotatedPlanarCodeSchedules, schedule_order
+        )
 
         self._perform_css_checks = False
 
@@ -171,5 +174,10 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
-    def draw_patch(self, filename: str | None = None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code: bool = True) -> None:
-        return super().draw_patch(filename, backend, unrotated_code)
+    def draw_patch(
+        self,
+        filename: str | None = None,
+        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        unrotated_code: bool = True,
+    ) -> None:
+        return _draw_code(self, filename, backend, unrotated_code)

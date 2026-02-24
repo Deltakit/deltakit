@@ -16,7 +16,7 @@ from deltakit_circuit._qubit_identifiers import PauliGate
 
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.plotting._visualisation import draw_code
+from deltakit_explorer.plotting._visualisation import _draw_code
 
 
 class ScheduleType(Enum):
@@ -76,7 +76,7 @@ class PlanarCode(CSSCode, ABC):
         untransformed_z_schedule: tuple[Coord2DDelta, ...],
         schedule_type: ScheduleType = ScheduleType.SIMULTANEOUS,
         use_ancilla_qubits: bool = True,
-        shift: Coord2DDelta = Coord2DDelta(0, 0)
+        shift: Coord2DDelta = Coord2DDelta(0, 0),
     ):
         self._shift = shift
         self.linear_tr = np.array([[1, 0], [0, 1]])
@@ -398,8 +398,16 @@ class PlanarCode(CSSCode, ABC):
                 reverse=True,
             )
         )
-    def draw_patch(self, filename: str | None = None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code: bool = False) -> None:
-        draw_code(self, filename=filename, backend=backend, unrotated_code=unrotated_code)
+
+    def draw_patch(
+        self,
+        filename: str | None = None,
+        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        unrotated_code: bool = False,
+    ) -> None:
+        return _draw_code(
+            self, filename=filename, backend=backend, unrotated_code=unrotated_code
+        )
 
     @cached_property
     def x0(self) -> int:

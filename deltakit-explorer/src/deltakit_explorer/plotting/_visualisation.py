@@ -1,13 +1,12 @@
 # (c) Copyright Riverlane 2020-2025.
-"""`visualisation` module aggregates data plotting methods.
-"""
+"""`visualisation` module aggregates data plotting methods."""
 
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable, Sequence
 from itertools import chain
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -15,11 +14,14 @@ import numpy as np
 import numpy.typing as npt
 import seaborn as sns
 from deltakit_circuit import PauliX
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from matplotlib.ticker import FuncFormatter
 
-from deltakit_explorer.codes._css._css_code import CSSCode
+if TYPE_CHECKING:
+    from deltakit_explorer.codes._planar_code import PlanarCode
 from deltakit_explorer.enums._basic_enums import DrawingColours
 from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
@@ -57,7 +59,8 @@ def correlation_matrix(
     # the qubit labels such that the labels are in the middle of the major
     # ticks. Sort the labels as they are not guaranteed to be in order.
     minor_ticks_in_major = len(
-        next(iter(qubit_to_detector_mapping.detector_map.values())))
+        next(iter(qubit_to_detector_mapping.detector_map.values()))
+    )
     num_major_ticks = len(qubit_to_detector_mapping.detector_map.keys())
     num_ticks = minor_ticks_in_major * num_major_ticks
     num_minor_ticks = num_ticks - num_major_ticks
@@ -66,7 +69,8 @@ def correlation_matrix(
     label_indices = [mid_im + (ticks_per_major * i) for i in range(num_major_ticks)]
     sorted_labels = (
         sorted(qubit_to_detector_mapping.detector_map.keys())
-        if len(labels) == 0 else labels
+        if len(labels) == 0
+        else labels
     )
 
     def format_func(_, tick_number):
@@ -91,6 +95,7 @@ def correlation_matrix(
     axes.grid(which="minor", color="#AAAAAA", linestyle="--", alpha=0.2)
     return plt
 
+
 def _rotate_defect_rate_points(
     detector_coords: dict,
     defect_rates: dict,
@@ -112,11 +117,10 @@ def _rotate_defect_rate_points(
 
     offset_defect_rates = {}
     for coord, defect_rate in rotated_coord_defect_rates.items():
-        offset_defect_rates[
-            (coord[0] - x_offset, coord[1] - y_offset)
-        ] = defect_rate
+        offset_defect_rates[(coord[0] - x_offset, coord[1] - y_offset)] = defect_rate
 
     return offset_defect_rates
+
 
 def defect_diagram(all_detector_coords: dict, all_defect_rates: dict):
     """Plots defect rates patch diagram given detector coordinates and
@@ -130,9 +134,7 @@ def defect_diagram(all_detector_coords: dict, all_defect_rates: dict):
         matplotlib.pyplot: matplotlib module
     """
     # rotate coords
-    defect_rates = _rotate_defect_rate_points(
-        all_detector_coords, all_defect_rates
-    )
+    defect_rates = _rotate_defect_rate_points(all_detector_coords, all_defect_rates)
     all_dr_means = defect_rates.values()
     cmap_min, cmap_max = min(all_dr_means), max(all_dr_means)
 
@@ -167,12 +169,9 @@ def defect_diagram(all_detector_coords: dict, all_defect_rates: dict):
         (num_rows - 1 - 1 - 0.5, x - 1, first_row[x])
         for x in np.where(first_row != 0)[0]
     ]
-    bottom_sc_indices = [
-        (-0.5, x - 1, last_row[x]) for x in np.where(last_row != 0)[0]
-    ]
+    bottom_sc_indices = [(-0.5, x - 1, last_row[x]) for x in np.where(last_row != 0)[0]]
     left_sc_indices = [
-        (num_cols - x - 1 - 1, -0.5, first_col[x])
-        for x in np.where(first_col != 0)[0]
+        (num_cols - x - 1 - 1, -0.5, first_col[x]) for x in np.where(first_col != 0)[0]
     ]
     right_sc_indices = [
         (num_cols - x - 1 - 1, num_cols - 1 - 1 - 0.5, last_col[x])
@@ -194,8 +193,7 @@ def defect_diagram(all_detector_coords: dict, all_defect_rates: dict):
     axes.set_xticks([])
     image.axes.invert_yaxis()
     cbar = axes.figure.colorbar(
-        image, ax=axes, shrink=1, orientation="vertical",
-        pad=0.2, label="Defect rate"
+        image, ax=axes, shrink=1, orientation="vertical", pad=0.2, label="Defect rate"
     )
     cbar.set_ticks([0.1, 0.25])
 
@@ -281,24 +279,26 @@ def defect_rates(
                 w2_avg.append(defect_rate)
                 plt.plot(
                     range(1, len(defect_rate) + 1),
-                    defect_rate, color="#ff7500", alpha=0.3
+                    defect_rate,
+                    color="#ff7500",
+                    alpha=0.3,
                 )
             else:
                 w4_avg.append(defect_rate)
                 plt.plot(
                     range(1, len(defect_rate) + 1),
-                    defect_rate, color="#006f62", alpha=0.3
+                    defect_rate,
+                    color="#006f62",
+                    alpha=0.3,
                 )
     w2_detectors = np.mean(w2_avg or [[]], axis=0)
     w4_detectors = np.mean(w4_avg or [[]], axis=0)
     plt.plot(
-        range(1, len(w4_detectors) + 1),
-        w4_detectors,
-        color="#006f62", label="Weight-4")
+        range(1, len(w4_detectors) + 1), w4_detectors, color="#006f62", label="Weight-4"
+    )
     plt.plot(
-        range(1, len(w2_detectors) + 1),
-        w2_detectors,
-        color="#ff7500", label="Weight-2")
+        range(1, len(w2_detectors) + 1), w2_detectors, color="#ff7500", label="Weight-2"
+    )
     plt.xlabel("Round")
     plt.xticks(range(1, len(w4_detectors) + 1))
     plt.ylabel("Defect rate")
@@ -306,23 +306,40 @@ def defect_rates(
     return plt
 
 
-def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotlib", "svg", "pgf"]|None = None, unrotated_code:bool=False) -> None:
-    if backend=="pgf":
+def _draw_code(
+    code: PlanarCode,
+    filename: str | None = None,
+    backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+    unrotated_code: bool = False,
+) -> tuple[Figure, Axes]:
+    """Function for drawing the Planar codes.
+    Args:
+        code: Planar Error Correction Code.
+        filename: The filename where to store the figure.
+        backend: The backend or file format that will be used for storing the plot.
+        unrotated_code: Boolean indicator is the code unrotated or not.
+    Returns:
+        tuple[Figure, Axes]: figure and axes of plot.
+    """
+    if backend == "pgf":
         mpl.use("pgf")
-        mpl.rcParams.update({
-            "pgf.texsystem": "pdflatex",
-            "font.family": "serif",
-            "text.usetex": True,
-            "pgf.rcfonts": False,
-        })
+        mpl.rcParams.update(
+            {
+                "pgf.texsystem": "pdflatex",
+                "font.family": "serif",
+                "text.usetex": True,
+                "pgf.rcfonts": False,
+            }
+        )
     fig, ax = plt.subplots(nrows=1, ncols=1)
 
     all_qubit_x_coords = [qubit.unique_identifier.x for qubit in code.qubits]
     all_qubit_y_coords = [qubit.unique_identifier.y for qubit in code.qubits]
 
-    _use_ancilla_qubits = code._use_ancilla_qubits if (code._use_ancilla_qubits is not None) else False
-
-    if _use_ancilla_qubits:
+    _use_ancilla_qubits = (
+        code._use_ancilla_qubits if (code._use_ancilla_qubits is not None) else False
+    )
+    if _use_ancilla_qubits and not unrotated_code:
         min_x, max_x = min(all_qubit_x_coords) - 1, max(all_qubit_x_coords) + 1
         min_y, max_y = min(all_qubit_y_coords) - 1, max(all_qubit_y_coords) + 1
     else:
@@ -332,15 +349,15 @@ def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotl
         min_x, max_x = (
             min(all_qubit_x_coords) - diff_from_max_coord_to_margin_no_ancilla,
             max(all_qubit_x_coords) + diff_from_max_coord_to_margin_no_ancilla,
-            )
+        )
         min_y, max_y = (
-                min(all_qubit_y_coords) - diff_from_max_coord_to_margin_no_ancilla,
-                max(all_qubit_y_coords) + diff_from_max_coord_to_margin_no_ancilla,
-            )
-        x_lim = (min_x, max_x)
-        y_lim = (min_y, max_y)
-        ax.set_xlim(x_lim)
-        ax.set_ylim(y_lim)
+            min(all_qubit_y_coords) - diff_from_max_coord_to_margin_no_ancilla,
+            max(all_qubit_y_coords) + diff_from_max_coord_to_margin_no_ancilla,
+        )
+    x_lim = (min_x, max_x)
+    y_lim = (min_y, max_y)
+    ax.set_xlim(x_lim)
+    ax.set_ylim(y_lim)
 
     stabilisers = tuple(chain.from_iterable(code._stabilisers))
     stabilisers = code._sort_stabilisers(stabilisers)
@@ -364,8 +381,7 @@ def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotl
                 2 * code.width - 1
             ):
                 data_qubit_x_coords = [
-                    -1 if x == 2 * code.width - 1 else x
-                    for x in data_qubit_x_coords
+                    -1 if x == 2 * code.width - 1 else x for x in data_qubit_x_coords
                 ]
             else:
                 data_qubit_x_coords = [
@@ -378,48 +394,41 @@ def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotl
                 2 * code.height - 1
             ):
                 data_qubit_y_coords = [
-                    -1 if y == 2 * code.height - 1 else y
-                    for y in data_qubit_y_coords
+                    -1 if y == 2 * code.height - 1 else y for y in data_qubit_y_coords
                 ]
             else:
                 data_qubit_y_coords = [
                     2 * code.height if y == 0 else y for y in data_qubit_y_coords
                 ]
 
-        # Re order data qubit coords for polygon drawing
-        ordered_data_qubit_y_coords: npt.NDArray[np.int8] = np.array(data_qubit_y_coords)
-        ordered_data_qubit_x_coords: npt.NDArray[np.int8] = np.array(data_qubit_x_coords)
-
-        order = np.argsort(
-            np.arctan2(
-                ordered_data_qubit_y_coords - ordered_data_qubit_y_coords.mean(),
-                ordered_data_qubit_x_coords - ordered_data_qubit_x_coords.mean(),
-            )
-        )
         paulis = [pauli for pauli in stabiliser.paulis if pauli is not None]
 
         if len(paulis) == 2:
-             ancilla_coord = stabiliser.ancilla_qubit.unique_identifier
-             data_qubit_x_coords.append(ancilla_coord[0])
-             data_qubit_y_coords.append(ancilla_coord[1])
+            ancilla_coord = stabiliser.ancilla_qubit.unique_identifier
+            data_qubit_x_coords.append(ancilla_coord[0])
+            data_qubit_y_coords.append(ancilla_coord[1])
         elif len(paulis) == 4:
-             data_qubit_x_coords[2], data_qubit_x_coords[3] = (
-                 data_qubit_x_coords[3],
-                 data_qubit_x_coords[2],
-             )
-             data_qubit_y_coords[2], data_qubit_y_coords[3] = (
-                 data_qubit_y_coords[3],
-                 data_qubit_y_coords[2])
+            data_qubit_x_coords[2], data_qubit_x_coords[3] = (
+                data_qubit_x_coords[3],
+                data_qubit_x_coords[2],
+            )
+            data_qubit_y_coords[2], data_qubit_y_coords[3] = (
+                data_qubit_y_coords[3],
+                data_qubit_y_coords[2],
+            )
 
-
-        ax.fill(
-                ordered_data_qubit_x_coords[order],
-                ordered_data_qubit_y_coords[order],
-                color=(
-                    DrawingColours.X_COLOUR.value
-                    if isinstance(paulis[0], PauliX)
-                    else DrawingColours.Z_COLOUR.value
-                ),
+        if isinstance(paulis[0], PauliX):
+            ax.fill(
+                data_qubit_x_coords,
+                data_qubit_y_coords,
+                color=DrawingColours.X_COLOUR.value,
+                alpha=1,
+            )
+        else:
+            ax.fill(
+                data_qubit_x_coords,
+                data_qubit_y_coords,
+                color=DrawingColours.Z_COLOUR.value,
                 alpha=1,
             )
 
@@ -457,46 +466,48 @@ def draw_code(code: CSSCode, filename: str|None=None, backend: Literal["matplotl
             ax.set_aspect(1)
             ax.add_artist(cc)
 
-    #Create the legend;
+    # Create the legend;
     legend_elements = [
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                color="w",
-                label="Data Qubit",
-                markerfacecolor=DrawingColours.DATA_QUBIT_COLOUR.value,
-                markersize=15,
-            ),
-            Line2D(
-                [0],
-                [0],
-                marker="o",
-                color="w",
-                label="Ancilla Qubit",
-                markerfacecolor=DrawingColours.ANCILLA_QUBIT_COLOUR.value,
-                markersize=15,
-            ),
-            Patch(facecolor=DrawingColours.X_COLOUR.value, label="X Stabiliser"),
-            Patch(facecolor=DrawingColours.Z_COLOUR.value, label="Z Stabiliser"),
-        ]
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            label="Data Qubit",
+            markerfacecolor=DrawingColours.DATA_QUBIT_COLOUR.value,
+            markersize=15,
+        ),
+        Line2D(
+            [0],
+            [0],
+            marker="o",
+            color="w",
+            label="Ancilla Qubit",
+            markerfacecolor=DrawingColours.ANCILLA_QUBIT_COLOUR.value,
+            markersize=15,
+        ),
+        Patch(facecolor=DrawingColours.X_COLOUR.value, label="X Stabiliser"),
+        Patch(facecolor=DrawingColours.Z_COLOUR.value, label="Z Stabiliser"),
+    ]
     legend = ax.legend(
-            handles=legend_elements,
-            loc="upper center",
-            bbox_to_anchor=(0.5, -0.1),
-            ncol=2,
-        )
-
+        handles=legend_elements,
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.1),
+        ncol=2,
+    )
     if filename is not None:
         # Save the file
-        output_directory = Path(filename)
+        output_directory = Path(filename).parent
         if not output_directory.exists():
-            output_directory.parent.mkdir(parents=True, exist_ok=True)
+            output_directory.parent.mkdir(parents=True)
         if backend == "matplotlib" or backend is None:
             fig.savefig(filename, bbox_extra_artists=(legend,), bbox_inches="tight")
-            plt.close(fig)
         elif backend == "pgf":
-            plt.savefig(filename + ".pgf",  bbox_extra_artists=(legend,), bbox_inches="tight")
+            plt.savefig(
+                filename + ".pgf", bbox_extra_artists=(legend,), bbox_inches="tight"
+            )
         elif backend == "svg":
-            fig.savefig(filename + ".svg", bbox_extra_artists=(legend,), bbox_inches="tight")
-            plt.close(fig)
+            fig.savefig(
+                filename + ".svg", bbox_extra_artists=(legend,), bbox_inches="tight"
+            )
+    return fig, ax
