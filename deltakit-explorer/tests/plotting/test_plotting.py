@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+import random
 from pathlib import Path
 from typing import ClassVar
 
@@ -10,6 +11,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from deltakit_explorer import plotting
+from deltakit_explorer.plotting import (
+    LambdaPlotResults,
+    LepprPlotResult,
+    interpolation_plot,
+)
 from deltakit_explorer.types import QubitCoordinateToDetectorMapping
 
 
@@ -17,35 +23,131 @@ class TestVisualisation:
 
     defect_rates: ClassVar[list[dict[tuple[float, ...], list[float]]]] = [
         {
-            (4.0, 5.0): [0.06904, 0.18388, 0.18308, 0.18564, 0.18602, 0.18416, 0.18526, 0.12188],
-            (2.0, 5.0): [0.08488, 0.19028, 0.18948, 0.19204, 0.19622, 0.20552, 0.20192, 0.14066],
-            (2.0, 7.0): [0.04926, 0.10428, 0.10848, 0.10914, 0.10932, 0.11754, 0.11748, 0.04888],
-            (4.0, 3.0): [0.0383, 0.10928, 0.10908, 0.1134, 0.1143, 0.11124, 0.11408, 0.07362]
+            (4.0, 5.0): [
+                0.06904,
+                0.18388,
+                0.18308,
+                0.18564,
+                0.18602,
+                0.18416,
+                0.18526,
+                0.12188,
+            ],
+            (2.0, 5.0): [
+                0.08488,
+                0.19028,
+                0.18948,
+                0.19204,
+                0.19622,
+                0.20552,
+                0.20192,
+                0.14066,
+            ],
+            (2.0, 7.0): [
+                0.04926,
+                0.10428,
+                0.10848,
+                0.10914,
+                0.10932,
+                0.11754,
+                0.11748,
+                0.04888,
+            ],
+            (4.0, 3.0): [
+                0.0383,
+                0.10928,
+                0.10908,
+                0.1134,
+                0.1143,
+                0.11124,
+                0.11408,
+                0.07362,
+            ],
         },
         {
-            (5.0, 6.0): [0.04326, 0.11596, 0.11936, 0.12142, 0.12186, 0.11838, 0.12, 0.07874],
-            (3.0, 4.0): [0.05906, 0.14218, 0.1584, 0.15778, 0.16064, 0.16834, 0.16924, 0.10692],
-            (1.0, 4.0): [0.05468, 0.1092, 0.11364, 0.1169, 0.11988, 0.12116, 0.12476, 0.09074],
-            (3.0, 6.0): [0.07178, 0.18952, 0.191, 0.1929, 0.19794, 0.20064, 0.20042, 0.11874]
-        }
+            (5.0, 6.0): [
+                0.04326,
+                0.11596,
+                0.11936,
+                0.12142,
+                0.12186,
+                0.11838,
+                0.12,
+                0.07874,
+            ],
+            (3.0, 4.0): [
+                0.05906,
+                0.14218,
+                0.1584,
+                0.15778,
+                0.16064,
+                0.16834,
+                0.16924,
+                0.10692,
+            ],
+            (1.0, 4.0): [
+                0.05468,
+                0.1092,
+                0.11364,
+                0.1169,
+                0.11988,
+                0.12116,
+                0.12476,
+                0.09074,
+            ],
+            (3.0, 6.0): [
+                0.07178,
+                0.18952,
+                0.191,
+                0.1929,
+                0.19794,
+                0.20064,
+                0.20042,
+                0.11874,
+            ],
+        },
     ]
 
     detector_map: ClassVar[dict[tuple[float, ...], list[int]]] = {
         (2.0, 5.0): [0, 4, 8, 12, 16, 20, 24, 28],
         (2.0, 7.0): [2, 5, 9, 13, 17, 21, 25, 30],
         (4.0, 5.0): [3, 7, 11, 15, 19, 23, 27, 31],
-        (4.0, 3.0): [1, 6, 10, 14, 18, 22, 26, 29]
+        (4.0, 3.0): [1, 6, 10, 14, 18, 22, 26, 29],
     }
 
     defect_coords: ClassVar[dict[int, tuple[float, ...]]] = {
-        0: (1.0, 4.0, 0.0), 1: (3.0, 4.0, 0.0), 2: (3.0, 6.0, 0.0), 3: (5.0, 6.0, 0.0),
-        4: (1.0, 4.0, 1.0), 5: (3.0, 4.0, 1.0), 6: (3.0, 6.0, 1.0), 7: (5.0, 6.0, 1.0),
-        8: (1.0, 4.0, 2.0), 9: (3.0, 4.0, 2.0), 10: (3.0, 6.0, 2.0), 11: (5.0, 6.0, 2.0),
-        12: (1.0, 4.0, 3.0), 13: (3.0, 4.0, 3.0), 14: (3.0, 6.0, 3.0), 15: (5.0, 6.0, 3.0),
-        16: (1.0, 4.0, 4.0), 17: (3.0, 4.0, 4.0), 18: (3.0, 6.0, 4.0), 19: (5.0, 6.0, 4.0),
-        20: (1.0, 4.0, 5.0), 21: (3.0, 4.0, 5.0), 22: (3.0, 6.0, 5.0), 23: (5.0, 6.0, 5.0),
-        24: (1.0, 4.0, 6.0), 25: (3.0, 4.0, 6.0), 26: (3.0, 6.0, 6.0), 27: (5.0, 6.0, 6.0),
-        28: (1.0, 4.0, 7.0), 29: (3.0, 4.0, 7.0), 30: (3.0, 6.0, 7.0), 31: (5.0, 6.0, 7.0)
+        0: (1.0, 4.0, 0.0),
+        1: (3.0, 4.0, 0.0),
+        2: (3.0, 6.0, 0.0),
+        3: (5.0, 6.0, 0.0),
+        4: (1.0, 4.0, 1.0),
+        5: (3.0, 4.0, 1.0),
+        6: (3.0, 6.0, 1.0),
+        7: (5.0, 6.0, 1.0),
+        8: (1.0, 4.0, 2.0),
+        9: (3.0, 4.0, 2.0),
+        10: (3.0, 6.0, 2.0),
+        11: (5.0, 6.0, 2.0),
+        12: (1.0, 4.0, 3.0),
+        13: (3.0, 4.0, 3.0),
+        14: (3.0, 6.0, 3.0),
+        15: (5.0, 6.0, 3.0),
+        16: (1.0, 4.0, 4.0),
+        17: (3.0, 4.0, 4.0),
+        18: (3.0, 6.0, 4.0),
+        19: (5.0, 6.0, 4.0),
+        20: (1.0, 4.0, 5.0),
+        21: (3.0, 4.0, 5.0),
+        22: (3.0, 6.0, 5.0),
+        23: (5.0, 6.0, 5.0),
+        24: (1.0, 4.0, 6.0),
+        25: (3.0, 4.0, 6.0),
+        26: (3.0, 6.0, 6.0),
+        27: (5.0, 6.0, 6.0),
+        28: (1.0, 4.0, 7.0),
+        29: (3.0, 4.0, 7.0),
+        30: (3.0, 6.0, 7.0),
+        31: (5.0, 6.0, 7.0),
     }
 
     resource_folder = Path(__file__).parent / "../resources"
@@ -86,10 +188,12 @@ class TestVisualisation:
         self.assert_same_size(path, path_ref)
 
     def test_plot_correlation_matrix(self, tmp_path):
-        stick = np.linspace(-.5, .5, 32).reshape(-1, 1)
-        mx = (stick @ stick.T)
+        stick = np.linspace(-0.5, 0.5, 32).reshape(-1, 1)
+        mx = stick @ stick.T
         plt.figure(figsize=(5, 5))
-        plotting.correlation_matrix(mx, QubitCoordinateToDetectorMapping(self.detector_map))
+        plotting.correlation_matrix(
+            mx, QubitCoordinateToDetectorMapping(self.detector_map)
+        )
         path = Path(tmp_path) / "corr.png"
         path_ref = self.resource_folder / "corr.png"
         plt.savefig(path)
@@ -108,5 +212,47 @@ class TestVisualisation:
         path = Path(tmp_path) / "defects_diagram_shifted.png"
         path_ref = self.resource_folder / "defects_diagram.png"
         plt.savefig(path)
+        plt.clf()
+        self.assert_same_size(path, path_ref)
+
+    def test_interpolation_plot(self):
+        leppr: float = random.random()
+        leppr_stddev: float = (1 - leppr) / 2
+        spam_error: float = random.random()
+        spam_error_stddev: float = (1 - spam_error) / 2
+        plot_results = LambdaPlotResults(
+            leppr, leppr_stddev, spam_error, spam_error_stddev
+        )
+        distances = np.array([5, 7, 9, 11, 13, 15])
+        lep_per_round = np.array([0.15, 0.1, 0.05, 0.25, 0.005, 0.001])
+        lep_per_round_std = np.array([0.01, 0.008, 0.005, 0.005, 0.005, 0.005])
+
+        fix, ax = interpolation_plot(
+            plot_results,
+            distances=distances,
+            lep_per_round=lep_per_round,
+            lep_per_round_std=lep_per_round_std,
+        )
+        path_ref = self.resource_folder / "lambda_diagram.png"
+        plt.savefig(path_ref)
+        plt.clf()
+
+        leppr: float = random.random()
+        leppr_stddev: float = (1 - leppr) / 2
+        spam_error: float = random.random()
+        spam_error_stddev: float = (1 - spam_error) / 2
+        plot_results = LepprPlotResult(
+            leppr, leppr_stddev, spam_error, spam_error_stddev
+        )
+
+        fix, ax = interpolation_plot(
+            plot_results,
+            distances=distances,
+            lep_per_round=lep_per_round,
+            lep_per_round_std=lep_per_round_std,
+        )
+        path = self.resource_folder / "leppr_diagram.png"
+        plt.savefig(path)
+
         plt.clf()
         self.assert_same_size(path, path_ref)
