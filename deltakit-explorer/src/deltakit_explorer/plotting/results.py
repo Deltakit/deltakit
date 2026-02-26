@@ -71,7 +71,7 @@ class Interpolated:
         # boundaries are also within [0, 1]
         # Since the fit could technically exceed it slightly or we just want to warn/clip.
         # Provided `interpolated` is within `[0, 1)`, boundaries are also within `[0, 1)`.
-        if not (np.all(self.interpolated >= 0) and np.all(self.interpolated <= 1)):
+        if not all( 0 <= self.interpolated <= 1):
             msg = "Interpolated values must be within [0, 1]"
             raise ValueError(msg)
         if not (np.all(self.lower_boundary >= 0) and np.all(self.lower_boundary <= 1)):
