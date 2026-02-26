@@ -64,7 +64,7 @@ def plot(
             fig, ax = plot(leppr_result)
     """
     if (fig is None) ^ (ax is None):
-        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
+        msg = "The 'fig' and 'ax' parameters should either be both `None` or both set."
         raise ValueError(msg)
 
     if fig is None and ax is None:
