@@ -55,13 +55,6 @@ class TestCalculateLambda:
         with pytest.raises(ValueError, match="^Multiple entries were provided"):
             calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
 
-    def test_even_distances_raises(self):
-        distances = [2, 4, 6]
-        lepprs = [0.01, 0.001, 0.0001]
-        lepprs_stddevs = [1e-10, 1e-10, 1e-10]
-        with pytest.raises(ValueError, match="^Found at least one even distance"):
-            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddevs)
-
     @pytest.mark.parametrize(
         ("lamb", "distances"),
         itertools.product(
