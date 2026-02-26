@@ -255,14 +255,6 @@ def calculate_lambda_and_lambda_stddev(
         )
         raise ValueError(msg)
 
-    # Make sure that there are no even distances.
-    if np.any(distances % 2 == 0):
-        msg = (
-            "Found at least one even distance in the provided distances "
-            f"({distances.tolist()}). This is not supported."
-        )
-        raise ValueError(msg)
-
     if method not in _LAMBDA_FITTING_METHODS:
         warnings.warn(
             "Got a fitting method that is not supported by this function "
