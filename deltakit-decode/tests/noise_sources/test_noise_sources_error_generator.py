@@ -3,22 +3,30 @@
 import deltakit_circuit as sp
 import pytest
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge, DecodingHyperEdge,
-                                           DecodingHyperGraph, EdgeRecord,
-                                           HyperMultiGraph, NXDecodingGraph,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome,
-                                           dem_to_decoding_graph_and_logicals,
-                                           dem_to_hypergraph_and_logicals)
-from deltakit_decode.utils import parse_stim_circuit
-from deltakit_decode.noise_sources import (EdgeProbabilityMatchingNoise,
-                                           ExhaustiveMatchingNoise,
-                                           ExhaustiveWeightedMatchingNoise,
-                                           FixedWeightMatchingNoise,
-                                           SampleStimNoise,
-                                           UniformMatchingNoise)
-from deltakit_decode.noise_sources._generic_noise_sources import _NoiseModel
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    DecodingHyperEdge,
+    DecodingHyperGraph,
+    EdgeRecord,
+    HyperMultiGraph,
+    NXDecodingGraph,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+    dem_to_decoding_graph_and_logicals,
+    dem_to_hypergraph_and_logicals,
+)
 from pytest_lazy_fixtures import lf
+
+from deltakit_decode.noise_sources import (
+    EdgeProbabilityMatchingNoise,
+    ExhaustiveMatchingNoise,
+    ExhaustiveWeightedMatchingNoise,
+    FixedWeightMatchingNoise,
+    SampleStimNoise,
+    UniformMatchingNoise,
+)
+from deltakit_decode.noise_sources._generic_noise_sources import _NoiseModel
+from deltakit_decode.utils import parse_stim_circuit
 
 
 @pytest.fixture(scope="module")
@@ -67,7 +75,7 @@ def stim_decoding_hypergraph():
 
 class TestExhaustiveMatchingNoise:
 
-    @pytest.mark.parametrize("graph, expected_errors", [
+    @pytest.mark.parametrize(("graph", "expected_errors"), [
         (
             lf("manual_decoding_graph"),
             {frozenset({0, 1}), frozenset({0, 2})}
@@ -111,8 +119,8 @@ class TestExhaustiveWeightedMatchingNoise:
         dem = stim_circuit.detector_error_model(decompose_errors=True)
         decoding_graph, logicals = dem_to_decoding_graph_and_logicals(dem)
 
-        times = set(
-            [decoding_graph.detector_records[logical.second].time for logical in logicals[0]])
+        times = {
+            decoding_graph.detector_records[logical.second].time for logical in logicals[0]}
         exhaustion_ceiling = min(
             [sum(decoding_graph.edge_records[edge].weight for edge in logicals[0]
                  if decoding_graph.detector_records[edge.second].time == time)
@@ -131,8 +139,7 @@ class TestExhaustiveWeightedMatchingNoise:
 
     def test_no_errors_above_ceiling_are_sampled(self, manual_decoding_hypergraph):
         noise_model = ExhaustiveWeightedMatchingNoise(0.01)
-        noise_sample = {sample for sample
-                        in noise_model.error_generator(manual_decoding_hypergraph)}
+        noise_sample = set(noise_model.error_generator(manual_decoding_hypergraph))
         assert not noise_sample
 
     def test_correct_errors_are_generated(self, noise_model_and_decoding_graph):
@@ -151,7 +158,7 @@ class TestExhaustiveWeightedMatchingNoise:
 
 class TestFixedWeightMatchingNoise:
 
-    @pytest.mark.parametrize("graph, expected_errors", [
+    @pytest.mark.parametrize(("graph", "expected_errors"), [
         (
             lf("manual_decoding_graph"),
             {frozenset({4, 5}), frozenset({2, 3})}
@@ -178,7 +185,7 @@ class TestFixedWeightMatchingNoise:
 
 class TestSampleStimNoise:
 
-    @pytest.mark.parametrize("stim_circuit, expected_sample", [
+    @pytest.mark.parametrize(("stim_circuit", "expected_sample"), [
         (
             stim.Circuit("""
                 X_ERROR(1) 0 1 2
@@ -222,7 +229,7 @@ class TestSampleStimNoise:
 
 class TestUniformMatchingNoise:
 
-    @pytest.mark.parametrize("noise_model, graph, expected_errors", [
+    @pytest.mark.parametrize(("noise_model", "graph", "expected_errors"), [
         (
             UniformMatchingNoise(0.2),
             lf("manual_decoding_graph"),
@@ -251,7 +258,7 @@ class TestUniformMatchingNoise:
 
 
 class TestEdgeProbabilityMatchingNoise:
-    @pytest.mark.parametrize("decoding_graph, expected_errors", [
+    @pytest.mark.parametrize(("decoding_graph", "expected_errors"), [
         (
             lf("stim_decoding_graph"),
             OrderedDecodingEdges()

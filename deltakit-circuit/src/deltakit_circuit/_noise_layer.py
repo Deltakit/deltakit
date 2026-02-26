@@ -4,21 +4,16 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from collections.abc import Iterable, Mapping
 from itertools import chain, permutations
-from typing import (
-    DefaultDict,
-    FrozenSet,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Tuple,
-    Union,
-)
+from typing import Generic
 
 import stim
+
+from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
 from deltakit_circuit._stim_identifiers import AppendArguments, NoiseStimIdentifier
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 from deltakit_circuit.noise_channels import (
     Leakage,
     Relax,
@@ -39,7 +34,6 @@ from deltakit_circuit.noise_channels._pauli_noise import (
     PauliYError,
     PauliZError,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T, U
 
 UNCORRELATED_NOISE_CHANNELS = (
     PauliXError,
@@ -60,24 +54,22 @@ class NoiseLayer(Generic[T]):
     """Class which represents noise in a circuit."""
 
     def __init__(
-        self, noise_channels: Union[_NoiseChannel, Iterable[_NoiseChannel], None] = None
+        self, noise_channels: _NoiseChannel | Iterable[_NoiseChannel] | None = None
     ):
-        self._uncorrelated_noise_channels: List[
-            Union[_UncorrelatedNoise, _LeakageNoise]
-        ] = []
-        self._correlated_noise_channels: List[_CorrelatedNoise] = []
+        self._uncorrelated_noise_channels: list[_UncorrelatedNoise | _LeakageNoise] = []
+        self._correlated_noise_channels: list[_CorrelatedNoise] = []
         if noise_channels is not None:
             self.add_noise_channels(noise_channels)
 
     @property
-    def noise_channels(self) -> Tuple[_NoiseChannel, ...]:
+    def noise_channels(self) -> tuple[_NoiseChannel, ...]:
         """Get all noise channels in this layer."""
         return tuple(
             chain(self._uncorrelated_noise_channels, self._correlated_noise_channels)
         )
 
     @property
-    def qubits(self) -> FrozenSet[Qubit[T]]:
+    def qubits(self) -> frozenset[Qubit[T]]:
         """Get all the qubits in this noise layer."""
         return frozenset(
             chain.from_iterable(
@@ -104,7 +96,7 @@ class NoiseLayer(Generic[T]):
             noise_channel.transform_qubits(id_mapping)
 
     def add_noise_channels(
-        self, noise_channels: Union[_NoiseChannel, Iterable[_NoiseChannel]]
+        self, noise_channels: _NoiseChannel | Iterable[_NoiseChannel]
     ):
         """Add noise channels to this noise layer.
 
@@ -126,8 +118,8 @@ class NoiseLayer(Generic[T]):
 
     def _collect_noise_channels(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> List[AppendArguments]:
-        grouped_noise: DefaultDict[NoiseStimIdentifier, List[stim.GateTarget]] = (
+    ) -> list[AppendArguments]:
+        grouped_noise: defaultdict[NoiseStimIdentifier, list[stim.GateTarget]] = (
             defaultdict(list)
         )
         for noise_channel in self._uncorrelated_noise_channels:
@@ -176,9 +168,12 @@ class NoiseLayer(Generic[T]):
         for stim_string, targets, probabilities, tag in self._collect_noise_channels(
             qubit_mapping
         ):
-            stim_circuit.append(
-                stim_string, targets, probabilities, tag=tag if tag is not None else ""
+            kwargs = (
+                {"tag": tag}
+                if tag is not None and is_stim_tag_feature_available()
+                else {}
             )
+            stim_circuit.append(stim_string, targets, probabilities, **kwargs)
 
     def approx_equals(  # noqa: PLR0911
         self,
@@ -274,18 +269,19 @@ class NoiseLayer(Generic[T]):
         )
 
     def __hash__(self) -> int:
-        raise NotImplementedError(
+        msg = (
             "Hash is expected to be implemented in constant time but there is not easy "
             "way of achieving that complexity with the current NoiseLayer internals. "
             "If you get this error, please open an issue on "
             "https://github.com/Deltakit/deltakit/issues/new/choose."
         )
+        raise NotImplementedError(msg)
 
     def __repr__(self) -> str:
         indent = 4 * " "
         noise_layer_lines = ["NoiseLayer(["]
         noise_layer_lines.extend(
-            f"{indent}{repr(noise_channel)}" for noise_channel in self.noise_channels
+            f"{indent}{noise_channel!r}" for noise_channel in self.noise_channels
         )
         noise_layer_lines.append("])")
         return "\n".join(noise_layer_lines)

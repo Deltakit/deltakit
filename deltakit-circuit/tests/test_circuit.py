@@ -1,9 +1,11 @@
 # (c) Copyright Riverlane 2020-2025.
+import contextlib
 from itertools import combinations
 
-import deltakit_circuit as sp
 import pytest
 import stim
+
+import deltakit_circuit as sp
 
 
 @pytest.fixture
@@ -42,7 +44,7 @@ def noisy_circuit(empty_circuit: sp.Circuit) -> sp.Circuit:
 
 
 @pytest.fixture
-def nested_circuit_with_noise(empty_circuit: sp.Circuit) -> sp.Circuit:
+def nested_circuit_with_noise() -> sp.Circuit:
     return sp.Circuit(
         sp.Circuit(
             [
@@ -80,9 +82,9 @@ def noisy_measurement_circuit(empty_circuit: sp.Circuit) -> sp.Circuit:
             sp.NoiseLayer(sp.noise_channels.Depolarise1(sp.Qubit(1), 0.02)),
         ),
         (
-            sp.GateLayer(sp.gates.X(sp.Qubit(i)) for i in range(0, 1)),
+            sp.GateLayer(sp.gates.X(sp.Qubit(i)) for i in range(1)),
             sp.NoiseLayer(sp.noise_channels.Depolarise2(sp.Qubit(0), sp.Qubit(1), 0.2)),
-            sp.GateLayer(sp.gates.MZ(sp.Qubit(i)) for i in range(0, 1)),
+            sp.GateLayer(sp.gates.MZ(sp.Qubit(i)) for i in range(1)),
         ),
     ],
 )
@@ -102,7 +104,7 @@ def test_appending_objects_to_circuit_that_are_not_layers_raises_error():
 
 
 @pytest.mark.parametrize(
-    "circuit, expected_repr",
+    ("circuit", "expected_repr"),
     [
         (
             sp.Circuit(sp.GateLayer(sp.gates.X(i) for i in range(2))),
@@ -277,7 +279,7 @@ class TestCircuitApproxEquals:
         assert circuit1.approx_equals(circuit2)
 
     @pytest.mark.parametrize(
-        "layers1, layers2",
+        ("layers1", "layers2"),
         [
             (
                 sp.GateLayer(sp.gates.H(sp.Qubit(0))),
@@ -326,7 +328,7 @@ class TestCircuitApproxEquals:
         assert not sp.Circuit(layers, 2).approx_equals(sp.Circuit(layers, 3))
 
     @pytest.mark.parametrize(
-        "layer1, layer2",
+        ("layer1", "layer2"),
         combinations(
             [
                 sp.Detector(sp.MeasurementRecord(-1)),
@@ -398,7 +400,7 @@ class TestCircuitApproxEquals:
         )
         assert circuit1.approx_equals(circuit2)
 
-    @pytest.mark.parametrize("rel_tol, abs_tol", [(1e-7, 0.0), (1e-9, 1e-9)])
+    @pytest.mark.parametrize(("rel_tol", "abs_tol"), [(1e-7, 0.0), (1e-9, 1e-9)])
     def test_approx_equal_circuits_are_approx_equal_other_tol(self, rel_tol, abs_tol):
         circuit1 = sp.Circuit(
             [
@@ -440,7 +442,7 @@ class TestCircuitApproxEquals:
         )
         assert circuit1.approx_equals(circuit2, rel_tol=rel_tol, abs_tol=abs_tol)
 
-    @pytest.mark.parametrize("rel_tol, abs_tol", [(1e-7, 0.0), (1e-9, 1e-9)])
+    @pytest.mark.parametrize(("rel_tol", "abs_tol"), [(1e-7, 0.0), (1e-9, 1e-9)])
     def test_not_approx_equal_circuits_are_not_approx_equal_other_tol(
         self, rel_tol, abs_tol
     ):
@@ -492,7 +494,7 @@ def test_two_circuits_with_identical_layers_are_equal():
 
 
 @pytest.mark.parametrize(
-    "layers1, layers2",
+    ("layers1", "layers2"),
     [
         (sp.GateLayer(sp.gates.H(sp.Qubit(0))), sp.GateLayer(sp.gates.H(sp.Qubit(1)))),
         (
@@ -620,6 +622,22 @@ def test_hash(empty_circuit: sp.Circuit):
         hash(empty_circuit)
 
 
+@pytest.mark.parametrize(
+    "body",
+    [
+        sp.GateLayer([sp.gates.X(0, tag="tag")]),
+        sp.NoiseLayer([sp.noise_channels.Depolarise1(0, 0.1, tag="tag")]),
+        sp.Detector(sp.MeasurementRecord(-1), tag="tag"),
+        sp.Observable(0, sp.MeasurementRecord(-1), tag="tag"),
+        sp.ShiftCoordinates((1, 1, 1), tag="tag"),
+    ],
+)
+def test_circuit_with_tag_exports_does_not_raise(body) -> None:
+    circuit_with_tags: sp.Circuit[int] = sp.Circuit()
+    circuit_with_tags.append_layers([body])
+    circuit_with_tags.as_stim_circuit()
+
+
 class TestApplyingGateNoise:
     @pytest.mark.parametrize("adjacency", sp.Circuit.LayerAdjacency)
     def test_applying_empty_gate_noise_profile_doesnt_add_noise_layer(
@@ -658,7 +676,7 @@ class TestApplyingGateNoise:
     ):
         empty_circuit.append_layers(sp.GateLayer(sp.gates.X(0)))
         empty_circuit.apply_gate_noise(
-            lambda noise_context: sp.noise_channels.PauliZError(0, 0.01), adjacency
+            lambda _: sp.noise_channels.PauliZError(0, 0.01), adjacency
         )
         assert empty_circuit.is_noisy
 
@@ -675,12 +693,11 @@ class TestApplyingGateNoise:
             ],
             adjacency,
         )
-        assert (
-            empty_circuit.gate_layers() == [gate_layer] and not empty_circuit.is_noisy
-        )
+        assert empty_circuit.gate_layers() == [gate_layer]
+        assert not empty_circuit.is_noisy
 
     @pytest.mark.parametrize(
-        "adjacency, expected_noise_index",
+        ("adjacency", "expected_noise_index"),
         [(sp.Circuit.LayerAdjacency.BEFORE, 0), (sp.Circuit.LayerAdjacency.AFTER, -1)],
     )
     def test_applying_gate_noise_adds_a_noise_layer_to_the_circuit(
@@ -778,7 +795,7 @@ class TestApplyingGateNoise:
         assert not empty_circuit.layers[0].is_noisy
 
     @pytest.mark.parametrize(
-        "adjacency, expected_circuit",
+        ("adjacency", "expected_circuit"),
         [
             (
                 sp.Circuit.LayerAdjacency.AFTER,
@@ -887,7 +904,7 @@ class TestReplaceGates:
         assert empty_circuit.measurement_gates[0] == noise_generator(gate)
 
     @pytest.mark.parametrize(
-        "layers, replacement_policy, expected_layers",
+        ("layers", "replacement_policy", "expected_layers"),
         [
             (
                 sp.Circuit(sp.GateLayer(sp.gates.MX(0)), iterations=2),
@@ -909,7 +926,7 @@ class TestReplaceGates:
         assert empty_circuit.layers == expected_layers
 
     @pytest.mark.parametrize(
-        "nested_circuit, replacement_policy",
+        ("nested_circuit", "replacement_policy"),
         [
             (
                 sp.Circuit(sp.GateLayer(sp.gates.MX(0)), iterations=2),
@@ -929,7 +946,7 @@ class TestReplaceGates:
         assert empty_circuit.layers == [nested_circuit]
 
     @pytest.mark.parametrize(
-        "deltakit_circuit_circuit, noise_to_apply, expected_gate_layers",
+        ("deltakit_circuit_circuit", "noise_to_apply", "expected_gate_layers"),
         [
             (
                 sp.Circuit(sp.GateLayer(sp.gates.MZ(i) for i in range(4))),
@@ -1012,7 +1029,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2), sp.Coordinate(0, 1)),
             sp.Detector(sp.MeasurementRecord(-3), sp.Coordinate(1, 1)),
         ]
-        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         deltakit_circuit_circuit = sp.Circuit(layers)
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.layers == layers
@@ -1020,8 +1037,9 @@ class TestReorderingDetectors:
     def test_other_layers_between_blocks_are_not_modified_when_reordering_detectors(
         self,
     ):
-        layers = [sp.GateLayer(sp.gates.MZ(i) for i in range(2))] + [
-            sp.GateLayer(sp.gates.I(i) for i in range(2))
+        layers = [
+            sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+            sp.GateLayer(sp.gates.I(i) for i in range(2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(layers)
         deltakit_circuit_circuit.reorder_detectors()
@@ -1035,7 +1053,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(2)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == detectors
@@ -1049,7 +1067,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-3), sp.Coordinate(0, 0, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1068,10 +1086,12 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-2), coordinate=sp.Coordinate(0, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[0:2]
-            + [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[2:4]
+            [
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[0:2],
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[2:4],
+            ]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1090,7 +1110,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), coordinate=sp.Coordinate(1, 0)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors
+            [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors]
         )
         deltakit_circuit_circuit.reorder_detectors(reverse=True)
         assert deltakit_circuit_circuit.detectors() == [
@@ -1107,7 +1127,7 @@ class TestReorderingDetectors:
         ]
         deltakit_circuit_circuit = sp.Circuit(
             sp.Circuit(
-                [sp.GateLayer(sp.gates.MZ(i) for i in range(3))] + detectors,
+                [sp.GateLayer(sp.gates.MZ(i) for i in range(3)), *detectors],
                 iterations=5,
             )
         )
@@ -1128,13 +1148,13 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), sp.Coordinate(0, 2)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            [sp.GateLayer(sp.gates.MZ(i) for i in range(2))]
-            + detectors[0:2]
-            + [
+            [
+                sp.GateLayer(sp.gates.MZ(i) for i in range(2)),
+                *detectors[0:2],
                 sp.Circuit(
-                    [sp.GateLayer(sp.gates.MX(i) for i in range(2))] + detectors[2:],
+                    [sp.GateLayer(sp.gates.MX(i) for i in range(2)), *detectors[2:]],
                     iterations=5,
-                )
+                ),
             ]
         )
         deltakit_circuit_circuit.reorder_detectors()
@@ -1155,7 +1175,7 @@ class TestReorderingDetectors:
             sp.Detector(sp.MeasurementRecord(-1), sp.Coordinate(0, 1)),
         ]
         deltakit_circuit_circuit = sp.Circuit(
-            detectors[0:2] + [sp.ShiftCoordinates((0, 1))] + detectors[2:4]
+            [*detectors[0:2], sp.ShiftCoordinates((0, 1)), *detectors[2:4]]
         )
         deltakit_circuit_circuit.reorder_detectors()
         assert deltakit_circuit_circuit.detectors() == [
@@ -1168,7 +1188,7 @@ class TestReorderingDetectors:
 
 class TestStimCircuit:
     @pytest.mark.parametrize(
-        "deltakit_circuit_circuit, expected_circuit",
+        ("deltakit_circuit_circuit", "expected_circuit"),
         [
             (
                 sp.Circuit(
@@ -1309,7 +1329,7 @@ class TestStimCircuit:
         )
 
     @pytest.mark.parametrize(
-        "deltakit_circuit_circuit, expected_string",
+        ("deltakit_circuit_circuit", "expected_string"),
         [
             (
                 sp.Circuit(
@@ -1352,7 +1372,7 @@ class TestStimCircuit:
         assert str(deltakit_circuit_circuit.as_stim_circuit()).endswith(expected_string)
 
     @pytest.mark.parametrize(
-        "deltakit_circuit_circuit, qubit_mapping, expected_string",
+        ("deltakit_circuit_circuit", "qubit_mapping", "expected_string"),
         [
             (
                 sp.Circuit(
@@ -1478,10 +1498,8 @@ class TestStimCircuit:
             for index, stim_id in reversed(list(enumerate(stim_identifiers)))
             if stim_id in sp.gates.GATE_MAPPING
         )
-        try:
+        with contextlib.suppress(IndexError):
             assert stim_lines[last_gate_line_index + 1] != "TICK"
-        except IndexError:
-            pass
 
     def test_stim_circuit_preserves_ordering_of_measurement_gates(
         self, empty_circuit: sp.Circuit
@@ -1703,17 +1721,17 @@ class TestFlatten:
         assert sp.Circuit(layers).flatten() == sp.Circuit(layers)
 
     @pytest.mark.parametrize(
-        "layers, iterations",
+        ("layers", "iterations"),
         [
-            [[sp.GateLayer(sp.gates.X(0))], 2],
-            [
+            ([sp.GateLayer(sp.gates.X(0))], 2),
+            (
                 [
                     sp.GateLayer(sp.gates.X(0)),
                     sp.GateLayer(sp.gates.H(0)),
                 ],
                 2,
-            ],
-            [
+            ),
+            (
                 [
                     sp.GateLayer(
                         [
@@ -1723,7 +1741,7 @@ class TestFlatten:
                     )
                 ],
                 2,
-            ],
+            ),
         ],
     )
     def test_flatten_for_iterating_circuits_works_as_expected(self, layers, iterations):
@@ -1732,17 +1750,17 @@ class TestFlatten:
         )
 
     @pytest.mark.parametrize(
-        "circuit, expected_circuit",
+        ("circuit", "expected_circuit"),
         [
-            [
+            (
                 sp.Circuit(sp.Circuit(sp.GateLayer(sp.gates.X(0)))),
                 sp.Circuit(sp.GateLayer(sp.gates.X(0))),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(sp.Circuit(sp.GateLayer(sp.gates.X(0))), iterations=2),
                 sp.Circuit([sp.GateLayer(sp.gates.X(0)), sp.GateLayer(sp.gates.X(0))]),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1755,8 +1773,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1772,8 +1790,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1787,8 +1805,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1804,8 +1822,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1824,8 +1842,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1850,8 +1868,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1867,8 +1885,8 @@ class TestFlatten:
                         sp.GateLayer(sp.gates.X(0)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1894,8 +1912,8 @@ class TestFlatten:
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1915,8 +1933,8 @@ class TestFlatten:
                         sp.Detector([sp.MeasurementRecord(-1)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1943,8 +1961,8 @@ class TestFlatten:
                         sp.Detector([sp.MeasurementRecord(-1)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1975,8 +1993,8 @@ class TestFlatten:
                         sp.Detector([sp.MeasurementRecord(-1)]),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -1998,8 +2016,8 @@ class TestFlatten:
                         sp.Observable(0, sp.MeasurementRecord(-1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -2029,8 +2047,8 @@ class TestFlatten:
                         sp.Observable(0, sp.MeasurementRecord(-1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -2048,8 +2066,8 @@ class TestFlatten:
                         sp.ShiftCoordinates((0, 0, 1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -2079,8 +2097,8 @@ class TestFlatten:
                         sp.ShiftCoordinates((0, 0, 1)),
                     ]
                 ),
-            ],
-            [
+            ),
+            (
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
@@ -2113,7 +2131,7 @@ class TestFlatten:
                         sp.ShiftCoordinates((0, 0, 1)),
                     ]
                 ),
-            ],
+            ),
         ],
     )
     def test_flatten_for_nested_circuits_works_as_expected(
@@ -2124,7 +2142,7 @@ class TestFlatten:
 
 class TestDetectorsGates:
     @pytest.mark.parametrize(
-        "circuit, expected_detectors_gates",
+        ("circuit", "expected_detectors_gates"),
         [
             (
                 sp.Circuit(
@@ -2132,7 +2150,7 @@ class TestDetectorsGates:
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(sp.GateLayer(sp.gates.X(0)), iterations=2),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         (det_a := sp.Detector([sp.MeasurementRecord(-1)])),
                     ],
                 ),
@@ -2145,7 +2163,7 @@ class TestDetectorsGates:
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
-                                sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                                sp.GateLayer(gate_a := sp.gates.MZ(0)),
                                 sp.GateLayer(sp.gates.X(0)),
                             ],
                             iterations=2,
@@ -2159,7 +2177,7 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(sp.GateLayer(sp.gates.X(0)), iterations=2),
@@ -2173,11 +2191,11 @@ class TestDetectorsGates:
                     [
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.X(0)),
                         (det_a := sp.Detector([sp.MeasurementRecord(-1)])),
                         sp.GateLayer(sp.gates.X(0)),
-                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
                         (det_b := sp.Detector([sp.MeasurementRecord(-1)])),
                     ]
                 ),
@@ -2188,11 +2206,11 @@ class TestDetectorsGates:
                     [
                         sp.GateLayer(sp.gates.H(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
-                        sp.GateLayer((gate_a := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_a := sp.gates.MZ(0)),
                         sp.GateLayer(sp.gates.MX(0)),
                         sp.GateLayer(sp.gates.X(0)),
                         sp.GateLayer(sp.gates.X(0)),
-                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
                         (
                             det_a := sp.Detector(
                                 [sp.MeasurementRecord(-1), sp.MeasurementRecord(-3)]
@@ -2206,13 +2224,13 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
-                                    sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                                    sp.GateLayer(gate_b := sp.gates.MZ(0)),
                                     iterations=1,
                                 ),
                                 (
@@ -2234,13 +2252,13 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
-                                    sp.GateLayer((gate_b := sp.gates.MZ(0))),
+                                    sp.GateLayer(gate_b := sp.gates.MZ(0)),
                                     iterations=3,
                                 ),
                                 (
@@ -2262,15 +2280,15 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
                                     [
-                                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
-                                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
+                                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                                     ],
                                     iterations=3,
                                 ),
@@ -2293,15 +2311,15 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
                                 sp.GateLayer(sp.gates.X(0)),
                                 sp.Circuit(
                                     [
-                                        sp.GateLayer((gate_b := sp.gates.MZ(0))),
-                                        sp.GateLayer((gate_a := sp.gates.MX(0))),
+                                        sp.GateLayer(gate_b := sp.gates.MZ(0)),
+                                        sp.GateLayer(gate_a := sp.gates.MX(0)),
                                         (
                                             det_a := sp.Detector(
                                                 [
@@ -2324,7 +2342,7 @@ class TestDetectorsGates:
                 sp.Circuit(
                     [
                         sp.GateLayer(sp.gates.H(0)),
-                        sp.GateLayer((gate_a := sp.gates.MPP(sp.PauliX(sp.Qubit(2))))),
+                        sp.GateLayer(gate_a := sp.gates.MPP(sp.PauliX(sp.Qubit(2)))),
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [sp.GateLayer(sp.gates.MX(0)), sp.GateLayer(sp.gates.X(0))],
@@ -2343,7 +2361,7 @@ class TestDetectorsGates:
                         sp.NoiseLayer(sp.noise_channels.PauliXError(sp.Qubit(1), 0.01)),
                         sp.Circuit(
                             [
-                                sp.GateLayer((gate_a := sp.gates.MRZ(0))),
+                                sp.GateLayer(gate_a := sp.gates.MRZ(0)),
                                 sp.GateLayer(sp.gates.X(0)),
                             ],
                             iterations=2,

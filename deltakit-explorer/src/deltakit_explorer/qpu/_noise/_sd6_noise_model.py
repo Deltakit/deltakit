@@ -8,14 +8,14 @@ representative of real-world experiments.
 
 from dataclasses import dataclass
 
-from deltakit_circuit import (after_reset_flip_probability,
-                              measurement_noise_profile)
+from deltakit_circuit import after_reset_flip_probability, measurement_noise_profile
 from deltakit_circuit.gates import TWO_QUBIT_GATES, OneQubitCliffordGate
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SD6Noise(NoiseParameters):
     """
     The standard depolarising noise model as seen in QEC literature, e.g.:
@@ -42,7 +42,7 @@ class SD6Noise(NoiseParameters):
         self.gate_noise.append(
             lambda noise_context: depolarise1_generator(
                 noise_context.gate_layer_qubits(
-                    tuple(TWO_QUBIT_GATES) + (OneQubitCliffordGate,), gate_qubit_count=1
+                    (*tuple(TWO_QUBIT_GATES), OneQubitCliffordGate), gate_qubit_count=1
                 )
             )
         )
@@ -55,7 +55,7 @@ class SD6Noise(NoiseParameters):
             )
         )
 
-        self.idle_noise = lambda qubit, t=0.0: Depolarise1(
+        self.idle_noise = lambda qubit, _t=0.0: Depolarise1(
             qubit=qubit, probability=self.p
         )
 

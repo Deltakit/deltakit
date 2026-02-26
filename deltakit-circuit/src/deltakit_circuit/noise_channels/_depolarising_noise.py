@@ -4,14 +4,14 @@
 from __future__ import annotations
 
 import math
-from typing import ClassVar, FrozenSet, Type, Union, get_args
+from typing import ClassVar, get_args
 
+from deltakit_circuit._qubit_identifiers import Qubit, T
 from deltakit_circuit.noise_channels._abstract_noise_channels import (
     OneProbabilityNoiseChannel,
     OneQubitOneProbabilityNoiseChannel,
     TwoQubitNoiseChannel,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T
 
 
 class Depolarise1(OneQubitOneProbabilityNoiseChannel[T]):
@@ -112,7 +112,7 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         )
 
 
-_DepolarisingNoise = Union[Depolarise1[T], Depolarise2[T]]
-ALL_DEPOLARISING_NOISE: FrozenSet[Type[_DepolarisingNoise]] = frozenset(
+_DepolarisingNoise = Depolarise1[T] | Depolarise2[T]
+ALL_DEPOLARISING_NOISE: frozenset[type[_DepolarisingNoise]] = frozenset(
     get_args(_DepolarisingNoise)
 )

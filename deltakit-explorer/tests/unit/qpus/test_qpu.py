@@ -1,17 +1,38 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              NoiseLayer, Observable, Qubit, ShiftCoordinates,
-                              measurement_noise_profile)
-from deltakit_circuit.gates import (CX, CZ, MX, MZ, RX, RZ, H, I,
-                                    OneQubitMeasurementGate, OneQubitResetGate,
-                                    X)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    NoiseLayer,
+    Observable,
+    Qubit,
+    ShiftCoordinates,
+    measurement_noise_profile,
+)
+from deltakit_circuit.gates import (
+    CX,
+    CZ,
+    MX,
+    MZ,
+    RX,
+    RZ,
+    H,
+    I,
+    OneQubitMeasurementGate,
+    OneQubitResetGate,
+    X,
+)
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu import QPU
-from deltakit_explorer.qpu._native_gate_set import (NativeGateSet,
-                                                    NativeGateSetAndTimes)
-from deltakit_explorer.qpu._noise import (NoiseParameters,
-                                          PhenomenologicalNoise, ToyNoise)
+from deltakit_explorer.qpu._native_gate_set import NativeGateSet, NativeGateSetAndTimes
+from deltakit_explorer.qpu._noise import (
+    NoiseParameters,
+    PhenomenologicalNoise,
+    ToyNoise,
+)
 
 common_noise_model = ToyNoise(p=0.001)
 
@@ -32,10 +53,7 @@ def qpu_with_times(request):
     depolarise2_generator = Depolarise2.generator_from_prob(0.01)
 
     if hasattr(request, "param"):
-        if "num_qubits" in request.param:
-            num_qubits = request.param["num_qubits"]
-        else:
-            num_qubits = 6
+        num_qubits = request.param.get("num_qubits", 6)
         maximise_parallelism = request.param["maximise_parallelism"]
     else:
         num_qubits = 6

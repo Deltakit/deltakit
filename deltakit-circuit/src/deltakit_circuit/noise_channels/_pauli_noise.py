@@ -4,15 +4,15 @@
 from __future__ import annotations
 
 import math
-from typing import ClassVar, FrozenSet, Type, Union, get_args
+from typing import ClassVar, get_args
 
+from deltakit_circuit._qubit_identifiers import Qubit, T
 from deltakit_circuit.noise_channels._abstract_noise_channels import (
     MultiProbabilityNoiseChannel,
     OneQubitNoiseChannel,
     OneQubitOneProbabilityNoiseChannel,
     TwoQubitNoiseChannel,
 )
-from deltakit_circuit._qubit_identifiers import Qubit, T
 
 
 class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):
@@ -107,6 +107,7 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
         p_x: float = 0.0,
         p_y: float = 0.0,
         p_z: float = 0.0,
+        *,
         tag: str | None = None,
     ):
         super().__init__(qubit=qubit, probabilities=(p_x, p_y, p_z), tag=tag)
@@ -234,6 +235,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         p_zx: float = 0.0,
         p_zy: float = 0.0,
         p_zz: float = 0.0,
+        *,
         tag: str | None = None,
     ):
         probabilities = (
@@ -295,7 +297,11 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         )
 
 
-_PauliNoise = Union[
-    PauliXError[T], PauliYError[T], PauliZError[T], PauliChannel1[T], PauliChannel2[T]
-]
-ALL_PAULI_NOISE: FrozenSet[Type[_PauliNoise]] = frozenset(get_args(_PauliNoise))
+_PauliNoise = (
+    PauliXError[T]
+    | PauliYError[T]
+    | PauliZError[T]
+    | PauliChannel1[T]
+    | PauliChannel2[T]
+)
+ALL_PAULI_NOISE: frozenset[type[_PauliNoise]] = frozenset(get_args(_PauliNoise))

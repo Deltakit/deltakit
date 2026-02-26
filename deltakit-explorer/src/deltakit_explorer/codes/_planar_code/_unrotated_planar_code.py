@@ -4,15 +4,16 @@ This module stores an implementation of the unrotated planar code.
 """
 
 import itertools
-from typing import Optional, Set, Tuple
 
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
-from deltakit_explorer.codes._planar_code._planar_code import (PlanarCode,
-                                                               ScheduleType)
-from deltakit_explorer.codes._schedules import (ScheduleOrder,
-                                                UnrotatedPlanarCodeSchedules,
-                                                get_x_and_z_schedules)
+
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
+from deltakit_explorer.codes._schedules import (
+    ScheduleOrder,
+    UnrotatedPlanarCodeSchedules,
+    get_x_and_z_schedules,
+)
 
 
 class UnrotatedPlanarCode(PlanarCode):
@@ -101,7 +102,7 @@ class UnrotatedPlanarCode(PlanarCode):
 
     def _calculate_untransformed_all_qubits(
         self,
-    ) -> Tuple[Set[Qubit], Set[Qubit], Set[Qubit]]:
+    ) -> tuple[set[Qubit], set[Qubit], set[Qubit]]:
         # horizontal and vertical total length of the rectangle in which the data and ancillary qubits are.
         x_length = 2 * self.width - 1
         y_length = 2 * self.height - 1
@@ -147,7 +148,7 @@ class UnrotatedPlanarCode(PlanarCode):
 
     def _calculate_untransformed_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliX], ...], Tuple[Set[PauliZ], ...]]:
+    ) -> tuple[tuple[set[PauliX], ...], tuple[set[PauliZ], ...]]:
         horizontal_logical_qubits = {
             Qubit(
                 Coord2D(
@@ -169,5 +170,5 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
-    def draw_patch(self, filename: Optional[str] = None, unrotated_code: bool = True) -> None:
+    def draw_patch(self, filename: str | None = None, unrotated_code: bool = True) -> None:
         return super().draw_patch(filename, unrotated_code)

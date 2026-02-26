@@ -1,10 +1,11 @@
 import itertools
+from importlib.metadata import version
 
 import pytest
 import stim
+from packaging.version import Version
 
 from deltakit_circuit._circuit import Circuit
-from deltakit_circuit._qubit_identifiers import Coordinate, Qubit
 from deltakit_circuit.gates._measurement_gates import (
     HERALD_LEAKAGE_EVENT,
     MEASUREMENT_GATES,
@@ -16,13 +17,12 @@ from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
 from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOISE
 
 
-@pytest.fixture
-def qubit_mapping() -> dict[int, Qubit]:
-    return {i: Qubit(Coordinate(i, i)) for i in range(3)}
-
-
+@pytest.mark.skipif(
+    Version(version("stim")) < Version("1.15"),
+    reason="Feature added in Stim v1.15",
+)
 @pytest.mark.parametrize(
-    "instr_template,tag",
+    ("instr_template", "tag"),
     itertools.product(
         [
             *(f"{sqg.stim_string}[{{tag}}] 0" for sqg in ONE_QUBIT_GATES),
@@ -37,9 +37,7 @@ def qubit_mapping() -> dict[int, Qubit]:
         ["", "sjkdhf", "λ", "leaky<0>"],
     ),
 )
-def test_parse_tagged_instruction(
-    instr_template: str, tag: str, qubit_mapping: dict[int, Qubit]
-) -> None:
+def test_parse_tagged_instruction(instr_template: str, tag: str) -> None:
     instr_str = instr_template.format(tag=tag)
     stim_circuit = stim.Circuit(instr_str)
     circuit = Circuit.from_stim_circuit(stim_circuit)

@@ -1,11 +1,16 @@
 # (c) Copyright Riverlane 2020-2025.
+from collections.abc import Iterable
 from itertools import chain
-from typing import Dict, Iterable, List, Set
 from unittest.mock import MagicMock
 
-import stim
-
 import pytest
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
+from pytest_mock import MockerFixture
+
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
     DemParser,
@@ -15,25 +20,27 @@ from deltakit_core.decoding_graphs import (
     LogicalsInEdges,
     observable_warning,
 )
-
 from deltakit_core.decoding_graphs._dem_parsing import CoordinateOffset, DetectorCounter
-from pytest_mock import MockerFixture
 
 
 class TestCoordinateOffset:
+    # Note about ignored lint rule below:
+    # CoordinateOffset inherits from tuple, so ruff would prefer the below lines to be
+    # (*CoordinateOffset(), 0, 1, 2, 3). But we explicitly want to test the "+"
+    # implementation, so we use it and ignore the rule.
     def test_adding_tuple_to_empty_coordinate_offset_returns_coordinate_offset_of_tuple(
         self,
     ):
-        assert CoordinateOffset() + (0, 1, 2, 3) == CoordinateOffset((0, 1, 2, 3))
+        assert CoordinateOffset() + (0, 1, 2, 3) == CoordinateOffset((0, 1, 2, 3))  # noqa: RUF005
 
     def test_adding_initialised_offset_to_tuple_returns_correct_offset(self):
-        assert CoordinateOffset((1, 1, 1)) + (1, 1, 1) == CoordinateOffset((2, 2, 2))
+        assert CoordinateOffset((1, 1, 1)) + (1, 1, 1) == CoordinateOffset((2, 2, 2))  # noqa: RUF005
 
     def test_adding_tuple_to_initialised_offset_returns_correct_offset(self):
-        assert (1, 1, 1) + CoordinateOffset((1, 1, 1)) == CoordinateOffset((2, 2, 2))
+        assert (1, 1, 1) + CoordinateOffset((1, 1, 1)) == CoordinateOffset((2, 2, 2))  # noqa: RUF005
 
     def test_adding_initialised_offset_to_longer_tuple_returns_correct_offset(self):
-        assert CoordinateOffset((1, 1)) + (1, 1, 1) == CoordinateOffset((2, 2, 1))
+        assert CoordinateOffset((1, 1)) + (1, 1, 1) == CoordinateOffset((2, 2, 1))  # noqa: RUF005
 
 
 def empty_handler(*args, **kwargs): ...
@@ -236,7 +243,7 @@ class TestDetectorRecorder:
         assert detector_recorder.detector_records == {1: DetectorRecord((0,), 0)}
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_records",
+        ("detector_error_model", "expected_detector_records"),
         [
             (
                 stim.DetectorErrorModel("detector(0, 1, 1) D0"),
@@ -254,7 +261,7 @@ class TestDetectorRecorder:
         self,
         dem_parser: DemParser,
         detector_error_model: stim.DetectorErrorModel,
-        expected_detector_records: Dict[int, DetectorRecord],
+        expected_detector_records: dict[int, DetectorRecord],
     ):
         dem_parser.parse(detector_error_model)
         assert dem_parser.detector_handler.detector_records == expected_detector_records
@@ -277,7 +284,7 @@ class TestDetectorCounter:
         assert detector_counter.counter == {1: 1}
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_counts",
+        ("detector_error_model", "expected_detector_counts"),
         [
             (
                 stim.DetectorErrorModel(
@@ -310,13 +317,13 @@ class TestDetectorCounter:
         detector_counter: DetectorCounter,
         dem_parser: DemParser,
         detector_error_model: stim.DetectorErrorModel,
-        expected_detector_counts: Dict[int, int],
+        expected_detector_counts: dict[int, int],
     ):
         dem_parser.parse(detector_error_model)
         assert detector_counter.counter == expected_detector_counts
 
     @pytest.mark.parametrize(
-        "detector_error_model, expected_detector_max",
+        ("detector_error_model", "expected_detector_max"),
         [
             (
                 stim.DetectorErrorModel(
@@ -383,7 +390,7 @@ class TestLogicalsInEdges:
         }
 
     @pytest.mark.parametrize(
-        "dem, detector_offset, expected_edge_records",
+        ("dem", "detector_offset", "expected_edge_records"),
         [
             (
                 stim.DetectorErrorModel("error(0.01) D0 D1"),
@@ -417,14 +424,14 @@ class TestLogicalsInEdges:
         self,
         dem: stim.DetectorErrorModel,
         detector_offset: int,
-        expected_edge_records: Dict[DecodingHyperEdge, EdgeRecord],
+        expected_edge_records: dict[DecodingHyperEdge, EdgeRecord],
     ):
         error_handler = LogicalsInEdges(0)
         error_handler(dem[0], detector_offset)
         assert error_handler._edge_records == expected_edge_records
 
     @pytest.mark.parametrize(
-        "dem, detector_offset, expected_logicals",
+        ("dem", "detector_offset", "expected_logicals"),
         [
             (
                 stim.DetectorErrorModel("error(0.01) D0 L0"),
@@ -462,14 +469,14 @@ class TestLogicalsInEdges:
         self,
         dem: stim.DetectorErrorModel,
         detector_offset: int,
-        expected_logicals: List[Set[DecodingHyperEdge]],
+        expected_logicals: list[set[DecodingHyperEdge]],
     ):
         error_handler = LogicalsInEdges(len(expected_logicals))
         error_handler(dem[0], detector_offset)
         assert error_handler.logicals == expected_logicals
 
     @pytest.mark.parametrize(
-        "dem, expected_edges, expected_logicals",
+        ("dem", "expected_edges", "expected_logicals"),
         [
             (
                 dem_repeat(3, ["shift_detectors 4", "error(0.01) D0"]),
@@ -500,8 +507,8 @@ class TestLogicalsInEdges:
     def test_parsing_dem_with_logicals_in_edges_has_expected_edges_and_logicals(
         self,
         dem: stim.DetectorErrorModel,
-        expected_edges: Set[DecodingHyperEdge],
-        expected_logicals: List[Set[DecodingHyperEdge]],
+        expected_edges: set[DecodingHyperEdge],
+        expected_logicals: list[set[DecodingHyperEdge]],
     ):
         parser = DemParser(
             LogicalsInEdges(len(expected_logicals)), empty_handler, empty_handler

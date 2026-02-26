@@ -3,13 +3,14 @@
 This module implements a repetition code for quantum memory and stability experiments.
 """
 
-from typing import Callable, List, Set, Tuple
+from collections.abc import Callable
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
 from deltakit_circuit.gates import PauliBasis
+
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
@@ -100,10 +101,11 @@ class RepetitionCode(CSSCode):
         Checks to ensure a valid stabiliser type is inputted into the code.
         """
         if stabiliser_type not in (PauliBasis.X, PauliBasis.Z):
-            raise ValueError(
+            msg = (
                 f"{stabiliser_type} is unsupported, only PauliBasis.X and "
                 "PauliBasis.Z are allowed."
             )
+            raise ValueError(msg)
 
     @staticmethod
     def _check_distance_at_least_two(distance: int):
@@ -112,9 +114,10 @@ class RepetitionCode(CSSCode):
         detection).
         """
         if distance < 2:
-            raise ValueError("Code distance must be at least 2.")
+            msg = "Code distance must be at least 2."
+            raise ValueError(msg)
 
-    def _calculate_data_qubits(self) -> Set[Qubit]:
+    def _calculate_data_qubits(self) -> set[Qubit]:
         """
         Calculate data qubits for the code.
 
@@ -128,7 +131,7 @@ class RepetitionCode(CSSCode):
 
     def _calculate_stabiliser_ancilla_qubits(
         self, use_looping_stabiliser
-    ) -> Set[Qubit]:
+    ) -> set[Qubit]:
         """
         Calculate ancilla qubits used for constructing the code stabilisers.
 
@@ -146,15 +149,15 @@ class RepetitionCode(CSSCode):
             stabiliser_ancillas.add(Qubit(Coord2D(x_coord, 0)))
         return stabiliser_ancillas
 
-    def _calculate_stabilisers(self, use_ancilla_qubits) -> List[List[Stabiliser]]:
+    def _calculate_stabilisers(self, use_ancilla_qubits) -> list[list[Stabiliser]]:
         """
         Get a full list of stabilisers to measure for the code.
         Stabilisers are pairs of ZZ (for the bit-flip code) or XX (phase-flip code)
         operators acting on data qubits adjacent to each ancilla.
         """
 
-        stabilisers_first: List[Stabiliser] = []
-        stabilisers_second: List[Stabiliser] = []
+        stabilisers_first: list[Stabiliser] = []
+        stabilisers_second: list[Stabiliser] = []
 
         for ancilla in self._stabiliser_ancilla_qubits:
             paulis = []
@@ -179,7 +182,7 @@ class RepetitionCode(CSSCode):
 
     def _calculate_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliGate]], Tuple[Set[PauliGate]]]:
+    ) -> tuple[tuple[set[PauliGate]], tuple[set[PauliGate]]]:
         """Return logical operators for the repetition code."""
         if self._stabiliser_pauli == PauliZ:
             x_logical = {PauliX(qubit) for qubit in self._data_qubits}

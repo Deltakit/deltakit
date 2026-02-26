@@ -3,11 +3,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from itertools import chain
-from typing import FrozenSet, Iterable, Mapping
 
 import stim
+
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
+from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class Detector:
@@ -30,6 +32,7 @@ class Detector:
         self,
         measurements: MeasurementRecord | Iterable[MeasurementRecord],
         coordinate: Iterable[float] | None = None,
+        *,
         tag: str | None = None,
     ):
         self._measurements = (
@@ -50,7 +53,7 @@ class Detector:
         return self._coordinate
 
     @property
-    def measurements(self) -> FrozenSet[MeasurementRecord]:
+    def measurements(self) -> frozenset[MeasurementRecord]:
         return self._measurements
 
     def transform_coordinates(
@@ -90,11 +93,13 @@ class Detector:
         stim_targets = chain.from_iterable(
             record.stim_targets() for record in self.measurements
         )
-        stim_arguments = self.coordinate if self.coordinate is not None else tuple()
-        stim_tag = self._tag if self._tag is not None else ""
-        stim_circuit.append(
-            self.stim_string, stim_targets, stim_arguments, tag=stim_tag
+        stim_arguments = self.coordinate if self.coordinate is not None else ()
+        kwargs = (
+            {"tag": self.tag}
+            if self.tag is not None and is_stim_tag_feature_available()
+            else {}
         )
+        stim_circuit.append(self.stim_string, stim_targets, stim_arguments, **kwargs)
 
     def __eq__(self, other: object) -> bool:
         return (

@@ -1,0 +1,5 @@
+# Linting configuration for deltakit_compile.
+#
+# General and format configurations are repository-wide for the moment.
+extend = "../ruff.toml"
+include = ["src/deltakit_compile/**/*.py", "tests/**/*.py"]

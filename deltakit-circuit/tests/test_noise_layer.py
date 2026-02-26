@@ -3,6 +3,7 @@ from itertools import permutations
 
 import pytest
 import stim
+
 from deltakit_circuit import (
     Circuit,
     Detector,
@@ -52,7 +53,7 @@ def test_adding_a_noise_channel_to_a_noise_layer_adds_it(
 
 
 @pytest.mark.parametrize(
-    "noise_channels, expected_repr",
+    ("noise_channels", "expected_repr"),
     [
         (
             noise_channels.Depolarise1(Qubit(2), 0.01),
@@ -157,7 +158,7 @@ class TestNoiseLayerEquality:
         assert noise_layer1 != noise_layer2
 
     @pytest.mark.parametrize(
-        "noise_channels1, noise_channels2",
+        ("noise_channels1", "noise_channels2"),
         permutations(
             [
                 (noise_channels.PauliXError(Qubit(0), 0.1),),
@@ -286,7 +287,7 @@ class TestNoiseLayerApproxEquals:
         assert not noise_layer1.approx_equals(noise_layer2)
 
     @pytest.mark.parametrize(
-        "noise_channels1, noise_channels2",
+        ("noise_channels1", "noise_channels2"),
         permutations(
             [
                 (noise_channels.PauliXError(Qubit(0), 0.1),),
@@ -331,7 +332,7 @@ class TestNoiseLayerApproxEquals:
         assert noise_layer1.approx_equals(noise_layer2)
 
     @pytest.mark.parametrize(
-        "noise_layer1, noise_layer2",
+        ("noise_layer1", "noise_layer2"),
         [
             (
                 NoiseLayer(
@@ -385,7 +386,7 @@ class TestNoiseLayerApproxEquals:
         assert noise_layer1.approx_equals(noise_layer2)
 
     @pytest.mark.parametrize(
-        "noise_layer1, noise_layer2, rel_tol, abs_tol",
+        ("noise_layer1", "noise_layer2", "rel_tol", "abs_tol"),
         [
             (
                 NoiseLayer(
@@ -485,7 +486,7 @@ class TestNoiseLayerApproxEquals:
         )
 
     @pytest.mark.parametrize(
-        "noise_layer1, noise_layer2",
+        ("noise_layer1", "noise_layer2"),
         [
             (
                 NoiseLayer(
@@ -539,7 +540,7 @@ class TestNoiseLayerApproxEquals:
         assert not noise_layer1.approx_equals(noise_layer2)
 
     @pytest.mark.parametrize(
-        "noise_layer1, noise_layer2, rel_tol, abs_tol",
+        ("noise_layer1", "noise_layer2", "rel_tol", "abs_tol"),
         [
             (
                 NoiseLayer(
@@ -679,7 +680,7 @@ def test_noise_layer_can_be_initialised_with_noise_channels(noise_channels):
 
 
 @pytest.mark.parametrize(
-    "noise_channel_class, probabilities",
+    ("noise_channel_class", "probabilities"),
     [
         (noise_channels.PauliXError, (0.1,)),
         (noise_channels.PauliYError, (0.1,)),
@@ -743,7 +744,7 @@ def test_adding_correlated_noise_on_the_same_channel_adds_both_noises(
 
 class TestStimCircuit:
     @pytest.mark.parametrize(
-        "noise_channel, expected_circuit",
+        ("noise_channel", "expected_circuit"),
         [
             (noise_channels.PauliXError(Qubit(0), 0.2), stim.Circuit("X_ERROR(0.2) 0")),
             (noise_channels.PauliYError(Qubit(2), 0.1), stim.Circuit("Y_ERROR(0.1) 2")),
@@ -880,7 +881,7 @@ class TestStimCircuit:
         assert len(str(empty_circuit).split("\n")) == 1
 
     @pytest.mark.parametrize(
-        "noise_channel, qubit_mapping, expected_stim_circuit",
+        ("noise_channel", "qubit_mapping", "expected_stim_circuit"),
         [
             (
                 noise_channels.Depolarise1((0, 1), 0.2),

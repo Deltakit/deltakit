@@ -68,18 +68,21 @@ IDENTICAL_QUBIT_PAIRS = [
 ]
 
 
-@pytest.mark.parametrize("qubit1, qubit2", IDENTICAL_QUBIT_PAIRS)
+@pytest.mark.parametrize(("qubit1", "qubit2"), IDENTICAL_QUBIT_PAIRS)
 def test_two_identical_qubits_are_equal(qubit1, qubit2):
     assert qubit1 == qubit2
 
 
-@pytest.mark.parametrize("qubit1, qubit2", IDENTICAL_QUBIT_PAIRS)
+@pytest.mark.parametrize(("qubit1", "qubit2"), IDENTICAL_QUBIT_PAIRS)
 def test_two_equal_qubits_have_the_same_hash(qubit1, qubit2):
     assert hash(qubit1) == hash(qubit2)
 
 
 def test_warning_is_raised_if_calling_pairs_from_consecutive_method():
-    with pytest.warns(DeprecationWarning):
+    msg = (
+        ".*Instead please use the `from_consecutive` method on the two qubit gate class"
+    )
+    with pytest.warns(DeprecationWarning, match=msg):
         list(Qubit.pairs_from_consecutive([0, 1]))
 
 
@@ -88,11 +91,13 @@ def test_error_is_raised_if_calling_pairs_from_consecutive_with_odd_sequence():
         "This method should not be used. Instead please use the `from_consecutive` "
         "method on the two qubit gate class"
     )
-    with pytest.warns(DeprecationWarning, match=msg):
-        with pytest.raises(
+    with (
+        pytest.warns(DeprecationWarning, match=msg),
+        pytest.raises(
             ValueError, match="Pairs cannot be constructed from an odd number of IDs."
-        ):
-            list(Qubit.pairs_from_consecutive([0, 1, 2]))
+        ),
+    ):
+        list(Qubit.pairs_from_consecutive([0, 1, 2]))
 
 
 def test_pairs_from_consecutive_returns_correct_qubit_pairs():
@@ -108,7 +113,7 @@ def test_pairs_from_consecutive_returns_correct_qubit_pairs():
 
 
 @pytest.mark.parametrize(
-    "qubit1, qubit2",
+    ("qubit1", "qubit2"),
     [
         (Qubit(2), Qubit(3)),
         (Qubit(Coordinate(0, 1, 2)), Qubit((0, 1, 2))),
@@ -158,7 +163,7 @@ def test_different_qubits_are_not_equal(qubit1, qubit2):
 
 
 @pytest.mark.parametrize(
-    "qubit, expected_representation",
+    ("qubit", "expected_representation"),
     [
         (Qubit(4), "Qubit(4)"),
         (Qubit((0, 2)), "Qubit((0, 2))"),
@@ -208,7 +213,7 @@ def test_error_is_raised_if_sweep_bit_index_is_negative():
 
 class TestPauliProducts:
     @pytest.mark.parametrize(
-        "pauli_gate, expected_string",
+        ("pauli_gate", "expected_string"),
         [
             (PauliX, "X"),
             (PauliY, "Y"),
@@ -393,7 +398,7 @@ def test_error_for_accessing_not_set_stim_id():
     with pytest.raises(ValueError, match=r".* has no stim identifier."):
         # ruff reports "useless attribute access" on the line below but the attribute
         # access is not really useless, as the goal is to call it and see if it raises
-        # an exception, so this check is ignored for that line.
+        # an exception, so this check is ignored for that line.
         Qubit((2, 34)).stim_identifier  # noqa: B018
 
 

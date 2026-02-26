@@ -1,23 +1,20 @@
 # (c) Copyright Riverlane 2020-2025.
-from typing import TYPE_CHECKING, Dict, Optional
 
 import numpy as np
 import stim
-from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 from tqdm import tqdm
 
-if TYPE_CHECKING:
-    from deltakit_explorer._cloud_decoders import _CloudDecoder
+from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 
 def run_decoding_on_circuit(
     circuit: stim.Circuit,
     max_shots: int,
-    decoder: 'DecoderProtocol | _CloudDecoder',
+    decoder: DecoderProtocol,
     max_batch_size: int = 10_000,
-    target_rse: Optional[float] = None,
+    target_rse: float | None = None,
     min_fails: int = 10
-) -> Dict[str, int]:
+) -> dict[str, int]:
     """Compute LEP of the decoder with given circuit.
     The function samples shots in batches and feeds them to decoders'
     decode_batch_to_logical_flip function and records a total number of shots
@@ -54,7 +51,7 @@ def run_decoding_on_circuit(
     batches = [max_batch_size] * (max_shots // max_batch_size)
     if (remaining_shots := max_shots - sum(batches)) > 0:
         batches.append(remaining_shots)
-    result: Dict[str, int] = {
+    result: dict[str, int] = {
         "shots": 0,
         "fails": 0,
     }

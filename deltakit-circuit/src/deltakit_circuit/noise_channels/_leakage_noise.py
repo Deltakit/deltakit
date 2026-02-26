@@ -6,10 +6,10 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from deltakit_circuit._qubit_identifiers import T
 from deltakit_circuit.noise_channels._abstract_noise_channels import (
     OneQubitOneProbabilityNoiseChannel,
 )
-from deltakit_circuit._qubit_identifiers import T
 
 
 class Leakage(OneQubitOneProbabilityNoiseChannel[T]):

@@ -40,4 +40,6 @@ ignore = []
     # of 404) and this change is not reflected everywhere, but that seems sufficiently
     # niche and unlikely to ignore that rule for now.
     "PLR2004",
+    # Temporary ignore.
+    "RUF043",
 ]

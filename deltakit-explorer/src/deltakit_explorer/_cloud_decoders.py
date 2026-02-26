@@ -1,9 +1,12 @@
-from typing import TYPE_CHECKING, Any, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 import deltakit_circuit
 import numpy as np
 import numpy.typing as npt
 import stim
+from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 if TYPE_CHECKING:
     from deltakit_core.decoding_graphs import OrderedDecodingEdges, OrderedSyndrome
@@ -11,7 +14,7 @@ if TYPE_CHECKING:
 from deltakit_explorer import Client, enums, types
 
 
-class _CloudDecoder:
+class _CloudDecoder(DecoderProtocol):
     """Decoder (Cloud-based).
 
     Parameters
@@ -46,16 +49,16 @@ class _CloudDecoder:
     def __init__(
         self,
         circuit: deltakit_circuit.Circuit | stim.Circuit | str,
-        parameters: Optional[dict[str, Any]] = None,
+        parameters: dict[str, Any] | None = None,
         use_experimental_graph_method: bool = False,
-        client: Optional[Client] = None,
+        client: Client | None = None,
     ):
         # some leakage-aware decoders will need to hint this value,
         # if they are using non-standard STIM extension
         self.num_observables = 0
         self.decoder_parameters = {} if parameters is None else parameters
         self.use_experimental_graph = use_experimental_graph_method
-        self.stim_circuit: Optional[stim.Circuit] = None
+        self.stim_circuit: stim.Circuit | None = None
         # to communicate to the server and to support leakage,
         # circuit must be a string
         if isinstance(circuit, deltakit_circuit.Circuit):
@@ -66,25 +69,25 @@ class _CloudDecoder:
             circuit = str(circuit)
         self.text_circuit = circuit
         if client is None:
-            raise NotImplementedError(
-                "Currently, a `client` must be provided to instantiate this class."
-            )
+            msg = "Currently, a `client` must be provided to instantiate this class."
+            raise NotImplementedError(msg)
         self.client = client
 
     def decode_batch_to_logical_flip(
             self,
             syndrome_batch: npt.NDArray[np.uint8],
-            leakage_batch: Optional[npt.NDArray[np.uint8]] = None,
+            leakage_batch: npt.NDArray[np.uint8] | None = None,
         ):
         """The method decodes the batch of syndromes to boolean values."""
         num_shots = syndrome_batch.shape[0]
         detectors = types.DetectionEvents(syndrome_batch)
         if self.num_observables < 1:
-            raise ValueError(
+            msg = (
                 "Circuit must have at least one observable. "
                 "Please make sure your circuit has observables or provide "
                 f"`num_observables` when instantiating an `{self.__class__.__name__}`."
             )
+            raise ValueError(msg)
         observables = types.ObservableFlips(
             np.zeros((num_shots, self.num_observables), dtype=syndrome_batch.dtype)
         )
@@ -105,10 +108,18 @@ class _CloudDecoder:
         )
         return decoding_result.predictions.as_numpy()
 
-    # use inherited `decode_to_boolean` and `decode_batch_to_full_correction`;
-    # they will raise `NotImplementedError`, too.
 
-    def decode_to_full_correction(self, syndrome: 'OrderedSyndrome') -> 'OrderedDecodingEdges':
+    def decode_batch_to_full_correction(
+        self, syndrome_batch: npt.NDArray[np.uint8]
+    ) -> npt.NDArray[np.uint8]:
+        raise NotImplementedError()
+
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
+        raise NotImplementedError()
+
+    def decode_to_full_correction(
+        self, syndrome: OrderedSyndrome
+    ) -> OrderedDecodingEdges:
         raise NotImplementedError()
 
     @property
@@ -343,10 +354,10 @@ class LCDecoder(_CloudDecoder):
     def __init__(
         self,
         circuit: deltakit_circuit.Circuit | stim.Circuit | str,
-        parameters: Optional[dict[str, Any]] = None,
+        parameters: dict[str, Any] | None = None,
         use_experimental_graph_method: bool = False,
-        client: Optional[Client] = None,
-        num_observables: Optional[int] = None,
+        client: Client | None = None,
+        num_observables: int | None = None,
     ):
         """Local Clustering Decoder (Cloud-based).
 

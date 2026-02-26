@@ -1,4 +1,4 @@
-# (c) Copyright Riverlane 2020-2025.
+# Copyright Riverlane 2020-2025.
 """Plot logical error probability per round vs code distance with optional Λ fit.
 
 This module provides a styling-focused wrapper around matplotlib for
@@ -146,3 +146,4 @@ def plot_lambda(
 
     apply_publication_style(ax)
     return ax
+

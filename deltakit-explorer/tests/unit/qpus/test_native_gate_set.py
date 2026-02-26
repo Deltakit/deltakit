@@ -1,12 +1,33 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-from deltakit_circuit.gates import (CX, CY, CZ, Gate, ISWAP, MEASUREMENT_GATES,
-                                    MY, ONE_QUBIT_GATES, RESET_GATES, RX, RY, RZ,
-                                    SQRT_X, SQRT_XX, TWO_QUBIT_GATES, H, I, X,
-                                    Y, Z)
-from deltakit_explorer.qpu._native_gate_set import (ExhaustiveGateSet,
-                                                    NativeGateSet,
-                                                    NativeGateSetAndTimes)
+from deltakit_circuit.gates import (
+    CX,
+    CY,
+    CZ,
+    ISWAP,
+    MEASUREMENT_GATES,
+    MY,
+    ONE_QUBIT_GATES,
+    RESET_GATES,
+    RX,
+    RY,
+    RZ,
+    SQRT_X,
+    SQRT_XX,
+    TWO_QUBIT_GATES,
+    Gate,
+    H,
+    I,
+    X,
+    Y,
+    Z,
+)
+
+from deltakit_explorer.qpu._native_gate_set import (
+    ExhaustiveGateSet,
+    NativeGateSet,
+    NativeGateSetAndTimes,
+)
 
 
 class TestNativeGateSetAndTimes:
@@ -75,7 +96,7 @@ class TestNativeGateSetAndTimes:
             NativeGateSetAndTimes(measurement_gates=input_gates)
 
     @pytest.mark.parametrize(
-        "gate, time, gate_type_attr",
+        ("gate", "time", "gate_type_attr"),
         [
             (SQRT_X, 2.0, "one_qubit_gates"),
             (SQRT_XX, 0.001, "two_qubit_gates"),
@@ -99,7 +120,7 @@ class TestNativeGateSetAndTimes:
             native_gate_set.add_gate(MY_GATE, 2.71)
 
     @pytest.mark.parametrize(
-        "gate, gate_type_attr",
+        ("gate", "gate_type_attr"),
         [
             (SQRT_X, "one_qubit_gates"),
             (SQRT_XX, "two_qubit_gates"),
@@ -174,21 +195,13 @@ class TestExhaustiveGateSet:
         return ExhaustiveGateSet()
 
     def test_1q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.one_qubit_gates == {
-            gate: 1 for gate in ONE_QUBIT_GATES
-        }
+        assert default_exhaustive_gateset.one_qubit_gates == dict.fromkeys(ONE_QUBIT_GATES, 1)
 
     def test_2q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.two_qubit_gates == {
-            gate: 1 for gate in TWO_QUBIT_GATES
-        }
+        assert default_exhaustive_gateset.two_qubit_gates == dict.fromkeys(TWO_QUBIT_GATES, 1)
 
     def test_reset_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.reset_gates == {
-            gate: 1 for gate in RESET_GATES
-        }
+        assert default_exhaustive_gateset.reset_gates == dict.fromkeys(RESET_GATES, 1)
 
     def test_measurement_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.measurement_gates == {
-            gate: 1 for gate in MEASUREMENT_GATES
-        }
+        assert default_exhaustive_gateset.measurement_gates == dict.fromkeys(MEASUREMENT_GATES, 1)

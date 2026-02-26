@@ -1,22 +1,28 @@
 import pytest
-from deltakit_circuit import (Circuit, GateLayer, NoiseContext, Qubit, gates,
-                              noise_channels)
+from deltakit_circuit import (
+    Circuit,
+    GateLayer,
+    NoiseContext,
+    Qubit,
+    gates,
+    noise_channels,
+)
+
 from deltakit_explorer.qpu import PhysicalNoise
-from deltakit_explorer.qpu._noise._noise_parameters import \
-    _idle_noise_from_t1_t2
+from deltakit_explorer.qpu._noise._noise_parameters import _idle_noise_from_t1_t2
 
 
 @pytest.fixture
 def noise_params():
-    return dict(
-        t1=20e-6,
-        t2=30e-6,
-        p_1_qubit_gate_error=0.001,
-        p_2_qubit_gate_error=0.02,
-        p_reset_error=0.03,
-        p_meas_qubit_error=0.04,
-        p_readout_flip=0.05,
-    )
+    return {
+        't1': 20e-6,
+        't2': 30e-6,
+        'p_1_qubit_gate_error': 0.001,
+        'p_2_qubit_gate_error': 0.02,
+        'p_reset_error': 0.03,
+        'p_meas_qubit_error': 0.04,
+        'p_readout_flip': 0.05,
+    }
 
 
 class TestPhysicalNoise:
@@ -77,3 +83,8 @@ class TestPhysicalNoise:
         noise_channel_reference = _idle_noise_from_t1_t2(noise_params['t1'], noise_params['t2'])(noise_context, t)
         assert isinstance(noise_channel_result, noise_channels.PauliChannel1)
         assert noise_channel_result.probabilities == noise_channel_reference.probabilities
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            PhysicalNoise(0.01)
+

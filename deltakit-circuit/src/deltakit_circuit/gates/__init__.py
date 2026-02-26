@@ -1,8 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """``deltakit.circuit.gates`` contains class-based representations of Stim gates."""
 
-from typing import Dict, Type, Union
-
 from deltakit_circuit.gates._abstract_gates import (
     Gate,
     OneQubitCliffordGate,
@@ -71,42 +69,45 @@ from deltakit_circuit.gates._two_qubit_gates import (
     _TwoQubitGate,
 )
 
-_Gate = Union[_OneQubitCliffordGate, _TwoQubitGate, _ResetGate, _MeasurementGate]
+_Gate = _OneQubitCliffordGate | _TwoQubitGate | _ResetGate | _MeasurementGate
 
-ONE_QUBIT_GATE_MAPPING: Dict[str, Type[_OneQubitCliffordGate]] = {
+ONE_QUBIT_GATE_MAPPING: dict[str, type[_OneQubitCliffordGate]] = {
     **{gate.stim_string: gate for gate in ONE_QUBIT_GATES},
-    **{"H_XZ": H, "SQRT_Z": S, "SQRT_Z_DAG": S_DAG},
+    "H_XZ": H,
+    "SQRT_Z": S,
+    "SQRT_Z_DAG": S_DAG,
 }
 
-TWO_QUBIT_GATE_MAPPING: Dict[str, Type[_TwoQubitGate]] = {
+TWO_QUBIT_GATE_MAPPING: dict[str, type[_TwoQubitGate]] = {
     **{gate.stim_string: gate for gate in TWO_QUBIT_GATES},
-    **{"ZCX": CX, "CNOT": CX, "ZCY": CY, "ZCZ": CZ},
+    "ZCX": CX,
+    "CNOT": CX,
+    "ZCY": CY,
+    "ZCZ": CZ,
 }
 
 ONE_QUBIT_MEASUREMENT_GATE_MAPPING = {
     **{gate.stim_string: gate for gate in MEASUREMENT_GATES - {MPP}},
-    **{"M": MZ, "MR": MRZ},
+    "M": MZ,
+    "MR": MRZ,
 }
 
-MEASUREMENT_GATE_MAPPING: Dict[str, Type[_MeasurementGate]] = {
+MEASUREMENT_GATE_MAPPING: dict[str, type[_MeasurementGate]] = {
     **ONE_QUBIT_MEASUREMENT_GATE_MAPPING,
-    **{MPP.stim_string: MPP},
+    MPP.stim_string: MPP,
 }
 
-RESET_GATE_MAPPING: Dict[str, Type[_ResetGate]] = {
+RESET_GATE_MAPPING: dict[str, type[_ResetGate]] = {
     **{gate.stim_string: gate for gate in RESET_GATES},
-    **{"R": RZ},
+    "R": RZ,
 }
 
-GATE_MAPPING: Dict[str, Type[_Gate]] = {
+GATE_MAPPING: dict[str, type[_Gate]] = {
     **ONE_QUBIT_GATE_MAPPING,
     **TWO_QUBIT_GATE_MAPPING,
     **MEASUREMENT_GATE_MAPPING,
     **RESET_GATE_MAPPING,
 }
-
-# Prevent import of non-public objects from this module.
-del Dict, Type, Union
 
 # List only public members in `__all__`.
 __all__ = [s for s in dir() if not s.startswith("_")]

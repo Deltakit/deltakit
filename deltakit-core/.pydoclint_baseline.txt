@@ -1,0 +1,308 @@
+src/deltakit_core/data_formats/_b801_parsers.py
+    DOC101: Function `to_bytearray`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `to_bytearray`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: Path | bytes].
+    DOC201: Function `to_bytearray` does not have a return section in docstring
+    DOC101: Function `b8_to_syndromes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `b8_to_syndromes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [b8_input: Path | bytes, detector_num: int].
+    DOC402: Function `b8_to_syndromes` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `b8_to_measurements`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `b8_to_measurements`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [b8_input: Path, measurement_num: int].
+    DOC402: Function `b8_to_measurements` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `b8_to_logical_flip`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `b8_to_logical_flip`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [b8_input: Path | bytes, num_logicals: int].
+    DOC402: Function `b8_to_logical_flip` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `syndromes_to_b8_file`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `syndromes_to_b8_file`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_num: int, syndrome_b8_out: Path, syndromes: Iterator[OrderedSyndrome]].
+    DOC101: Function `logical_flips_to_b8_file`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `logical_flips_to_b8_file`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_flips: Iterator[tuple[bool, ...]], logical_flips_b8_out: Path].
+    DOC101: Function `parse_01_to_logical_flips`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `parse_01_to_logical_flips`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_flips_01_file: Path].
+    DOC402: Function `parse_01_to_logical_flips` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `parse_01_to_syndromes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `parse_01_to_syndromes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_flips_01_file: Path].
+    DOC402: Function `parse_01_to_syndromes` has "yield" statements, but the docstring does not have a "Yields" section
+--------------------
+src/deltakit_core/data_formats/_measurements.py
+    DOC101: Function `split_input_data_to_c64`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `split_input_data_to_c64`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [input_data: Iterable[Iterable[Bitstring]], output_path: Path].
+    DOC003: Function/method `c64_to_addressed_input_words`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_data_qubits.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `EdgeRecord.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `EdgeRecord.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any].
+    DOC501: Method `EdgeRecord.weight` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `EdgeRecord.weight` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `from_dict`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_loglikelihood`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DecodingHyperEdge.to_decoding_edge`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingHyperEdge.to_decoding_edge`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [boundary: int | None].
+    DOC201: Method `DecodingHyperEdge.to_decoding_edge` does not have a return section in docstring
+    DOC501: Method `DecodingHyperEdge.to_decoding_edge` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `DecodingHyperEdge.to_decoding_edge` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DecodingEdge.is_timelike`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingEdge.is_timelike`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_records: Mapping[int, DetectorRecord]].
+    DOC201: Method `DecodingEdge.is_timelike` does not have a return section in docstring
+    DOC101: Method `DecodingEdge.is_spacelike`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingEdge.is_spacelike`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_records: Mapping[int, DetectorRecord]].
+    DOC201: Method `DecodingEdge.is_spacelike` does not have a return section in docstring
+    DOC101: Method `DecodingEdge.is_hooklike`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingEdge.is_hooklike`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_records: Mapping[int, DetectorRecord]].
+    DOC201: Method `DecodingEdge.is_hooklike` does not have a return section in docstring
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `OrderedDecodingEdges.append`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OrderedDecodingEdges.append`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [mod_2_filter: bool, other: OrderedDecodingEdges[EdgeT]].
+    DOC201: Method `OrderedDecodingEdges._as_tuple` does not have a return section in docstring
+    DOC003: Function/method `as_bitstring`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_syndrome_indices`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `errors_to_syndrome`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_decoding_graph.py
+    DOC003: Function/method `convolve_probabilities`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `HyperMultiGraph.get_edges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `HyperMultiGraph.get_edges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC201: Method `HyperMultiGraph.get_edges` does not have a return section in docstring
+    DOC101: Method `HyperMultiGraph.incident_edges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `HyperMultiGraph.incident_edges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector: int].
+    DOC201: Method `HyperMultiGraph.incident_edges` does not have a return section in docstring
+    DOC101: Method `HyperMultiGraph.neighbors`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `HyperMultiGraph.neighbors`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector: int].
+    DOC201: Method `HyperMultiGraph.neighbors` does not have a return section in docstring
+    DOC101: Method `HyperMultiGraph.detector_is_boundary`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `HyperMultiGraph.detector_is_boundary`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector: int].
+    DOC201: Method `HyperMultiGraph.detector_is_boundary` does not have a return section in docstring
+    DOC201: Method `HyperMultiGraph.to_parity_check_matrix` does not have a return section in docstring
+    DOC003: Function/method `error_to_syndrome`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC103: Method `DecodingHyperMultiGraph.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_data: Iterable[DecodingHyperEdge | tuple[int, ...] | tuple[DecodingHyperEdge, EdgeRecord]]]. Arguments in the docstring but not in the function signature: [multi_hyper_edges: Iterable[Tuple[DecodingHyperEdge, int]]].
+    DOC101: Method `DecodingHyperMultiGraph.get_edges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingHyperMultiGraph.get_edges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC201: Method `DecodingHyperMultiGraph.get_edges` does not have a return section in docstring
+    DOC003: Function/method `with_multi_edges_merged`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC102: Method `DecodingHyperGraph.__init__`: Docstring contains more arguments than in function signature.
+    DOC103: Method `DecodingHyperGraph.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_data: Iterable[DecodingHyperEdge | tuple[int, ...] | tuple[DecodingHyperEdge, EdgeRecord]]]. Arguments in the docstring but not in the function signature: [edge_records: Optional[Dict[DecodingHyperEdge, EdgeRecord]], hyper_edges: Iterable[DecodingHyperEdge]].
+    DOC003: Function/method `get_edge`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DecodingHyperGraph.get_edge`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingHyperGraph.get_edge`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC101: Method `DecodingHyperGraph.get_edge_record`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingHyperGraph.get_edge_record`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC201: Method `DecodingHyperGraph.get_edge_record` does not have a return section in docstring
+    DOC201: Method `DecodingHyperGraph.to_nx_decoding_graph` does not have a return section in docstring
+    DOC101: Method `DecodingHyperGraph.get_relevant_nodes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingHyperGraph.get_relevant_nodes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logicals: Iterable[set[DecodingHyperEdge]]].
+    DOC201: Method `DecodingHyperGraph.get_relevant_nodes` does not have a return section in docstring
+    DOC601: Class `DecodingCode`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DecodingCode`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [hypergraph: DecodingHyperGraph, logicals: HyperLogicals]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `DecodingCode.to_nx_code` does not have a return section in docstring
+    DOC601: Class `_QECNX`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `_QECNX`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [edge_attr_dict_factory: , node_attr_dict_factory: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `_QECNXMG`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `_QECNXMG`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [edge_attr_dict_factory: , node_attr_dict_factory: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `NXGraph.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [boundaries: Iterable[int], graph: NXGraphT].
+    DOC501: Method `NXGraph.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `NXGraph.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC201: Method `NXGraph.no_boundary_view` does not have a return section in docstring
+    DOC101: Method `NXGraph.detector_is_boundary`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.detector_is_boundary`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector: int].
+    DOC201: Method `NXGraph.detector_is_boundary` does not have a return section in docstring
+    DOC101: Method `NXGraph.get_relevant_nodes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.get_relevant_nodes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logicals: Iterable[set[DecodingEdge]]].
+    DOC201: Method `NXGraph.get_relevant_nodes` does not have a return section in docstring
+    DOC101: Method `NXGraph.shortest_path`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.shortest_path`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [destination: int, origin: int].
+    DOC201: Method `NXGraph.shortest_path` does not have a return section in docstring
+    DOC101: Method `NXGraph.shortest_path_length`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.shortest_path_length`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [destination: int, origin: int].
+    DOC201: Method `NXGraph.shortest_path_length` does not have a return section in docstring
+    DOC101: Method `NXGraph.shortest_path_no_boundaries`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.shortest_path_no_boundaries`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [destination: int, origin: int].
+    DOC201: Method `NXGraph.shortest_path_no_boundaries` does not have a return section in docstring
+    DOC101: Method `NXGraph.shortest_path_length_no_boundaries`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXGraph.shortest_path_length_no_boundaries`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [destination: int, origin: int].
+    DOC201: Method `NXGraph.shortest_path_length_no_boundaries` does not have a return section in docstring
+    DOC601: Class `NXCode`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NXCode`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [graph: NXDecodingGraph, logicals: NXLogicals]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `NXDecodingMultiGraph`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NXDecodingMultiGraph`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [base_graph_class: ClassVar]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_edge_list`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC102: Method `NXDecodingMultiGraph.from_edge_list`: Docstring contains more arguments than in function signature.
+    DOC103: Method `NXDecodingMultiGraph.from_edge_list`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: [edge_records: Optional[Dict[Tuple[DecodingEdge, int] | DecodingEdge, EdgeRecord]] = None].
+    DOC003: Function/method `with_multi_edges_merged`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC601: Class `NXDecodingGraph`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NXDecodingGraph`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [base_graph_class: ClassVar]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_edge_list`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `NXDecodingGraph.to_decoding_hypergraph` does not have a return section in docstring
+    DOC003: Function/method `get_edge`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `NXDecodingGraph.get_edge`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXDecodingGraph.get_edge`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC101: Method `NXDecodingGraph.get_edge_record`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `NXDecodingGraph.get_edge_record`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*detectors: int].
+    DOC201: Method `NXDecodingGraph.get_edge_record` does not have a return section in docstring
+--------------------
+src/deltakit_core/decoding_graphs/_decoding_graph_tools.py
+    DOC101: Function `filter_to_data_edges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `filter_to_data_edges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [graph: NXDecodingGraph].
+    DOC201: Function `filter_to_data_edges` does not have a return section in docstring
+    DOC101: Function `filter_to_measure_edges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `filter_to_measure_edges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [graph: NXDecodingGraph].
+    DOC201: Function `filter_to_measure_edges` does not have a return section in docstring
+    DOC003: Function/method `hypergraph_to_weighted_edge_list`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `hypergraph_to_weighted_edge_list`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `hypergraph_to_weighted_edge_list`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hypergraph: DecodingHyperGraph].
+    DOC003: Function/method `has_contiguous_nodes`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `single_boundary_is_last_node`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `is_single_connected_component`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `parse_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `stim_circuit_to_graph_dem`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `graph_to_json`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `nx_graph_from_json`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `inverse_logical_at_boundary`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `is_logical_along_boundary`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `worst_case_num_detectors`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `compute_graph_distance_for_logical`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `compute_graph_distance`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `compute_graph_distance`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `compute_graph_distance`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [decoding_graph: NXDecodingGraph, logicals: NXLogicals, weighted: bool].
+    DOC003: Function/method `unweight_graph`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_dem_parsing.py
+    DOC101: Function `observable_warning`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `observable_warning`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_observable: stim.DemInstruction].
+    DOC003: Function/method `collect_edges`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `LogicalsInEdges.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `LogicalsInEdges.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [num_logicals: int].
+    DOC101: Method `DemParser.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DemParser.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_handler: DH, error_handler: EH, observable_handler: ObservableHandler].
+    DOC003: Function/method `parse`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `dem_to_hypergraph_and_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `error_handler_no_multiedges`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `error_handler_no_multiedges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_offset: int, error: stim.DemInstruction].
+    DOC003: Function/method `dem_to_decoding_graph_and_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `error_handler`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `error_handler`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_offset: int, error: stim.DemInstruction].
+    DOC501: Function `error_handler` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `error_handler` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Function `detector_handler`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `detector_handler`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [coordinate_offset: CoordinateOffset, detector: stim.DemInstruction, detector_offset: int].
+    DOC003: Function/method `max_num_detectors`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_explained_dem_parsing.py
+    DOC003: Function/method `depolarising_as_independent`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `noise_probability`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `parse_explained_dem`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `extract_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_hypergraph_annotations_tools.py
+    DOC003: Function/method `annotate_edges_with_window_ids`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_window_id_transfer_graph`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_unique_window_ids`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_unique_logical_window_ids`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `separate_edges_per_window_id`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `separate_logicals_by_window_id`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_hypergraph_decomposition.py
+    DOC003: Function/method `decompositions`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_syndromes.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DetectorRecord.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DetectorRecord.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [**kwargs: Any].
+    DOC003: Function/method `from_dict`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_sequence`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `OrderedSyndrome._as_tuple` does not have a return section in docstring
+    DOC003: Function/method `from_bitstring`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `OrderedSyndrome.as_bitstring`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OrderedSyndrome.as_bitstring`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [num_bits: int].
+    DOC201: Method `OrderedSyndrome.as_bitstring` does not have a return section in docstring
+    DOC003: Function/method `split_at_symptom`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `OrderedSyndrome.split_by_time_coord`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `OrderedSyndrome.split_by_time_coord`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_records: Mapping[int, DetectorRecord], layers: int].
+    DOC201: Method `OrderedSyndrome.split_by_time_coord` does not have a return section in docstring
+    DOC003: Function/method `as_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Bitstring.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Bitstring.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: int].
+    DOC501: Method `Bitstring.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Bitstring.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `Bitstring.from_bits`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Bitstring.from_bits`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [bits: Iterable[Bit]].
+    DOC201: Method `Bitstring.from_bits` does not have a return section in docstring
+    DOC101: Method `Bitstring.from_bytes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Bitstring.from_bytes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [bytes_: Collection[SupportsIndex]].
+    DOC201: Method `Bitstring.from_bytes` does not have a return section in docstring
+    DOC101: Method `Bitstring.from_indices`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Bitstring.from_indices`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [indices: Iterable[int]].
+    DOC201: Method `Bitstring.from_indices` does not have a return section in docstring
+    DOC003: Function/method `to_indices`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Bitstring.to_words`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Bitstring.to_words`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [num_bits_per_word: int].
+    DOC402: Method `Bitstring.to_words` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC201: Method `Bitstring.bit_count` does not have a return section in docstring
+    DOC101: Method `FixedWidthBitstring.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `FixedWidthBitstring.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [value: int, width: int].
+    DOC501: Method `FixedWidthBitstring.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `FixedWidthBitstring.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `FixedWidthBitstring.change_width`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `FixedWidthBitstring.change_width`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [new_width: int].
+    DOC003: Function/method `get_round_words`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_weighted_graphs.py
+    DOC003: Function/method `change_graph_error_probabilities`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `vector_weights`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/decoding_graphs/_windowing_utils.py
+    DOC003: Function/method `nodes_within_radius`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `weighted_nodes_within_radius`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `induce_subhypergraph`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `connect_dangling_to_boundary_hypergraph`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_combine_probabilities`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_combine_probabilities`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [prob1: float, prob2: float].
+    DOC201: Function `_combine_probabilities` does not have a return section in docstring
+    DOC003: Function/method `relabel_hypergraph_nodes_contiguously`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `expand_nodes_to_time_span`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_core/deprecation.py
+    DOC501: Function `deprecated` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `deprecated` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_core/plotting/colours.py
+    DOC601: Class `RiverlaneColors`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `RiverlaneColors`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [BLACK_70_PERC: , BLUE: , BLUE_70_PERC: , DARK_GREEN: , LIGHT_GREEN: , MILD_GREEN: , ORANGE: , ORANGE_70_PERC: , RUST: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+tests/unit/data_formats/test_b8_parser.py
+    DOC101: Method `TestB8ReadWriteMethods.test_example_b8_syndrome_parse`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `TestB8ReadWriteMethods.test_example_b8_syndrome_parse`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `TestB8ReadWriteMethods.test_example_b8_syndrome_parse`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Method `TestB8ReadWriteMethods.test_example_b8_syndrome_parse`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [reference_data_dir: ].
+    DOC101: Method `TestB8ReadWriteMethods.test_example_b8_logical_flip_parse`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `TestB8ReadWriteMethods.test_example_b8_logical_flip_parse`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `TestB8ReadWriteMethods.test_example_b8_logical_flip_parse`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Method `TestB8ReadWriteMethods.test_example_b8_logical_flip_parse`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [expected_logical_flips: , file_name: , num_logicals: , reference_data_dir: ].
+--------------------
+tests/unit/decoding_graphs/test_hypergraph_annotation_tools.py
+    DOC201: Function `rotmem_code` does not have a return section in docstring
+    DOC101: Function `edge_window_graph`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `edge_window_graph`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [rotmem_code: DecodingCode].
+    DOC201: Function `edge_window_graph` does not have a return section in docstring
+    DOC101: Function `test_annotate_edge_window_id_everything_window_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_annotate_edge_window_id_everything_window_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph].
+    DOC101: Function `test_annotated_edge_window_ids_are_contiguous`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_annotated_edge_window_ids_are_contiguous`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph].
+    DOC101: Function `test_get_window_id_transfer_graph_from_nodes`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_get_window_id_transfer_graph_from_nodes`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph].
+    DOC101: Function `test_get_unique_window_ids`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_get_unique_window_ids`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph].
+    DOC101: Function `test_get_unique_logical_window_ids`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_get_unique_logical_window_ids`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph, rotmem_code: DecodingCode].
+    DOC101: Function `test_separate_logicals_by_window_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_separate_logicals_by_window_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph, rotmem_code: DecodingCode].
+    DOC101: Function `test_separate_edges_per_window_id`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_separate_edges_per_window_id`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [edge_window_graph: DecodingHyperGraph].
+--------------------

@@ -6,9 +6,11 @@ from deltakit_circuit import GateLayer, PauliX, Qubit
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import MPP, MRX, MRY, MRZ, MX, MY, MZ, H, I
 from deltakit_circuit.noise_channels._depolarising_noise import Depolarise1
+
 from deltakit_explorer.qpu._noise import PhenomenologicalNoise
-from deltakit_explorer.qpu._noise._phenomenological_noise import \
-    ToyPhenomenologicalNoise
+from deltakit_explorer.qpu._noise._phenomenological_noise import (
+    ToyPhenomenologicalNoise,
+)
 
 qubits = [Qubit(0), Qubit(17), Qubit(Coord2D(1, 1))]
 
@@ -30,7 +32,7 @@ class TestPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (
                 PhenomenologicalNoise(
@@ -59,7 +61,7 @@ class TestPhenomenologicalNoise:
         )
 
     @pytest.mark.parametrize(
-        "phenomenological_noise, probability",
+        ("phenomenological_noise", "probability"),
         [
             (lambda qubit: Depolarise1(qubit, 0.0), 0.0),
             (lambda qubit: Depolarise1(qubit, 0.001), 0.001),
@@ -76,6 +78,10 @@ class TestPhenomenologicalNoise:
         assert len(noise_model.gate_noise) == 1
         assert noise_model.gate_noise[0](MockNoiseContext()) == expected_noise_channel
 
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            PhenomenologicalNoise(0.01)
+
 class TestToyPhenomenologicalNoise:
     def test_noise_profiles_are_initialised_to_empty_lists(self):
         noise_model = ToyPhenomenologicalNoise()
@@ -84,7 +90,7 @@ class TestToyPhenomenologicalNoise:
         assert noise_model.measurement_noise_after == []
 
     @pytest.mark.parametrize(
-        "noise_model, probability",
+        ("noise_model", "probability"),
         [
             (ToyPhenomenologicalNoise(), 0.0),
             (ToyPhenomenologicalNoise(p=0.001), 0.001),
@@ -113,3 +119,7 @@ class TestToyPhenomenologicalNoise:
         noise_model = ToyPhenomenologicalNoise(p=0.1)
         gate_t = type(gate)
         assert noise_model.measurement_flip[gate_t](gate).probability == 0.1
+
+    def test_position_args_raise_error(self):
+        with pytest.raises(TypeError, match="positional argument"):
+            ToyPhenomenologicalNoise(0.01)

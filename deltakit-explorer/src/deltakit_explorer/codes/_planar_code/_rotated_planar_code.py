@@ -4,16 +4,18 @@ This module stores an implementation of the rotated planar code.
 """
 # pylint: disable=too-many-branches, too-many-boolean-expressions
 import itertools
-from typing import Set, Tuple
 
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
-from deltakit_explorer.codes._planar_code._planar_code import (PlanarCode,
-                                                               ScheduleType)
-from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import \
-    RotatedPlanarCodeSchedules
+
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
+from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import (
+    RotatedPlanarCodeSchedules,
+)
 from deltakit_explorer.codes._schedules._schedule_order import (
-    ScheduleOrder, get_x_and_z_schedules)
+    ScheduleOrder,
+    get_x_and_z_schedules,
+)
 
 
 class RotatedPlanarCode(PlanarCode):
@@ -126,7 +128,7 @@ class RotatedPlanarCode(PlanarCode):
             shift=shift,
         )
 
-    def _calculate_default_patch_data_qubits(self) -> Set[Qubit]:
+    def _calculate_default_patch_data_qubits(self) -> set[Qubit]:
         """Calculates the untransformed data qubits for a default rotated
         code patch.
 
@@ -145,7 +147,7 @@ class RotatedPlanarCode(PlanarCode):
 
     def _calculate_default_patch_ancilla_qubits(
         self,
-    ) -> Tuple[Set[Qubit], Set[Qubit]]:
+    ) -> tuple[set[Qubit], set[Qubit]]:
         """Calculates the untransformed ancilla qubits for a default rotated
         code patch.
 
@@ -204,7 +206,7 @@ class RotatedPlanarCode(PlanarCode):
 
     def _calculate_untransformed_all_qubits(
         self,
-    ) -> Tuple[Set[Qubit], Set[Qubit], Set[Qubit]]:
+    ) -> tuple[set[Qubit], set[Qubit], set[Qubit]]:
         data_qubits = self._calculate_default_patch_data_qubits()
         (
             x_ancilla_qubits,
@@ -219,7 +221,7 @@ class RotatedPlanarCode(PlanarCode):
 
     def _calculate_untransformed_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliX], ...], Tuple[Set[PauliZ], ...]]:
+    ) -> tuple[tuple[set[PauliX], ...], tuple[set[PauliZ], ...]]:
         horiz_op_pauli, vert_op_pauli = (
             (PauliX, PauliZ) if self._top_bumps_are_z else (PauliZ, PauliX)
         )

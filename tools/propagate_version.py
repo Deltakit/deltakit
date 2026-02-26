@@ -1,5 +1,5 @@
 """
-This module is used by the "release" pixi task in order to propagate the version in the
+This module is used by the release process in order to propagate the version in the
 toml file of the top-level project into the toml files of the sub-projects in the
 monorepo.
 """
@@ -12,7 +12,7 @@ with open("pyproject.toml", "r", encoding="utf-8") as f:
 
 version = top_data["project"]["version"]
 
-projects = ["deltakit-explorer", "deltakit-circuit", "deltakit-core", "deltakit-decode"]
+projects = ["deltakit-explorer", "deltakit-circuit", "deltakit-core", "deltakit-decode", "deltakit-compile"]
 
 for project in projects:
     path = f"{project}/pyproject.toml"

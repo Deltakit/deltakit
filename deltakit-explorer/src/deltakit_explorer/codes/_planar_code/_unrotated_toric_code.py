@@ -6,24 +6,26 @@ represents two logical qubits.
 
 import itertools
 from pathlib import Path
-from typing import Optional, Set, Tuple, Type
 
 import matplotlib.pyplot as plt
 import numpy.typing as npt
-from deltakit_circuit import Qubit, PauliX, PauliZ
+from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
-from deltakit_explorer.codes._planar_code._planar_code import (PlanarCode,
-                                                               ScheduleType)
-from deltakit_explorer.codes._schedules._schedule_order import (
-    ScheduleOrder, get_x_and_z_schedules)
-from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import \
-    UnrotatedPlanarCodeSchedules
-from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.enums._basic_enums import DrawingColours
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 from numpy import arctan2, argsort, array, int8
+
+from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
+from deltakit_explorer.codes._schedules._schedule_order import (
+    ScheduleOrder,
+    get_x_and_z_schedules,
+)
+from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import (
+    UnrotatedPlanarCodeSchedules,
+)
+from deltakit_explorer.codes._stabiliser import Stabiliser
+from deltakit_explorer.enums._basic_enums import DrawingColours
 
 
 class UnrotatedToricCode(PlanarCode):
@@ -92,7 +94,7 @@ class UnrotatedToricCode(PlanarCode):
 
     def _calculate_untransformed_all_qubits(
         self,
-    ) -> Tuple[Set[Qubit], Set[Qubit], Set[Qubit]]:
+    ) -> tuple[set[Qubit], set[Qubit], set[Qubit]]:
         data_qubits = {
             Qubit(Coord2D(x, y))
             for (x, y) in itertools.product(
@@ -129,10 +131,10 @@ class UnrotatedToricCode(PlanarCode):
 
     def _calculate_single_type_stabilisers(
         self,
-        ancilla_qubits: Set[Qubit],
-        schedule: Tuple[Coord2DDelta, ...],
-        gate: Type[PauliGate],
-    ) -> Tuple[Stabiliser, ...]:
+        ancilla_qubits: set[Qubit],
+        schedule: tuple[Coord2DDelta, ...],
+        gate: type[PauliGate],
+    ) -> tuple[Stabiliser, ...]:
         stabilisers = []
         for ancilla in ancilla_qubits:
             paulis = []
@@ -149,7 +151,7 @@ class UnrotatedToricCode(PlanarCode):
 
     def _calculate_untransformed_logical_operators(
         self,
-    ) -> Tuple[Tuple[Set[PauliGate], ...], Tuple[Set[PauliGate], ...]]:
+    ) -> tuple[tuple[set[PauliGate], ...], tuple[set[PauliGate], ...]]:
         x_logicals = (
             {PauliX(Qubit(Coord2D(x, 0))) for x in range(0, 2 * self.width - 1, 2)},
             {PauliX(Qubit(Coord2D(1, y))) for y in range(1, 2 * self.height, 2)},
@@ -161,7 +163,7 @@ class UnrotatedToricCode(PlanarCode):
 
         return (x_logicals, z_logicals)
 
-    def draw_patch(self, filename: Optional[str] = None, unrotated_code: bool = False) -> None:
+    def draw_patch(self, filename: str | None = None, unrotated_code: bool = False) -> None:  # noqa: ARG002
         fig, ax = plt.subplots(nrows=1, ncols=1)
         all_qubit_x_coords = [qubit.unique_identifier.x for qubit in self.qubits]
         all_qubit_y_coords = [qubit.unique_identifier.y for qubit in self.qubits]
@@ -170,7 +172,7 @@ class UnrotatedToricCode(PlanarCode):
         ax.set_xlim((min_x, max_x))
         ax.set_ylim((min_y, max_y))
 
-        stabilisers: Tuple[Stabiliser, ...] = tuple(
+        stabilisers: tuple[Stabiliser, ...] = tuple(
             itertools.chain.from_iterable(self._stabilisers)
         )
 

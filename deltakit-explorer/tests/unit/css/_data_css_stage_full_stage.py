@@ -1,16 +1,26 @@
 from dataclasses import dataclass
-from typing import Tuple
 
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              Observable, PauliX, PauliZ, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    Observable,
+    PauliX,
+    PauliZ,
+    Qubit,
+    ShiftCoordinates,
+)
 from deltakit_circuit._basic_types import Coord2D
 from deltakit_circuit.gates import CX, CZ, MPP, MX, MZ, RX, RZ, I
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
-from ._data_css_stage import (example_simultaneous_stabilisers,
-                              example_spaced_stabilisers)
+from ._data_css_stage import (
+    example_simultaneous_stabilisers,
+    example_spaced_stabilisers,
+)
 
 # creating a default value different from None to avoid tests expecting None to accidentally
 # pass on test components which haven't been explicitly defined.
@@ -22,9 +32,9 @@ class CSSStageTestComponents:
     stage: CSSStage
     expected_first_round: Circuit = MISSING_VALUE  # type: ignore [assignment]
     expected_remaining_rounds: Circuit = MISSING_VALUE  # type: ignore [assignment]
-    expected_measurements_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_resets_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_ordered_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_measurements_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_resets_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_ordered_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
 
 
 full_stage_1_round = CSSStageTestComponents(

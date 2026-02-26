@@ -6,20 +6,19 @@ with a collection of stabilisers.
 
 from __future__ import annotations
 
-import warnings
-from typing import Collection, Iterable, Optional
+from collections.abc import Collection, Iterable
 
+import numpy as np
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
-from deltakit_explorer.codes._css._stabiliser_helper_functions import \
-    pauli_gates_to_stim_pauli_string
-from deltakit_explorer.codes._stabiliser import Stabiliser
+from ldpc import mod2
 from numpy.typing import NDArray
 from stim import PauliString, Tableau
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=SyntaxWarning)
-    from bposd.css import css_code  # type: ignore
+from deltakit_explorer.codes._css._stabiliser_helper_functions import (
+    pauli_gates_to_stim_pauli_string,
+)
+from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
 def paulistring_to_operator(
@@ -48,7 +47,7 @@ def paulistring_to_operator(
 
 
 def get_str_logical_operators_from_tableau(
-    stabilisers: Collection[PauliString], num_logical_qubits: Optional[int] = None
+    stabilisers: Collection[PauliString], num_logical_qubits: int | None = None
 ) -> list[tuple[PauliString, PauliString]]:
     """
     For a general stabiliser code, computes the logical operators for a collection of
@@ -117,7 +116,7 @@ def get_str_logical_operators_from_tableau(
 
 
 def get_logical_operators_from_tableau(
-    stabilisers: Iterable[Stabiliser], num_logical_qubits: Optional[int] = None
+    stabilisers: Iterable[Stabiliser], num_logical_qubits: int | None = None
 ) -> tuple[tuple[set[_PauliGate], ...], tuple[set[_PauliGate], ...]]:
     """
     For a general stabiliser code, computes the logical operators for a collection of
@@ -231,13 +230,63 @@ def get_logical_operators_from_css_parity_check_matrices(
         The logical operators, provided as a tuple of all the X logical operators
         at index 0 and all the Z logical operators at index 1.
     """
-    code = css_code(hx, hz)
-    x_logs, z_logs = code.compute_logicals()
+    x_logs, z_logs = css_code_compute_logicals(hx, hz)
 
     return tuple(
-        set(PauliX(column_to_qubit[i]) for i, x in enumerate(log_op) if x)
+        {PauliX(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
         for log_op in x_logs
     ), tuple(
-        set(PauliZ(column_to_qubit[i]) for i, x in enumerate(log_op) if x)
+        {PauliZ(column_to_qubit[i]) for i, x in enumerate(log_op) if x}
         for log_op in z_logs
     )
+
+
+def css_code_compute_logicals(
+    hx: NDArray[np.floating], hz: NDArray[np.floating]
+) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
+    """Drop-in replacement for calling bposd.css_code.compute_logicals.
+
+    Note:
+        This function has been taken from the following repository under the MIT
+        licence: [bp_osd repository](https://github.com/quantumgizmos/bp_osd).
+
+        The following modifications were performed:
+            1. Add more detailed typing information (parameter types, return type).
+            2. Remove two lines of code that were not directly used by the method:
+                ```
+                if self.K == np.nan:
+                    self.compute_dimension()
+                ```
+            3. Change the names of the parameters of compute_lz to avoid a name clash.
+            4. Remove all the `self.`.
+            5. Add a docstring.
+            6. Add typing to the internal `compute_lz` function.
+            7. Only use dense matrices because the inputs are dense anyway.
+
+        You can check the original version of this function at
+        [this permalink](https://github.com/quantumgizmos/bp_osd/blob/8894ec654b24ae875c07e5a361dcae9a77d748ce/src/bposd/css.py#L75).
+
+    Args:
+        hx: parity check matrix for the X code.
+        hz: parity check matrix for the Z code.
+
+    Returns:
+        a tuple ``(lx, lz)`` representing the X and Z logicals.
+    """
+    def compute_lz(_hx: NDArray[np.floating], _hz: NDArray[np.floating]) -> NDArray[np.floating]:
+        # lz logical operators
+        # lz\in ker{hx} AND \notin Im(Hz.T)
+
+        # compute the kernel basis of hx
+        # Note that because inputs are dense arrays, it is fine for every array to be dense in this
+        # function.
+        ker_hx = mod2.nullspace(_hx).todense()
+        # Row reduce to find vectors in kx that are not in the image of hz.T.
+        log_stack = np.vstack([_hz, ker_hx])
+
+        rank_hz = mod2.rank(_hz)
+        pivots = mod2.pivot_rows(log_stack)[rank_hz:]
+
+        return np.asarray(log_stack[pivots])
+
+    return compute_lz(hz, hx), compute_lz(hx, hz)

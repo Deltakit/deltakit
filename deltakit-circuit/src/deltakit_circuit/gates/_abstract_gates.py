@@ -5,21 +5,13 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
+from collections.abc import Generator, Mapping, Sequence
 from enum import Enum
-from typing import (
-    ClassVar,
-    Generator,
-    Generic,
-    Mapping,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import ClassVar, Generic, TypeVar, cast
 
 import stim
+from typing_extensions import Self
+
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
 
 
@@ -42,7 +34,7 @@ class Gate(ABC, Generic[T]):
 
     stim_string: ClassVar[str]
 
-    def __init__(self, tag: str | None = None) -> None:
+    def __init__(self, *, tag: str | None = None) -> None:
         super().__init__()
         self._tag = tag
 
@@ -52,7 +44,7 @@ class Gate(ABC, Generic[T]):
 
     @property
     @abstractmethod
-    def qubits(self) -> Tuple[Qubit[T], ...]:
+    def qubits(self) -> tuple[Qubit[T], ...]:
         """Get all the qubits this gate acts on."""
 
     @abstractmethod
@@ -70,7 +62,7 @@ class Gate(ABC, Generic[T]):
     @abstractmethod
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         """Convert the qubits this gate acts on to equivalent stim targets."""
 
     @abstractmethod
@@ -101,8 +93,8 @@ class OneQubitGate(Gate[T]):
         The qubit that this gate acts on.
     """
 
-    def __init__(self, qubit: Qubit[T] | T, tag: str | None = None):
-        super().__init__(tag)
+    def __init__(self, qubit: Qubit[T] | T, *, tag: str | None = None):
+        super().__init__(tag=tag)
         self._qubit = Qubit(qubit) if not isinstance(qubit, Qubit) else qubit
 
     @property
@@ -111,7 +103,7 @@ class OneQubitGate(Gate[T]):
         return self._qubit
 
     @property
-    def qubits(self) -> Tuple[Qubit[T]]:
+    def qubits(self) -> tuple[Qubit[T]]:
         return (self.qubit,)
 
     def transform_qubits(self, id_mapping: Mapping[T, U]):
@@ -120,7 +112,7 @@ class OneQubitGate(Gate[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         return (stim.GateTarget(qubit_mapping[self.qubit]),)
 
     def __repr__(self) -> str:
@@ -186,11 +178,13 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         qubit: Qubit[T] | T,
         probability: float = 0.0,
         invert: bool = False,
+        *,
         tag: str | None = None,
     ):
-        super().__init__(qubit, tag)
+        super().__init__(qubit, tag=tag)
         if not 0 <= probability <= 1:
-            raise ValueError("Probability must be between zero and one.")
+            msg = "Probability must be between zero and one."
+            raise ValueError(msg)
         self._probability = probability
         self._is_inverted = invert
 
@@ -207,7 +201,7 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, ...]:
+    ) -> tuple[stim.GateTarget, ...]:
         if self.is_inverted:
             return (stim.target_inv(qubit_mapping[self.qubit]),)
         return super().stim_targets(qubit_mapping)
@@ -274,8 +268,8 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         )
 
 
-UT = TypeVar("UT", bound=Union[Qubit, SweepBit, MeasurementRecord])
-VT = TypeVar("VT", bound=Union[Qubit, SweepBit, MeasurementRecord])
+UT = TypeVar("UT", bound=Qubit | SweepBit | MeasurementRecord)
+VT = TypeVar("VT", bound=Qubit | SweepBit | MeasurementRecord)
 
 TwoOperandGateT = TypeVar("TwoOperandGateT", bound="TwoOperandGate")
 
@@ -300,8 +294,8 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     stim_string: ClassVar[str]
 
-    def __init__(self, operand1: UT | T, operand2: VT | T, tag: str | None = None):
-        super().__init__(tag)
+    def __init__(self, operand1: UT | T, operand2: VT | T, *, tag: str | None = None):
+        super().__init__(tag=tag)
         operand1 = cast(
             UT,
             operand1
@@ -315,7 +309,8 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
             else Qubit(operand2),
         )
         if operand1 == operand2:
-            raise ValueError("Operands for two qubit gates must be different.")
+            msg = "Operands for two qubit gates must be different."
+            raise ValueError(msg)
         self._operand1 = operand1
         self._operand2 = operand2
 
@@ -335,7 +330,7 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     def stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> Tuple[stim.GateTarget, stim.GateTarget]:
+    ) -> tuple[stim.GateTarget, stim.GateTarget]:
         """Get the stim gate targets which define this operation."""
         return (
             self._operand1.stim_targets(qubit_mapping)[0],
@@ -344,8 +339,8 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     @classmethod
     def from_consecutive(
-        cls: Type[TwoOperandGateT], pairs: Sequence[UT | VT | T], tag: str | None = None
-    ) -> Generator[TwoOperandGateT, None, None]:
+        cls, pairs: Sequence[UT | VT | T], *, tag: str | None = None
+    ) -> Generator[Self, None, None]:
         """Yield an class instance for each pair in a flattened sequence of
         data.
 
@@ -362,9 +357,10 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
             Qubit pair from neighbouring elements in the sequence.
         """
         if len(pairs) % 2 != 0:
-            raise ValueError(
-                "Two qubit gates can only be constructed from an even number of qubits"
+            msg = (
+                "Two qubit gates can only be constructed from an even number of qubits."
             )
+            raise ValueError(msg)
         for control, target in zip(pairs[::2], pairs[1::2], strict=True):
             yield cls(control, target, tag=tag)
 
@@ -394,7 +390,7 @@ class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):
     """
 
     @property
-    def qubits(self) -> Tuple[Qubit[T], Qubit[T]]:
+    def qubits(self) -> tuple[Qubit[T], Qubit[T]]:
         return (self._operand1, self._operand2)
 
     def transform_qubits(  # type: ignore[override]
@@ -434,12 +430,12 @@ class ControlledGate(TwoOperandGate[UT, VT]):
         The string that stim associates with this gate.
     """
 
-    def __init__(self, control: UT | T, target: VT | T, tag: str | None = None):
+    def __init__(self, control: UT | T, target: VT | T, *, tag: str | None = None):
         # pylint: disable=useless-super-delegation
-        super().__init__(control, target, tag)
+        super().__init__(control, target, tag=tag)
 
     @property
-    def qubits(self) -> Tuple[Qubit[T], ...]:
+    def qubits(self) -> tuple[Qubit[T], ...]:
         """Get all the qubits for this operation."""
         qubits = []
         if isinstance((operand1 := self._operand1), Qubit):

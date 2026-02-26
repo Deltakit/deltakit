@@ -8,21 +8,22 @@ experimental standard.
 
 from dataclasses import dataclass
 
-from deltakit_circuit import (after_reset_flip_probability,
-                              measurement_noise_profile)
+from deltakit_circuit import after_reset_flip_probability, measurement_noise_profile
 from deltakit_circuit.gates import TWO_QUBIT_GATES, OneQubitCliffordGate
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._leakage_noise_profiles import (
     idle_qubit_relaxation_noise_profile,
     one_qubit_clifford_gate_relaxation_noise_profile,
     qubit_reset_leakage_noise_profile,
     resonator_idle_qubit_relaxation_noise_profile,
     two_qubit_gate_leakage_noise_profile,
-    two_qubit_gate_relaxation_noise_profile)
+    two_qubit_gate_relaxation_noise_profile,
+)
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SI1000Noise(NoiseParameters):
     """
     Superconducting inspired noise model from: https://arxiv.org/abs/2108.10457.
@@ -50,7 +51,7 @@ class SI1000Noise(NoiseParameters):
         self.gate_noise.append(
             lambda noise_context: depolarise1_generator(
                 noise_context.gate_layer_qubits(
-                    tuple(TWO_QUBIT_GATES) + (OneQubitCliffordGate,), gate_qubit_count=1
+                    (*tuple(TWO_QUBIT_GATES), OneQubitCliffordGate), gate_qubit_count=1
                 )
             )
         )
@@ -63,7 +64,7 @@ class SI1000Noise(NoiseParameters):
             )
         )
 
-        self.idle_noise = lambda qubit, t=0.0: Depolarise1(
+        self.idle_noise = lambda qubit, _t=0.0: Depolarise1(
             qubit=qubit, probability=self.p / 10
         )
 

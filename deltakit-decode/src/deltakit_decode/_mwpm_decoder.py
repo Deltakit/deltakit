@@ -1,17 +1,20 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+from collections.abc import Iterable
 from functools import cached_property
-from typing import Iterable, Tuple
 
 import networkx as nx
 import numpy as np
 import pymatching
 import stim
 from deltakit_circuit import Circuit
-from deltakit_core.decoding_graphs import (DecodingHyperEdge,
-                                           OrderedDecodingEdges,
-                                           OrderedSyndrome)
+from deltakit_core.decoding_graphs import (
+    DecodingHyperEdge,
+    OrderedDecodingEdges,
+    OrderedSyndrome,
+)
+
 from deltakit_decode._abstract_matching_decoders import GraphDecoder
 from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
 
@@ -62,7 +65,7 @@ class PyMatchingDecoder(GraphDecoder):
     def _full_matcher(self) -> pymatching.Matching:
         return self._make_matcher([[edge] for edge in self.decoding_graph.edges])
 
-    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> Tuple[bool, ...]:
+    def decode_to_logical_flip(self, syndrome: OrderedSyndrome) -> tuple[bool, ...]:
         py_matching_syndrome = syndrome.as_bitstring(max(self.decoding_graph.nodes) + 1)
         corrections = self._logical_flip_matcher.decode(py_matching_syndrome)
         return tuple(bool(corr) for corr in corrections)
@@ -91,7 +94,7 @@ class PyMatchingDecoder(GraphDecoder):
     @classmethod
     def construct_decoder_and_stim_circuit(
         cls, circuit: Circuit
-    ) -> Tuple[PyMatchingDecoder, stim.Circuit]:
+    ) -> tuple[PyMatchingDecoder, stim.Circuit]:
         """Helper factory to create a MWPM decoder and the Stim circuit used
         during its construction.
 

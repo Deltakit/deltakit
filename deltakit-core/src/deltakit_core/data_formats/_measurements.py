@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 import csv
+from collections.abc import Iterable, Iterator
 from itertools import cycle
 from pathlib import Path
-from typing import Iterable, Iterator, List, Tuple
 
 from deltakit_core.decoding_graphs import Bitstring
 
@@ -16,7 +16,7 @@ def split_input_data_to_c64(
 
     The decoder input data could be measurements or syndromes.
     """
-    with open(output_path, "w", encoding="ascii") as output_handle:
+    with output_path.open("w", newline="", encoding="ascii") as output_handle:
         cw = csv.writer(output_handle)
         for input_datum in input_data:
             words = [
@@ -31,7 +31,7 @@ def split_input_data_to_c64(
 
 def c64_to_addressed_input_words(
     input_path: Path, round_width: int
-) -> Iterator[List[Tuple[int, int]]]:
+) -> Iterator[list[tuple[int, int]]]:
     """Given a path to a c64 file, return, for each line, the words within the line
     and the index of each word in each round. These are appropriate for input to a
     hardware decoder, they could be syndromes or measurement data.
@@ -48,7 +48,7 @@ def c64_to_addressed_input_words(
     List[Tuple[int, int]]
         List of addressed 64bit words
     """
-    with open(input_path, "r", encoding="ascii") as input_handle:
+    with input_path.open("r", encoding="ascii") as input_handle:
         syndrome_reader = csv.reader(input_handle)
         for row in syndrome_reader:
             round_indices = cycle(range(round_width // 64 + 1))

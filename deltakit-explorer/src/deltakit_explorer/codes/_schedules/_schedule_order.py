@@ -6,18 +6,17 @@ planar code.
 """
 
 from enum import Enum
-from typing import Tuple, Type, Union
 
 from deltakit_circuit._basic_types import Coord2DDelta
-from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import \
-    RotatedPlanarCodeSchedules
-from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import \
-    UnrotatedPlanarCodeSchedules
 
-ScheduleClass = Union[
-    Type[RotatedPlanarCodeSchedules],
-    Type[UnrotatedPlanarCodeSchedules],
-]
+from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import (
+    RotatedPlanarCodeSchedules,
+)
+from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import (
+    UnrotatedPlanarCodeSchedules,
+)
+
+ScheduleClass = type[RotatedPlanarCodeSchedules] | type[UnrotatedPlanarCodeSchedules]
 
 
 class ScheduleOrder(Enum):
@@ -45,9 +44,9 @@ def get_x_and_z_schedules(
     schedule_class: ScheduleClass,
     schedule_order: ScheduleOrder,
     x_type_has_N_shape: bool = True,
-) -> Tuple[
-    Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta],
-    Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta],
+) -> tuple[
+    tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta],
+    tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta],
 ]:
     """
     Function to retrieve the relevant schedule dictionary and assign the correct
@@ -74,7 +73,8 @@ def get_x_and_z_schedules(
     elif schedule_order == ScheduleOrder.DOUBLY_REFLECTED:
         dict_to_use = schedule_class.doubly_reflected_N_Z_dict
     else:
-        raise ValueError(f"Did not recognise ScheduleOrder {schedule_order}")
+        msg = f"Did not recognise ScheduleOrder {schedule_order}"
+        raise ValueError(msg)
 
     if x_type_has_N_shape:
         return dict_to_use["N"], dict_to_use["Z"]

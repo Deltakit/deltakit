@@ -1,8 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
-import os
 from itertools import groupby
 from operator import itemgetter
-from typing import Tuple
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,12 +26,12 @@ from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 max_shots = 1e7
 
 # File name to save output data.
-filename = f"RPC_MWPM_X_MEM_{max_shots:.0e}_shots.csv"
+filename = Path(f"RPC_MWPM_X_MEM_{max_shots:.0e}_shots.csv")
 
 
 def rotated_planar_xmem_noiseless(
     x_distance: int, z_distance: int, num_rounds: int
-) -> Tuple[RotatedPlanarCode, Circuit]:
+) -> tuple[RotatedPlanarCode, Circuit]:
     """This function takes as input quantum memory parameters (X-distance, Z-distance,
     Num Rounds) and returns a noiseless logical-X quantum memory circuit in a default
     gate set.
@@ -108,14 +107,12 @@ def noise_model(physical_error_rate: float) -> NoiseParameters:
         return Depolarise1(qubit=qubit, probability=physical_error_rate)
 
     # Construct noise model
-    noise_model = NoiseParameters(
+    return NoiseParameters(
         gate_noise=gate_noise,
         reset_noise=reset_noise,
         idle_noise=idle_noise,
         measurement_flip=measurement_flip_noise,
     )
-
-    return noise_model
 
 
 def rotated_planar_xmem_noisy(
@@ -166,9 +163,7 @@ def rotated_planar_xmem_noisy(
     )
 
     # Create a noisy circuit by compiling the noiseless circuit in the QPU
-    noisy_circuit = qpu.compile_and_add_noise_to_circuit(noiseless_circuit)
-
-    return noisy_circuit
+    return qpu.compile_and_add_noise_to_circuit(noiseless_circuit)
 
 
 def experiment_decoder_manager(
@@ -243,7 +238,7 @@ def plot_per_round_logical_error(data, colors, distance: int) -> None:
     plt.plot(
         physical_error,
         logical_rates_per_round,
-        label=f"{filename.replace('.csv', '')} d={distance}",
+        label=f"{filename.name.replace('.csv', '')} d={distance}",
         markersize=7,
         marker="o",
         linestyle="-",
@@ -252,32 +247,25 @@ def plot_per_round_logical_error(data, colors, distance: int) -> None:
 
 
 @pytest.mark.slow
-def test_qmem():
-    pct1_shots, pct1_fails = experiment_decoder_manager(
+def test_qmem() -> None:
+    _ = experiment_decoder_manager(
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.01
-    ).run_batch_shots(1e5)
-    pt1pct1_shots, pt1pct1_fails = experiment_decoder_manager(
+    ).run_batch_shots(10_000)
+    _ = experiment_decoder_manager(
         x_distance=3, z_distance=3, num_rounds=3, physical_error_rate=0.001
-    ).run_batch_shots(1e5)
-    print(
-        f"Logical error probability with physical error 1%: {pct1_fails / pct1_shots}"
-    )
-    print(
-        "Logical error probability with physical error .1%:"
-        f"{pt1pct1_fails / pt1pct1_shots}"
-    )
+    ).run_batch_shots(10_000)
 
     distances = [3, 5, 7, 9]
     physical_error_rates = np.logspace(-5, -1.75, 14)
 
     # overwrite_data = False
     overwrite_data = True
-    if overwrite_data and os.path.exists(filename):
-        os.remove(filename)
+    if overwrite_data and filename.exists():
+        filename.unlink()
 
-    if overwrite_data or not os.path.exists(filename):
+    if overwrite_data or not filename.exists():
         # Make all the decoder managers for the different data-points
-        decoder_managers = []
+        decoder_managers: list[tuple[int, StimDecoderManager]] = []
         for phys in physical_error_rates:
             num_shots = int(min(phys**-2, max_shots))
             decoder_managers.extend(
@@ -316,4 +304,4 @@ def test_qmem():
     plt.grid()
     plt.legend()
 
-    plt.savefig(filename + ".png")
+    plt.savefig(filename.parent / f"{filename.name}.png")

@@ -11,23 +11,31 @@ from typing import Any
 
 import stim
 import tqdm
+
 from deltakit_explorer._utils._logging import Logging
 from deltakit_explorer._utils._utils import HTTP_PACKET_LIMIT
-from deltakit_explorer.data._data_analysis import \
-    get_decoding_request_size_estimate as get_dec_request_size
-from deltakit_explorer.data._data_analysis import \
-    get_decoding_response_size_estimate as get_dec_size
-from deltakit_explorer.data._data_analysis import \
-    get_simulation_response_size_estimate as get_sim_size
+from deltakit_explorer.data._data_analysis import (
+    get_decoding_request_size_estimate as get_dec_request_size,
+)
+from deltakit_explorer.data._data_analysis import (
+    get_decoding_response_size_estimate as get_dec_size,
+)
+from deltakit_explorer.data._data_analysis import (
+    get_simulation_response_size_estimate as get_sim_size,
+)
 from deltakit_explorer.data._data_analysis import has_leakage
-from deltakit_explorer.enums._api_enums import (DataFormat, DecoderType,
-                                                QECECodeType)
+from deltakit_explorer.enums._api_enums import DataFormat, DecoderType, QECECodeType
 from deltakit_explorer.types._exceptions import ServerException
 from deltakit_explorer.types._experiment_types import QECExperimentDefinition
-from deltakit_explorer.types._types import (CircuitParameters, Decoder,
-                                            DecodingResult, DetectionEvents,
-                                            LeakageFlags, Measurements,
-                                            ObservableFlips)
+from deltakit_explorer.types._types import (
+    CircuitParameters,
+    Decoder,
+    DecodingResult,
+    DetectionEvents,
+    LeakageFlags,
+    Measurements,
+    ObservableFlips,
+)
 
 
 def validate_and_split_decoding(func):
@@ -44,7 +52,7 @@ def validate_and_split_decoding(func):
         noisy_stim_circuit: str | stim.Circuit,
         leakage_flags: LeakageFlags | None = None,
     ):
-        if decoder.decoder_type in {DecoderType.LCD} and leakage_flags is not None:
+        if decoder.decoder_type == DecoderType.LCD and leakage_flags is not None:
             Logging.warn(
                 "Leakage-aware decoding has a heavy initialisation part. "
                 "Big tasks may be cancelled by server timeout.",
@@ -134,17 +142,19 @@ def validate_generation(func):
                     "big code patches. This may lead to a server timeout.",
                     uid="decorator",
                 )
-        if experiment_definition.code_type in {QECECodeType.BIVARIATE_BICYCLE}:
-            if parameters is not None:
-                if parameters.matrix_specifications is not None:
-                    param_l = parameters.matrix_specifications.param_l
-                    has_basis_gates = experiment_definition.basis_gates is not None
-                    if param_l >= 15 and has_basis_gates:
-                        Logging.warn(
-                            "BBCode circuit generation with a provided gate set "
-                            "may be slow. This may lead to a server timeout.",
-                            uid="decorator",
-                        )
+        if (
+            experiment_definition.code_type == QECECodeType.BIVARIATE_BICYCLE
+            and parameters is not None
+            and parameters.matrix_specifications is not None
+        ):
+            param_l = parameters.matrix_specifications.param_l
+            has_basis_gates = experiment_definition.basis_gates is not None
+            if param_l >= 15 and has_basis_gates:
+                Logging.warn(
+                    "BBCode circuit generation with a provided gate set "
+                    "may be slow. This may lead to a server timeout.",
+                    uid="decorator",
+                )
         return func(obj, experiment_definition)
 
     return wrapper

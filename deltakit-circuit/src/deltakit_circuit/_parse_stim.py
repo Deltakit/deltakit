@@ -5,25 +5,32 @@ circuits."""
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Hashable, Iterable, Mapping, Sequence
 from itertools import tee, zip_longest
-from typing import (
-    Hashable,
-    Iterable,
-    List,
-    Mapping,
-    Sequence,
-    Set,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TypeVar, cast
 
 import stim
+
 from deltakit_circuit._annotations._detector import Detector, MeasurementRecord
 from deltakit_circuit._annotations._observable import Observable
 from deltakit_circuit._annotations._shift_coordinates import ShiftCoordinates
 from deltakit_circuit._gate_layer import GateLayer
+from deltakit_circuit._noise_layer import NoiseLayer
+from deltakit_circuit._qubit_identifiers import (
+    Coordinate,
+    InvertiblePauliX,
+    InvertiblePauliY,
+    InvertiblePauliZ,
+    MeasurementPauliProduct,
+    PauliProduct,
+    PauliX,
+    PauliY,
+    PauliZ,
+    Qubit,
+    SweepBit,
+    _InvertiblePauliGate,
+    _PauliGate,
+)
 from deltakit_circuit.gates import GATE_MAPPING, OneQubitResetGate, _Gate
 from deltakit_circuit.gates._abstract_gates import (
     OneQubitCliffordGate,
@@ -48,22 +55,6 @@ from deltakit_circuit.noise_channels import (
     PauliZError,
     Relax,
     _NoiseChannel,
-)
-from deltakit_circuit._noise_layer import NoiseLayer
-from deltakit_circuit._qubit_identifiers import (
-    Coordinate,
-    InvertiblePauliX,
-    InvertiblePauliY,
-    InvertiblePauliZ,
-    MeasurementPauliProduct,
-    PauliProduct,
-    PauliX,
-    PauliY,
-    PauliZ,
-    Qubit,
-    SweepBit,
-    _InvertiblePauliGate,
-    _PauliGate,
 )
 
 
@@ -93,15 +84,16 @@ def _classify_pauli_target(
         if target.is_inverted_result_target:
             return InvertiblePauliZ(qubit, invert=True)
         return PauliZ(qubit)
-    raise ValueError(f"Target: {target} is not a Pauli gate target.")
+    msg = f"Target: {target} is not a Pauli gate target."
+    raise ValueError(msg)
 
 
 def _parse_single_qubit_gate_instruction(
-    gate_class: Type[_OneQubitCliffordGate | _ResetGate],
+    gate_class: type[_OneQubitCliffordGate | _ResetGate],
     instruction_targets: Iterable[stim.GateTarget],
     instruction_tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
-) -> List[GateLayer]:
+) -> list[GateLayer]:
     qubits = (
         qubit_mapping.get(target.value, Qubit(target.value))
         for target in instruction_targets
@@ -114,12 +106,12 @@ def _parse_single_qubit_gate_instruction(
 
 
 def _parse_two_qubit_gate_instruction(
-    gate_class: Type[_TwoQubitGate],
+    gate_class: type[_TwoQubitGate],
     instruction_targets: Sequence[stim.GateTarget],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> GateLayer:
-    targets: List[Qubit | SweepBit | MeasurementRecord] = []
+    targets: list[Qubit | SweepBit | MeasurementRecord] = []
     for target in instruction_targets:
         if target.is_sweep_bit_target:
             targets.append(SweepBit(target.value))
@@ -131,7 +123,7 @@ def _parse_two_qubit_gate_instruction(
 
 
 def _parse_single_qubit_measurement(
-    gate_class: Type[_OneQubitMeasurementGate],
+    gate_class: type[_OneQubitMeasurementGate],
     instruction_targets: Iterable[stim.GateTarget],
     instruction_arguments: Iterable[float],
     tag: str | None,
@@ -177,8 +169,8 @@ def _parse_mpp_instruction(
     """
     probability = next(iter(instruction_arguments), 0.0)
 
-    pauli_gates: List[_PauliGate | _InvertiblePauliGate] = []
-    qubit_identifiers: List[
+    pauli_gates: list[_PauliGate | _InvertiblePauliGate] = []
+    qubit_identifiers: list[
         _PauliGate | _InvertiblePauliGate | MeasurementPauliProduct
     ] = []
     current_targets, peak_targets = tee(instruction_targets)
@@ -200,8 +192,8 @@ def _parse_mpp_instruction(
 
 
 def _parse_single_qubit_noise_instruction(
-    noise_class: Type[
-        Union[PauliXError, PauliYError, PauliZError, Depolarise1, Leakage, Relax]
+    noise_class: type[
+        PauliXError | PauliYError | PauliZError | Depolarise1 | Leakage | Relax
     ],
     instruction_targets: Iterable[stim.GateTarget],
     probability: float,
@@ -255,7 +247,7 @@ def _parse_pauli_channel_2_instruction(
 
 
 def _parse_correlated_error_instruction(
-    noise_class: Type[CorrelatedError | ElseCorrelatedError],
+    noise_class: type[CorrelatedError | ElseCorrelatedError],
     instruction_targets: Iterable[stim.GateTarget],
     probability: float,
     tag: str | None,
@@ -269,7 +261,7 @@ def _parse_correlated_error_instruction(
 
 
 def parse_stim_gate_instruction(
-    deltakit_circuit_gate_class: Type[_Gate],
+    deltakit_circuit_gate_class: type[_Gate],
     instruction_targets: Sequence[stim.GateTarget],
     instruction_arguments: Sequence[float],
     instruction_tag: str | None,
@@ -331,14 +323,15 @@ def parse_stim_gate_instruction(
         return _parse_mpp_instruction(
             instruction_targets, instruction_arguments, instruction_tag, qubit_mapping
         )
-    raise ValueError(
+    msg = (
         f"Given gate class: '{deltakit_circuit_gate_class}' is not a "
         "valid deltakit_circuit gate."
     )
+    raise ValueError(msg)
 
 
 def parse_stim_noise_instruction(
-    deltakit_circuit_noise_class: Type[_NoiseChannel],
+    deltakit_circuit_noise_class: type[_NoiseChannel],
     instruction_targets: Sequence[stim.GateTarget],
     instruction_arguments: Sequence[float],
     instruction_tag: str | None,
@@ -401,10 +394,11 @@ def parse_stim_noise_instruction(
             instruction_tag,
             qubit_mapping,
         )
-    raise ValueError(
+    msg = (
         f"Given noise class: '{deltakit_circuit_noise_class}' is not a "
         "valid deltakit_circuit noise channel."
     )
+    raise ValueError(msg)
 
 
 def parse_detector(instruction: stim.CircuitInstruction) -> Detector:
@@ -528,7 +522,7 @@ def parse_circuit_instruction(
 T = TypeVar("T", bound=Hashable)  # pylint: disable=invalid-name
 
 
-def group_targets(targets: Iterable[T]) -> List[Set[T]]:
+def group_targets(targets: Iterable[T]) -> list[set[T]]:
     """Group an iterable of qubit indices into overlapping sets of duplicate
     elements. It does not preserve order and puts items into the "earliest"
     available set.
@@ -552,11 +546,11 @@ def group_targets(targets: Iterable[T]) -> List[Set[T]]:
     """
     target_counts = Counter(targets)
     number_of_groups = max(target_counts.values())
-    grouped_targets: List[Set[T]] = [set() for _ in range(number_of_groups)]
+    grouped_targets: list[set[T]] = [set() for _ in range(number_of_groups)]
     for target, target_count in target_counts.items():
         for group in grouped_targets[0:target_count]:
             group.add(target)
     return grouped_targets
 
 
-_Layer = Union[GateLayer, NoiseLayer, Detector, Observable, ShiftCoordinates]
+_Layer = GateLayer | NoiseLayer | Detector | Observable | ShiftCoordinates

@@ -1,15 +1,20 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-from collections import namedtuple
 from math import exp, log
+from typing import NamedTuple
 
 import pytest
-from deltakit_explorer.analysis import \
-    predict_distance_for_quops, predict_quops_at_distance
+
+from deltakit_explorer.analysis import (
+    predict_distance_for_quops,
+    predict_quops_at_distance,
+)
 
 
-Parameters = namedtuple("Parameters", ["lambda0", "lambda_"])
+class Parameters(NamedTuple):
+    lambda0: float
+    lambda_: float
 
 def alternative_lep_per_round(p_0: float, lambda_: float, d: int) -> float:
     return p_0 * exp(-log(lambda_) * (d + 1) / 2)
@@ -64,7 +69,7 @@ def test_predict_distance_for_quops_method_raises_when_quops_too_big():
 
 
 @pytest.mark.parametrize(
-    "lambda0, lambda_, distance, quops",
+    ("lambda0", "lambda_", "distance", "quops"),
     [
         (1.0e-3, 2.0, 11, 5819.090965902487),
         (1.0e-2, 1.5, 5, 68.30475477033615),
@@ -79,7 +84,7 @@ def test_predict_qoups_by_distance_constants(lambda0, lambda_, distance, quops):
 
 
 @pytest.mark.parametrize(
-    "lambda0, lambda_, distance, quops",
+    ("lambda0", "lambda_", "distance", "quops"),
     [
         (1.0e-3, 2.0, 11, 5800),
         (1.0e-2, 1.5, 1, 65),

@@ -1,16 +1,21 @@
 import pytest
 import stim
 from deltakit_circuit.gates import PauliBasis
-from deltakit_explorer.codes._bivariate_bicycle_code import \
-    BivariateBicycleCode  # noqa: F401
+
+from deltakit_explorer.codes._bivariate_bicycle_code import (
+    BivariateBicycleCode,  # noqa: F401
+)
 from deltakit_explorer.codes._css._css_code_experiment_circuit import (
-    css_code_memory_circuit, css_code_stability_circuit)
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_planar_code import \
-    UnrotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_toric_code import \
-    UnrotatedToricCode
+    css_code_memory_circuit,
+    css_code_stability_circuit,
+)
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
+from deltakit_explorer.codes._planar_code._unrotated_planar_code import (
+    UnrotatedPlanarCode,
+)
+from deltakit_explorer.codes._planar_code._unrotated_toric_code import (
+    UnrotatedToricCode,
+)
 from deltakit_explorer.codes._repetition_code import RepetitionCode
 
 
@@ -29,11 +34,7 @@ def mock_client(mocker):
     RepetitionCode(distance=3),
 ])
 @pytest.mark.parametrize("basis", [PauliBasis.X, PauliBasis.Z])
-@pytest.mark.parametrize("css_code_experiment_circuit", [
-    css_code_memory_circuit,
-    css_code_stability_circuit,
-])
-def test_css_code_experiment_circuit_cloud(mock_client, code, basis, css_code_experiment_circuit):
+def test_css_code_experiment_circuit_cloud(mock_client, code, basis):
     result = css_code_memory_circuit(
         css_code=code,
         num_rounds=3,

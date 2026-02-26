@@ -1,3 +1,5 @@
+# Automatically add labels to PR according to rules defined in `../labeler.yml`.
+# These labels are then used to filter out CI tests depending on which package changed.
 name: Label PRs
 
 on:
@@ -5,9 +7,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  # Get changed labels
   label-prs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     permissions:
       contents: read
       pull-requests: write

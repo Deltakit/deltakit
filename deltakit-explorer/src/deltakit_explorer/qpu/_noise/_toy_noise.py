@@ -7,16 +7,20 @@ experimental standard.
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 from deltakit_circuit import measurement_noise_profile
-from deltakit_circuit.gates import (TWO_QUBIT_GATES, OneQubitCliffordGate,
-                                    OneQubitMeasurementGate, OneQubitResetGate)
+from deltakit_circuit.gates import (
+    TWO_QUBIT_GATES,
+    OneQubitCliffordGate,
+    OneQubitMeasurementGate,
+    OneQubitResetGate,
+)
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ToyNoise(NoiseParameters):
     """
     A noise model specified only by two parameters.
@@ -46,7 +50,7 @@ class ToyNoise(NoiseParameters):
     name = "toy_noise"
 
     p: float = 0
-    p_measurement_flip: Optional[float] = None
+    p_measurement_flip: float | None = None
 
     def __post_init__(self):
         self.p_measurement_flip = (
@@ -68,7 +72,7 @@ class ToyNoise(NoiseParameters):
             )
         )
 
-        self.idle_noise = lambda qubit, t=0.0: Depolarise1(
+        self.idle_noise = lambda qubit, _t=0.0: Depolarise1(
             qubit=qubit, probability=self.p / 10
         )
 

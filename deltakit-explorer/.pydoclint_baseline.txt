@@ -1,0 +1,843 @@
+src/deltakit_explorer/_api/_api_client.py
+    DOC101: Method `APIClient.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `APIClient.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [base_url: str, request_timeout: int].
+    DOC111: Method `APIClient.set_token`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.set_token` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.set_token` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.execute`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.execute` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.execute` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.kill`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.kill` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.kill` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.generate_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.generate_circuit` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.generate_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.simulate_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.simulate_circuit` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.simulate_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.add_noise`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.add_noise` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.add_noise` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.decode`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.decode` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.decode` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC201: Method `APIClient.defect_rates` does not have a return section in docstring
+    DOC501: Method `APIClient.defect_rates` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.defect_rates` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.get_correlation_matrix_for_trimmed_data`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.get_correlation_matrix_for_trimmed_data` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.get_correlation_matrix_for_trimmed_data` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `APIClient.trim_circuit_and_detectors`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIClient.trim_circuit_and_detectors` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIClient.trim_circuit_and_detectors` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+--------------------
+src/deltakit_explorer/_api/_api_v2_client.py
+    DOC601: Class `JobStatus`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `JobStatus`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CANCELLED: , FAILED: , IN_PROGRESS: , SUBMITTED: , SUCCESS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `Job`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Job`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [error: str | None, request_id: str, result: dict, status: str, type: APIEndpoints, workload: dict]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `APIv2Client`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `APIv2Client`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [STATUS_CHECK_DELAY: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC301: Class `APIv2Client`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `APIv2Client.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `APIv2Client.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [base_url: str, request_timeout: int].
+    DOC111: Method `APIv2Client.set_token`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `APIv2Client.set_token` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `APIv2Client.set_token` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ServerException'].
+--------------------
+src/deltakit_explorer/_api/_auth.py
+    DOC111: Function `set_token`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `set_https_verification`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/_api/_client.py
+    DOC301: Class `Client`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `Client.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Client.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [api_version: int, base_url: str, timeout: int].
+    DOC501: Method `Client.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Method `Client.get_instance`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC101: Method `Client.set_token`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Client.set_token`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [token: str, validate: bool].
+    DOC201: Method `Client.set_token` does not have a return section in docstring
+    DOC111: Method `Client.add_noise`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.add_noise` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.add_noise` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.decode`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.decode` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.decode` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.decode_measurements`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `Client.defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.defect_rates` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.defect_rates` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.get_correlation_matrix_for_trimmed_data`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.get_correlation_matrix_for_trimmed_data` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.get_correlation_matrix_for_trimmed_data` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.get_correlation_matrix`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.get_correlation_matrix` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.get_correlation_matrix` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.trim_circuit_and_detectors`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.trim_circuit_and_detectors` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.trim_circuit_and_detectors` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.get_experiment_detectors_and_defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.get_experiment_detectors_and_defect_rates` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.get_experiment_detectors_and_defect_rates` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC111: Method `Client.generate_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.generate_circuit` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.generate_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.simulate_stim_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.simulate_stim_circuit` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.simulate_stim_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.kill`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/_api/_gql_client.py
+    DOC301: Class `GQLClient`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `GQLClient.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GQLClient.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [base_url: str, request_timeout: int].
+    DOC111: Method `GQLClient._get_query`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `GQLClient._get_query` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `GQLClient._get_query` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ServerException'].
+    DOC001: Function/method `execute_query`: Potential formatting errors in docstring. Error message: Expected a colon in 'TransportQueryError'. (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `execute_query`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `GQLClient.execute_query`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `GQLClient.execute_query`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [query: str, query_id: str, variable_values: dict].
+--------------------
+src/deltakit_explorer/_cloud_decoders.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `_CloudDecoder.decode_batch_to_logical_flip`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `_CloudDecoder.decode_batch_to_logical_flip`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [leakage_batch: npt.NDArray[np.uint8] | None, syndrome_batch: npt.NDArray[np.uint8]].
+    DOC201: Method `_CloudDecoder.decode_batch_to_logical_flip` does not have a return section in docstring
+    DOC501: Method `_CloudDecoder.decode_batch_to_logical_flip` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `_CloudDecoder.decode_batch_to_logical_flip` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC301: Class `LCDecoder`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/_utils/_decorators.py
+    DOC101: Function `validate_and_split_decoding`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `validate_and_split_decoding`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `validate_and_split_decoding`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `validate_and_split_decoding`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [func: ].
+    DOC201: Function `validate_and_split_decoding` does not have a return section in docstring
+    DOC101: Function `validate_generation`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `validate_generation`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `validate_generation`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `validate_generation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [func: ].
+    DOC201: Function `validate_generation` does not have a return section in docstring
+    DOC101: Function `validate_and_split_simulation`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `validate_and_split_simulation`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `validate_and_split_simulation`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `validate_and_split_simulation`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [func: ].
+    DOC201: Function `validate_and_split_simulation` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/_utils/_logging.py
+    DOC601: Class `Logging`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Logging`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [CRITICAL: , DEBUG: , ERROR: , FATAL: , INFO: , NOTSET: , WARNING: , file_handler: , logger: , logging.getLogger('requests').disabled: , logging.getLogger('urllib3').disabled: , stream_handler: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC111: Method `Logging.info_and_generate_uid`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `Logging.info`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `Logging.warn`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `Logging.error`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC101: Method `Logging.set_log_to_console`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Logging.set_log_to_console`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [log_to_console: bool].
+    DOC101: Method `Logging.set_log_level`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Logging.set_log_level`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [loglevel: int].
+--------------------
+src/deltakit_explorer/_utils/_utils.py
+    DOC201: Function `get_config_directory` does not have a return section in docstring
+    DOC201: Function `get_config_file_path` does not have a return section in docstring
+    DOC111: Function `read_persisted_variables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `set_variables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC101: Function `override_persisted_variables`: Docstring contains fewer arguments than in function signature.
+    DOC111: Function `override_persisted_variables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC103: Function `override_persisted_variables`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file: Path].
+    DOC101: Function `merge_variables`: Docstring contains fewer arguments than in function signature.
+    DOC111: Function `merge_variables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC103: Function `merge_variables`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [file: Path].
+--------------------
+src/deltakit_explorer/analysis/_analysis.py
+    DOC111: Function `get_exp_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `calculate_lep_and_lep_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `calculate_lep_and_lep_stddev` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `calculate_lep_and_lep_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC111: Function `get_lambda_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/_lambda.py
+    DOC101: Function `_lambda_fit_with_d`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_lambda_fit_with_d`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
+    DOC201: Function `_lambda_fit_with_d` does not have a return section in docstring
+    DOC101: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
+    DOC201: Function `_lambda_fit_with_d_plus_1_over_2` does not have a return section in docstring
+    DOC101: Function `_lambda_fit_with_direct`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_lambda_fit_with_direct`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
+    DOC201: Function `_lambda_fit_with_direct` does not have a return section in docstring
+    DOC111: Function `calculate_lambda_and_lambda_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `calculate_lambda_and_lambda_stddev` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `calculate_lambda_and_lambda_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/analysis/_leppr.py
+    DOC111: Function `compute_logical_error_per_round`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `compute_logical_error_per_round` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `compute_logical_error_per_round` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['RuntimeError', 'ValueError'].
+    DOC111: Function `simulate_different_round_numbers_for_lep_per_round_estimation`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/_quops.py
+    DOC001: Function/method `_equal_or_less_brute_force_search`: Potential formatting errors in docstring. Error message: Section 'Parameters' is not empty but nothing was parsed. (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `_equal_or_less_brute_force_search`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_equal_or_less_brute_force_search`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_equal_or_less_brute_force_search`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [func: Callable[[int], float], maximum: int, minimum: int, step: int, target: float].
+    DOC101: Function `_calculate_lep`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_calculate_lep`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distance: int, lambda0: float, lambda_: float, num_rounds: int].
+    DOC201: Function `_calculate_lep` does not have a return section in docstring
+    DOC003: Function/method `predict_quops_at_distance`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC103: Function `predict_quops_at_distance`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distance: int, lambda0: float, lambda_: float]. Arguments in the docstring but not in the function signature: [distance (int): , lambda0 (float): , lambda_ (float): ].
+    DOC003: Function/method `predict_distance_for_quops`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC103: Function `predict_distance_for_quops`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [lambda0: float, lambda_: float, max_distance: int, num_quops: float]. Arguments in the docstring but not in the function signature: [lambda0 (float): , lambda_ (float): , max_distance (int): , num_quops (int): ].
+--------------------
+src/deltakit_explorer/analysis/error_budget/_budget.py
+    DOC101: Method `ErrorBudgetResult.from_gradient`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ErrorBudgetResult.from_gradient`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [gradient: npt.NDArray[np.floating], gradient_stddevs: npt.NDArray[np.floating], noise_parameters: npt.NDArray[np.floating]].
+    DOC201: Method `ErrorBudgetResult.from_gradient` does not have a return section in docstring
+    DOC111: Function `get_error_budget`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/error_budget/_discretisation.py
+    DOC111: Method `GradientFitDiscretisationGenerator.__call__`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC502: Method `GradientFitDiscretisationGenerator.__call__` has a "Raises" section in the docstring, but there are not "raise" statements in the body
+    DOC101: Function `get_linear_points`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_linear_points`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [a: float, b: float, c: float, num_points: int].
+    DOC201: Function `get_linear_points` does not have a return section in docstring
+    DOC101: Function `get_logarithmic_points`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_logarithmic_points`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [a: float, b: float, c: float, num_points: int].
+    DOC201: Function `get_logarithmic_points` does not have a return section in docstring
+    DOC501: Function `get_logarithmic_points` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `get_logarithmic_points` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC601: Class `DiscretisationStrategy`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DiscretisationStrategy`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [LINEAR: , LOGARITHMIC: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/analysis/error_budget/_generation.py
+    DOC111: Function `_generate_surface_code_memory_decoder_manager`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `generate_decoder_managers_for_lambda`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `generate_decoder_managers_for_lambda` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `generate_decoder_managers_for_lambda` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/analysis/error_budget/_gradient.py
+    DOC111: Function `_variate_ith_parameter_by`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `_approximate_derivative_at_point_from_values`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `_get_variance_of_gradient_estimation_at_point`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `get_decoding_result`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `get_lambda_gradient`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `inverse_lambda_gradient_at`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/error_budget/_lambda.py
+    DOC111: Function `inverse_lambda_at`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/error_budget/_memory.py
+    DOC301: Class `PreComputedMemoryGenerator`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Function `get_rotated_surface_code_memory_circuit`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_rotated_surface_code_memory_circuit`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distance: int, num_rounds: int].
+    DOC201: Function `get_rotated_surface_code_memory_circuit` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/analysis/error_budget/_post_processing.py
+    DOC101: Function `_filter_non_close_noise_parameters`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_filter_non_close_noise_parameters`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: pd.DataFrame, noise_parameter_names: Sequence[str], noise_parameters: npt.NDArray[np.floating]].
+    DOC201: Function `_filter_non_close_noise_parameters` does not have a return section in docstring
+    DOC101: Function `compute_lambda_and_stddev_from_results`: Docstring contains fewer arguments than in function signature.
+    DOC111: Function `compute_lambda_and_stddev_from_results`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC103: Function `compute_lambda_and_stddev_from_results`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [noise_parameter_names: Sequence[str], num_rounds_by_distance: Mapping[int, Sequence[int]]]. Arguments in the docstring but not in the function signature: [num_rounds_by_distances: Mapping[int, Sequence[int]]].
+    DOC501: Function `compute_lambda_and_stddev_from_results` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `compute_lambda_and_stddev_from_results` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/analysis/error_budget/_rounds.py
+    DOC111: Function `compute_ideal_rounds_for_noise_model_and_distance`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/analysis/error_budget/_visualisation.py
+    DOC101: Function `_text_size_in_data_coordinates`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_text_size_in_data_coordinates`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ax: Axes, fig: Figure, text: str].
+    DOC201: Function `_text_size_in_data_coordinates` does not have a return section in docstring
+    DOC101: Function `_draw_line_from_text_to_position`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_draw_line_from_text_to_position`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ax: Axes, colour: str, fig: Figure, t: float, text: Text, x: float, y: float].
+    DOC111: Function `plot_error_budget`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/codes/_bivariate_bicycle_code.py
+    DOC003: Function/method `_find_anticommuting_pairs`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Monomial.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Monomial.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [l: int, m: int, x_pow: int, y_pow: int].
+    DOC501: Method `Monomial.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Monomial.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC201: Method `Monomial.inverse` does not have a return section in docstring
+    DOC101: Method `Polynomial.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Polynomial.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [monomials: list[Monomial]].
+    DOC003: Function/method `from_vec`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `to_vec`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `Polynomial.reverse` does not have a return section in docstring
+    DOC003: Function/method `mult_by_monomial`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `BivariateBicycleCode._validate_input_parameters`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `BivariateBicycleCode._validate_input_parameters`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ell: int, m: int, m_A_powers: list[int], m_B_powers: list[int]].
+    DOC501: Method `BivariateBicycleCode._validate_input_parameters` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `BivariateBicycleCode._validate_input_parameters` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `_get_qubit_coords`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_css_code.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CSSCode.x_and_z_operators_commute`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode.x_and_z_operators_commute`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [x_operator: Iterable[PauliX | None], z_operator: Iterable[PauliZ | None]].
+    DOC201: Method `CSSCode.x_and_z_operators_commute` does not have a return section in docstring
+    DOC101: Method `CSSCode._check_for_duplicate_paulis`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_for_duplicate_paulis`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [x_logical_operators: Sequence[Collection[PauliGate]], z_logical_operators: Sequence[Collection[PauliGate]]].
+    DOC501: Method `CSSCode._check_for_duplicate_paulis` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_for_duplicate_paulis` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_stabiliser_and_logical_operator_types`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_stabiliser_and_logical_operator_types`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: tuple[tuple[Stabiliser, ...], ...], x_logical_operators: tuple[frozenset[PauliGate], ...], z_logical_operators: tuple[frozenset[PauliGate], ...]].
+    DOC501: Method `CSSCode._check_stabiliser_and_logical_operator_types` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_stabiliser_and_logical_operator_types` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `_calculate_x_and_z_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CSSCode._calculate_x_and_z_stabilisers`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._calculate_x_and_z_stabilisers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: tuple[tuple[Stabiliser, ...], ...]].
+    DOC101: Method `CSSCode.check_logical_operators_are_independent`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode.check_logical_operators_are_independent`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [x_logicals: Iterable[Iterable[PauliX]], z_logicals: Iterable[Iterable[PauliZ]]].
+    DOC501: Method `CSSCode.check_logical_operators_are_independent` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode.check_logical_operators_are_independent` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_commutation_relations`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_commutation_relations`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [check_logical_operators_are_independent: bool, x_logical_operators: tuple[frozenset[PauliGate], ...], x_stabilisers: list[set[Stabiliser]], z_logical_operators: tuple[frozenset[PauliGate], ...], z_stabilisers: list[set[Stabiliser]]].
+    DOC501: Method `CSSCode._check_commutation_relations` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_commutation_relations` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_ancilla_qubit_properties`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_ancilla_qubit_properties`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ancilla_qubits: set[Qubit], data_qubits: set[Qubit], stabilisers: tuple[tuple[Stabiliser, ...], ...]].
+    DOC501: Method `CSSCode._check_ancilla_qubit_properties` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_ancilla_qubit_properties` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_logical_operators_are_supported_on_data_qubits`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_logical_operators_are_supported_on_data_qubits`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data_qubits: set[Qubit], logical_operators: tuple[frozenset[PauliGate], ...]].
+    DOC501: Method `CSSCode._check_logical_operators_are_supported_on_data_qubits` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_logical_operators_are_supported_on_data_qubits` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_stabiliser_lengths`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_stabiliser_lengths`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: tuple[tuple[Stabiliser, ...], ...]].
+    DOC501: Method `CSSCode._check_stabiliser_lengths` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_stabiliser_lengths` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_unique_data_qubits_in_layers`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_unique_data_qubits_in_layers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: tuple[tuple[Stabiliser, ...], ...]].
+    DOC501: Method `CSSCode._check_unique_data_qubits_in_layers` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_unique_data_qubits_in_layers` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSCode._check_schedule_is_valid`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSCode._check_schedule_is_valid`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [x_stabilisers: list[set[Stabiliser]], z_stabilisers: list[set[Stabiliser]]].
+    DOC501: Method `CSSCode._check_schedule_is_valid` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSCode._check_schedule_is_valid` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Function `_entangled_ancillas`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_entangled_ancillas`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [x_stab: Stabiliser, z_stab: Stabiliser].
+    DOC201: Function `_entangled_ancillas` does not have a return section in docstring
+    DOC003: Function/method `from_matrix`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `parity_check_matrices`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `CSSCode.calculate_number_of_logical_qubits` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/codes/_css/_css_code_experiment_circuit.py
+    DOC003: Function/method `css_code_memory_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_cloud_css_code_experiment_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `css_code_stability_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_css_stage.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CSSStage._calculate_gate_qubits`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSStage._calculate_gate_qubits`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [first_round_gates: frozenset[OneQubitCliffordGate | TwoOperandGate]].
+    DOC201: Method `CSSStage._calculate_gate_qubits` does not have a return section in docstring
+    DOC501: Method `CSSStage._calculate_gate_qubits` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSStage._calculate_gate_qubits` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSStage._check_disjointness`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSStage._check_disjointness`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [measurements: Sequence[OneQubitMeasurementGate], resets: Iterable[OneQubitResetGate], stabilisers: Sequence[Sequence[Stabiliser]]].
+    DOC501: Method `CSSStage._check_disjointness` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSStage._check_disjointness` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `CSSStage._check_first_round_gates`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSStage._check_first_round_gates`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [first_round_data_qubits: Sequence[Qubit], gates: frozenset[OneQubitCliffordGate | TwoOperandGate], measurements: Sequence[OneQubitMeasurementGate], stabilisers: Sequence[Sequence[Stabiliser]]].
+    DOC501: Method `CSSStage._check_first_round_gates` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `CSSStage._check_first_round_gates` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `_determine_ancilla_uniqueness`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `CSSStage._determine_ancilla_uniqueness`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `CSSStage._determine_ancilla_uniqueness`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: Sequence[Sequence[Stabiliser]]].
+    DOC003: Function/method `_determine_circuit_construction_method`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `CSSStage._construct_mpp_syndrome_extraction_layers` does not have a return section in docstring
+    DOC201: Method `CSSStage._construct_full_syndrome_extraction_layers` does not have a return section in docstring
+    DOC201: Method `CSSStage._construct_syndrome_extraction_layers` does not have a return section in docstring
+    DOC003: Function/method `detector_coordinates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `measurements_as_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `resets_as_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC201: Method `CSSStage.ordered_stabilisers` does not have a return section in docstring
+    DOC003: Function/method `stabilisers_before`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `resets_only`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `allowable_final_stage`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `first_round`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `remaining_rounds`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__eq__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_detectors.py
+    DOC003: Function/method `_get_coordinate_from_ancilla_qubit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_coordinate_from_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_detector_coordinates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_coordinate_shifts`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_between_round_detectors`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_between_round_detectors_and_coordinate_shifts`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_joint_sub_super_stabilisers_ind`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_stage_transition_detectors`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_stage_transition_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_experiment_circuit.py
+    DOC003: Function/method `experiment_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_observables.py
+    DOC003: Function/method `_construct_observables`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_stabiliser_code.py
+    DOC101: Method `StabiliserCode.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `StabiliserCode.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [check_logical_operators_are_independent: bool, stabilisers: Sequence[Iterable[Stabiliser]], use_ancilla_qubits: bool, x_logical_operators: Sequence[Collection[PauliGate]] | None, z_logical_operators: Sequence[Collection[PauliGate]] | None].
+    DOC501: Method `StabiliserCode.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `StabiliserCode.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `encode_logical_zeroes`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `encode_logical_pluses`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `measure_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `measure_z_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `measure_x_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `use_ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `x_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `x_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `z_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `z_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `overwrite_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_validate_new_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_css/_stabiliser_helper_functions.py
+    DOC003: Function/method `get_entangling_layer`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_transform_stabiliser`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_get_data_qubits_from_stabilisers`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_get_data_qubits_from_stabilisers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: Sequence[Sequence[Stabiliser]]].
+    DOC201: Function `_get_data_qubits_from_stabilisers` does not have a return section in docstring
+    DOC003: Function/method `pauli_gates_to_stim_pauli_string`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_logicals.py
+    DOC003: Function/method `paulistring_to_operator`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_str_logical_operators_from_tableau`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_logical_operators_from_tableau`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_logical_operators_from_css_parity_check_matrices`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC103: Function `get_logical_operators_from_css_parity_check_matrices`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hx: NDArray, hz: NDArray]. Arguments in the docstring but not in the function signature: [h_x: NDArray, h_z: NDArray].
+--------------------
+src/deltakit_explorer/codes/_planar_code/_planar_code.py
+    DOC601: Class `ScheduleType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ScheduleType`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [SIMULTANEOUS: , X_FIRST: , X_ONLY: , Z_FIRST: , Z_ONLY: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PlanarCode.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PlanarCode.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [untransformed_x_schedule: tuple[Coord2DDelta, ...], untransformed_z_schedule: tuple[Coord2DDelta, ...]].
+    DOC003: Function/method `_dimensions_at_least_2`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_untransformed_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_logical_operators`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_untransformed_all_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_x_and_z_ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_update_qubit_coordinates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_single_type_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_sort_stabilisers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Function `_count_nones_at_the_end`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_count_nones_at_the_end`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabiliser: Stabiliser].
+    DOC201: Function `_count_nones_at_the_end` does not have a return section in docstring
+    DOC101: Function `_contains_x`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_contains_x`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabiliser: Stabiliser].
+    DOC201: Function `_contains_x` does not have a return section in docstring
+    DOC003: Function/method `draw_patch`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PlanarCode.draw_patch`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PlanarCode.draw_patch`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [unrotated_code: bool].
+    DOC003: Function/method `x0`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `x1`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `y0`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `y1`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_shifted_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_planar_code/_rotated_planar_code.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_default_patch_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_default_patch_ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_planar_code/_unrotated_planar_code.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/codes/_planar_code/_unrotated_toric_code.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `UnrotatedToricCode.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `UnrotatedToricCode.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [schedule_order: ScheduleOrder, schedule_type: ScheduleType, use_ancilla_qubits: bool].
+--------------------
+src/deltakit_explorer/codes/_repetition_code.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `RepetitionCode._check_stabiliser_type_is_valid`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `RepetitionCode._check_stabiliser_type_is_valid`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabiliser_type: PauliBasis].
+    DOC501: Method `RepetitionCode._check_stabiliser_type_is_valid` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `RepetitionCode._check_stabiliser_type_is_valid` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `RepetitionCode._check_distance_at_least_two`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `RepetitionCode._check_distance_at_least_two`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distance: int].
+    DOC501: Method `RepetitionCode._check_distance_at_least_two` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `RepetitionCode._check_distance_at_least_two` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC003: Function/method `_calculate_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_stabiliser_ancilla_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `RepetitionCode._calculate_stabiliser_ancilla_qubits`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `RepetitionCode._calculate_stabiliser_ancilla_qubits`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [use_looping_stabiliser: ].
+    DOC101: Method `RepetitionCode._calculate_stabilisers`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `RepetitionCode._calculate_stabilisers`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `RepetitionCode._calculate_stabilisers`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Method `RepetitionCode._calculate_stabilisers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [use_ancilla_qubits: ].
+    DOC201: Method `RepetitionCode._calculate_stabilisers` does not have a return section in docstring
+    DOC201: Method `RepetitionCode._calculate_logical_operators` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/codes/_schedules/_rotated_planar_code_schedules.py
+    DOC601: Class `RotatedPlanarCodeSchedules`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `RotatedPlanarCodeSchedules`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [default_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], doubly_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], horizontally_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], vertically_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/codes/_schedules/_schedule_order.py
+    DOC601: Class `ScheduleOrder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ScheduleOrder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [DOUBLY_REFLECTED: , HORIZONTALLY_REFLECTED: , STANDARD: , VERTICALLY_REFLECTED: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Function `get_x_and_z_schedules`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `get_x_and_z_schedules`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [schedule_class: ScheduleClass, schedule_order: ScheduleOrder, x_type_has_N_shape: bool].
+    DOC201: Function `get_x_and_z_schedules` does not have a return section in docstring
+    DOC501: Function `get_x_and_z_schedules` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `get_x_and_z_schedules` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/codes/_schedules/_unrotated_planar_code_schedules.py
+    DOC601: Class `UnrotatedPlanarCodeSchedules`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `UnrotatedPlanarCodeSchedules`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [default_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], doubly_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], horizontally_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]], vertically_reflected_N_Z_dict: ClassVar[dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/codes/_stabiliser.py
+    DOC301: Class `Stabiliser`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_check_data_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Stabiliser._check_data_qubits`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Stabiliser._check_data_qubits`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [qubits: Collection[Qubit]].
+    DOC003: Function/method `operator_repr`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Stabiliser.__eq__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Stabiliser.__eq__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [other: object].
+    DOC201: Method `Stabiliser.__eq__` does not have a return section in docstring
+    DOC003: Function/method `__mul__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `Stabiliser.__mul__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Stabiliser.__mul__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [other: Stabiliser].
+--------------------
+src/deltakit_explorer/data/_converter.py
+    DOC101: Function `read_01`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `read_01`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stream: StreamReader | TextIOWrapper].
+    DOC402: Function `read_01` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `read_csv`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `read_csv`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stream: StreamReader | TextIOWrapper].
+    DOC402: Function `read_csv` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `read_b8`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `read_b8`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stream: BufferedIOBase | RawIOBase, width: int].
+    DOC402: Function `read_b8` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `write_01`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `write_01`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: Iterable[list[int]] | npt.NDArray, stream: StreamWriter | TextIOWrapper | StringIO].
+    DOC101: Function `write_csv`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `write_csv`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: Iterable[list[int]] | npt.NDArray, stream: StreamWriter | TextIOWrapper | StringIO].
+    DOC101: Function `write_b8`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `write_b8`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: Iterable[list[int]] | npt.NDArray, stream: BufferedIOBase | RawIOBase | BytesIO].
+    DOC111: Function `write_binary_data_to_file`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `write_binary_data_to_file` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `write_binary_data_to_file` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+--------------------
+src/deltakit_explorer/data/_data_analysis.py
+    DOC111: Function `get_binary_data_size`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `get_binary_data_size` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `get_binary_data_size` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC111: Function `get_decoding_response_size_estimate`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `get_decoding_request_size_estimate`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `get_simulation_response_size_estimate`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `has_leakage`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/enums/_api_enums.py
+    DOC601: Class `APIEndpoints`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `APIEndpoints`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ADD_NOISE: , ADD_SI1000_NOISE: , CORRELATION_MATRIX: , DECODE: , DECODE_LEAKAGE: , DEFECT_RATES: , GENERATE_CIRCUIT: , SIMULATE_CIRCUIT: , TRIM_CIRCUIT_AND_DETECTORS: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `DataFormat`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DataFormat`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [B8: , CSV: , F01: , TEXT: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `DecoderType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DecoderType`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [AC: , BELIEF_MATCHING: , BP_OSD: , CC: , LCD: , MWPM: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `QECExperimentType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `QECExperimentType`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [QUANTUM_MEMORY: , STABILITY: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `QECECodeType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `QECECodeType`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [BIVARIATE_BICYCLE: , REPETITION: , ROTATED_PLANAR: , UNROTATED_PLANAR: , UNROTATED_TORIC: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/enums/_basic_enums.py
+    DOC601: Class `DrawingColours`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DrawingColours`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ANCILLA_QUBIT_COLOUR: , DATA_QUBIT_COLOUR: , X_COLOUR: , Z_COLOUR: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/plotting/_lambda.py
+    DOC101: Function `_lambda_interpolated`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_lambda_interpolated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_], lambda0: float, lambda_: float].
+    DOC201: Function `_lambda_interpolated` does not have a return section in docstring
+    DOC101: Function `plot_lambda`: Docstring contains fewer arguments than in function signature.
+    DOC111: Function `plot_lambda`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC103: Function `plot_lambda`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [ax: Axes | None, fig: Figure | None, lambda_data: LambdaResults, lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None, num_sigmas: int]. Arguments in the docstring but not in the function signature: [lep_stddev_per_round: npt.NDArray[numpy.float64] | Sequence[float]].
+    DOC501: Function `plot_lambda` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `plot_lambda` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/plotting/_leppr.py
+    DOC101: Function `_lep_interpolated`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `_lep_interpolated`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [leppr: float, rounds_interpolated: npt.NDArray[np.floating], spam: float].
+    DOC201: Function `_lep_interpolated` does not have a return section in docstring
+    DOC111: Function `plot_logical_error_probability_per_round`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `plot_logical_error_probability_per_round` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `plot_logical_error_probability_per_round` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+--------------------
+src/deltakit_explorer/plotting/_visualisation.py
+    DOC111: Function `correlation_matrix`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `defect_diagram`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Function `defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+--------------------
+src/deltakit_explorer/qpu/_circuits/_circuit_functions.py
+    DOC003: Function/method `merge_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_calculate_offset_annotation_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC102: Function `_calculate_offset_annotation_layers`: Docstring contains more arguments than in function signature.
+    DOC103: Function `_calculate_offset_annotation_layers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: []: ].
+    DOC003: Function/method `remove_identities`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_circuits/_parallelise_circuits.py
+    DOC003: Function/method `parallelise_disjoint_circuits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `parallelise_same_length_circuits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_circuits/_tableau_compile_functions.py
+    DOC003: Function/method `_compile_to_native_gates_plus_unitaries`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC102: Function `_compile_to_native_gates_plus_unitaries`: Docstring contains more arguments than in function signature.
+    DOC103: Function `_compile_to_native_gates_plus_unitaries`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: []: ].
+    DOC003: Function/method `_compile_or_exchange_unitary_block`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_compile_reset_and_meas_to_native_gates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_compile_two_qubit_gate_to_target`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC103: Function `_compile_two_qubit_gate_to_target`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [gate_to_intermediate_rep_dict: TwoQubitGateCompilationLookupDict]. Arguments in the docstring but not in the function signature: [gate_to_int_rep_dict: TwoQubitGateCompilationLookupDict].
+    DOC003: Function/method `_compile_two_qubit_gates_to_native_gates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_compile_comp_data`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `compile_circuit_to_native_gates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_circuits/_tableau_functions.py
+    DOC003: Function/method `_get_tableau_as_key`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_compilation_dict`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_compilation_with_projectors_before_unitaries`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_compilation_with_measurement_after_unitaries`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_is_identity_like`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_single_qubits_tableau_key_from_two_qubit_tableau`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_compilation_with_two_qubit_gates`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC601: Class `CompilationData`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `CompilationData`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [iterations: int, measurement_gates: SpecialGateDict, non_gatelayer_layers: dict[int, Layer], num_layers: int, reset_gates: SpecialGateDict, two_qubit_gates: SpecialGateDict, unitary_blocks: dict[int, list[OneQubitCliffordGate]]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC003: Function/method `_extract_structure_from_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_add_gates_from_unitary_blocks`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_create_circuit_from_compilation_data`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_native_gate_set.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `add_gate`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_times`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC104: Method `NativeGateSetAndTimes.from_times`: Arguments are the same in the docstring and the function signature, but are in a different order.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_noise/_leakage_noise_profiles.py
+    DOC003: Function/method `two_qubit_gate_leakage_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `qubit_reset_leakage_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `two_qubit_gate_relaxation_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `one_qubit_clifford_gate_relaxation_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `idle_qubit_relaxation_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `resonator_idle_qubit_relaxation_noise_profile`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/qpu/_noise/_noise_parameters.py
+    DOC003: Function/method `_idle_noise_from_t1_t2`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC601: Class `NoiseParameters`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NoiseParameters`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [gate_noise: list[NoiseProfile], idle_noise: Callable[[Qubit, float], NoiseChannel] | None, measurement_flip: dict[type[_MeasurementGate], Callable[[_MeasurementGate], _MeasurementGate]], measurement_noise_after: list[NoiseProfile], measurement_noise_before: list[NoiseProfile], name: , reset_noise: list[NoiseProfile]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `NoiseParameters.as_noise_profile_after_gate` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/qpu/_noise/_phenomenological_noise.py
+    DOC601: Class `PhenomenologicalNoise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PhenomenologicalNoise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [phenomenological_noise: Callable[[Qubit], OneQubitNoiseChannel] | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `ToyPhenomenologicalNoise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ToyPhenomenologicalNoise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [p: float, p_measurement_flip: float | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/qpu/_noise/_physical_noise.py
+    DOC601: Class `PhysicalNoise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PhysicalNoise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [name: , p_1_qubit_gate_error: float, p_2_qubit_gate_error: float, p_meas_qubit_error: float, p_readout_flip: float, p_reset_error: float, t1: float, t2: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/qpu/_noise/_sd6_noise_model.py
+    DOC601: Class `SD6Noise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `SD6Noise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [name: , p: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/qpu/_noise/_si1000_noise.py
+    DOC601: Class `SI1000Noise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `SI1000Noise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [name: , p: float, pL: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/qpu/_noise/_toy_noise.py
+    DOC601: Class `ToyNoise`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ToyNoise`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [name: , p: float, p_measurement_flip: float | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+src/deltakit_explorer/qpu/_qpu.py
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_apply_idle_noise`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `get_circuit_execution_time`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `add_noise_to_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `_get_valid_qubit_mapping`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `compile_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `compile_and_add_noise_to_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `from_circuit_compile_and_add_noise`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_explorer/simulation/_stim_simulation.py
+    DOC111: Function `simulate_with_stim`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `simulate_with_stim` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `simulate_with_stim` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError', 'ValueError'].
+--------------------
+src/deltakit_explorer/types/_data_string.py
+    DOC601: Class `DataString`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `DataString`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [empty: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC301: Class `DataString`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `DataString.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DataString.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: bytes | str].
+    DOC111: Method `DataString.from_file`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `DataString.is_data_string`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `DataString.from_data_string`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `DataString.to_file`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC001: Function/method `to_string`: Potential formatting errors in docstring. Error message: Expected a colon in 'Defaults to UTF-8.'. (Note: DOC001 could trigger other unrelated violations under this function/method too. Please fix the docstring formatting first.)
+    DOC003: Function/method `to_string`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DataString.to_string`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DataString.to_string`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encoding: str].
+--------------------
+src/deltakit_explorer/types/_exceptions.py
+    DOC601: Class `ServerException`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `ServerException`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [message: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `ServerException.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `ServerException.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [message: str].
+--------------------
+src/deltakit_explorer/types/_experiment_types.py
+    DOC601: Class `QECExperiment`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `QECExperiment`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [detectors: DetectionEvents | None, leakage_flags: LeakageFlags | None, measurements: Measurements | None, noisy_circuit: str, observables: ObservableFlips | None, sweep_bits: BinaryDataType | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC111: Method `QECExperiment.from_circuit_and_measurements`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC601: Class `QECExperimentDefinition`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `QECExperimentDefinition`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [basis_gates: list[str] | None, code_type: QECECodeType, experiment_type: QECExperimentType, num_rounds: int, observable_basis: PauliBasis, parameters: CircuitParameters | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `QECExperimentDefinition.get_parameters_gql_string` does not have a return section in docstring
+    DOC101: Method `QECExperimentDefinition.get_repetition_z_quantum_memory`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `QECExperimentDefinition.get_repetition_z_quantum_memory`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [basis_gates: list[str] | None, distance: int, num_rounds: int].
+    DOC201: Method `QECExperimentDefinition.get_repetition_z_quantum_memory` does not have a return section in docstring
+    DOC101: Method `QECExperimentDefinition.get_rotated_planar_z_quantum_memory`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `QECExperimentDefinition.get_rotated_planar_z_quantum_memory`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [basis_gates: list[str] | None, distance: int, num_rounds: int].
+    DOC201: Method `QECExperimentDefinition.get_rotated_planar_z_quantum_memory` does not have a return section in docstring
+--------------------
+src/deltakit_explorer/types/_types.py
+    DOC101: Method `JSONable._to_json`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `JSONable._to_json`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `JSONable._to_json`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Method `JSONable._to_json`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [obj: ].
+    DOC201: Method `JSONable._to_json` does not have a return section in docstring
+    DOC501: Method `JSONable._to_json` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `JSONable._to_json` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC601: Class `MatrixSpecifications`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `MatrixSpecifications`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [m_A_powers: list[int], m_B_powers: list[int], param_l: int, param_m: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `MatrixSpecifications.to_gql` does not have a return section in docstring
+    DOC601: Class `Sizes`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Sizes`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [sizes: Sequence[int]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `Sizes.to_gql` does not have a return section in docstring
+    DOC601: Class `CircuitParameters`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `CircuitParameters`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [matrix_specifications: MatrixSpecifications | None, sizes: Sizes | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC111: Method `CircuitParameters.from_sizes`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC201: Method `CircuitParameters.from_sizes` does not have a return section in docstring
+    DOC111: Method `CircuitParameters.from_matrix_specification`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC201: Method `CircuitParameters.to_gql` does not have a return section in docstring
+    DOC601: Class `TypedData`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `TypedData`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [content: Any, data_format: DataFormat, data_width: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `TypedData.as_01_string` does not have a return section in docstring
+    DOC501: Method `TypedData.as_01_string` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `TypedData.as_01_string` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC201: Method `TypedData.as_b8_bytes` does not have a return section in docstring
+    DOC501: Method `TypedData.as_b8_bytes` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `TypedData.as_b8_bytes` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC201: Method `TypedData.as_numpy` does not have a return section in docstring
+    DOC501: Method `TypedData.as_numpy` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `TypedData.as_numpy` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC201: Method `TypedData.get_width` does not have a return section in docstring
+    DOC601: Class `RAMData`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `RAMData`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [content: list[list[int]] | npt.NDArray]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `RAMData.get_width` does not have a return section in docstring
+    DOC601: Class `TypedDataFile`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `TypedDataFile`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [content: Path]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `TypedDataString`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `TypedDataString`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [content: DataString]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC111: Method `TypedDataString.from_data`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `TypedDataString.from_data` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `TypedDataString.from_data` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC201: Method `TypedDataString.as_data_string` does not have a return section in docstring
+    DOC601: Class `BinaryDataType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `BinaryDataType`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [data: TypedData]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC101: Method `BinaryDataType.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `BinaryDataType.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data: Path | DataString | list[list[int]] | npt.NDArray, data_format: DataFormat, data_width: int].
+    DOC501: Method `BinaryDataType.__init__` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `BinaryDataType.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `BinaryDataType.as_data_string`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `BinaryDataType.as_data_string`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [data_format: DataFormat].
+    DOC201: Method `BinaryDataType.as_data_string` does not have a return section in docstring
+    DOC501: Method `BinaryDataType.as_data_string` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `BinaryDataType.as_data_string` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError'].
+    DOC201: Method `BinaryDataType.as_01_string` does not have a return section in docstring
+    DOC201: Method `BinaryDataType.as_numpy` does not have a return section in docstring
+    DOC201: Method `BinaryDataType.as_b8_bytes` does not have a return section in docstring
+    DOC111: Method `BinaryDataType.split`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC111: Method `BinaryDataType.to_batches`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC402: Method `BinaryDataType.to_batches` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC111: Method `BinaryDataType.combine`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC101: Method `Measurements._deinstrument_leakage_circuit`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `Measurements._deinstrument_leakage_circuit`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [circuit: str].
+    DOC201: Method `Measurements._deinstrument_leakage_circuit` does not have a return section in docstring
+    DOC111: Method `Measurements.to_detectors_and_observables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Measurements.to_detectors_and_observables` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Measurements.to_detectors_and_observables` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC601: Class `NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `PhysicalNoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `PhysicalNoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str], p_1_qubit_gate_error: float, p_2_qubit_gate_error: float, p_meas_qubit_error: float, p_readout_flip: float, p_reset_error: float, t_1: float, t_2: float, time_1_qubit_gate: float, time_2_qubit_gate: float, time_measurement: float, time_reset: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC201: Method `PhysicalNoiseModel.get_floor_superconducting_noise` does not have a return section in docstring
+    DOC201: Method `PhysicalNoiseModel.get_superconducting_noise` does not have a return section in docstring
+    DOC201: Method `PhysicalNoiseModel.get_ion_trap_noise` does not have a return section in docstring
+    DOC601: Class `SI1000NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `SI1000NoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str], p: float, p_l: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC301: Class `DecodingResult`: __init__() should not have a docstring; please combine it with the docstring of the class
+    DOC101: Method `DecodingResult.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DecodingResult.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [counts: list[int] | None, fails: int, predictionsFile: dict[str, str | None] | None, predictions_format: DataFormat, shots: int, times: list[float] | None].
+    DOC201: Method `DecodingResult.get_logical_error_probability` does not have a return section in docstring
+    DOC201: Method `DecodingResult.get_standard_deviation` does not have a return section in docstring
+    DOC111: Method `DecodingResult.combine`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC601: Class `Decoder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `Decoder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [decoder_type: DecoderType, parallel_jobs: int, parameters: dict[str, Any], use_experimental_graph: bool]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC601: Class `QubitCoordinateToDetectorMapping`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `QubitCoordinateToDetectorMapping`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [detector_map: dict[tuple[float, ...], list[int]]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+tests/analysis/budget/test_post_processing.py
+    DOC101: Function `test_data_matches_csv`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `test_data_matches_csv`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [simulated_error_budgeting_data: ErrorBudgetingResults].
+--------------------
+tests/helpers/_utils.py
+    DOC601: Class `FakeResponse`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `FakeResponse`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [status: str, status_code: int, text: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+tests/server/test_api_client.py
+    DOC101: Function `mock_client`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `mock_client`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `mock_client`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `mock_client`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [mocker: , request: ].
+    DOC201: Function `mock_client` does not have a return section in docstring
+    DOC601: Class `NewNoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC603: Class `NewNoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar, ENDPOINT_RESULT_FIELDNAME: ClassVar]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+--------------------
+tests/utils/test_utils.py
+    DOC402: Function `reset_env` has "yield" statements, but the docstring does not have a "Yields" section
+    DOC101: Function `test_log_directory_env_variable`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `test_log_directory_env_variable`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `test_log_directory_env_variable`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `test_log_directory_env_variable`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [tmp_path: ].
+    DOC101: Function `test_log_directory_home_directory`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `test_log_directory_home_directory`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `test_log_directory_home_directory`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `test_log_directory_home_directory`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [tmp_path: ].
+    DOC101: Function `test_log_directory_env_variable_not_a_directory`: Docstring contains fewer arguments than in function signature.
+    DOC106: Function `test_log_directory_env_variable_not_a_directory`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Function `test_log_directory_env_variable_not_a_directory`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Function `test_log_directory_env_variable_not_a_directory`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [tmp_path: ].
+    DOC501: Function `test_log_directory_env_variable_invalid_path` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `test_log_directory_env_variable_invalid_path` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+--------------------

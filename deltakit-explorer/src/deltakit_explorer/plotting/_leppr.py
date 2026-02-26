@@ -1,4 +1,4 @@
-# (c) Copyright Riverlane 2020-2025.
+# Copyright Riverlane 2020-2025.
 """Plot logical error probabilities vs rounds with optional LEPPR fit.
 
 This module provides a thin, styling-focused wrapper around matplotlib for
@@ -153,3 +153,4 @@ def plot_leppr(
 
     apply_publication_style(ax)
     return ax
+

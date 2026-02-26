@@ -1,15 +1,22 @@
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 from deltakit_circuit import measurement_noise_profile
-from deltakit_circuit.gates import (I, OneQubitCliffordGate,
-                                    OneQubitMeasurementGate, OneQubitResetGate)
+from deltakit_circuit.gates import (
+    I,
+    OneQubitCliffordGate,
+    OneQubitMeasurementGate,
+    OneQubitResetGate,
+)
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
+
 from deltakit_explorer.qpu._noise._noise_parameters import (
-    NoiseParameters, _idle_noise_from_t1_t2)
+    NoiseParameters,
+    _idle_noise_from_t1_t2,
+)
 
 
-@dataclass
+@dataclass(kw_only=True)
 class PhysicalNoise(NoiseParameters):
     r"""Gets gate noise parameters given physical gate data
 
@@ -61,7 +68,7 @@ class PhysicalNoise(NoiseParameters):
     p_meas_qubit_error: float = 0
     p_readout_flip: float = 0
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         idle_noise = _idle_noise_from_t1_t2(self.t1, self.t2)
 
         def _gate_noise(noise_context):

@@ -5,7 +5,7 @@ codes.
 """
 
 from dataclasses import dataclass
-from typing import ClassVar, Dict, Tuple
+from typing import ClassVar
 
 from deltakit_circuit._basic_types import Coord2DDelta
 
@@ -36,7 +36,7 @@ class UnrotatedPlanarCodeSchedules:
     #             -------------
 
     default_N_Z_dict: ClassVar[
-        Dict[str, Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
+        dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
     ] = {
         "N": (
             Coord2DDelta(0, 1),
@@ -67,7 +67,7 @@ class UnrotatedPlanarCodeSchedules:
     #             |     ./    |
     #             -------------
     horizontally_reflected_N_Z_dict: ClassVar[
-        Dict[str, Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
+        dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
     ] = {
         "N": (
             Coord2DDelta(0, 1),
@@ -98,7 +98,7 @@ class UnrotatedPlanarCodeSchedules:
     #             |      /    |
     #             -------------
     vertically_reflected_N_Z_dict: ClassVar[
-        Dict[str, Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
+        dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
     ] = {
         n_or_z: schedule[::-1]
         for n_or_z, schedule in horizontally_reflected_N_Z_dict.items()
@@ -119,5 +119,5 @@ class UnrotatedPlanarCodeSchedules:
     #             |     \     |
     #             -------------
     doubly_reflected_N_Z_dict: ClassVar[
-        Dict[str, Tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
+        dict[str, tuple[Coord2DDelta, Coord2DDelta, Coord2DDelta, Coord2DDelta]]
     ] = {n_or_z: schedule[::-1] for n_or_z, schedule in default_N_Z_dict.items()}

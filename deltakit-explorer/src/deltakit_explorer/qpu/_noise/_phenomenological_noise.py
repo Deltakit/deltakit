@@ -6,16 +6,17 @@ noise. `PhenomenologicalNoise` adds noise to `I` gates.
 to be Depolarise1, and adds measurement flip noise.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 from deltakit_circuit import Qubit, measurement_noise_profile
 from deltakit_circuit.gates import I
 from deltakit_circuit.noise_channels import Depolarise1, OneQubitNoiseChannel
+
 from deltakit_explorer.qpu._noise._noise_parameters import NoiseParameters
 
 
-@dataclass
+@dataclass(kw_only=True)
 class PhenomenologicalNoise(NoiseParameters):
     """
     Class for capturing phenomenological noise.
@@ -27,7 +28,7 @@ class PhenomenologicalNoise(NoiseParameters):
         no noise.
     """
 
-    phenomenological_noise: Optional[Callable[[Qubit], OneQubitNoiseChannel]] = None
+    phenomenological_noise: Callable[[Qubit], OneQubitNoiseChannel] | None = None
 
     def __post_init__(self):
         if self.phenomenological_noise is not None:
@@ -39,7 +40,7 @@ class PhenomenologicalNoise(NoiseParameters):
             )
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ToyPhenomenologicalNoise(PhenomenologicalNoise):
     """
     Class for capturing a phenomenological noise model with simple input parameters.
@@ -54,7 +55,7 @@ class ToyPhenomenologicalNoise(PhenomenologicalNoise):
     """
 
     p: float = 0.0
-    p_measurement_flip: Optional[float] = None
+    p_measurement_flip: float | None = None
 
     def __post_init__(self):
         if self.p_measurement_flip is None:

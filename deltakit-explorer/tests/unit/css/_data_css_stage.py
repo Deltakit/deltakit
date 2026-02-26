@@ -1,16 +1,22 @@
 # (c) Copyright Riverlane 2020-2025.
 from dataclasses import dataclass
-from typing import Tuple
 
-from deltakit_circuit import (Circuit, Detector, GateLayer, MeasurementRecord,
-                              Observable, PauliX, PauliZ, Qubit,
-                              ShiftCoordinates)
+from deltakit_circuit import (
+    Circuit,
+    Detector,
+    GateLayer,
+    MeasurementRecord,
+    Observable,
+    PauliX,
+    PauliZ,
+    Qubit,
+    ShiftCoordinates,
+)
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
-from deltakit_circuit.gates import (CX, CZ, MPP, MX, MZ, RX, RZ, SWAP, H, I, X,
-                                    Z)
+from deltakit_circuit.gates import CX, CZ, MPP, MX, MZ, RX, RZ, SWAP, H, I, X, Z
+
 from deltakit_explorer.codes._css._css_stage import CSSStage
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
 # creating a default value different from None to avoid tests expecting None to accidentally
@@ -23,9 +29,9 @@ class CSSStageTestComponents:
     stage: CSSStage
     expected_first_round: Circuit = MISSING_VALUE  # type: ignore [assignment]
     expected_remaining_rounds: Circuit = MISSING_VALUE  # type: ignore [assignment]
-    expected_measurements_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_resets_as_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
-    expected_ordered_stabilisers: Tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_measurements_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_resets_as_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
+    expected_ordered_stabilisers: tuple[Stabiliser, ...] = MISSING_VALUE  # type: ignore [assignment]
 
 
 example_simultaneous_stabilisers = [
@@ -280,8 +286,8 @@ stabiliser_meas_stage = CSSStageTestComponents(
         ]
     ),
     expected_remaining_rounds=Circuit(),
-    expected_measurements_as_stabilisers=tuple(),
-    expected_resets_as_stabilisers=tuple(),
+    expected_measurements_as_stabilisers=(),
+    expected_resets_as_stabilisers=(),
 )
 
 stabiliser_reset_stage = CSSStageTestComponents(
@@ -353,7 +359,7 @@ stabiliser_reset_stage = CSSStageTestComponents(
             }
         )
     ),
-    expected_measurements_as_stabilisers=tuple(),
+    expected_measurements_as_stabilisers=(),
 )
 
 stabiliser_reset_stage_many_rounds = CSSStageTestComponents(
@@ -621,7 +627,7 @@ data_x_stage = CSSStageTestComponents(
             RZ(Qubit(Coord2D(0, 4))),
             RX(Qubit(Coord2D(0, 6))),
         ],
-        first_round_gates=[X(Coord2D(1, 1)), X((Coord2D(3, 3)))],
+        first_round_gates=[X(Coord2D(1, 1)), X(Coord2D(3, 3))],
     ),
     expected_first_round=Circuit(
         [
@@ -786,7 +792,7 @@ data_z_stage = CSSStageTestComponents(
             RZ(Qubit(Coord2D(0, 4))),
             RX(Qubit(Coord2D(0, 6))),
         ],
-        first_round_gates=[Z(Coord2D(1, 1)), Z((Coord2D(3, 3)))],
+        first_round_gates=[Z(Coord2D(1, 1)), Z(Coord2D(3, 3))],
     ),
     expected_first_round=Circuit(
         [

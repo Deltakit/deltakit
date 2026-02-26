@@ -5,9 +5,10 @@ from pathlib import Path
 
 import pytest
 import stim
+
 from deltakit_explorer import simulation
 from deltakit_explorer._api._client import Client
-from deltakit_explorer.types import Measurements, LeakageFlags
+from deltakit_explorer.types import LeakageFlags, Measurements
 
 
 class TestStimSimulation:
@@ -65,7 +66,7 @@ class TestStimSimulation:
             )
 
     @pytest.mark.parametrize(
-            "circuit,result",
+            ("circuit", "result"),
             [
                 (
                     "MZ 1\nLEAKAGE(0.0) 1",

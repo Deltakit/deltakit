@@ -6,21 +6,17 @@ from __future__ import annotations
 import collections.abc
 import warnings
 from collections import Counter
+from collections.abc import Iterable, Iterator
 from itertools import chain, zip_longest
-from typing import (
-    Dict,
-    Generic,
-    Iterable,
-    Iterator,
-    List,
-    Protocol,
-    Set,
-    Tuple,
-    TypeVar,
-    cast,
-)
+from typing import Generic, Protocol, TypeVar, cast
 
-import stim
+from typing_extensions import Self
+
+try:
+    import lestim as stim
+except ImportError:
+    import stim
+
 
 from deltakit_core.decoding_graphs._data_qubits import (
     DecodingEdge,
@@ -35,10 +31,10 @@ from deltakit_core.decoding_graphs._decoding_graph import (
 from deltakit_core.decoding_graphs._syndromes import DetectorRecord
 
 
-class CoordinateOffset(tuple):  # noqa: PLW1641
+class CoordinateOffset(tuple[int | float, ...]):  # noqa: PLW1641
     """Class to track the coordinate offset in a Detector Error Model."""
 
-    def __new__(cls, offset: Iterable[float | int] = ()):
+    def __new__(cls, offset: Iterable[float | int] = ()) -> Self:
         return super().__new__(cls, offset)
 
     def __add__(self, other: object) -> CoordinateOffset:
@@ -89,10 +85,10 @@ class DetectorRecorder(DetectorHandler):
     DetectorRecords."""
 
     def __init__(self) -> None:
-        self._detector_records: Dict[int, DetectorRecord] = {}
+        self._detector_records: dict[int, DetectorRecord] = {}
 
     @property
-    def detector_records(self) -> Dict[int, DetectorRecord]:
+    def detector_records(self) -> dict[int, DetectorRecord]:
         """Get the detector records for this class."""
         return self._detector_records
 
@@ -101,9 +97,9 @@ class DetectorRecorder(DetectorHandler):
         detector: stim.DemInstruction,
         detector_offset: int,
         coordinate_offset: CoordinateOffset,
-    ):
+    ) -> None:
         detector_index = (
-            detector_offset + cast(List[stim.DemTarget], detector.targets_copy())[0].val
+            detector_offset + cast(list[stim.DemTarget], detector.targets_copy())[0].val
         )
         detector_coordinate = coordinate_offset + detector.args_copy()
         self._detector_records[detector_index] = DetectorRecord.from_sequence(
@@ -116,7 +112,7 @@ def observable_warning(logical_observable: stim.DemInstruction) -> None:
     instruction is encountered."""
     logicals = " ".join(
         f"L{target.val}"
-        for target in cast(List[stim.DemTarget], logical_observable.targets_copy())
+        for target in cast(list[stim.DemTarget], logical_observable.targets_copy())
     )
     warnings.warn(
         f"Isolated logical observables {logicals} declared in DEM file.",
@@ -127,7 +123,7 @@ def observable_warning(logical_observable: stim.DemInstruction) -> None:
 
 def collect_edges(
     error: stim.DemInstruction, detector_offset: int
-) -> Iterator[Tuple[Set[int], float, List[int]]]:
+) -> Iterator[tuple[set[int], float, list[int]]]:
     """Iterate through the DEM targets in the error and yield all the
     detectors which make up the edge, the probability of an error on this edge
     and the logical observables which would be affected by an error on the
@@ -154,10 +150,10 @@ def collect_edges(
             logical is affected this will be an empty list.
     """
     p_err = error.args_copy()[0]
-    vertices_in_edge: Set[int] = set()
-    logicals_affected: List[int] = []
+    vertices_in_edge: set[int] = set()
+    logicals_affected: list[int] = []
     for target in chain(
-        cast(List[stim.DemTarget], error.targets_copy()), (stim.target_separator(),)
+        cast(list[stim.DemTarget], error.targets_copy()), (stim.target_separator(),)
     ):
         if target.is_separator():
             yield vertices_in_edge, p_err, logicals_affected
@@ -174,24 +170,24 @@ class LogicalsInEdges(ErrorHandler):
     and edges which affect the logicals."""
 
     def __init__(self, num_logicals: int):
-        self._edges: Set[DecodingHyperEdge] = set()
-        self._edge_records: Dict[DecodingHyperEdge, EdgeRecord] = {}
-        self._logicals: List[Set[DecodingHyperEdge]] = [
+        self._edges: set[DecodingHyperEdge] = set()
+        self._edge_records: dict[DecodingHyperEdge, EdgeRecord] = {}
+        self._logicals: list[set[DecodingHyperEdge]] = [
             set() for _ in range(num_logicals)
         ]
 
     @property
-    def edges(self) -> Set[DecodingHyperEdge]:
+    def edges(self) -> set[DecodingHyperEdge]:
         """Gets all edges from a detector error model."""
         return self._edges
 
     @property
-    def logicals(self) -> List[Set[DecodingHyperEdge]]:
+    def logicals(self) -> list[set[DecodingHyperEdge]]:
         """Get the edges which affect each logical of a detector error
         model."""
         return self._logicals
 
-    def __call__(self, error: stim.DemInstruction, detector_offset: int):
+    def __call__(self, error: stim.DemInstruction, detector_offset: int) -> None:
         for vertices, p_err, logicals in collect_edges(error, detector_offset):
             edge = DecodingHyperEdge(vertices)
             self._edge_records[edge] = EdgeRecord(p_err=p_err)
@@ -244,7 +240,7 @@ class DemParser(Generic[EH, DH]):
         """Get the logical observable handler for this DEM parser."""
         return self._observable_handler
 
-    def parse(self, detector_error_model: stim.DetectorErrorModel):
+    def parse(self, detector_error_model: stim.DetectorErrorModel) -> None:
         """Parse a detector error model using the given error and detector
         handlers. The class keeps track of the detector and coordinate offsets.
 
@@ -273,7 +269,7 @@ class DemParser(Generic[EH, DH]):
 
 def dem_to_hypergraph_and_logicals(
     dem: stim.DetectorErrorModel,
-) -> Tuple[DecodingHyperGraph, List[Set[DecodingHyperEdge]]]:
+) -> tuple[DecodingHyperGraph, list[set[DecodingHyperEdge]]]:
     """Convert a Stim detector error model into a DecodingHyperGraph and a
     list of edges which affect the logical observable at the index in the list.
 
@@ -288,8 +284,8 @@ def dem_to_hypergraph_and_logicals(
         DecodingHyperGraph created from detector error model and a list of
         edges which affect the logical.
     """
-    edge_records: Dict[DecodingHyperEdge, EdgeRecord] = {}
-    logicals_affected: List[Set[DecodingHyperEdge]] = [
+    edge_records: dict[DecodingHyperEdge, EdgeRecord] = {}
+    logicals_affected: list[set[DecodingHyperEdge]] = [
         set() for _ in range(dem.num_observables)
     ]
 
@@ -324,7 +320,7 @@ def dem_to_hypergraph_and_logicals(
 
 def dem_to_decoding_graph_and_logicals(
     dem: stim.DetectorErrorModel,
-) -> Tuple[NXDecodingGraph, List[Set[DecodingEdge]]]:
+) -> tuple[NXDecodingGraph, list[set[DecodingEdge]]]:
     """Convert a detector error model into a NXDecodingGraph object and a list
     of edges which effect particular logicals.
 
@@ -348,11 +344,11 @@ def dem_to_decoding_graph_and_logicals(
     boundary = dem.num_detectors
     graph = _QECNX()
     graph.add_node(boundary, **DetectorRecord((-1, -1), 0))
-    logicals_affected: List[Set[DecodingEdge]] = [
+    logicals_affected: list[set[DecodingEdge]] = [
         set() for _ in range(dem.num_observables)
     ]
 
-    def error_handler(error: stim.DemInstruction, detector_offset: int):
+    def error_handler(error: stim.DemInstruction, detector_offset: int) -> None:
         """Type of error handler for constructing decoding graph and
         logical edges from error instructions."""
         degree_target = 2
@@ -365,9 +361,8 @@ def dem_to_decoding_graph_and_logicals(
                 )
                 continue
             if degree > degree_target:
-                raise ValueError(
-                    f"Edge of degree {degree} cannot be converted to decoding edge."
-                )
+                msg = f"Edge of degree {degree} cannot be converted to decoding edge."
+                raise ValueError(msg)
 
             u, v = (next(iter(vertices)), boundary) if degree == 1 else tuple(vertices)
             old_edge_data = (
@@ -389,11 +384,11 @@ def dem_to_decoding_graph_and_logicals(
         detector: stim.DemInstruction,
         detector_offset: int,
         coordinate_offset: CoordinateOffset,
-    ):
+    ) -> None:
         """Type of detector handler for adding coordinate annotated detectors
         to the decoding graph."""
         detector_index = (
-            detector_offset + cast(List[stim.DemTarget], detector.targets_copy())[0].val
+            detector_offset + cast(list[stim.DemTarget], detector.targets_copy())[0].val
         )
         detector_coordinate = coordinate_offset + detector.args_copy()
         graph.add_node(

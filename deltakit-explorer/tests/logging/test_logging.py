@@ -1,11 +1,13 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+import contextlib
 import logging
-import os
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import pytest
+
 from deltakit_explorer import Client
 from deltakit_explorer._api import _auth
 from deltakit_explorer._utils._logging import LOG_FILENAME, Logging
@@ -18,7 +20,7 @@ class TestLogging:
     def setup_class(self):
         """Redirect logging to a temporary file"""
 
-        self.logfile = NamedTemporaryFile("w+")
+        self.logfile = NamedTemporaryFile("w+")  # noqa: SIM115
         handler = logging.StreamHandler(self.logfile)
         handler.setFormatter(
             logging.Formatter(
@@ -29,6 +31,7 @@ class TestLogging:
         Logging.set_log_level(logging.INFO)
 
     def teardown_class(self):
+        self.logfile.close()
         del self.logfile
 
     def test_info_and_generate_uid_logs(self):
@@ -129,17 +132,17 @@ class TestLogging:
             ),
         ],
     )
-    def test_log_method_correct_format_and_content(self, log_path, method, ref_text):
+    def test_log_method_correct_format_and_content(self, log_path: Path, method, ref_text):
         method("test", "test")
-        with open(log_path) as logfile:
+        with log_path.open() as logfile:
             text = logfile.read()
         get_lsb_indices = [i for i, x in enumerate(text) if x == "["]
         string_start = get_lsb_indices[1]  # ignore the date+time
         assert text[string_start:] == ref_text
 
-    def test_info_and_generate_uid_format_and_content(self, log_path):
+    def test_info_and_generate_uid_format_and_content(self, log_path: Path):
         uid = Logging.info_and_generate_uid({"test": "test"})
-        with open(log_path) as logfile:
+        with log_path.open() as logfile:
             text = logfile.read()
         get_lsb_indices = [i for i, x in enumerate(text) if x == "["]
         string_start = get_lsb_indices[1]  # ignore the date+time
@@ -161,18 +164,16 @@ class TestLogging:
 
         # cleanup
         for file in files:
-            assert os.path.getsize(file) <= 256 * 1024 * 1024
-            try:
-                os.remove(file)
-            except PermissionError:
-                pass
+            assert file.stat().st_size <= 256 * 1024 * 1024
+            with contextlib.suppress(PermissionError):
+                file.unlink()
 
-    def test_string_shortening(self, log_path):
+    def test_string_shortening(self, log_path: Path):
         local1 = "12345" * 1000
         local2 = "asdfbdx" * 100
         args = { "local1": local1, "local2": local2, "log_path": log_path }
         Logging.info_and_generate_uid(args)
-        with open(log_path) as logfile:
+        with log_path.open() as logfile:
             text = logfile.read()
         assert len(text) <= (
             # cap of 63 per variable value + quotes

@@ -7,11 +7,12 @@ imports within other `deltakit_explorer` modules accordingly.
 """
 
 from deltakit_explorer.codes._planar_code._planar_code import ScheduleType
-from deltakit_explorer.codes._planar_code._rotated_planar_code import \
-    RotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_planar_code import \
-    UnrotatedPlanarCode
-from deltakit_explorer.codes._planar_code._unrotated_toric_code import \
-    UnrotatedToricCode
+from deltakit_explorer.codes._planar_code._rotated_planar_code import RotatedPlanarCode
+from deltakit_explorer.codes._planar_code._unrotated_planar_code import (
+    UnrotatedPlanarCode,
+)
+from deltakit_explorer.codes._planar_code._unrotated_toric_code import (
+    UnrotatedToricCode,
+)
 
 __all__ = [s for s in dir() if not s.startswith("_")]

@@ -1,17 +1,17 @@
 # (c) Copyright Riverlane 2020-2025.
 """Module containing useful functions to aid in the interaction of decoding graphs and Stim circuits.
 """
-from typing import (List, Set, Tuple)
 
 import stim
-from deltakit_core.decoding_graphs import (DecodingEdge,
-                                           DemParser,
-                                           DetectorCounter,
-                                           NXDecodingGraph,
-                                           dem_to_decoding_graph_and_logicals)
-
 from deltakit_circuit import Circuit, trim_detectors
-from deltakit_core.decoding_graphs import FixedWidthBitstring
+from deltakit_core.decoding_graphs import (
+    DecodingEdge,
+    DemParser,
+    DetectorCounter,
+    FixedWidthBitstring,
+    NXDecodingGraph,
+    dem_to_decoding_graph_and_logicals,
+)
 
 
 def stim_circuit_to_graph_dem(stim_circuit: stim.Circuit,
@@ -46,8 +46,8 @@ def stim_circuit_to_graph_dem(stim_circuit: stim.Circuit,
 def parse_stim_circuit(stim_circuit: stim.Circuit,
                        trim_circuit: bool = True,
                        lexical_detectors: bool = True,
-                       ) -> Tuple[NXDecodingGraph,
-                                  List[Set[DecodingEdge]],
+                       ) -> tuple[NXDecodingGraph,
+                                  list[set[DecodingEdge]],
                                   stim.Circuit]:
     """Parse a Stim file into a decoding graph and the relevant logicals.
 
@@ -91,7 +91,7 @@ def parse_stim_circuit(stim_circuit: stim.Circuit,
 def split_measurement_bitstring(
     bitstring: FixedWidthBitstring,
     circuit: stim.Circuit
-) -> List[FixedWidthBitstring]:
+) -> list[FixedWidthBitstring]:
     """Split a measurement bitstring according to the number of measurements
     in each layer of the circuit.
 
@@ -113,7 +113,7 @@ def split_measurement_bitstring(
 
     # starting index of split bitstring
     start_idx = 0
-    split_bitstrings: List[FixedWidthBitstring] = []
+    split_bitstrings: list[FixedWidthBitstring] = []
 
     for layer in circuit.gate_layers():
         number_of_measurements_in_layer = len(layer.measurement_gates)
