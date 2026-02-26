@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
 from deltakit_explorer.plotting.plotting import plot
-from deltakit_explorer.plotting.results import _leppr_interpolate
+from deltakit_explorer.plotting.results import interpolate_leppr
 
 
 def plot_logical_error_probability_per_round(
@@ -108,7 +108,7 @@ def plot_logical_error_probability_per_round(
         label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
-    leppr_result = _leppr_interpolate(
+    leppr_result = interpolate_leppr(
         leppr_data, num_rounds, num_sigmas=num_sigmas
     )
 

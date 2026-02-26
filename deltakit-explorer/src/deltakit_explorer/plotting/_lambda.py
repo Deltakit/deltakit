@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 
 from deltakit_explorer.analysis._lambda import LambdaResults
 from deltakit_explorer.plotting.plotting import plot
-from deltakit_explorer.plotting.results import _lambda_interpolate
+from deltakit_explorer.plotting.results import interpolate_lambda
 
 
 def plot_lambda(
@@ -93,7 +93,7 @@ def plot_lambda(
         label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
     )
 
-    lambda_result = _lambda_interpolate(
+    lambda_result = interpolate_lambda(
         lambda_data, distances, num_sigmas=num_sigmas
     )
 

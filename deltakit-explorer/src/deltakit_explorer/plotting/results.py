@@ -8,12 +8,12 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from deltakit_explorer.analysis._lambda import LambdaResults
+from deltakit_explorer.analysis._lambda import LambdaResults as LambdaData
 from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
 
 
 def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_ | np.floating]
+    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_ | np.floating]  # lambda_ avoids shadowing the built-in `lambda` keyword
 ) -> npt.NDArray[np.floating]:
     """Computes logical error probability per round that would be obtained with the
     provided values.
@@ -71,13 +71,13 @@ class Interpolated:
         # boundaries are also within [0, 1]
         # Since the fit could technically exceed it slightly or we just want to warn/clip.
         # Provided `interpolated` is within `[0, 1)`, boundaries are also within `[0, 1)`.
-        if not all( 0 <= self.interpolated <= 1):
+        if not np.all((self.interpolated >= 0) & (self.interpolated <= 1)):
             msg = "Interpolated values must be within [0, 1]"
             raise ValueError(msg)
-        if not (np.all(self.lower_boundary >= 0) and np.all(self.lower_boundary <= 1)):
+        if not np.all((self.lower_boundary >= 0) & (self.lower_boundary <= 1)):
             msg = "Lower boundary values must be within [0, 1]"
             raise ValueError(msg)
-        if not (np.all(self.upper_boundary >= 0) and np.all(self.upper_boundary <= 1)):
+        if not np.all((self.upper_boundary >= 0) & (self.upper_boundary <= 1)):
             msg = "Upper boundary values must be within [0, 1]"
             raise ValueError(msg)
 
@@ -104,8 +104,8 @@ class LambdaResult(Interpolated):
             raise ValueError(msg)
 
 
-def _lambda_interpolate(
-    lambda_data: LambdaResults,
+def interpolate_lambda(
+    lambda_data: LambdaData,
     distances: npt.NDArray[np.int_],
     *,
     num_sigmas: int = 3,
@@ -114,7 +114,7 @@ def _lambda_interpolate(
     """Compute the interpolated Lambda fit curve and its error band.
 
     Args:
-        lambda_data: Results from calculate_lambda_and_lambda_stddev.
+        lambda_data: Results from calculate_lambda_and_lambda_stddev (a :class:`LambdaData` instance).
         distances: The code distances used for interpolation.
         num_sigmas: Number of standard deviations for the error band. Default 3.
         num_points: Number of interpolation points. Default 200.
@@ -171,7 +171,7 @@ class LEPPRResult(Interpolated):
             raise ValueError(msg)
 
 
-def _leppr_interpolate(
+def interpolate_leppr(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[np.int_],
     *,

@@ -12,6 +12,8 @@ from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import (
     LambdaResult,
     LEPPRResult,
+    interpolate_lambda,
+    interpolate_leppr,
 )
 
 # List only public members in `__all__`.
