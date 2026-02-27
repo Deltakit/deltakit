@@ -85,14 +85,14 @@ class LambdaPlotResults(InterpolationPlot):
             tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]: -  Upper and Lower bounds.
         """
         self.lambda_interpolated_low = self._interpolate(
-            self.lambda0 - num_sigmas * self.lambda0_stddev,
             self.lambda_ - num_sigmas * self.lambda_stddev,
+            self.lambda0 - num_sigmas * self.lambda0_stddev,
             self.distance_grid,
         )
 
         self.lambda_interpolated_high = self._interpolate(
-            self.lambda0 + num_sigmas * self.lambda0_stddev,
             self.lambda_ + num_sigmas * self.lambda_stddev,
+            self.lambda0 + num_sigmas * self.lambda0_stddev,
             self.distance_grid,
         )
         return self.lambda_interpolated_low, self.lambda_interpolated_high

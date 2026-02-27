@@ -1,7 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
-import random
 from pathlib import Path
 from typing import ClassVar
 
@@ -9,8 +8,14 @@ import matplotlib as mpl
 import matplotlib.image as img
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from deltakit_explorer import plotting
+from deltakit_explorer.analysis import (
+    calculate_lambda_and_lambda_stddev,
+    compute_logical_error_per_round,
+)
 from deltakit_explorer.plotting import (
     LambdaPlotResults,
     LepprPlotResult,
@@ -216,43 +221,51 @@ class TestVisualisation:
         self.assert_same_size(path, path_ref)
 
     def test_interpolation_plot(self):
-        leppr: float = random.random()
-        leppr_stddev: float = (1 - leppr) / 2
-        spam_error: float = random.random()
-        spam_error_stddev: float = (1 - spam_error) / 2
-        plot_results = LambdaPlotResults(
-            leppr, leppr_stddev, spam_error, spam_error_stddev
-        )
-        distances = np.array([5, 7, 9, 11, 13, 15])
-        lep_per_round = np.array([0.15, 0.1, 0.05, 0.25, 0.005, 0.001])
-        lep_per_round_std = np.array([0.01, 0.008, 0.005, 0.005, 0.005, 0.005])
 
-        fix, ax = interpolation_plot(
+        lep_per_round = [0.15, 0.1, 0.05]
+        lep_stddev_per_round = [0.01, 0.008, 0.005]
+        distances = [5, 7, 9]
+        lambda_results = calculate_lambda_and_lambda_stddev(
+            distances, lep_per_round, lep_stddev_per_round, method="d"
+        )
+
+        lambda_, lambda_stddev = lambda_results.lambda_, lambda_results.lambda_stddev
+        lambda0, lambda0_stddev = lambda_results.lambda0, lambda_results.lambda0_stddev
+        plot_results = LambdaPlotResults(
+            lambda_, lambda_stddev, lambda0, lambda0_stddev
+        )
+
+        fig, ax = interpolation_plot(
             plot_results,
             distances=distances,
             lep_per_round=lep_per_round,
-            lep_per_round_std=lep_per_round_std,
+            lep_per_round_std=lep_stddev_per_round,
         )
         path_ref = self.resource_folder / "lambda_diagram.png"
         plt.savefig(path_ref)
         plt.clf()
 
-        leppr: float = random.random()
-        leppr_stddev: float = (1 - leppr) / 2
-        spam_error: float = random.random()
-        spam_error_stddev: float = (1 - spam_error) / 2
+        res = compute_logical_error_per_round(
+            num_rounds=distances,
+            logical_error_probabilities=lep_per_round,
+            logical_error_probabilities_stddev=lep_stddev_per_round,
+        )
+        leppr, leppr_stddev = res.leppr, res.leppr_stddev
+        spam_error, spam_error_stddev = res.spam_error, res.spam_error_stddev
+
         plot_results = LepprPlotResult(
             leppr, leppr_stddev, spam_error, spam_error_stddev
         )
 
-        fix, ax = interpolation_plot(
+        fig, ax = interpolation_plot(
             plot_results,
             distances=distances,
             lep_per_round=lep_per_round,
-            lep_per_round_std=lep_per_round_std,
+            lep_per_round_std=lep_stddev_per_round,
         )
         path = self.resource_folder / "leppr_diagram.png"
         plt.savefig(path)
-
         plt.clf()
         self.assert_same_size(path, path_ref)
+        assert isinstance(fig, Figure)
+        assert isinstance(ax, Axes)

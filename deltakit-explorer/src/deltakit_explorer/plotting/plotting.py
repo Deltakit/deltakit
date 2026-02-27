@@ -60,12 +60,13 @@ def _(
         ... )
         >>> num_failed_shots=[34, 151, 356]
         >>> num_shots=[500000] * 3
-        >>> distances=[2, 4, 6]
+        >>> num_rounds=[2, 4, 6]
         >>> res = compute_logical_error_per_round(
         ...     num_failed_shots=num_failed_shots,
         ...     num_shots=num_shots,
         ...     num_rounds=num_rounds,
         ... )
+        ...
         >>> lep, lep_stddev = calculate_lep_and_lep_stddev(
         ...     fails=num_failed_shots, shots=num_shots
         ... )
@@ -116,7 +117,7 @@ def _(
     distance_grid = np.linspace(distances[0], distances[-1], 200)
     plot_results.set_distances(distance_grid=distance_grid)
     lep_interpolated = plot_results._interpolate(
-        plot_results.leppr, plot_results.spam_error, plot_results.distance_grid
+        plot_results.spam_error, plot_results.leppr, plot_results.distance_grid
     )
 
     # Plot the fitted logical error probability per round curve
@@ -195,9 +196,6 @@ def _(
     if fig is None and ax is None:
         fig, ax = plt.subplots()
 
-    # These should be already checked by the above code, but type checkers are not able
-    # to infer that information, so including the asserts explicitly for type checkers
-    # to understand.
     assert ax is not None
     assert fig is not None
 
@@ -223,7 +221,7 @@ def _(
         lep_per_round,
         yerr=lep_per_round_std,
         fmt=".",
-        color=RIVERLANE_PLOT_COLOURS[1],
+        color=RIVERLANE_PLOT_COLOURS[0],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
