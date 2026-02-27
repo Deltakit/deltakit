@@ -81,7 +81,7 @@ def plot(
         case LEPPRResult():
             x_vals = result.rounds
             xlabel = "Rounds"
-            ylabel = "Logical Error Probability"
+            ylabel = "Logical Error Probability per Round"
         case _:
             msg = (
                 f"Unsupported result type: {type(result).__name__}. "
