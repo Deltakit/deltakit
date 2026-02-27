@@ -19,6 +19,7 @@ def plot(
     *,
     fig: Figure | None = None,
     ax: Axes | None = None,
+    title: str | None = None,
 ) -> tuple[Figure, Axes]:
     """Generic plot function that dispatches to specialised plotting based on the
     result type.
@@ -47,8 +48,8 @@ def plot(
         The matplotlib Figure and Axes objects containing the plot.
 
     Raises:
-        ValueError: If ``fig`` and ``ax`` are not both None or both set, or if
-            the ``result`` type is not supported.
+        ValueError: If ``fig`` and ``ax`` are not both None or both set.
+        TypeError: If the ``result`` type is not supported.
 
     Examples:
         Plotting a Lambda fit curve::
@@ -77,17 +78,19 @@ def plot(
         case LambdaResult():
             x_vals = result.distances
             xlabel = "Code distance"
-            ylabel = "Error suppression factor Λ"
+            ylabel = "Logical Error Probability per Round"
+            default_title = "Error Suppression Factor Λ"
         case LEPPRResult():
             x_vals = result.rounds
             xlabel = "Rounds"
-            ylabel = "Logical Error Probability per Round"
+            ylabel = "Logical Error Probability"
+            default_title = "Logical Error Probability per Round"
         case _:
             msg = (
                 f"Unsupported result type: {type(result).__name__}. "
                 "Expected LambdaResult or LEPPRResult."
             )
-            raise ValueError(msg)
+            raise TypeError(msg)
 
     ax.plot(
         x_vals,
@@ -99,10 +102,11 @@ def plot(
         x_vals,
         result.lower_boundary,
         result.upper_boundary,
+        label=result.confidence_interval_label,
         color=RIVERLANE_PLOT_COLOURS[0],
         alpha=0.2,
     )
-    ax.set_title("Logical Error Probability Per Round Fit")
+    ax.set_title(title if title is not None else default_title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.legend()

@@ -7,6 +7,8 @@ import numpy as np
 import pytest
 
 from deltakit_explorer._utils._utils import DELTAKIT_SERVER_URL_ENV
+from deltakit_explorer.analysis._lambda import LambdaResults
+from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
 
 
 def pytest_sessionstart(session):  # noqa: ARG001
@@ -16,3 +18,35 @@ def pytest_sessionstart(session):  # noqa: ARG001
 @pytest.fixture(scope="session")
 def random_generator():
     return np.random.default_rng()
+
+
+@pytest.fixture
+def lambda_results() -> LambdaResults:
+    """Example LambdaResults for testing."""
+    return LambdaResults(
+        lambda_=3.0,
+        lambda_stddev=0.1,
+        lambda0=1.5,
+        lambda0_stddev=0.05,
+    )
+
+
+@pytest.fixture
+def leppr_results() -> LogicalErrorProbabilityPerRoundResults:
+    """Example LEPPR results for testing."""
+    return LogicalErrorProbabilityPerRoundResults(
+        leppr=0.001,
+        leppr_stddev=0.0001,
+        spam_error=0.01,
+        spam_error_stddev=0.001,
+    )
+
+
+@pytest.fixture
+def distances() -> np.ndarray:
+    return np.array([5, 7, 9])
+
+
+@pytest.fixture
+def num_rounds() -> np.ndarray:
+    return np.array([2, 4, 6])

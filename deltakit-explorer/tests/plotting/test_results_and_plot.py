@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
-from deltakit_explorer.analysis._lambda import LambdaResults
-from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import (
     LambdaResult,
@@ -19,36 +17,7 @@ from deltakit_explorer.plotting.results import (
 # Use non-interactive backend for CI
 mpl.use("Agg")
 
-@pytest.fixture
-def lambda_results() -> LambdaResults:
-    """Example LambdaResults for testing."""
-    return LambdaResults(
-        lambda_=3.0,
-        lambda_stddev=0.1,
-        lambda0=1.5,
-        lambda0_stddev=0.05,
-    )
 
-
-@pytest.fixture
-def leppr_results() -> LogicalErrorProbabilityPerRoundResults:
-    """Example LEPPR results for testing."""
-    return LogicalErrorProbabilityPerRoundResults(
-        leppr=0.001,
-        leppr_stddev=0.0001,
-        spam_error=0.01,
-        spam_error_stddev=0.001,
-    )
-
-
-@pytest.fixture
-def distances() -> np.ndarray:
-    return np.array([5, 7, 9])
-
-
-@pytest.fixture
-def num_rounds() -> np.ndarray:
-    return np.array([2, 4, 6])
 
 class TestComputeLambdaPlot:
     def test_output_type(self, lambda_results, distances):
@@ -119,7 +88,7 @@ class TestPlot:
         fig, ax = plot(lambda_result)
         assert fig is not None
         assert ax is not None
-        assert ax.get_title() == "Logical Error Probability Per Round Fit"
+        assert ax.get_title() == "Error Suppression Factor Λ"
         assert ax.get_xlabel() == "Code distance"
         plt.close(fig)
 
@@ -128,7 +97,7 @@ class TestPlot:
         fig, ax = plot(leppr_result)
         assert fig is not None
         assert ax is not None
-        assert ax.get_title() == "Logical Error Probability Per Round Fit"
+        assert ax.get_title() == "Logical Error Probability per Round"
         assert ax.get_xlabel() == "Rounds"
         plt.close(fig)
 
@@ -148,5 +117,5 @@ class TestPlot:
         plt.close(fig)
 
     def test_plot_raises_on_unsupported_type(self):
-        with pytest.raises(ValueError, match="Unsupported result type"):
+        with pytest.raises(TypeError, match="Unsupported result type"):
             plot("invalid")

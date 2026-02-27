@@ -9,7 +9,9 @@ import numpy as np
 import numpy.typing as npt
 
 from deltakit_explorer.analysis._lambda import LambdaResults as LambdaData
-from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
+from deltakit_explorer.analysis._leppr import (
+    LogicalErrorProbabilityPerRoundResults as LEPPRData,
+)
 
 
 def _lambda_interpolated(
@@ -60,11 +62,16 @@ class Interpolated:
     lower_boundary: npt.NDArray[np.floating]
     upper_boundary: npt.NDArray[np.floating]
     fit_label: str
+    confidence_interval_label: str
 
     def __post_init__(self) -> None:
         """Validate that all arrays have the same shape and data ranges."""
         if not (self.interpolated.shape == self.lower_boundary.shape == self.upper_boundary.shape):
-            msg = "All arrays must have the same shape."
+            msg = (
+                "The 'interpolated', 'lower_boundary', and 'upper_boundary' arrays "
+                f"must have the same shape. Got {self.interpolated.shape}, "
+                f"{self.lower_boundary.shape}, and {self.upper_boundary.shape} respectively."
+            )
             raise ValueError(msg)
 
         # Check that provided interpolated is within [0, 1]
@@ -101,6 +108,12 @@ class LambdaResult(Interpolated):
         super().__post_init__()
         if not np.all(self.distances > 0):
             msg = "Distances must be positive."
+            raise ValueError(msg)
+        if self.distances.shape != self.interpolated.shape:
+            msg = (
+                f"The 'distances' array shape {self.distances.shape} must match the "
+                f"'interpolated' array shape {self.interpolated.shape}."
+            )
             raise ValueError(msg)
 
 
@@ -146,6 +159,7 @@ def interpolate_lambda(
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
         fit_label=fit_label,
+        confidence_interval_label=f"Confidence interval ({num_sigmas}σ) on Λ fit",  # noqa: RUF001
     )
 
 
@@ -169,10 +183,16 @@ class LEPPRResult(Interpolated):
         if not np.all(self.rounds > 0):
             msg = "Rounds must be positive."
             raise ValueError(msg)
+        if self.rounds.shape != self.interpolated.shape:
+            msg = (
+                f"The 'rounds' array shape {self.rounds.shape} must match the "
+                f"'interpolated' array shape {self.interpolated.shape}."
+            )
+            raise ValueError(msg)
 
 
 def interpolate_leppr(
-    leppr_data: LogicalErrorProbabilityPerRoundResults,
+    leppr_data: LEPPRData,
     num_rounds: npt.NDArray[np.int_],
     *,
     num_sigmas: int = 3,
@@ -213,4 +233,5 @@ def interpolate_leppr(
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
         fit_label=fit_label,
+        confidence_interval_label=f"Confidence interval ({num_sigmas}σ) on ε fit",  # noqa: RUF001
     )

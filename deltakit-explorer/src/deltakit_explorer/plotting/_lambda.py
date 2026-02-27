@@ -46,10 +46,16 @@ def plot_lambda(
         The matplotlib Figure and Axes objects containing the plot.
 
     Example:
+        from deltakit_explorer.analysis import LambdaResults
+
+        lambda_data = LambdaResults(
+            lambda_=3.16, lambda_stddev=0.45, lambda0=0.5, lambda0_stddev=0.1
+        )
         fig, ax = plot_lambda(
-            distances = [5, 7, 9],
-            lep_per_round = [0.15, 0.1, 0.05],
-            lep_stddev_per_round = [0.01, 0.008, 0.005],
+            lambda_data=lambda_data,
+            distances=[5, 7, 9],
+            lep_per_round=[0.15, 0.1, 0.05],
+            lep_per_round_stddev=[0.01, 0.008, 0.005],
         )
         ax.set_yscale("log")
         plt.show()
