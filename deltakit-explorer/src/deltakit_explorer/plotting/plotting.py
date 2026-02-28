@@ -51,7 +51,7 @@ def _(
             Default is None.
 
     Returns:
-        tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
+        The matplotlib Figure and Axes objects containing the plot.
 
     Example:
 
