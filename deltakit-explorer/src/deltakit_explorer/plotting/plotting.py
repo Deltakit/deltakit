@@ -42,7 +42,7 @@ def _(
             a sequence of floats representing the standard deviation of the logical
             error probabilities corresponding to the number of rounds in ``distances``.
             If None, no error bars will be plotted. Default is None.
-        num_sigmas (int): number of sigmas to consider when plotting error bars.
+        num_sigmas: number of sigmas to consider when plotting error bars.
         fig:
             a matplotlib Figure object to plot on. If None, a new figure will be created.
             Default is None.
