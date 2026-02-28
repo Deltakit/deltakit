@@ -404,7 +404,7 @@ class PlanarCode(CSSCode, ABC):
         filename: str | None = None,
         backend: Literal["matplotlib", "svg", "pgf"] | None = None,
         unrotated_code: bool = False,
-    ) -> None:
+    ) -> tuple[Figure, Axes]:
         return _draw_code(
             self, filename=filename, backend=backend, unrotated_code=unrotated_code
         )
