@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 from functools import singledispatch
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,13 +13,8 @@ from deltakit_explorer.plotting.result import LambdaPlotResults, LepprPlotResult
 
 
 @singledispatch
-def interpolation_plot():
-    return
-
-
-@interpolation_plot.register(LepprPlotResult)
-def _(
-    plot_results: LepprPlotResult,
+def interpolation_plot(
+    plot_results: Union(LambdaPlotResults, LepprPlotResult),
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_per_round_std: npt.NDArray[np.float64] | Sequence[float] | None = None,
@@ -27,7 +23,7 @@ def _(
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
-    """Plot the logical error probability per round data and the fitted curve.
+    """ ""Plot the logical error probability per round data and the fitted curve.
 
     Args:
         plot_results:
@@ -53,29 +49,48 @@ def _(
     Returns:
         The matplotlib Figure and Axes objects containing the plot.
 
-    Example:
+    """
+    return
 
-        >>> from deltakit_explorer.analysis import (
-        ...     calculate_lep_and_lep_stddev, compute_logical_error_per_round,
-        ... )
-        >>> num_failed_shots=[34, 151, 356]
-        >>> num_shots=[500000] * 3
-        >>> num_rounds=[2, 4, 6]
-        >>> res = compute_logical_error_per_round(
-        ...     num_failed_shots=num_failed_shots,
-        ...     num_shots=num_shots,
-        ...     num_rounds=num_rounds,
-        ... )
-        ...
-        >>> lep, lep_stddev = calculate_lep_and_lep_stddev(
-        ...     fails=num_failed_shots, shots=num_shots
-        ... )
-        >>> fig, ax = plot_lep_per_round_per_round(
-        ...     res,
-        ...     num_rounds=num_rounds,
-        ...     lep_per_round=lep,
-        ...     lep_per_round_std=lep_stddev,
-        ... )
+
+@interpolation_plot.register(LepprPlotResult)
+def _(
+    plot_results: LepprPlotResult,
+    distances: npt.NDArray[np.int_] | Sequence[int],
+    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
+    lep_per_round_std: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    *,
+    num_sigmas: int = 3,
+    fig: Figure | None = None,
+    ax: Axes | None = None,
+) -> tuple[Figure, Axes]:
+    """
+    Plot the logical error probability per round data and the fitted curve.
+
+    Args:
+        plot_results:
+            Data class containing logical error probability per round fit results.
+        distances:
+            a sequence of integers representing the number of rounds used to get the
+            corresponding results in ``num_failed_shots`` and ``num_shots``.
+        lep_per_round:
+            a sequence of floats representing the logical error probabilities
+            corresponding to the number of rounds in ``distances``.
+        lep_per_round_std:
+            a sequence of floats representing the standard deviation of the logical
+            error probabilities corresponding to the number of rounds in ``distances``.
+            If None, no error bars will be plotted. Default is None.
+        num_sigmas: number of sigmas to consider when plotting error bars.
+        fig:
+            a matplotlib Figure object to plot on. If None, a new figure will be created.
+            Default is None.
+        ax:
+            a matplotlib Axes object to plot on. If None, a new axes will be created.
+            Default is None.
+
+    Returns:
+        The matplotlib Figure and Axes objects containing the plot.
+
     """
     if (fig is None) ^ (ax is None):
         msg = "The 'fig' and 'ax' parameters should either be both None or both set."
@@ -167,14 +182,18 @@ def _(
 
     Args:
         plot_results (LambdaResults): Object that contains the results data
-        distances (npt.NDArray[np.int\\_] | Sequence[int]): The distances of the code.
-        lep_per_round (npt.NDArray[np.float64] | Sequence[float]):
+        distances: The distances of the code.
+        lep_per_round:
             The logical error probabilities per round.
-        lep_per_round_std (npt.NDArray[np.float64] | Sequence[float] | None):
+        lep_per_round_std:
             The standard deviation of the logical error probabilities per round.
-        num_sigmas (int):
-        fig (Figure):
-        ax (Axes):
+        num_sigmas: number of sigmas to consider when plotting error bars.
+        fig:
+            a matplotlib Figure object to plot on. If None, a new figure will be created.
+            Default is None.
+        ax:
+            a matplotlib Axes object to plot on. If None, a new axes will be created.
+            Default is None.
 
     Returns:
         The matplotlib Figure and Axes objects containing the plot.

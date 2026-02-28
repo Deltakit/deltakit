@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 import numpy as np
@@ -12,31 +12,30 @@ class InterpolationPlot(ABC):
     def set_distances(self, distance_grid: npt.NDArray[int]) -> None:
         self.distance_grid = distance_grid
 
+    @abstractmethod
     def _interpolate(self):
         return
 
+    @abstractmethod
     def _interpolate_results(self):
         return
 
 
 @dataclass
 class LambdaPlotResults(InterpolationPlot):
-    """Named-tuple-like class containing computation results from
-    :func:`calculate_lambda_and_lambda_stddev`.
-
+    """
     Attributes:
-        lambda_ (float): computed error suppression factor.
-        lambda_stddev (float): lambda standard deviation.
-        lambda0 (float): computed error suppression multiplicative offset (value of Λ_0
+        lambda_: computed error suppression factor.
+        lambda_stddev: lambda standard deviation.
+        lambda0: computed error suppression multiplicative offset (value of Λ_0
             in the expression ``Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]``).
-        lambda0_stddev (float): Λ_0 standard deviation.
-        distance_grid (npt.NDArray[np.int_]):
-        lambda_interpolated (npt.NDArray[np.floating]):
-        lambda_interpolated_low (npt.NDArray[np.floating]):
-        lambda_interpolated_high (npt.NDArray[np.floating]):
+        lambda0_stddev: Λ_0 standard deviation.
+        distance_grid: The distance of the code.
+        lambda_interpolated: Interpolated values.
+        lambda_interpolated_low: Lower bound of interpolated values.
+        lambda_interpolated_high: Higher bounds of interpolated value.
     """
 
-    lambda_: float
     lambda_stddev: float
     lambda0: float
     lambda0_stddev: float
@@ -64,11 +63,11 @@ class LambdaPlotResults(InterpolationPlot):
         to estimate the logical error probability per round from the provided ``lambda_``
         and ``lambda0`` on the provided list of ``distance_grid``.
         Args:
-            lambda_: (float | None): - error suppression factor.
-            lambda0: (float | None): -  multiplicative constant.
-            distance_grid: (npt.NDArray[np.int_] | None) - distance of the code.
+            lambda_: Error suppression factor.
+            lambda0:  Multiplicative constant.
+            distance_grid: Distance of the code.
         Returns:
-            npt.NDArray[np.floating]: List of interpolated points.
+            List of interpolated points.
         """
         self.lambda_interpolated = (lambda_ ** (-(distance_grid + 1) / 2)) / lambda0
         return self.lambda_interpolated
@@ -77,12 +76,11 @@ class LambdaPlotResults(InterpolationPlot):
         self, num_sigmas: int | None = 3
     ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
         """Function for the producing the error band.
-
         Args:
-            num_sigmas: (int|None): - standard deviation.
+            num_sigmas: Number of standard deviations.
 
         Returns:
-            tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]: -  Upper and Lower bounds.
+            Upper and Lower bounds.
         """
         self.lambda_interpolated_low = self._interpolate(
             self.lambda_ - num_sigmas * self.lambda_stddev,
@@ -104,14 +102,14 @@ class LepprPlotResult(InterpolationPlot):
     Logical Error Probability Per Round.
 
     Attributes:
-        leppr (float): Logical Error Probability Per Round (LEPPR).
-        leppr_stddev (float): LEPPR standard deviation.
-        spam_error (float): computed SPAM error probability.
-        spam_error_stddev (float): SPAM error probability standard deviation.
-        distance_grid (npt.NDArray[np.int_]): The distance of the code.
-        lep_interpolated (npt.NDArray[np.floating]): Interpolated values.
-        lep_interpolated_low (npt.NDArray[np.floating]): Lower bound of interpolated values.
-        lep_interpolated_high (npt.NDArray[np.floating]): Higher bounds of interpolated value.
+        leppr: Logical Error Probability Per Round (LEPPR).
+        leppr_stddev: LEPPR standard deviation.
+        spam_error: computed SPAM error probability.
+        spam_error_stddev: SPAM error probability standard deviation.
+        distance_grid: The distance of the code.
+        lep_interpolated: Interpolated values.
+        lep_interpolated_low: Lower bound of interpolated values.
+        lep_interpolated_high: Higher bounds of interpolated value.
     """
 
     leppr: float
@@ -144,12 +142,12 @@ class LepprPlotResult(InterpolationPlot):
         probability per round.
 
         Args:
-            spam: (float | None): - SPAM error.
-            leppr: (float | None): - logical error probability per run.
-            distance_grid: (npt.NDArray[np.int_] | None) - distance of the code.
+            spam:  SPAM error.
+            leppr: Logical error probability per run.
+            distance_grid:  Distance of the code.
 
         Returns:
-            npt.NDArray[np.floating]: List of interpolated points.
+            List of interpolated points.
         """
         expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** distance_grid
         self.lep_interpolated = (1 - expected_fidelity) / 2
@@ -160,10 +158,10 @@ class LepprPlotResult(InterpolationPlot):
     ) -> tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]:
         """Function for the producing the error band.
         Args:
-            num_sigmas: (int|None): - standard deviation.
+            num_sigmas: Number of standard deviations.
 
         Returns:
-            tuple[npt.NDArray[np.floating], npt.NDArray[np.floating]]: Upper and Lower bounds.
+            Upper and Lower bounds.
         """
         self.lep_interpolated_low = self._interpolate(
             self.spam_error - num_sigmas * self.spam_error_stddev,
