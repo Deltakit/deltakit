@@ -10,6 +10,8 @@ from typing import Literal
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._schedules._schedule_order import (
@@ -20,7 +22,7 @@ from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import 
     UnrotatedPlanarCodeSchedules,
 )
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.plotting._visualisation import _draw_code
+from deltakit_explorer.plotting._draw import _draw_code
 
 
 class UnrotatedToricCode(PlanarCode):

@@ -13,10 +13,12 @@ import numpy as np
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.plotting._visualisation import _draw_code
+from deltakit_explorer.plotting._draw import _draw_code
 
 
 class ScheduleType(Enum):
