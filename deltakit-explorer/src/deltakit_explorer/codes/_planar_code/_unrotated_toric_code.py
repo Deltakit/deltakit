@@ -163,7 +163,7 @@ class UnrotatedToricCode(PlanarCode):
         filename: str | None = None,
         backend: Literal["matplotlib", "svg", "pgf"] | None = None,
         unrotated_code: bool = True,
-    ) -> None:
+    ) -> tuple[Figure, Axes]:
         return _draw_code(
             self, filename=filename, backend=backend, unrotated_code=unrotated_code
         )
