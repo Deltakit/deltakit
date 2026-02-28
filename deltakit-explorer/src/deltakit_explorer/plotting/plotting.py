@@ -177,7 +177,7 @@ def _(
         ax (Axes):
 
     Returns:
-        tuple[Figure, Axes]: The matplotlib Figure and Axes objects containing the plot.
+        The matplotlib Figure and Axes objects containing the plot.
 
     Example:
         fig, ax = plot_lambda(
