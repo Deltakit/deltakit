@@ -83,7 +83,7 @@ def plot(
         case LEPPRResult():
             x_vals = result.rounds
             xlabel = "Rounds"
-            ylabel = "Logical Error Probability"
+            ylabel = "Logical Error Probability per Round"
             default_title = "Logical Error Probability per Round"
         case _:
             msg = (

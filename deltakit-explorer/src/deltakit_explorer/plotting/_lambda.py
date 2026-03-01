@@ -7,13 +7,13 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis._lambda import LambdaResults
+from deltakit_explorer.analysis._lambda import LambdaResults as LambdaData
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import interpolate_lambda
 
 
 def plot_lambda(
-    lambda_data: LambdaResults,
+    lambda_data: LambdaData,
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
