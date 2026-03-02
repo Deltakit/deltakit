@@ -10,28 +10,30 @@ from itertools import chain
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-import seaborn as sns
 from matplotlib.ticker import FuncFormatter
 
 from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
 
 def correlation_matrix(
-    matrix: npt.NDArray,
-    qubit_to_detector_mapping: QubitCoordinateToDetectorMapping,
+    matrix: npt.NDArray[np.floating] | Sequence[Sequence[float]],
+    qubit_to_detector_mapping: QubitCoordinateToDetectorMapping | dict[tuple[float, ...], list[int]],
     labels: Sequence[str] = (),
 ):
     """Plot a given correlation matrix as a heatmap.
 
     Args:
-        matrix (npt.NDArray): correlation matrix.
-        qubit_to_detector_mapping (QubitCoordinateToDetectorMapping):
-            {qubit_coordinate_tuple_1: [det_1, det_2, det_2, ...], }
-        labels (Sequence[str]): labels to the qubits.
+        matrix: correlation matrix to plot.
+        qubit_to_detector_mapping: Mapping of detectors to qubit coordinates.
+        labels: labels to the qubits.
 
     Returns:
         matplotlib.plt:
             The plt object containing the drawn heatmap.
+    Raises:
+        ImportError:
+            If seaborn is not installed - please install Visualisation extras.
+
 
     Examples:
 
@@ -48,16 +50,29 @@ def correlation_matrix(
     # create a list of indices of the minor ticks for which to label with
     # the qubit labels such that the labels are in the middle of the major
     # ticks. Sort the labels as they are not guaranteed to be in order.
+
+    try:
+        import seaborn as sns  # noqa: PLC0415
+    except ImportError as ie:
+        msg = "Seaborn is not installed - please install Visualisation extras"
+        raise ImportError(msg) from ie
+
+    #Harmonise the inputs
+    if isinstance(qubit_to_detector_mapping, QubitCoordinateToDetectorMapping):
+        qubit_to_detector_mapping = qubit_to_detector_mapping.detector_map
+
+    matrix = np.asarray(matrix)
+
     minor_ticks_in_major = len(
-        next(iter(qubit_to_detector_mapping.detector_map.values())))
-    num_major_ticks = len(qubit_to_detector_mapping.detector_map.keys())
+        next(iter(qubit_to_detector_mapping.values())))
+    num_major_ticks = len(qubit_to_detector_mapping.keys())
     num_ticks = minor_ticks_in_major * num_major_ticks
     num_minor_ticks = num_ticks - num_major_ticks
     ticks_per_major = num_minor_ticks // num_major_ticks
     mid_im = ticks_per_major // 2
     label_indices = [mid_im + (ticks_per_major * i) for i in range(num_major_ticks)]
     sorted_labels = (
-        sorted(qubit_to_detector_mapping.detector_map.keys())
+        sorted(qubit_to_detector_mapping.keys())
         if len(labels) == 0 else labels
     )
 
@@ -115,8 +130,8 @@ def defect_diagram(all_detector_coords: dict, all_defect_rates: dict):
     their error rates.
 
     Args:
-        all_detector_coords (Dict): Mapping from coordinates to detector numbers.
-        all_defect_rates (Dict): Defect rates of detectors.
+        all_detector_coords: Mapping from coordinates to detector numbers.
+        all_defect_rates: Defect rates of detectors.
 
     Returns:
         matplotlib.pyplot: matplotlib module
@@ -223,11 +238,11 @@ def defect_rates(
     in Google paper https://www.nature.com/articles/s41586-022-05434-1.
 
     Args:
-        defect_rates_series (Iterable[Dict[Tuple[float, ...], List[float]]]):
+        defect_rates_series:
             List of defect rates dictionaries.
             E.g, this can be for the X and Z experiments
             for the Google data set.
-        w2_det_coords (Container[Tuple[float, ...]]):
+        w2_det_coords:
             Coordinates for the weight 2 detectors, so
             that these may be plotted with a separate colour
             and have their average separate from the higher-weight

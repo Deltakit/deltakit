@@ -3,15 +3,27 @@ from collections.abc import Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+from deltakit_core.deprecation import deprecated
 from matplotlib.ticker import FuncFormatter
+from packaging.version import Version
 
 
+@deprecated(
+    reason="A better function is now available.",
+    replaced_by="deltakit_explorer.plotting.correlation_matrix",
+    removed_in_version=Version("0.9.0"),
+)
 def plot_correlation_matrix(
     matrix: list[list[float]],
     major_minor_mapping: dict[tuple[float, ...], list[int]],
     labels: Sequence[str] = (),
 ):
     """Plot a given correlation matrix as a heatmap.
+
+    .. deprecated:: 0.9.0
+        This function is deprecated and will be removed in a future release.
+        Use `deltakit_explorer.plotting.correlation_matrix`
+        instead.
 
     Parameters
     ----------
@@ -29,6 +41,7 @@ def plot_correlation_matrix(
     matplotlib.plt
         The plt object containing the drawn heatmap.
     """
+
     try:
         import seaborn as sns  # noqa: PLC0415
     except ImportError as ie:

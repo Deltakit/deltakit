@@ -44,7 +44,6 @@ dependencies = [
   "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
   "stim~=1.15; python_version >= '3.13'",
   "requests~=2.32",
-  "seaborn~=0.12",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",
   "typing_extensions~=4.0",
@@ -54,6 +53,8 @@ dependencies = [
   "pandas~=2.3; python_version >= '3.13'",
   "ldpc~=2.2",
 ]
+[project.optional-dependencies]
+vis = ["seaborn"]
 
 [project.urls]
 Homepage = "https://github.com/Deltakit/deltakit"

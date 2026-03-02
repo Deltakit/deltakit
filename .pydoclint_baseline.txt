@@ -1692,7 +1692,6 @@ deltakit-explorer/src/deltakit_explorer/plotting/_leppr.py
     DOC503: Function `plot_logical_error_probability_per_round` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
 --------------------
 deltakit-explorer/src/deltakit_explorer/plotting/_visualisation.py
-    DOC111: Function `correlation_matrix`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC111: Function `defect_diagram`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC111: Function `defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
 --------------------
