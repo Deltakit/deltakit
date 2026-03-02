@@ -3,11 +3,11 @@
 This module contains common implementation parts for planar codes.
 Other planar code classes derive from PlanarCode.
 """
-from pathlib import Path
 import warnings
 from abc import ABC, abstractmethod
 from enum import Enum
 from functools import cached_property
+from pathlib import Path
 from typing import Literal
 
 import numpy as np

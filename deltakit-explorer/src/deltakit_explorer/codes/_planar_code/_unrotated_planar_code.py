@@ -2,16 +2,15 @@
 """
 This module stores an implementation of the unrotated planar code.
 """
-from pathlib import Path
-from typing_extensions import override
-
 import itertools
+from pathlib import Path
 from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from typing_extensions import override
 
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._schedules import (
@@ -19,7 +18,6 @@ from deltakit_explorer.codes._schedules import (
     UnrotatedPlanarCodeSchedules,
     get_x_and_z_schedules,
 )
-from deltakit_explorer.plotting._draw import _draw_code
 
 
 class UnrotatedPlanarCode(PlanarCode):

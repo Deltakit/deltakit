@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from collections.abc import Collection, Iterable, Sequence
 from itertools import chain
-from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np

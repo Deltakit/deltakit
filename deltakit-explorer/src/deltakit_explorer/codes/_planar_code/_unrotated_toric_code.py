@@ -3,10 +3,8 @@
 This module includes implementation of the unrotated toric code. The code
 represents two logical qubits.
 """
-from pathlib import Path
-from typing_extensions import override
-
 import itertools
+from pathlib import Path
 from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
@@ -14,6 +12,7 @@ from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from typing_extensions import override
 
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._schedules._schedule_order import (
@@ -24,7 +23,6 @@ from deltakit_explorer.codes._schedules._unrotated_planar_code_schedules import 
     UnrotatedPlanarCodeSchedules,
 )
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.plotting._draw import _draw_code
 
 
 class UnrotatedToricCode(PlanarCode):
