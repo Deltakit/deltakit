@@ -16,7 +16,9 @@ def plot_logical_error_probability_per_round(
     leppr_data: LogicalErrorProbabilityPerRoundResults,
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
-    logical_error_probability_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    logical_error_probability_stddev: (
+        npt.NDArray[np.float64] | Sequence[float] | None
+    ) = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -105,11 +107,12 @@ def plot_logical_error_probability_per_round(
         yerr=logical_error_probability_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[0],
-        label=f"Logical error probabilities (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
     leppr_result = interpolate_leppr(
         leppr_data, num_rounds, num_sigmas=num_sigmas
+
     )
 
     plot(leppr_result, fig=fig, ax=ax)

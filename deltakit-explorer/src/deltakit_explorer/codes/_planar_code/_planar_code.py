@@ -3,22 +3,23 @@
 This module contains common implementation parts for planar codes.
 Other planar code classes derive from PlanarCode.
 """
-import itertools
 import warnings
 from abc import ABC, abstractmethod
 from enum import Enum
 from functools import cached_property
 from pathlib import Path
+from typing import Literal
 
-import matplotlib.pyplot as plt
 import numpy as np
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
 from deltakit_circuit._qubit_identifiers import PauliGate
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._stabiliser import Stabiliser
-from deltakit_explorer.enums._basic_enums import DrawingColours
+from deltakit_explorer.plotting._draw import _draw_code
 
 
 class ScheduleType(Enum):
@@ -78,7 +79,7 @@ class PlanarCode(CSSCode, ABC):
         untransformed_z_schedule: tuple[Coord2DDelta, ...],
         schedule_type: ScheduleType = ScheduleType.SIMULTANEOUS,
         use_ancilla_qubits: bool = True,
-        shift: Coord2DDelta = Coord2DDelta(0, 0)
+        shift: Coord2DDelta = Coord2DDelta(0, 0),
     ):
         self._shift = shift
         self.linear_tr = np.array([[1, 0], [0, 1]])
@@ -401,127 +402,15 @@ class PlanarCode(CSSCode, ABC):
             )
         )
 
-    def draw_patch(self, filename: str | None = None, unrotated_code: bool = False) -> None:
-        """
-        Draw a picture of the planar code, optionally saving it to a .png file.
-
-        Parameters
-        ----------
-        filename: str, optional
-            Path to the file where to save the pictorial representation of the
-            planar code stored in this class.
-        """
-        all_qubit_x_coords = [qubit.unique_identifier.x for qubit in self.qubits]
-        all_qubit_y_coords = [qubit.unique_identifier.y for qubit in self.qubits]
-        diff_from_max_coord_to_margin_no_ancilla = (
-            2 if not unrotated_code or not (self.linear_tr == np.eye(2)).all() else 1
+    def draw_patch(
+        self,
+        filename: Path | None = None,
+        unrotated_code: bool = False,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
+    ) -> tuple[Figure, Axes]:
+        return _draw_code(
+            self, filename=filename, unrotated_code=unrotated_code, backend=backend
         )
-        if self._use_ancilla_qubits:
-            min_x, max_x = min(all_qubit_x_coords) - 1, max(all_qubit_x_coords) + 1
-            min_y, max_y = min(all_qubit_y_coords) - 1, max(all_qubit_y_coords) + 1
-        else:
-            min_x, max_x = (
-                min(all_qubit_x_coords) - diff_from_max_coord_to_margin_no_ancilla,
-                max(all_qubit_x_coords) + diff_from_max_coord_to_margin_no_ancilla,
-            )
-            min_y, max_y = (
-                min(all_qubit_y_coords) - diff_from_max_coord_to_margin_no_ancilla,
-                max(all_qubit_y_coords) + diff_from_max_coord_to_margin_no_ancilla,
-            )
-        x_lim = (min_x, max_x)
-        y_lim = (min_y, max_y)
-        fig, ax = plt.subplots(nrows=1, ncols=1)
-        ax.set_xlim(x_lim)
-        ax.set_ylim(y_lim)
-
-        stabilisers = tuple(itertools.chain.from_iterable(self._stabilisers))
-        stabilisers = self._sort_stabilisers(stabilisers)
-
-        # Draw stabiliser plaquettes
-        for stabiliser in stabilisers:
-            data_qubit_x_coords = [
-                pauli.qubit.unique_identifier[0]
-                for pauli in stabiliser.paulis
-                if pauli is not None
-            ]
-            data_qubit_y_coords = [
-                pauli.qubit.unique_identifier[1]
-                for pauli in stabiliser.paulis
-                if pauli is not None
-            ]
-
-            paulis = [pauli for pauli in stabiliser.paulis if pauli is not None]
-
-            if len(paulis) == 2:
-                ancilla_coord = stabiliser.ancilla_qubit.unique_identifier
-                data_qubit_x_coords.append(ancilla_coord[0])
-                data_qubit_y_coords.append(ancilla_coord[1])
-            elif len(paulis) == 4:
-                data_qubit_x_coords[2], data_qubit_x_coords[3] = (
-                    data_qubit_x_coords[3],
-                    data_qubit_x_coords[2],
-                )
-                data_qubit_y_coords[2], data_qubit_y_coords[3] = (
-                    data_qubit_y_coords[3],
-                    data_qubit_y_coords[2],
-                )
-
-            if isinstance(paulis[0], PauliX):
-                ax.fill(
-                    data_qubit_x_coords,
-                    data_qubit_y_coords,
-                    color=DrawingColours.X_COLOUR.value,
-                    alpha=1,
-                )
-            else:
-                ax.fill(
-                    data_qubit_x_coords,
-                    data_qubit_y_coords,
-                    color=DrawingColours.Z_COLOUR.value,
-                    alpha=1,
-                )
-
-        # Draw data qubits
-        for qubit in self._data_qubits:
-            cc = plt.Circle(
-                qubit.unique_identifier,
-                0.2,
-                color=DrawingColours.DATA_QUBIT_COLOUR.value,
-                alpha=1,
-            )
-            ax.set_aspect(1)
-            ax.add_artist(cc)
-
-        if self._use_ancilla_qubits:
-            # Draw X stabiliser ancilla qubits
-            for qubit in self._x_ancilla_qubits:
-                cc = plt.Circle(
-                    qubit.unique_identifier,
-                    0.2,
-                    color=DrawingColours.ANCILLA_QUBIT_COLOUR.value,
-                    alpha=1,
-                )
-                ax.set_aspect(1)
-                ax.add_artist(cc)
-
-            # Draw Z stabiliser ancilla qubits
-            for qubit in self._z_ancilla_qubits:
-                cc = plt.Circle(
-                    qubit.unique_identifier,
-                    0.2,
-                    color=DrawingColours.ANCILLA_QUBIT_COLOUR.value,
-                    alpha=1,
-                )
-                ax.set_aspect(1)
-                ax.add_artist(cc)
-
-        # Save the file
-        if filename:
-            output_directory = Path(filename)
-            if not output_directory.exists():
-                output_directory.parent.mkdir(parents=True, exist_ok=True)
-            fig.savefig(filename)
-            plt.close(fig)
 
     @cached_property
     def x0(self) -> int:

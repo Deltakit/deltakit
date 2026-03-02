@@ -1554,9 +1554,6 @@ deltakit-explorer/src/deltakit_explorer/codes/_planar_code/_planar_code.py
     DOC101: Function `_contains_x`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `_contains_x`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabiliser: Stabiliser].
     DOC201: Function `_contains_x` does not have a return section in docstring
-    DOC003: Function/method `draw_patch`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Method `PlanarCode.draw_patch`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `PlanarCode.draw_patch`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [unrotated_code: bool].
     DOC003: Function/method `x0`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `x1`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `y0`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.

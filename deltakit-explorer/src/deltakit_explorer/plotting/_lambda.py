@@ -96,7 +96,7 @@ def plot_lambda(
         yerr=lep_per_round_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
-        label=f"Logical error probabilities per round (±{num_sigmas}σ)"  # noqa: RUF001
+        label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
     lambda_result = interpolate_lambda(

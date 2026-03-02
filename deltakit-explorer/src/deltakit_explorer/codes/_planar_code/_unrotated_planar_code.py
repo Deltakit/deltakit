@@ -2,11 +2,15 @@
 """
 This module stores an implementation of the unrotated planar code.
 """
-
 import itertools
+from pathlib import Path
+from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from typing_extensions import override
 
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._schedules import (
@@ -76,7 +80,9 @@ class UnrotatedPlanarCode(PlanarCode):
     ):
         # coordinates of the bottom left vertex of the rectangle
         (self._x0, self._y0) = (0, 0)
-        x_schedule, z_schedule = get_x_and_z_schedules(UnrotatedPlanarCodeSchedules, schedule_order)
+        x_schedule, z_schedule = get_x_and_z_schedules(
+            UnrotatedPlanarCodeSchedules, schedule_order
+        )
 
         self._perform_css_checks = False
 
@@ -170,5 +176,12 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
-    def draw_patch(self, filename: str | None = None, unrotated_code: bool = True) -> None:
-        return super().draw_patch(filename, unrotated_code)
+
+    @override
+    def draw_patch(
+        self,
+        filename: Path | None = None,
+        unrotated_code: bool = True,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
+    ) -> tuple[Figure, Axes]:
+        return super().draw_patch(filename, unrotated_code, backend)

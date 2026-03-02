@@ -4,9 +4,14 @@ This module stores an implementation of the rotated planar code.
 """
 # pylint: disable=too-many-branches, too-many-boolean-expressions
 import itertools
+from pathlib import Path
+from typing import Literal
 
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from typing_extensions import override
 
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode, ScheduleType
 from deltakit_explorer.codes._schedules._rotated_planar_code_schedules import (
@@ -100,9 +105,7 @@ class RotatedPlanarCode(PlanarCode):
     ):
         self._horizontal_bump_with_top_left = horizontal_bump_with_top_left
         self._top_bumps_are_z = top_bumps_are_z
-        self._x_type_has_N_shape = (  # pylint: disable=invalid-name
-            top_bumps_are_z
-        )
+        self._x_type_has_N_shape = top_bumps_are_z  # pylint: disable=invalid-name
         x_schedule, z_schedule = get_x_and_z_schedules(
             RotatedPlanarCodeSchedules,
             schedule_order,
@@ -238,3 +241,12 @@ class RotatedPlanarCode(PlanarCode):
             if self._top_bumps_are_z
             else ((vert_op,), (horiz_op,))
         )
+
+    @override
+    def draw_patch(
+        self,
+        filename: Path | None = None,
+        unrotated_code: bool = False,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
+    ) -> tuple[Figure, Axes]:
+        return super().draw_patch(filename, unrotated_code, backend)

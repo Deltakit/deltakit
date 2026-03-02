@@ -56,6 +56,7 @@ dependencies = [
 [project.optional-dependencies]
 vis = ["seaborn"]
 
+
 [project.urls]
 Homepage = "https://github.com/Deltakit/deltakit"
 Source = "https://github.com/Deltakit/deltakit"
