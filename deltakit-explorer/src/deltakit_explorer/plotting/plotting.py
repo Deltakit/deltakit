@@ -43,6 +43,8 @@ def plot(
             a new figure will be created. Default is None.
         ax: An existing matplotlib Axes. If None, a new
             axes will be created. Default is None.
+        title: An optional custom title for the plot. If None,
+            a default title based on the result type will be used.
 
     Returns:
         The matplotlib Figure and Axes objects containing the plot.

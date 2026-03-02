@@ -22,7 +22,11 @@ def random_generator():
 
 @pytest.fixture
 def lambda_results() -> LambdaResults:
-    """Example LambdaResults for testing."""
+    """Example LambdaResults for testing.
+
+    Returns:
+        Example LambdaResults.
+    """
     return LambdaResults(
         lambda_=3.0,
         lambda_stddev=0.1,
@@ -33,7 +37,11 @@ def lambda_results() -> LambdaResults:
 
 @pytest.fixture
 def leppr_results() -> LogicalErrorProbabilityPerRoundResults:
-    """Example LEPPR results for testing."""
+    """Example LEPPR results for testing.
+
+    Returns:
+        Example LEPPR results.
+    """
     return LogicalErrorProbabilityPerRoundResults(
         leppr=0.001,
         leppr_stddev=0.0001,

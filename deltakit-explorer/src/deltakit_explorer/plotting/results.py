@@ -29,6 +29,14 @@ def _lambda_interpolated(
 
     to estimate the logical error probability per round from the provided ``lambda_``
     and ``lambda0`` on the provided list of ``distances``.
+
+    Args:
+        lambda0: Multiplicative constant.
+        lambda_: Error suppression factor.
+        distances: Array of code distances.
+
+    Returns:
+        Interpolated logical error probabilities per round.
     """
     return lambda_**(-(distances + 1) / 2) / lambda0
 
@@ -49,6 +57,14 @@ def _lep_interpolated(
     ``f = (1 - 2 * e)`` where ``f`` is any of ``F``, ``Fs`` or ``Fε`` and ``e`` is any
     of logical error probability, logical error probability of a SPAM or logical error
     probability per round.
+
+    Args:
+        spam: Fidelity of SPAM-related operations.
+        leppr: Logical error probability per round.
+        rounds_interpolated: Number of quantum error-correction rounds performed.
+
+    Returns:
+        Interpolated logical error probabilities.
     """
     expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
     return (1 - expected_fidelity) / 2
@@ -56,7 +72,15 @@ def _lep_interpolated(
 
 @dataclass(frozen=True)
 class Interpolated:
-    """Base class for interpolated plotting data."""
+    """Base class for interpolated plotting data.
+
+    Attributes:
+        interpolated: Values of the interpolation.
+        lower_boundary: Values of the lower boundary.
+        upper_boundary: Values of the upper boundary.
+        fit_label: Label for the fit text.
+        confidence_interval_label: Label for the confidence interval.
+    """
 
     interpolated: npt.NDArray[np.floating]
     lower_boundary: npt.NDArray[np.floating]
@@ -65,7 +89,11 @@ class Interpolated:
     confidence_interval_label: str
 
     def __post_init__(self) -> None:
-        """Validate that all arrays have the same shape and data ranges."""
+        """Validate that all arrays have the same shape and data ranges.
+
+        Raises:
+            ValueError: If the shapes do not match or a value is out of bounds.
+        """
         if not (self.interpolated.shape == self.lower_boundary.shape == self.upper_boundary.shape):
             msg = (
                 "The 'interpolated', 'lower_boundary', and 'upper_boundary' arrays "
@@ -95,11 +123,6 @@ class LambdaResult(Interpolated):
 
     Attributes:
         distances: Interpolated distance grid for the fit curve.
-        interpolated: Interpolated logical error probability per round values
-            along the distance grid.
-        lower_boundary: Lower boundary of the error band.
-        upper_boundary: Upper boundary of the error band.
-        fit_label: The label to use for the fit curve.
     """
 
     distances: npt.NDArray[np.floating]
@@ -169,11 +192,6 @@ class LEPPRResult(Interpolated):
 
     Attributes:
         rounds: Interpolated rounds grid for the fit curve.
-        interpolated: Interpolated logical error probability values along the
-            rounds grid.
-        lower_boundary: Lower boundary of the error band.
-        upper_boundary: Upper boundary of the error band.
-        fit_label: The label to use for the fit curve.
     """
 
     rounds: npt.NDArray[np.floating]
