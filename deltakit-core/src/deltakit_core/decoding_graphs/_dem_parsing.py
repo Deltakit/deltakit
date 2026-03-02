@@ -250,21 +250,20 @@ class DemParser(Generic[EH, DH]):
             A stim detector error model.
         """
         for instruction in detector_error_model:
-            if isinstance(instruction, stim.DemRepeatBlock):
+            if instruction.type == "repeat":
                 for _ in range(instruction.repeat_count):
                     self.parse(instruction.body_copy())
-            elif isinstance(instruction, stim.DemInstruction):
-                if instruction.type == "error":
-                    self._error_handler(instruction, self._detector_offset)
-                elif instruction.type == "shift_detectors":
-                    self._detector_offset += cast(int, instruction.targets_copy()[0])
-                    self._coordinate_offset += instruction.args_copy()
-                elif instruction.type == "detector":
-                    self._detector_handler(
-                        instruction, self._detector_offset, self._coordinate_offset
-                    )
-                elif instruction.type == "logical_observable":
-                    self._observable_handler(instruction)
+            elif instruction.type == "error":
+                self._error_handler(instruction, self._detector_offset)
+            elif instruction.type == "shift_detectors":
+                self._detector_offset += cast(int, instruction.targets_copy()[0])
+                self._coordinate_offset += instruction.args_copy()
+            elif instruction.type == "detector":
+                self._detector_handler(
+                    instruction, self._detector_offset, self._coordinate_offset
+                )
+            elif instruction.type == "logical_observable":
+                self._observable_handler(instruction)
 
 
 def dem_to_hypergraph_and_logicals(
