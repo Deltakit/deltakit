@@ -24,7 +24,7 @@ Issues contributions concern reporting a behavioural discrepancy in the code bas
 
 ## Submitting a Pull Request
 
-Issues can be resolved by submitting a Pull Request (PR). The recommended workflow is to first fork the main branch using the GitHub interface (via the Fork button in the top-right corner). This creates a new repository under your GitHub account, prefixed with your GitHub handle.Resolving an issue is possible by submitting a Pull Request (PR). The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle. 
+Issues can be resolved by submitting a Pull Request (PR). The recommended workflow is to first fork the main branch using the GitHub interface (via the Fork button in the top-right corner). This creates a new repository under your GitHub account, prefixed with your GitHub handle.Resolving an issue is possible by submitting a Pull Request (PR). The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle.
 
 Clone your fork locally:
 

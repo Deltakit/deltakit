@@ -12,7 +12,13 @@ with open("pyproject.toml", "r", encoding="utf-8") as f:
 
 version = top_data["project"]["version"]
 
-projects = ["deltakit-explorer", "deltakit-circuit", "deltakit-core", "deltakit-decode", "deltakit-compile"]
+projects = [
+    "deltakit-explorer",
+    "deltakit-circuit",
+    "deltakit-core",
+    "deltakit-decode",
+    "deltakit-compile",
+]
 
 for project in projects:
     path = f"{project}/pyproject.toml"

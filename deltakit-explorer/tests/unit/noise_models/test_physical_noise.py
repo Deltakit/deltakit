@@ -87,4 +87,3 @@ class TestPhysicalNoise:
     def test_position_args_raise_error(self):
         with pytest.raises(TypeError, match="positional argument"):
             PhysicalNoise(0.01)
-

@@ -172,4 +172,3 @@ class TestSD6NoiseModel:
     def test_position_args_raise_error(self):
         with pytest.raises(TypeError, match="positional argument"):
             SD6Noise(0.01)
-

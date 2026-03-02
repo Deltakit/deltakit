@@ -17,26 +17,29 @@ from deltakit_explorer.analysis._leppr import (
 def _lambda_interpolated(
     lambda0: float, lambda_: float, distances: npt.NDArray[np.int_ | np.floating]  # lambda_ avoids shadowing the built-in `lambda` keyword
 ) -> npt.NDArray[np.floating]:
-    """Computes logical error probability per round that would be obtained with the
-    provided values.
+    """Estimate the logical error probability per round for given parameters.
 
-    Uses the formula ``ε = 1 / Λ_0 * Λ**(-(d + 1) / 2)`` where:
+    The estimate is based on the formula
 
-    - ``ε`` is the logical error probability per round,
-    - ``Λ_0`` is a multiplicative constant,
-    - ``Λ`` is the error suppression factor,
-    - ``d`` is the distance of the code,
+        ε = (1 / Λ₀) * Λ**(-(d + 1) / 2)
 
-    to estimate the logical error probability per round from the provided ``lambda_``
-    and ``lambda0`` on the provided list of ``distances``.
+    where:
+      - ε is the logical error probability per round,
+      - Λ₀ is a normalisation constant,
+      - Λ is the error suppression factor,
+      - d is the code distance.
+
+    For each distance in ``distances``, this function computes the corresponding
+    logical error probability using the supplied ``lambda_`` (Λ) and ``lambda0`` (Λ₀).
 
     Args:
-        lambda0: Multiplicative constant.
-        lambda_: Error suppression factor.
-        distances: Array of code distances.
+        lambda0: Normalisation constant Λ₀.
+        lambda_: Error suppression factor Λ.
+        distances: Iterable of code distances d.
 
     Returns:
-        Interpolated logical error probabilities per round.
+        An array containing the estimated logical error probability per round
+        for each provided distance.
     """
     return lambda_**(-(distances + 1) / 2) / lambda0
 
@@ -44,27 +47,34 @@ def _lambda_interpolated(
 def _lep_interpolated(
     spam: float, leppr: float, rounds_interpolated: npt.NDArray[np.floating]
 ) -> npt.NDArray[np.floating]:
-    """Computes logical error that would be obtained with the provided values.
+    """Compute the logical error probability corresponding to the given parameters.
 
-    Uses the formula ``F = Fs * Fε**r`` where:
+    The expected computation fidelity is modelled as
 
-    - ``F`` is the expected fidelity of the computation,
-    - ``Fs`` is the fidelity of SPAM-related operations,
-    - ``Fε`` is the fidelity of one quantum error-correction round,
-    - ``r`` is the number of quantum error-correction rounds performed.
+        F = Fs * Fε**r
 
-    Each fidelity is obtained from the respective error probability with the formula
-    ``f = (1 - 2 * e)`` where ``f`` is any of ``F``, ``Fs`` or ``Fε`` and ``e`` is any
-    of logical error probability, logical error probability of a SPAM or logical error
-    probability per round.
+    where:
+      - F is the overall fidelity of the computation,
+      - Fs is the fidelity of SPAM-related operations,
+      - Fε is the fidelity of a single quantum error-correction round,
+      - r is the number of error-correction rounds performed.
+
+    Each fidelity value is derived from its associated error probability using
+
+        f = 1 - 2e
+
+    where:
+      - f represents F, Fs, or Fε,
+      - e represents the corresponding logical error probability
+        (overall, SPAM-related, or per-round).
 
     Args:
-        spam: Fidelity of SPAM-related operations.
-        leppr: Logical error probability per round.
-        rounds_interpolated: Number of quantum error-correction rounds performed.
+        spam: Error probability associated with SPAM operations.
+        leppr: Error probability per error-correction round.
+        rounds_interpolated: Number of error-correction rounds performed.
 
     Returns:
-        Interpolated logical error probabilities.
+        Logical error probability of the full computation.
     """
     expected_fidelity = (1 - 2 * spam) * (1 - 2 * leppr) ** rounds_interpolated
     return (1 - expected_fidelity) / 2
@@ -72,14 +82,20 @@ def _lep_interpolated(
 
 @dataclass(frozen=True)
 class Interpolated:
-    """Base class for interpolated plotting data.
+    """Container for interpolated plotting data and associated confidence bounds.
+
+    Stores the interpolated central values together with their lower and upper
+    confidence interval boundaries, along with labels describing the fit and
+    its confidence interval for visualisation purposes.
 
     Attributes:
-        interpolated: Values of the interpolation.
-        lower_boundary: Values of the lower boundary.
-        upper_boundary: Values of the upper boundary.
-        fit_label: Label for the fit text.
-        confidence_interval_label: Label for the confidence interval.
+        interpolated: Array of interpolated central values (e.g., fitted curve values).
+        lower_boundary: Array representing the lower bound of the confidence interval
+            corresponding to ``interpolated``.
+        upper_boundary: Array representing the upper bound of the confidence interval
+            corresponding to ``interpolated``.
+        fit_label: Label describing the fitted/interpolated data (e.g., legend entry).
+        confidence_interval_label: Label describing the confidence interval region (e.g., legend entry).
     """
 
     interpolated: npt.NDArray[np.floating]
@@ -89,10 +105,15 @@ class Interpolated:
     confidence_interval_label: str
 
     def __post_init__(self) -> None:
-        """Validate that all arrays have the same shape and data ranges.
+        """Validate consistency of interpolated data and confidence bounds.
+
+        Ensures that ``interpolated``, ``lower_boundary``, and ``upper_boundary``
+        arrays all have identical shapes so that each interpolated value has
+        corresponding lower and upper confidence bounds.
 
         Raises:
-            ValueError: If the shapes do not match or a value is out of bounds.
+            ValueError: If the shapes of ``interpolated``,
+                ``lower_boundary``, and ``upper_boundary`` do not match.
         """
         if not (self.interpolated.shape == self.lower_boundary.shape == self.upper_boundary.shape):
             msg = (
