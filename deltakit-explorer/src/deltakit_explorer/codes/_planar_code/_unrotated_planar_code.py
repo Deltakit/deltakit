@@ -2,6 +2,8 @@
 """
 This module stores an implementation of the unrotated planar code.
 """
+from pathlib import Path
+from typing_extensions import override
 
 import itertools
 from typing import Literal
@@ -176,10 +178,12 @@ class UnrotatedPlanarCode(PlanarCode):
 
         return (x_logical,), (z_logical,)
 
+
+    @override
     def draw_patch(
         self,
-        filename: str | None = None,
-        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        filename: Path | None = None,
         unrotated_code: bool = True,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
     ) -> tuple[Figure, Axes]:
-        return _draw_code(self, filename, backend, unrotated_code)
+        return super().draw_patch(filename, unrotated_code, backend)

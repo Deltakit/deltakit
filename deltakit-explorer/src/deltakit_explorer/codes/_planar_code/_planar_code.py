@@ -3,6 +3,7 @@
 This module contains common implementation parts for planar codes.
 Other planar code classes derive from PlanarCode.
 """
+from pathlib import Path
 import warnings
 from abc import ABC, abstractmethod
 from enum import Enum
@@ -403,12 +404,12 @@ class PlanarCode(CSSCode, ABC):
 
     def draw_patch(
         self,
-        filename: str | None = None,
-        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        filename: Path | None = None,
         unrotated_code: bool = False,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
     ) -> tuple[Figure, Axes]:
         return _draw_code(
-            self, filename=filename, backend=backend, unrotated_code=unrotated_code
+            self, filename=filename, unrotated_code=unrotated_code, backend=backend
         )
 
     @cached_property

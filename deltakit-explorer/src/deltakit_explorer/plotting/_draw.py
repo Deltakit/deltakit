@@ -21,15 +21,17 @@ from deltakit_explorer.enums._basic_enums import DrawingColours
 def _draw_code(
     code: PlanarCode,
     filename: Path | None = None,
-    backend: Literal["matplotlib", "svg", "pgf"] | None = "matplotlib",
     unrotated_code: bool = False,
+    backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
 ) -> tuple[Figure, Axes]:
     """Function for drawing the Planar codes.
+
     Args:
         code: Planar Error Correction Code.
         filename: The filename where to store the figure.
-        backend: The backend or file format that will be used for storing the plot.
         unrotated_code: Boolean indicator is the code unrotated or not.
+        backend: The backend or file format that will be used for storing the plot.
+
     Returns:
         figure and axes of plot.
     """
@@ -212,14 +214,14 @@ def _draw_code(
         output_directory = Path(filename).parent
         if not output_directory.exists():
             output_directory.parent.mkdir(parents=True)
-        if backend == "matplotlib" or backend is None:
+        if backend == "matplotlib":
             fig.savefig(filename, bbox_extra_artists=(legend,), bbox_inches="tight")
         elif backend == "pgf":
-            plt.savefig(
-                filename + ".pgf", bbox_extra_artists=(legend,), bbox_inches="tight"
+            fig.savefig(
+                filename.parent / f"{filename.name}.pgf", bbox_extra_artists=(legend,), bbox_inches="tight"
             )
         elif backend == "svg":
             fig.savefig(
-                filename + ".svg", bbox_extra_artists=(legend,), bbox_inches="tight"
+                filename.parent / f"{filename.name}.svg", bbox_extra_artists=(legend,), bbox_inches="tight"
             )
     return fig, ax

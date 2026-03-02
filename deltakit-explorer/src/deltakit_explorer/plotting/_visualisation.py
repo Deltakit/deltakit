@@ -13,8 +13,6 @@ import numpy.typing as npt
 import seaborn as sns
 from matplotlib.ticker import FuncFormatter
 
-if TYPE_CHECKING:
-    pass
 from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
 

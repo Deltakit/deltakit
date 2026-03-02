@@ -3,6 +3,8 @@
 This module stores an implementation of the rotated planar code.
 """
 # pylint: disable=too-many-branches, too-many-boolean-expressions
+from typing_extensions import override
+from pathlib import Path
 import itertools
 from typing import Literal
 
@@ -240,11 +242,12 @@ class RotatedPlanarCode(PlanarCode):
             if self._top_bumps_are_z
             else ((vert_op,), (horiz_op,))
         )
-
+        
+    @override
     def draw_patch(
         self,
-        filename: str | None = None,
-        backend: Literal["matplotlib", "svg", "pgf"] | None = None,
+        filename: Path | None = None,
         unrotated_code: bool = False,
+        backend: Literal["matplotlib", "svg", "pgf"] = "matplotlib",
     ) -> tuple[Figure, Axes]:
-        return _draw_code(self, filename, backend, unrotated_code)
+        return super().draw_patch(filename, unrotated_code, backend)
