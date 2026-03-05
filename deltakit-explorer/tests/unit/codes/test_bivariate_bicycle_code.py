@@ -161,10 +161,10 @@ class TestMonomial:
         self,
         x_pow,
         y_pow,
-        l,
+        l,  # noqa: E741
         m,
         exp_x_pow,
-        exp_y_pow,  # noqa: E741
+        exp_y_pow,
     ):
         mon = Monomial(x_pow, y_pow, l, m)
         assert mon.x_pow == exp_x_pow

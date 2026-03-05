@@ -11,6 +11,7 @@ from typing import Any, ClassVar, TypeAlias
 
 import numpy as np
 from deltakit_core.decoding_graphs import EdgeT, HyperMultiGraph, OrderedDecodingEdges
+from typing_extensions import override
 
 from deltakit_decode.noise_sources._generic_noise_sources import (
     CombinedSequences,
@@ -31,10 +32,11 @@ EdgeFilterT: TypeAlias = Callable[[HyperMultiGraph], Sequence[EdgeT]]
 class NoNoiseMatchingSequence(SequentialNoise[HyperMultiGraph, OrderedDecodingEdges]):
     """A noise model that outputs a single empty list of decoding edges."""
 
+    @override
     def error_generator(
         self,
         code_data: HyperMultiGraph,
-        seed: int | None = None,  # noqa: ARG002
+        seed: int | None = None,
     ) -> Iterator[OrderedDecodingEdges]:
         yield OrderedDecodingEdges()
 
@@ -87,10 +89,11 @@ class NoMatchingNoise(IndependentMatchingNoise):
     Used to define ZERO for the purpose of monte carlo model addition.
     """
 
+    @override
     def error_generator(
         self,
         code_data: HyperMultiGraph,
-        seed: int | None = None,  # noqa: ARG002
+        seed: int | None = None,
     ) -> Iterator[OrderedDecodingEdges]:
         while True:
             yield OrderedDecodingEdges()
