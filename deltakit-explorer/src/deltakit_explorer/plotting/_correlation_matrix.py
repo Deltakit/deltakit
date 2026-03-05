@@ -16,7 +16,8 @@ from deltakit_explorer.types._types import QubitCoordinateToDetectorMapping
 
 def correlation_matrix(
     matrix: npt.NDArray[np.floating] | Sequence[Sequence[float]],
-    qubit_to_detector_mapping: QubitCoordinateToDetectorMapping | dict[tuple[float, ...], list[int]],
+    qubit_to_detector_mapping: QubitCoordinateToDetectorMapping
+    | dict[tuple[float, ...], list[int]],
     labels: Sequence[str] = (),
 ):
     """Plot a given correlation matrix as a heatmap.
@@ -39,7 +40,8 @@ def correlation_matrix(
         Collect the data for a correlation matrix plot::
 
             matrix, mapping = client.get_correlation_matrix(
-                detectors, stim_circuit,
+                detectors,
+                stim_circuit,
                 use_default_noise_model_edges=True,
             )
             plt = correlation_matrix(matrix, mapping)
@@ -56,14 +58,13 @@ def correlation_matrix(
         msg = "Seaborn is not installed - please install Visualisation extras"
         raise ImportError(msg) from ie
 
-    #Harmonise the inputs
+    # Harmonise the inputs
     if isinstance(qubit_to_detector_mapping, QubitCoordinateToDetectorMapping):
         qubit_to_detector_mapping = qubit_to_detector_mapping.detector_map
 
     matrix = np.asarray(matrix)
 
-    minor_ticks_in_major = len(
-        next(iter(qubit_to_detector_mapping.values())))
+    minor_ticks_in_major = len(next(iter(qubit_to_detector_mapping.values())))
     num_major_ticks = len(qubit_to_detector_mapping.keys())
     num_ticks = minor_ticks_in_major * num_major_ticks
     num_minor_ticks = num_ticks - num_major_ticks
@@ -71,8 +72,7 @@ def correlation_matrix(
     mid_im = ticks_per_major // 2
     label_indices = [mid_im + (ticks_per_major * i) for i in range(num_major_ticks)]
     sorted_labels = (
-        sorted(qubit_to_detector_mapping.keys())
-        if len(labels) == 0 else labels
+        sorted(qubit_to_detector_mapping.keys()) if len(labels) == 0 else labels
     )
 
     def format_func(_, tick_number):
@@ -254,21 +254,20 @@ def defect_rates(
             experiments = [
                 QECExperiment.from_circuit_and_measurements(
                     folder / "circuit_noisy.stim",
-                    folder / "measurements.b8", DataFormat.B8,
-                    folder / "sweep.b8", DataFormat.B8,
+                    folder / "measurements.b8",
+                    DataFormat.B8,
+                    folder / "sweep.b8",
+                    DataFormat.B8,
                 )
-                for folder
-                in z_and_x_experiment_folders
+                for folder in z_and_x_experiment_folders
             ]
             all_rates = []
             for experiment in experiments:
-                _, rates = client.get_experiment_detectors_and_defect_rates(
-                    experiment
-                )
+                _, rates = client.get_experiment_detectors_and_defect_rates(experiment)
                 all_rates.append(rates)
             defect_rates(
                 all_rates,
-                w2_det_coords=set({(5., 6.), (1., 4.), (4., 3.), (2., 7.)})
+                w2_det_coords=set({(5.0, 6.0), (1.0, 4.0), (4.0, 3.0), (2.0, 7.0)}),
             )
     """
     # ensure these are floats!

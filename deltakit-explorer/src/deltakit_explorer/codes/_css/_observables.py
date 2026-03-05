@@ -3,6 +3,7 @@
 This module contains standalone functions related to observables used to generate
 stabiliser code circuits.
 """
+
 from collections.abc import Iterable, Mapping, Sequence
 
 from deltakit_circuit import MeasurementRecord, Observable, Qubit

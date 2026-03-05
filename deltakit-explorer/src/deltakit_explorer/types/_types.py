@@ -149,7 +149,7 @@ class CircuitParameters(JSONable):
                         observable_basis=PauliBasis.Z,
                         num_rounds=3,
                         basis_gates=["CZ", "H", "MZ", "RZ"],
-                        parameters=CircuitParameters.from_sizes((3, 3))
+                        parameters=CircuitParameters.from_sizes((3, 3)),
                     )
                 )
 
@@ -196,7 +196,7 @@ class CircuitParameters(JSONable):
                             param_m=6,
                             m_A_powers=[3, 1, 2],
                             m_B_powers=[3, 1, 2],
-                        )
+                        ),
                     )
                 )
 
@@ -206,7 +206,7 @@ class CircuitParameters(JSONable):
                 param_l=param_l,
                 param_m=param_m,
                 m_A_powers=m_A_powers,
-                m_B_powers=m_B_powers
+                m_B_powers=m_B_powers,
             )
         )
 
@@ -311,8 +311,7 @@ class TypedDataFile(TypedData):
         elif self.data_format == DataFormat.B8:
             with self.content.open("rb") as file:
                 string_builder = StringIO()
-                write_01(
-                    read_b8(file, self.data_width), string_builder)
+                write_01(read_b8(file, self.data_width), string_builder)
                 return string_builder.getvalue()
         else:
             msg = "Type conversion is not implemented"
@@ -333,14 +332,12 @@ class TypedDataFile(TypedData):
                 write_b8(read_01(file), bytes_builder)
                 return bytes_builder.getvalue()
         msg = f"Type conversion is not implemented for {self.data_format}"
-        raise NotImplementedError(
-            msg)
+        raise NotImplementedError(msg)
 
     def as_numpy(self) -> npt.NDArray[np.uint8]:
         if self.data_format == DataFormat.B8:
             with self.content.open("rb") as file:
-                return np.array(
-                    list(read_b8(file, self.data_width)), dtype=np.uint8)
+                return np.array(list(read_b8(file, self.data_width)), dtype=np.uint8)
         elif self.data_format == DataFormat.CSV:
             with Path.open(self.content, encoding="utf-8") as file:
                 return np.array(list(read_csv(file)), dtype=np.uint8)
@@ -348,8 +345,7 @@ class TypedDataFile(TypedData):
             with Path.open(self.content, encoding="utf-8") as file:
                 return np.array(list(read_01(file)), dtype=np.uint8)
         msg = f"Type conversion is not implemented for {self.data_format}"
-        raise NotImplementedError(
-            msg)
+        raise NotImplementedError(msg)
 
 
 @dataclass
@@ -371,9 +367,7 @@ class TypedDataString(TypedData):
         if self.data_format == DataFormat.CSV:
             string_builder = StringIO()
             write_01(
-                read_csv(
-                    TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")
-                ),
+                read_csv(TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")),
                 string_builder,
             )
             return string_builder.getvalue()
@@ -386,19 +380,15 @@ class TypedDataString(TypedData):
         if self.data_format == DataFormat.CSV:
             bytes_builder = BytesIO()
             write_b8(
-                read_csv(
-                    TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")
-                ),
-                bytes_builder
+                read_csv(TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")),
+                bytes_builder,
             )
             return bytes_builder.getvalue()
         if self.data_format == DataFormat.F01:
             bytes_builder = BytesIO()
             write_b8(
-                read_01(
-                    TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")
-                ),
-                bytes_builder
+                read_01(TextIOWrapper(BytesIO(self.content.data), encoding="utf-8")),
+                bytes_builder,
             )
             return bytes_builder.getvalue()
         msg = "Type conversion is not implemented"
@@ -409,12 +399,7 @@ class TypedDataString(TypedData):
 
         if self.data_format == DataFormat.B8:
             return np.array(
-                list(
-                    read_b8(
-                        stream=BytesIO(self.content.data),
-                        width=self.data_width
-                    )
-                ),
+                list(read_b8(stream=BytesIO(self.content.data), width=self.data_width)),
                 dtype=np.uint8,
             )
         if self.data_format == DataFormat.CSV:
@@ -472,8 +457,7 @@ class TypedDataString(TypedData):
                     content=DataString(bytes_builder.getvalue()),
                 )
         msg = f"Cannot extract binary data from {type(data)}, {data.data_format}."
-        raise ValueError(
-            msg)
+        raise ValueError(msg)
 
     def as_data_string(self) -> str:
         """Gets a datastring for the object."""
@@ -494,9 +478,7 @@ class BinaryDataType:
     ):
         if isinstance(data, Path):
             self.data = TypedDataFile(
-                data_format=data_format,
-                content=data,
-                data_width=data_width
+                data_format=data_format, content=data, data_width=data_width
             )
         elif isinstance(data, DataString):
             self.data = TypedDataString(
@@ -522,12 +504,10 @@ class BinaryDataType:
             return str(DataString(TypedDataString.from_data(self.data).as_01_string()))
         if data_format == DataFormat.CSV:
             string = StringIO()
-            write_csv(
-                TypedDataString.from_data(self.data).as_numpy(), string)
+            write_csv(TypedDataString.from_data(self.data).as_numpy(), string)
             return str(DataString(string.getvalue()))
         msg = f"Saving to data string is not implemented for {data_format}"
-        raise NotImplementedError(
-            msg)
+        raise NotImplementedError(msg)
 
     def as_01_string(self) -> str:
         """Represent content of the object as 01 string."""
@@ -564,8 +544,9 @@ class BinaryDataType:
 
         """
         # heavy lifting
-        assert shards > 0, \
+        assert shards > 0, (
             f"Number of batches should be bigger than 0, but was {shards}."
+        )
         numpy_data = self.as_numpy()
         lines = numpy_data.shape[0]
         shard_size = ceil(lines / shards)
@@ -578,7 +559,7 @@ class BinaryDataType:
             # this may produce empty objects, as in 6 / 4 -> [2, 2, 2, 0]
             results.append(
                 cls(
-                    data=numpy_data[start: end],
+                    data=numpy_data[start:end],
                     data_format=self.data.data_format,
                     data_width=self.data.get_width(),
                 )
@@ -606,15 +587,16 @@ class BinaryDataType:
                     ...
 
         """
-        assert batch_size > 0, \
+        assert batch_size > 0, (
             f"Batch size should be bigger than 0, but was {batch_size}."
+        )
         numpy_data = self.as_numpy()
         lines = numpy_data.shape[0]
         cls = type(self)
         ptr = 0
         while ptr < lines:
             yield cls(
-                data=numpy_data[ptr: ptr + batch_size],
+                data=numpy_data[ptr : ptr + batch_size],
                 data_format=self.data.data_format,
                 data_width=self.data.get_width(),
             )
@@ -728,9 +710,7 @@ class Measurements(BinaryDataType):
                     circuit = stim.Circuit(stim_circuit)
                 except ValueError as stim_ex:
                     msg = "Provided circuit is not a valid stim circuit."
-                    raise ValueError(
-                        msg
-                    ) from stim_ex
+                    raise ValueError(msg) from stim_ex
 
         converter = circuit.compile_m2d_converter()
         sweeps = None
@@ -832,7 +812,7 @@ class PhysicalNoiseModel(NoiseModel):
             p_2_qubit_gate_error=0.425e-3,
             p_reset_error=1.99e-3,
             p_meas_qubit_error=6.17e-3,
-            p_readout_flip=0.0
+            p_readout_flip=0.0,
         )
 
     @staticmethod
@@ -850,7 +830,7 @@ class PhysicalNoiseModel(NoiseModel):
             p_2_qubit_gate_error=0.01,
             p_reset_error=0.01,
             p_meas_qubit_error=0.01,
-            p_readout_flip=0.01
+            p_readout_flip=0.01,
         )
 
     @staticmethod
@@ -870,7 +850,7 @@ class PhysicalNoiseModel(NoiseModel):
             p_2_qubit_gate_error=6e-3,
             p_reset_error=1e-5,
             p_meas_qubit_error=39e-4,
-            p_readout_flip=3e-3
+            p_readout_flip=3e-3,
         )
 
 
@@ -951,7 +931,7 @@ class DecodingResult:
         if self.shots <= 0:
             return float("inf")
         hits = self.shots - self.fails
-        return (self.fails * hits / self.shots ** 3) ** .5
+        return (self.fails * hits / self.shots**3) ** 0.5
 
     @classmethod
     def combine(cls, results: Iterable[DecodingResult]) -> DecodingResult:

@@ -76,8 +76,14 @@ def css_code_memory_circuit(
         msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
         raise NotImplementedError(msg)
     if client is not None:
-        return _cloud_css_code_experiment_circuit(QECExperimentType.QUANTUM_MEMORY,
-                                              css_code, num_rounds, logical_basis, client, use_iswap_gates)
+        return _cloud_css_code_experiment_circuit(
+            QECExperimentType.QUANTUM_MEMORY,
+            css_code,
+            num_rounds,
+            logical_basis,
+            client,
+            use_iswap_gates,
+        )
     data_qubit_init_stage = (
         css_code.encode_logical_zeroes()
         if logical_basis == PauliBasis.Z
@@ -153,15 +159,11 @@ def _cloud_css_code_experiment_circuit(
     code_type = code_types[css_code.__class__]
 
     if isinstance(css_code, PlanarCode):
-        parameters = CircuitParameters.from_sizes(
-            (css_code.width, css_code.height)
-        )
+        parameters = CircuitParameters.from_sizes((css_code.width, css_code.height))
     elif isinstance(css_code, RepetitionCode):
-        parameters = CircuitParameters.from_sizes(
-            (css_code.distance,)
-        )
+        parameters = CircuitParameters.from_sizes((css_code.distance,))
     elif isinstance(css_code, BivariateBicycleCode):
-        parameters=CircuitParameters.from_matrix_specification(
+        parameters = CircuitParameters.from_matrix_specification(
             param_l=css_code.param_l,
             param_m=css_code.param_m,
             m_A_powers=css_code.m_A_powers,
@@ -174,9 +176,16 @@ def _cloud_css_code_experiment_circuit(
     if use_iswap_gates:
         basis_gates = [
             "ISWAP",
-            "MZ", "RZ",
-            "X", "Y", "Z", "H",
-            "S", "S_DAG", "SQRT_X", "SQRT_X_DAG",
+            "MZ",
+            "RZ",
+            "X",
+            "Y",
+            "Z",
+            "H",
+            "S",
+            "S_DAG",
+            "SQRT_X",
+            "SQRT_X_DAG",
         ]
 
     circuit = client.generate_circuit(
@@ -231,5 +240,11 @@ def css_code_stability_circuit(
     ValueError :
         If `css_code` is not of a valid type.
     """
-    return _cloud_css_code_experiment_circuit(QECExperimentType.STABILITY,
-                                              css_code, num_rounds, logical_basis, client, use_iswap_gates)
+    return _cloud_css_code_experiment_circuit(
+        QECExperimentType.STABILITY,
+        css_code,
+        num_rounds,
+        logical_basis,
+        client,
+        use_iswap_gates,
+    )

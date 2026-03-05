@@ -4,7 +4,6 @@ This module includes functions merging multiple circuits into a
 single circuit to be executed on a single QPU in parallel.
 """
 
-
 import numpy as np
 from deltakit_circuit import (
     Circuit,
@@ -138,9 +137,7 @@ def parallelise_disjoint_circuits(circuits: list[Circuit]) -> Circuit:
     for layer in max_circ.layers:
         if isinstance(layer, GateLayer):
             parallelised_layers.append(GateLayer())
-            parallelised_layers_gate_types.append(
-                {type(gate) for gate in layer.gates}
-            )
+            parallelised_layers_gate_types.append({type(gate) for gate in layer.gates})
         else:
             parallelised_layers.append(layer)
             parallelised_layers_gate_types.append(set())

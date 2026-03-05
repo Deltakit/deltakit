@@ -476,13 +476,11 @@ class TestGetCompilationDict:
         # is non-deterministic in its order, and when two sets of gates evaluate to the same tableau,
         # it will pick one at random. e.g, +X,+Y can be SQRT_X*X or X*SQRT_X.
         assert any(
-
             _get_compilation_dict(
                 NativeGateSet(one_qubit_gates=native_gate_set), max_length=weight
             )[0]
             == expected_dict
             for expected_dict in possible_dicts
-
         )
 
     @pytest.mark.parametrize(
@@ -1629,7 +1627,13 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after", "gate_exchange_dict"),
+        (
+            "two_qubit_gate",
+            "comp_dict",
+            "unitaries_before",
+            "unitaries_after",
+            "gate_exchange_dict",
+        ),
         [
             (
                 CX,
@@ -2081,7 +2085,13 @@ class TestGetCompilationWithTwoQubitGates:
         )
 
     @pytest.mark.parametrize(
-        ("two_qubit_gate", "comp_dict", "unitaries_before", "unitaries_after", "gate_exchange_dict"),
+        (
+            "two_qubit_gate",
+            "comp_dict",
+            "unitaries_before",
+            "unitaries_after",
+            "gate_exchange_dict",
+        ),
         [
             (
                 CX,
@@ -4486,7 +4496,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                }
+                },
             ),
             (
                 Circuit([GateLayer(RZ(0)), Circuit(GateLayer(RZ(0)), iterations=2)]),
@@ -4500,7 +4510,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                }
+                },
             ),
             (
                 Circuit(
@@ -4520,7 +4530,7 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                }
+                },
             ),
             (
                 Circuit(Circuit(Circuit(GateLayer(RZ(0)), iterations=2), iterations=2)),
@@ -4549,9 +4559,9 @@ class TestCompilationData:
                         2,
                         1,
                     )
-                }
-            )
-        ]
+                },
+            ),
+        ],
     )
     class TestNestedCircuits:
         def test_extract_structure_from_circuit_gives_correct_output_for_nested_Circuits(
@@ -5207,7 +5217,10 @@ class TestCompileCircuitWithTableau:
             assert compiled_circ == expected_circ
 
         def test_no_non_native_gates_left_after_compilation(
-            self, circ, native_gate_set, expected_circ  # noqa: ARG002
+            self,
+            circ,
+            native_gate_set,
+            expected_circ,  # noqa: ARG002
         ):
             compiled_circ = compile_circuit_to_native_gates(circ, native_gate_set)
             for gate_layer in compiled_circ.gate_layers():
@@ -5296,7 +5309,10 @@ class TestCompileCircuitWithTableau:
             assert compiled_circ == expected_circ
 
         def test_no_non_native_gates_left_after_compilation(
-            self, circ, native_gate_set, expected_circ  # noqa: ARG002
+            self,
+            circ,
+            native_gate_set,
+            expected_circ,  # noqa: ARG002
         ):
             compiled_circ = compile_circuit_to_native_gates(circ, native_gate_set)
             for gate_layer in compiled_circ.gate_layers():
@@ -5602,7 +5618,13 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
             assert np.sum(circ.as_stim_circuit().compile_sampler().sample(100)) == 0
 
     @pytest.mark.parametrize(
-        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
+        (
+            "current_gate",
+            "preceding_ub",
+            "succeeding_ub",
+            "target_gate",
+            "expected_unitary_blocks",
+        ),
         [
             (
                 RX,
@@ -5702,7 +5724,13 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         )
 
     @pytest.mark.parametrize(
-        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
+        (
+            "current_gate",
+            "preceding_ub",
+            "succeeding_ub",
+            "target_gate",
+            "expected_unitary_blocks",
+        ),
         [
             (
                 RX,
@@ -6006,7 +6034,13 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         ) == ([], [], gate.stim_string)
 
     @pytest.mark.parametrize(
-        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
+        (
+            "current_gate",
+            "preceding_ub",
+            "succeeding_ub",
+            "target_gate",
+            "expected_unitary_blocks",
+        ),
         [
             (
                 MX,
@@ -6141,7 +6175,13 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         )
 
     @pytest.mark.parametrize(
-        ("current_gate", "preceding_ub", "succeeding_ub", "target_gate", "expected_unitary_blocks"),
+        (
+            "current_gate",
+            "preceding_ub",
+            "succeeding_ub",
+            "target_gate",
+            "expected_unitary_blocks",
+        ),
         [
             (
                 MX,
@@ -8364,7 +8404,12 @@ class TestCompileResetAndMeasToNativeGates:
 
     @pytest.mark.parametrize("up_to_paulis", [False, True])
     @pytest.mark.parametrize(
-        ("comp_data", "native_gate_set", "layer_ind_lookup", "expected_layer_ind_lookup"),
+        (
+            "comp_data",
+            "native_gate_set",
+            "layer_ind_lookup",
+            "expected_layer_ind_lookup",
+        ),
         [
             (
                 (
@@ -8839,8 +8884,7 @@ class TestTwoQubitGateCompilationDicts:
             * (ub1_tableau + ub3_tableau)
         )
         assert (
-            stim.Tableau.from_named_gate(gate.stim_string)
-            == cz_with_unitaries_tableau
+            stim.Tableau.from_named_gate(gate.stim_string) == cz_with_unitaries_tableau
         )
 
     @pytest.mark.parametrize("gate", list(CZ_TO_GATE_DICT.keys()))
@@ -8881,7 +8925,7 @@ class TestTwoQubitGateCompilationDicts:
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
             f"Current Stim version is {CURRENT_STIM_VERSION}."
-        )
+        ),
     )
     @pytest.mark.parametrize("gate", list(GATE_TO_CZSWAP_DICT.keys()))
     def test_cpswap_to_czswap_dict_compilations_give_equivalent_tableaus(self, gate):
@@ -8922,7 +8966,7 @@ class TestTwoQubitGateCompilationDicts:
             "CZSWAP gate has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
             f"Current Stim version is {CURRENT_STIM_VERSION}."
-        )
+        ),
     )
     @pytest.mark.parametrize("gate", list(CZSWAP_TO_GATE_DICT.keys()))
     def test_czswap_to_cpswap_dict_compilations_give_equivalent_tableaus(self, gate):
@@ -9806,7 +9850,12 @@ class TestCompileTwoQubitGatesToNativeGates:
             )
 
     @pytest.mark.parametrize(
-        ("comp_data", "native_gate_set", "layer_ind_lookup", "expected_layer_ind_lookup"),
+        (
+            "comp_data",
+            "native_gate_set",
+            "layer_ind_lookup",
+            "expected_layer_ind_lookup",
+        ),
         [
             (
                 CompilationData(
@@ -10065,9 +10114,10 @@ class TestCompileTwoQubitGatesToNativeGates:
             == expected_layer_ind_lookup
         )
 
+
 class TestGetTableauFromSequenceOf1qGates:
     def test_error_with_2q_gate(self):
-        gates = ['X', 'I', 'CX']
+        gates = ["X", "I", "CX"]
         message = "'gates' must be composed of only single qubit gates"
         with pytest.raises(ValueError, match=message):
             _get_tableau_from_sequence_of_1q_gates(gates)

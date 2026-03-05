@@ -111,9 +111,7 @@ class APIv2Client(APIClient):
         self._request_session.headers.update(self.auth_headers)
 
     def _update_headers(self):
-        self.auth_headers = {
-            "Authorization": "Bearer " + get_token()
-        }
+        self.auth_headers = {"Authorization": "Bearer " + get_token()}
 
     def _submit_task(
         self,
@@ -206,17 +204,20 @@ class APIv2Client(APIClient):
             # A client request ID is going to be different from
             # a server-generated one.
             Logging.info(f"Server created the job {job.request_id}", request_id)
-            while job.status in [JobStatus.SUBMITTED.value, JobStatus.IN_PROGRESS.value]:
+            while job.status in [
+                JobStatus.SUBMITTED.value,
+                JobStatus.IN_PROGRESS.value,
+            ]:
                 time.sleep(APIv2Client.STATUS_CHECK_DELAY)
                 Logging.info(
                     f"Job ({job.type}, {job.request_id}), status = {job.status}",
-                    request_id
+                    request_id,
                 )
                 job = self._get_job_status(job.request_id)
             job.raise_on_error()
             Logging.info(
                 f"Job ({job.type}, {job.request_id}) completed, status = {job.status}",
-                request_id
+                request_id,
             )
             return job.result
         except KeyboardInterrupt:
@@ -238,7 +239,9 @@ class APIv2Client(APIClient):
         return 0
 
     @override
-    def generate_circuit(self, experiment_definition: QECExperimentDefinition, request_id: str) -> str:
+    def generate_circuit(
+        self, experiment_definition: QECExperimentDefinition, request_id: str
+    ) -> str:
         result = self.execute(
             query_name=APIEndpoints.GENERATE_CIRCUIT,
             variable_values=experiment_definition.to_json(),
@@ -247,7 +250,9 @@ class APIv2Client(APIClient):
         return DataString.from_data_string(str(result.get("circuit"))).to_string()
 
     @override
-    def simulate_circuit(self, stim_circuit: str | stim.Circuit, shots: int, request_id: str) -> tuple[Measurements, LeakageFlags | None]:
+    def simulate_circuit(
+        self, stim_circuit: str | stim.Circuit, shots: int, request_id: str
+    ) -> tuple[Measurements, LeakageFlags | None]:
         result = self.execute(
             query_name=APIEndpoints.SIMULATE_CIRCUIT,
             variable_values={
@@ -269,7 +274,9 @@ class APIv2Client(APIClient):
         return mmts, leakage
 
     @override
-    def add_noise(self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str) -> str:
+    def add_noise(
+        self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str
+    ) -> str:
         if noise_model.ENDPOINT is None:
             msg = f"Noise addition for {type(noise_model)} is not implemented."
             raise NotImplementedError(msg)
@@ -293,14 +300,20 @@ class APIv2Client(APIClient):
         leakage_flags: LeakageFlags | None,
         request_id: str,
     ) -> DecodingResult:
-        query_name = APIEndpoints.DECODE if leakage_flags is None else APIEndpoints.DECODE_LEAKAGE
+        query_name = (
+            APIEndpoints.DECODE
+            if leakage_flags is None
+            else APIEndpoints.DECODE_LEAKAGE
+        )
         job_result = self.execute(
             query_name=query_name,
             variable_values={
                 "circuit": str(DataString(str(noisy_stim_circuit))),
                 "detectors": detectors.as_data_string(DataFormat.B8),
                 "observables": observables.as_data_string(DataFormat.B8),
-                "leakage_flags": leakage_flags.as_data_string(DataFormat.B8) if leakage_flags else None,
+                "leakage_flags": leakage_flags.as_data_string(DataFormat.B8)
+                if leakage_flags
+                else None,
                 "decoder_type": decoder.decoder_type.value,
                 "decoder_parameters": decoder.parameters,
                 "decoder_jobs": decoder.parallel_jobs,
@@ -318,7 +331,8 @@ class APIv2Client(APIClient):
         return result
 
     @override
-    def defect_rates(self,
+    def defect_rates(
+        self,
         detectors: DetectionEvents,
         stim_circuit: str | stim.Circuit,
         request_id: str,
@@ -333,10 +347,7 @@ class APIv2Client(APIClient):
             request_id=request_id,
         )
         rates = result["defect_rates"]
-        return {
-            tuple(map(float, pair["key"])): pair["value"]
-            for pair in rates
-        }
+        return {tuple(map(float, pair["key"])): pair["value"] for pair in rates}
 
     @override
     def get_correlation_matrix_for_trimmed_data(
@@ -358,9 +369,12 @@ class APIv2Client(APIClient):
         )
         matrix = result.get("correlation_matrix")
         qubit_to_detectors = cast(list, result.get("mapping", []))
-        mapping = QubitCoordinateToDetectorMapping({
-            tuple(qubit_det["qubit"]): qubit_det["detectors"] for qubit_det in qubit_to_detectors
-        })
+        mapping = QubitCoordinateToDetectorMapping(
+            {
+                tuple(qubit_det["qubit"]): qubit_det["detectors"]
+                for qubit_det in qubit_to_detectors
+            }
+        )
         return np.array(matrix, dtype=np.float64), mapping
 
     @override
@@ -368,7 +382,7 @@ class APIv2Client(APIClient):
         self,
         stim_circuit: str | stim.Circuit,
         detectors: DetectionEvents,
-        request_id: str
+        request_id: str,
     ) -> tuple[str, DetectionEvents]:
         query_name = APIEndpoints.TRIM_CIRCUIT_AND_DETECTORS
         result = self.execute(
@@ -381,5 +395,7 @@ class APIv2Client(APIClient):
         )
         circuit = str(result.get("circuit"))
         dets_datastring = str(result.get("detectors"))
-        detectors = DetectionEvents(DataString.from_data_string(dets_datastring), DataFormat.F01)
+        detectors = DetectionEvents(
+            DataString.from_data_string(dets_datastring), DataFormat.F01
+        )
         return DataString.from_data_string(circuit).to_string(), detectors

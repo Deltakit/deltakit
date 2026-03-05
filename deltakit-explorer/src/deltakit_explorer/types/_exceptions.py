@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """Exception classes for the project"""
+
 from __future__ import annotations
 
 

@@ -23,6 +23,7 @@ def reset_env():
     else:
         os.environ.pop("LOG_DIRECTORY", None)
 
+
 def test_log_directory_env_variable(tmp_path):
     """Set LOG_DIRECTORY environment variable to a temporary path"""
 
@@ -48,6 +49,7 @@ def test_log_directory_home_directory(tmp_path):
         assert result == cwd
         assert result.is_dir()
 
+
 def test_log_directory_env_variable_not_a_directory(tmp_path):
     """Set LOG_DIRECTORY to a file path instead of a directory"""
 
@@ -61,6 +63,7 @@ def test_log_directory_env_variable_not_a_directory(tmp_path):
         result = get_log_directory()
         assert result == Path.cwd()
         assert result.is_dir()
+
 
 def test_log_directory_env_variable_invalid_path():
     """Set LOG_DIRECTORY to an invalid path string"""
@@ -80,13 +83,17 @@ def test_log_directory_env_variable_invalid_path():
         tmp.rmdir()
         raise
 
+
 def test_env_and_home_directory_unavailable():
     """Ensure LOG_DIRECTORY env variable is not set"""
 
     os.environ.pop("LOG_DIRECTORY", None)
 
-    with mock.patch.object(Path, "home", side_effect=PermissionError), \
-         mock.patch.object(Path, "cwd", side_effect=OSError), pytest.raises(OSError):
+    with (
+        mock.patch.object(Path, "home", side_effect=PermissionError),
+        mock.patch.object(Path, "cwd", side_effect=OSError),
+        pytest.raises(OSError),
+    ):
         get_log_directory()
 
 
@@ -97,11 +104,13 @@ def test_read_persisted_variables(tmp_path):
     assert result["A"] == "1"
     assert result["B"] == "2"
 
+
 def test_read_persisted_variables_invalid(tmp_path):
     file = tmp_path / "vars.env"
     file.write_text("A=1\nB\n")
     result = _utils.read_persisted_variables(file)
     assert result == {}
+
 
 def test_merge_variables(tmp_path):
     file = tmp_path / "vars.env"

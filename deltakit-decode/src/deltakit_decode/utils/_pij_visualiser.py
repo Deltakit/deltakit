@@ -65,7 +65,7 @@ def plot_correlation_matrix(
             return sorted_labels[label_indices.index(tick_number)]
         return None
 
-    col1 = sns.cubehelix_palette(start=.2, rot=-.3, light=1.0, as_cmap=True)
+    col1 = sns.cubehelix_palette(start=0.2, rot=-0.3, light=1.0, as_cmap=True)
     ax = sns.heatmap(matrix, cmap=col1)
     ax.invert_yaxis()
     ax.set(xlabel="Qubits", ylabel="Qubits")

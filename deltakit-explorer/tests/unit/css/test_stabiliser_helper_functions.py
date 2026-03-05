@@ -58,7 +58,7 @@ class TestPauliGatesToStimPauliString:
             "Parsing Pauli strings with indices has been introduced in Stim v1.13.0."
             "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
             f"Current Stim version is {CURRENT_STIM_VERSION}."
-        )
+        ),
     )
     @pytest.mark.parametrize(
         ("pauli_gates", "data_qubit_to_index_lookup", "expected_pauli_string"),

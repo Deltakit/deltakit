@@ -589,18 +589,18 @@ def _compile_two_qubit_gates_to_native_gates(
                             layer_index_lookup[i] += delta
 
                 # update unitary blocks
-                comp_data.unitary_blocks[
-                    qubit1_entry[1]["preceding"]
-                ] = compiled_updated_unitaries[0]
-                comp_data.unitary_blocks[
-                    qubit1_entry[1]["succeeding"]
-                ] = compiled_updated_unitaries[1]
-                comp_data.unitary_blocks[
-                    qubit2_entry[1]["preceding"]
-                ] = compiled_updated_unitaries[2]
-                comp_data.unitary_blocks[
-                    qubit2_entry[1]["succeeding"]
-                ] = compiled_updated_unitaries[3]
+                comp_data.unitary_blocks[qubit1_entry[1]["preceding"]] = (
+                    compiled_updated_unitaries[0]
+                )
+                comp_data.unitary_blocks[qubit1_entry[1]["succeeding"]] = (
+                    compiled_updated_unitaries[1]
+                )
+                comp_data.unitary_blocks[qubit2_entry[1]["preceding"]] = (
+                    compiled_updated_unitaries[2]
+                )
+                comp_data.unitary_blocks[qubit2_entry[1]["succeeding"]] = (
+                    compiled_updated_unitaries[3]
+                )
 
                 new_two_qubit_dict[
                     (

@@ -2,6 +2,7 @@
 """
 This module stores an implementation of the rotated planar code.
 """
+
 # pylint: disable=too-many-branches, too-many-boolean-expressions
 import itertools
 from pathlib import Path

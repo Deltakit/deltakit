@@ -74,10 +74,10 @@ class _CloudDecoder(DecoderProtocol):
         self.client = client
 
     def decode_batch_to_logical_flip(
-            self,
-            syndrome_batch: npt.NDArray[np.uint8],
-            leakage_batch: npt.NDArray[np.uint8] | None = None,
-        ):
+        self,
+        syndrome_batch: npt.NDArray[np.uint8],
+        leakage_batch: npt.NDArray[np.uint8] | None = None,
+    ):
         """The method decodes the batch of syndromes to boolean values."""
         num_shots = syndrome_batch.shape[0]
         detectors = types.DetectionEvents(syndrome_batch)
@@ -97,7 +97,7 @@ class _CloudDecoder(DecoderProtocol):
         decoder = types.Decoder(
             decoder_type=self._decoder_type,
             use_experimental_graph=self.use_experimental_graph,
-            parameters=self.decoder_parameters
+            parameters=self.decoder_parameters,
         )
         decoding_result = self.client.decode(
             detectors=detectors,
@@ -107,7 +107,6 @@ class _CloudDecoder(DecoderProtocol):
             leakage_flags=leakage,
         )
         return decoding_result.predictions.as_numpy()
-
 
     def decode_batch_to_full_correction(
         self, syndrome_batch: npt.NDArray[np.uint8]
@@ -157,6 +156,7 @@ class MWPMDecoder(_CloudDecoder):
     This cloud-based decoder implements Minimum Weight Perfect Matching
     (https://arxiv.org/abs/2303.15933).
     """
+
     _decoder_type = enums.DecoderType.MWPM
 
 
@@ -190,6 +190,7 @@ class CCDecoder(_CloudDecoder):
     This cloud-based decoder implements Collision Clustering
     (https://arxiv.org/abs/2309.05558).
     """
+
     _decoder_type = enums.DecoderType.CC
 
 
@@ -223,6 +224,7 @@ class BeliefMatchingDecoder(_CloudDecoder):
     This cloud-based decoder implements Belief Matching
     (https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.031007).
     """
+
     _decoder_type = enums.DecoderType.BELIEF_MATCHING
 
 
@@ -260,6 +262,7 @@ class BPOSDecoder(_CloudDecoder):
     This cloud-based decoder implements Belief Propagation - Ordered Statistics Decoding
     (https://quantum-journal.org/papers/q-2021-11-22-585/).
     """
+
     _decoder_type = enums.DecoderType.BP_OSD
 
 
@@ -308,6 +311,7 @@ class ACDecoder(_CloudDecoder):
     This cloud-based decoder implements Ambiguity Clustering
     (https://arxiv.org/abs/2406.14527).
     """
+
     _decoder_type = enums.DecoderType.AC
 
 
@@ -348,8 +352,8 @@ class LCDecoder(_CloudDecoder):
     This cloud-based decoder implements the Local Clustering Decoder algorithm
     (https://arxiv.org/abs/2411.10343).
     """
-    _decoder_type = enums.DecoderType.LCD
 
+    _decoder_type = enums.DecoderType.LCD
 
     def __init__(
         self,

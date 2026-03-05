@@ -155,7 +155,6 @@ def calculate_lep_and_lep_stddev(
     return lep, lep_stddev
 
 
-
 @deprecated(
     reason=(
         "A better function is now available. The output of this function can now be "

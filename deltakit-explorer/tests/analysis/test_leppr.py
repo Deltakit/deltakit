@@ -21,9 +21,7 @@ class TestLEPPerRoundComputation:
         random_generator: np.random.Generator,
     ) -> None:
         f_0 = 1 - 2 * spam_error
-        rounds = np.arange(
-            2, np.ceil(np.log(0.3 / f_0) / np.log(1 - 2 * leppr)), 2
-        )
+        rounds = np.arange(2, np.ceil(np.log(0.3 / f_0) / np.log(1 - 2 * leppr)), 2)
         fidelities = f_0 * (1 - 2 * leppr) ** rounds
         lep = (1 - fidelities) / 2
         lep *= 1 - random_generator.normal(0, 1e-4, lep.size)

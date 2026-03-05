@@ -18,7 +18,6 @@ from deltakit_explorer._cloud_decoders import (
 
 
 class TestCloudDecoder:
-
     def setup_method(self):
         # make sure we have a token specified. If there is not
         # token in the environment, client instance cannot be constructed.
@@ -31,9 +30,14 @@ class TestCloudDecoder:
     @pytest.mark.parametrize(
         "decoder_class",
         [
-            _CloudDecoder, MWPMDecoder, ACDecoder,
-            CCDecoder, LCDecoder, BPOSDecoder, BeliefMatchingDecoder
-        ]
+            _CloudDecoder,
+            MWPMDecoder,
+            ACDecoder,
+            CCDecoder,
+            LCDecoder,
+            BPOSDecoder,
+            BeliefMatchingDecoder,
+        ],
     )
     def test_raises_with_no_client(self, decoder_class):
         client = None
@@ -45,17 +49,20 @@ class TestCloudDecoder:
         [
             "M 0 1",
             stim.Circuit("M 0 1"),
-            deltakit_circuit.Circuit.from_stim_circuit(
-                stim.Circuit("M 0 1")
-            ),
-        ]
+            deltakit_circuit.Circuit.from_stim_circuit(stim.Circuit("M 0 1")),
+        ],
     )
     @pytest.mark.parametrize(
         "decoder_class",
         [
-            _CloudDecoder, MWPMDecoder, ACDecoder,
-            CCDecoder, LCDecoder, BPOSDecoder, BeliefMatchingDecoder
-        ]
+            _CloudDecoder,
+            MWPMDecoder,
+            ACDecoder,
+            CCDecoder,
+            LCDecoder,
+            BPOSDecoder,
+            BeliefMatchingDecoder,
+        ],
     )
     def test_accept_formats_and_converts_to_string(self, decoder_class, circuit):
         client = Client("http://localhost")
@@ -68,15 +75,15 @@ class TestCloudDecoder:
         [
             "M 0 1",
             stim.Circuit("M 0 1"),
-            deltakit_circuit.Circuit.from_stim_circuit(
-                stim.Circuit("M 0 1")
-            ),
-        ]
+            deltakit_circuit.Circuit.from_stim_circuit(stim.Circuit("M 0 1")),
+        ],
     )
     def test_cloud_decoder_raises_with_no_observables(self, circuit):
         client = Client("http://localhost")
         decoder = _CloudDecoder(circuit, client=client)
-        with pytest.raises(ValueError, match="Circuit must have at least one observable"):
+        with pytest.raises(
+            ValueError, match="Circuit must have at least one observable"
+        ):
             decoder.decode_batch_to_logical_flip(
                 np.array([[0, 1], [1, 0]], dtype=np.uint8)
             )
@@ -84,9 +91,13 @@ class TestCloudDecoder:
     @pytest.mark.parametrize(
         "decoder_class",
         [
-            MWPMDecoder, ACDecoder, CCDecoder,
-            LCDecoder, BPOSDecoder, BeliefMatchingDecoder,
-        ]
+            MWPMDecoder,
+            ACDecoder,
+            CCDecoder,
+            LCDecoder,
+            BPOSDecoder,
+            BeliefMatchingDecoder,
+        ],
     )
     def test_decoder_batch_to_logical_flip(self, decoder_class, mocker):
         circuit = stim.Circuit("M 0 1\nOBSERVABLE_INCLUDE(0) rec[-1]")

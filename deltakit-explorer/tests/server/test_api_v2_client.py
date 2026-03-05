@@ -18,7 +18,6 @@ from tests.helpers._utils import FakeResponse
 
 
 class TestExecute:
-
     def test_execute_success(self, mocker):
         client = APIv2Client("http://localhost")
         job_submit = Job(
@@ -83,7 +82,6 @@ def test_generate_circuit_calls_execute(mocker):
 
 
 class TestAPICalls:
-
     def test_simulate_circuit_leakage(self, mocker):
         client = APIv2Client("http://localhost")
         mocker.patch.object(
@@ -196,7 +194,6 @@ class TestAPICalls:
 
 
 class TestServiceCalls:
-
     def test_get_job_status_ok(self, mocker):
         url = "https://unknown/url"
         client = APIv2Client(url)

@@ -15,7 +15,11 @@ from deltakit_explorer.analysis._leppr import (
 
 
 def _lambda_interpolated(
-    lambda0: float, lambda_: float, distances: npt.NDArray[np.int_ | np.floating]  # lambda_ avoids shadowing the built-in `lambda` keyword
+    lambda0: float,
+    lambda_: float,
+    distances: npt.NDArray[
+        np.int_ | np.floating
+    ],  # lambda_ avoids shadowing the built-in `lambda` keyword
 ) -> npt.NDArray[np.floating]:
     """Estimate the logical error probability per round for given parameters.
 
@@ -41,7 +45,7 @@ def _lambda_interpolated(
         An array containing the estimated logical error probability per round
         for each provided distance.
     """
-    return lambda_**(-(distances + 1) / 2) / lambda0
+    return lambda_ ** (-(distances + 1) / 2) / lambda0
 
 
 def _lep_interpolated(
@@ -115,7 +119,11 @@ class Interpolated:
             ValueError: If the shapes of ``interpolated``,
                 ``lower_boundary``, and ``upper_boundary`` do not match.
         """
-        if not (self.interpolated.shape == self.lower_boundary.shape == self.upper_boundary.shape):
+        if not (
+            self.interpolated.shape
+            == self.lower_boundary.shape
+            == self.upper_boundary.shape
+        ):
             msg = (
                 "The 'interpolated', 'lower_boundary', and 'upper_boundary' arrays "
                 f"must have the same shape. Got {self.interpolated.shape}, "
@@ -195,7 +203,9 @@ def interpolate_lambda(
         distances_interpolated,
     )
 
-    fit_label = f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+    fit_label = (
+        f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+    )
 
     return LambdaResult(
         distances=distances_interpolated,

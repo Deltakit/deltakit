@@ -1,6 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """This module accumulates classes for data transformation.
 Contantins converters between most popular formats: 01, b8, and csv"""
+
 from __future__ import annotations
 
 from codecs import StreamReader, StreamWriter
@@ -18,18 +19,17 @@ def read_01(stream: StreamReader | TextIOWrapper) -> Iterable[list[int]]:
     for line in stream:
         yield [int(char) for char in line.strip()]
 
+
 def read_csv(stream: StreamReader | TextIOWrapper) -> Iterable[list[int]]:
     """Read CSV data from steam, StringIO or file descriptor."""
     for line in stream:
         yield [int(char) for char in line.strip().split(",")]
 
-def read_b8(
-    stream: BufferedIOBase | RawIOBase,
-    width: int
-) -> Iterable[list[int]]:
+
+def read_b8(stream: BufferedIOBase | RawIOBase, width: int) -> Iterable[list[int]]:
     """Read bit-packed data from steam, BytesIO or file descriptor."""
     bytes_per_shot = (width + 7) // 8
-    while (shot := stream.read(bytes_per_shot)):
+    while shot := stream.read(bytes_per_shot):
         result = []
         # iterate through bits
         for k in range(width):
@@ -37,6 +37,7 @@ def read_b8(
             which_bit = (which_byte >> (k % 8)) % 2
             result.append(which_bit)
         yield result
+
 
 def write_01(
     data: Iterable[list[int]] | npt.NDArray,
@@ -47,6 +48,7 @@ def write_01(
         # convert to string, and then join with empty
         stream.write("".join(map(str, row)) + "\n")
 
+
 def write_csv(
     data: Iterable[list[int]] | npt.NDArray,
     stream: StreamWriter | TextIOWrapper | StringIO,
@@ -55,6 +57,7 @@ def write_csv(
     for row in data:
         # convert to string, and then join with empty
         stream.write(",".join(map(str, row)) + "\n")
+
 
 def write_b8(
     data: Iterable[list[int]] | npt.NDArray,
@@ -69,6 +72,7 @@ def write_b8(
             longint <<= 1
             longint += int_bit
         stream.write(longint.to_bytes(bytes_per_shot, "little"))
+
 
 def write_binary_data_to_file(
     data: Iterable[list[int]] | npt.NDArray,

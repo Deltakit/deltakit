@@ -15,8 +15,8 @@ PijData = dict[frozenset[int], float]
 
 
 def _compute_combinations_of_detectors(
-        samples: Collection,
-        max_degree: int = 2,
+    samples: Collection,
+    max_degree: int = 2,
 ) -> Counter:
     """Calculate combinations of detectors for a
     given set of samples of detectors.
@@ -35,7 +35,8 @@ def _compute_combinations_of_detectors(
     return Counter(
         chain.from_iterable(
             combinations(s, weight)
-            for s in samples for weight in range(1, max_degree + 1)
+            for s in samples
+            for weight in range(1, max_degree + 1)
         )
     )
 
@@ -51,9 +52,11 @@ def _generate_expectation_data_multiprocess(
         if num_processes == -1:
             num_processes = pathos.helpers.mp.cpu_count()
         else:
-            warn("num_processes 0 or < -1, falling back to using single process.",
-                 UserWarning,
-                 stacklevel=3)
+            warn(
+                "num_processes 0 or < -1, falling back to using single process.",
+                UserWarning,
+                stacklevel=3,
+            )
             num_processes = 1
 
     if only_even and not only_odd:
@@ -61,25 +64,29 @@ def _generate_expectation_data_multiprocess(
     if only_odd and not only_even:
         samples = list(islice(samples, 1, len(samples), 2))
     elif only_even and only_odd:
-        warn("Both only_odd and only_even are True. Selecting whole batch.",
-             stacklevel=3)
+        warn(
+            "Both only_odd and only_even are True. Selecting whole batch.", stacklevel=3
+        )
 
     # if num_processes > samples, floor to 1
-    step = max(len(samples)//num_processes, 1)+1
-    split_samples = [list(islice(samples, n, n+step))
-                     for n in range(0, len(samples), step)]
+    step = max(len(samples) // num_processes, 1) + 1
+    split_samples = [
+        list(islice(samples, n, n + step)) for n in range(0, len(samples), step)
+    ]
     with pathos.helpers.mp.Pool(num_processes) as p:
-        results = p.starmap(_compute_combinations_of_detectors, [
-            (samples, max_degree) for samples in split_samples])
+        results = p.starmap(
+            _compute_combinations_of_detectors,
+            [(samples, max_degree) for samples in split_samples],
+        )
     data: Counter = Counter()
     for c in results:
         data.update(c)
 
     # divide count values of each Xi, Xj etc by number of
     # samples to get expectation value
-    expectation_values: PijData = {frozenset(key):
-                                   data[key] / len(samples)
-                                   for key in data}
+    expectation_values: PijData = {
+        frozenset(key): data[key] / len(samples) for key in data
+    }
 
     return expectation_values
 
@@ -103,21 +110,25 @@ def _generate_expectation_data_singleprocess(
     if only_odd and not only_even:
         samples = islice(samples, 1, None, 2)
     elif only_even and only_odd:
-        warn("Both only_odd and only_even are True. Selecting whole batch.",
-             stacklevel=3)
+        warn(
+            "Both only_odd and only_even are True. Selecting whole batch.", stacklevel=3
+        )
 
     counter: Counter[Iterable[int]] = Counter()
     num_samples = 0
     for s in samples:
-        counter.update(chain.from_iterable(combinations(s, weight)
-                                           for weight in range(1, max_degree + 1)))
+        counter.update(
+            chain.from_iterable(
+                combinations(s, weight) for weight in range(1, max_degree + 1)
+            )
+        )
         num_samples += 1
 
     # divide count values of each Xi, Xj etc by number of
     # samples to get expectation value
-    expectation_values: PijData = {frozenset(key):
-                                   counter[key] / num_samples
-                                   for key in counter}
+    expectation_values: PijData = {
+        frozenset(key): counter[key] / num_samples for key in counter
+    }
     return expectation_values
 
 
@@ -169,17 +180,13 @@ def generate_expectation_data(
         the given pair of detectors firing.
     """
     if isinstance(samples, Generator):
-        return _generate_expectation_data_singleprocess(samples,
-                                                        only_even,
-                                                        only_odd,
-                                                        max_degree,
-                                                        num_processes)
+        return _generate_expectation_data_singleprocess(
+            samples, only_even, only_odd, max_degree, num_processes
+        )
     if isinstance(samples, Collection):
-        return _generate_expectation_data_multiprocess(samples,
-                                                       only_even,
-                                                       only_odd,
-                                                       max_degree,
-                                                       num_processes)
+        return _generate_expectation_data_multiprocess(
+            samples, only_even, only_odd, max_degree, num_processes
+        )
     msg = (
         f"Unrecognised argument type: {type(samples)}, argument must be a Generator or "
         "Collection."
@@ -250,22 +257,21 @@ def _calculate_edge_prob_with_higher_degrees(
     """
     # collect all edges our current edge is a subset of -
     # thereby all edges that can turn on our edge
-    connected_edges = [pij_data[k]
-                       for k in pij_data if edge < k]
+    connected_edges = [pij_data[k] for k in pij_data if edge < k]
     if len(connected_edges) == 0:
         return pij_data.get(edge, 0.0)
     pi_sigma = _calculate_p_i_sigma(connected_edges)[0]
     if math.isclose(pi_sigma, 0.5, rel_tol=0.05):
-        warn("pi_sigma is converging to 0.5. Please consider trimming"
-             " the number of edges used in calculations.", stacklevel=3)
+        warn(
+            "pi_sigma is converging to 0.5. Please consider trimming"
+            " the number of edges used in calculations.",
+            stacklevel=3,
+        )
         return max(min_prob, 0.0)
     return (pij_data.get(edge, 0.0) - pi_sigma) / (1 - (2 * pi_sigma))
 
 
-def _n1_formula(
-    exp_values: PijData,
-    keys: Sequence[frozenset[int]]
-) -> float:
+def _n1_formula(exp_values: PijData, keys: Sequence[frozenset[int]]) -> float:
     """Formula for parameter n1 in hyperedge calculations.
 
     Parameters
@@ -284,10 +290,7 @@ def _n1_formula(
     return math.prod((1 - (2 * exp_values.get(n, 0.0))) for n in keys)
 
 
-def _d1_formula(
-    exp_values: PijData,
-    keys: Sequence[frozenset[int]]
-) -> float:
+def _d1_formula(exp_values: PijData, keys: Sequence[frozenset[int]]) -> float:
     """Formula for parameter d1 in hyperedge calculations.
 
     Parameters
@@ -304,16 +307,18 @@ def _d1_formula(
         The value of the calculation.
     """
     tuple_keys = [tuple(x) for x in keys]
-    return math.prod(1 - (2 * exp_values.get(frozenset(n[:1]), 0.0))
-                     - (2 * exp_values.get(frozenset(n[1:]), 0.0))
-                     + (4 * exp_values.get(frozenset(n), 0.0))
-                     for n in tuple_keys)
+    return math.prod(
+        1
+        - (2 * exp_values.get(frozenset(n[:1]), 0.0))
+        - (2 * exp_values.get(frozenset(n[1:]), 0.0))
+        + (4 * exp_values.get(frozenset(n), 0.0))
+        for n in tuple_keys
+    )
 
 
-def _n2_formula(exp_values: PijData,
-                key: frozenset[int],
-                keys: Sequence[frozenset[int]]
-                ) -> float:
+def _n2_formula(
+    exp_values: PijData, key: frozenset[int], keys: Sequence[frozenset[int]]
+) -> float:
     """Formula for parameter n2 in hyperedge calculations.
 
     Parameters
@@ -333,9 +338,12 @@ def _n2_formula(exp_values: PijData,
     float
         The value of the calculation.
     """
-    return 1 - (2 * math.fsum(exp_values.get(frozenset((n,)), 0.0) for n in key)) \
-        + (4 * math.fsum(exp_values.get(x, 0.0) for x in keys)) \
+    return (
+        1
+        - (2 * math.fsum(exp_values.get(frozenset((n,)), 0.0) for n in key))
+        + (4 * math.fsum(exp_values.get(x, 0.0) for x in keys))
         - (8 * exp_values.get(key, 0.0))
+    )
 
 
 def create_correlation_matrix(
@@ -372,8 +380,7 @@ def create_correlation_matrix(
 
     # create a mapping - each major tick is an ancilla qubit,
     # and each minor tick inside a major corresponds to a round
-    major_minor_mapping: defaultdict[tuple[float, ...],
-                                     list[int]] = defaultdict(list)
+    major_minor_mapping: defaultdict[tuple[float, ...], list[int]] = defaultdict(list)
     for k, v in graph.detector_records.items():
         if k not in graph.boundaries:
             major_minor_mapping[v.spatial_coord].append(k)
@@ -384,8 +391,10 @@ def create_correlation_matrix(
 
     # if there are not a consistent number of rounds for each qubit,
     # throw an error, since we can only plot NxN matrices
-    if not all(len(x) == len(next(iter(major_minor_mapping.values())))
-                for x in major_minor_mapping.values()):
+    if not all(
+        len(x) == len(next(iter(major_minor_mapping.values())))
+        for x in major_minor_mapping.values()
+    ):
         msg = "Inconsistent qubit time mapping"
         raise ValueError(msg)
 
@@ -401,18 +410,22 @@ def create_correlation_matrix(
     # into the corresponding Pij value, and place in corresponding row
     num_major_squares = len(major_minor_mapping.keys())
     num_minor_squares = len(next(iter(major_minor_mapping.values())))
-    correlation_matrix = np.array([np.array([0.0
-                                             for _ in range(num_major_squares
-                                                            * num_minor_squares)])
-                                   for _ in range(num_major_squares
-                                                  * num_minor_squares)])
+    correlation_matrix = np.array(
+        [
+            np.array([0.0 for _ in range(num_major_squares * num_minor_squares)])
+            for _ in range(num_major_squares * num_minor_squares)
+        ]
+    )
     for i, coord in enumerate(product(sorted(major_minor_mapping.keys()), repeat=2)):
-        for j, qubit in enumerate(product(major_minor_mapping[coord[0]],
-                                          major_minor_mapping[coord[1]])):
-            row_coord = ((i // num_major_squares) * num_minor_squares) + \
-                (j // num_minor_squares)
-            col_coord = ((i % num_major_squares) * num_minor_squares) + \
-                (j % num_minor_squares)
+        for j, qubit in enumerate(
+            product(major_minor_mapping[coord[0]], major_minor_mapping[coord[1]])
+        ):
+            row_coord = ((i // num_major_squares) * num_minor_squares) + (
+                j // num_minor_squares
+            )
+            col_coord = ((i % num_major_squares) * num_minor_squares) + (
+                j % num_minor_squares
+            )
             correlation_matrix[row_coord][col_coord] = coord_to_pij(qubit)
 
     if not plot_boundary_edges:

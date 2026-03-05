@@ -15,7 +15,6 @@ from tests.helpers._utils import FakeResponse
 
 
 class TestGQLClientTokenManipulations:
-
     @pytest.mark.parametrize("api_version", [1, 2])
     def test_set_token_raises_on_connection(self, api_version, mocker):
         old_server = os.environ.pop(utils.DELTAKIT_SERVER_URL_ENV, default="")
@@ -32,9 +31,15 @@ class TestGQLClientTokenManipulations:
 
     def test_set_token_raises_on_server_v1_error(self):
         old_server = os.environ.pop(utils.DELTAKIT_SERVER_URL_ENV, default="")
-        os.environ[utils.DELTAKIT_SERVER_URL_ENV] = "https://deltakit.riverlane.com/proxy"
-        with pytest.raises(ServerException, match="^Token failed validation: Status 401"):
-            GQLClient("https://deltakit.riverlane.com/proxy").set_token("abcdefghijklmnopqrstuvwxyzabcdef", validate=True)
+        os.environ[utils.DELTAKIT_SERVER_URL_ENV] = (
+            "https://deltakit.riverlane.com/proxy"
+        )
+        with pytest.raises(
+            ServerException, match="^Token failed validation: Status 401"
+        ):
+            GQLClient("https://deltakit.riverlane.com/proxy").set_token(
+                "abcdefghijklmnopqrstuvwxyzabcdef", validate=True
+            )
             # Token should be a 32-character string
         if old_server:
             os.environ[utils.DELTAKIT_SERVER_URL_ENV] = old_server
@@ -70,7 +75,9 @@ class TestGQLClientTokenManipulations:
             "deltakit_explorer._api._client.Client.get_instance",
             return_value=client,
         )
-        mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(404))
+        mocker.patch.object(
+            client._api._request_session, "get", return_value=FakeResponse(404)
+        )
         Path.unlink(utils.get_config_file_path())
         randint = random.randint(1000, 9999)
         token = f"abc-{randint}"
@@ -83,7 +90,11 @@ class TestGQLClientTokenManipulations:
             "deltakit_explorer._api._client.Client.get_instance",
             return_value=client,
         )
-        mocker.patch.object(client._api._request_session, "get", return_value=FakeResponse(401))
+        mocker.patch.object(
+            client._api._request_session, "get", return_value=FakeResponse(401)
+        )
         Path.unlink(utils.get_config_file_path())
         with pytest.raises(ServerException):
-            Client.set_token("abcdefghijklmnopqrstuvwxyzabcdef", validate=True) # Token should be a 32-character string
+            Client.set_token(
+                "abcdefghijklmnopqrstuvwxyzabcdef", validate=True
+            )  # Token should be a 32-character string

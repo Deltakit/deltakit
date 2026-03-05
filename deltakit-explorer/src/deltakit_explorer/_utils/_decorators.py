@@ -3,6 +3,7 @@
 Using decorators is motivated by separation of logic with parameter
 validation.
 """
+
 from __future__ import annotations
 
 import functools
@@ -56,15 +57,13 @@ def validate_and_split_decoding(func):
             Logging.warn(
                 "Leakage-aware decoding has a heavy initialisation part. "
                 "Big tasks may be cancelled by server timeout.",
-                uid="decorator"
+                uid="decorator",
             )
 
         numpy_detectors = detectors.as_numpy()
         # numpy-based instance, to avoid multiple recreation
         detectors = DetectionEvents(
-            numpy_detectors,
-            DataFormat.B8,
-            data_width=numpy_detectors.shape[1]
+            numpy_detectors, DataFormat.B8, data_width=numpy_detectors.shape[1]
         )
         shots = numpy_detectors.shape[0]
         batch_size = min(100_000, shots)
@@ -109,8 +108,12 @@ def validate_and_split_decoding(func):
 
         for dets, obs, leakage in tasks:
             decoding_result = func(
-                obj, dets, obs,
-                decoder, noisy_stim_circuit, leakage,
+                obj,
+                dets,
+                obs,
+                decoder,
+                noisy_stim_circuit,
+                leakage,
             )
             results.append(decoding_result)
         return DecodingResult.combine(results)
@@ -125,18 +128,22 @@ def validate_generation(func):
 
     @functools.wraps(func)
     def wrapper(
-        obj, experiment_definition: QECExperimentDefinition,
+        obj,
+        experiment_definition: QECExperimentDefinition,
     ):
         parameters: CircuitParameters | None = experiment_definition.parameters
-        if experiment_definition.code_type in {
-            QECECodeType.ROTATED_PLANAR,
-            QECECodeType.UNROTATED_PLANAR,
-            QECECodeType.UNROTATED_TORIC
-        } and parameters is not None and parameters.sizes is not None:
-            area = functools.reduce(
-                lambda a, b: a * b,
-                parameters.sizes.sizes, 1)
-            if area >= 21 ** 2 and experiment_definition.basis_gates is not None:
+        if (
+            experiment_definition.code_type
+            in {
+                QECECodeType.ROTATED_PLANAR,
+                QECECodeType.UNROTATED_PLANAR,
+                QECECodeType.UNROTATED_TORIC,
+            }
+            and parameters is not None
+            and parameters.sizes is not None
+        ):
+            area = functools.reduce(lambda a, b: a * b, parameters.sizes.sizes, 1)
+            if area >= 21**2 and experiment_definition.basis_gates is not None:
                 Logging.warn(
                     "Circuit generation with a provided gate set may be slow for "
                     "big code patches. This may lead to a server timeout.",
@@ -195,8 +202,7 @@ def validate_and_split_simulation(func):
 
         if len(shots_list) > 1:
             Logging.warn(
-                "Simulation will be performed in batches "
-                f"of {batch_size} shots.",
+                f"Simulation will be performed in batches of {batch_size} shots.",
                 uid="decorator",
             )
         measurements = []
@@ -208,17 +214,14 @@ def validate_and_split_simulation(func):
             meas, leak = func(obj, stim_circuit, batch)
             measurements.append(meas)
             leakages.append(leak)
-        if (
-            not all(leak is None for leak in leakages)
-            and not all(leak is not None for leak in leakages)
+        if not all(leak is None for leak in leakages) and not all(
+            leak is not None for leak in leakages
         ):
             msg = (
                 "Some of batches returned leakage information, "
                 "and some did not. Data is inconsistent."
             )
-            raise ServerException(
-                msg
-            )
+            raise ServerException(msg)
         final_measurements = Measurements.combine(measurements)
         final_leakages = None
         if all(leak is not None for leak in leakages):

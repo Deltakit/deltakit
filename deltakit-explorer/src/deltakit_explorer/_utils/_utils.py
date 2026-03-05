@@ -2,6 +2,7 @@
 """
 Contains a few utility functions to be used in deltakit api
 """
+
 from __future__ import annotations
 
 import csv
@@ -24,7 +25,7 @@ def get_log_directory() -> Path:
     """
 
     # Check for 'LOG_DIRECTORY' environment variable
-    env_folder = os.getenv('LOG_DIRECTORY')
+    env_folder = os.getenv("LOG_DIRECTORY")
     if env_folder:
         env_data_folder = Path(env_folder)
         if env_data_folder.exists() and env_data_folder.is_dir():

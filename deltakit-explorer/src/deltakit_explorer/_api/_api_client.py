@@ -85,9 +85,7 @@ class APIClient(ABC):  # pragma: nocover
 
     @abstractmethod
     def generate_circuit(
-        self,
-        experiment_definition: QECExperimentDefinition,
-        request_id: str
+        self, experiment_definition: QECExperimentDefinition, request_id: str
     ) -> str:
         """Generate a circuit based on the experiment definition.
 
@@ -102,10 +100,7 @@ class APIClient(ABC):  # pragma: nocover
 
     @abstractmethod
     def simulate_circuit(
-        self,
-        stim_circuit: str | stim.Circuit,
-        shots: int,
-        request_id: str
+        self, stim_circuit: str | stim.Circuit, shots: int, request_id: str
     ) -> tuple[Measurements, LeakageFlags | None]:
         """Simulate a circuit and return measurements and leakage flags.
 
@@ -119,7 +114,9 @@ class APIClient(ABC):  # pragma: nocover
         raise NotImplementedError()
 
     @abstractmethod
-    def add_noise(self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str) -> str:
+    def add_noise(
+        self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str
+    ) -> str:
         """Add noise to a circuit based on the provided noise model.
 
         Args:
@@ -202,7 +199,7 @@ class APIClient(ABC):  # pragma: nocover
         self,
         stim_circuit: str | stim.Circuit,
         detectors: DetectionEvents,
-        request_id: str
+        request_id: str,
     ) -> tuple[str, DetectionEvents]:
         """Trim a circuit and detectors to remove qubits and detectors irrelevant to decoding problem.
 

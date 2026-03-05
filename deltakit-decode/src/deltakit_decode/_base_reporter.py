@@ -94,35 +94,31 @@ class TimingReporter(BaseReporter):
 
     @property
     def avg_wall_ns(self):
-        """Average nanoseconds of wall clock time taken to decode per shot
-        """
+        """Average nanoseconds of wall clock time taken to decode per shot"""
         if self._shots > 0:
             return self._sum_wall_ns / self._shots
         return 0
 
     @property
     def stderr_wall_ns(self):
-        """Standard deviation in nanoseconds of wall clock time taken to decode per shot
-        """
+        """Standard deviation in nanoseconds of wall clock time taken to decode per shot"""
         if self._shots > 1:
             return sqrt(self._sum_of_square_deviations / (self._shots - 1))
         return 0
 
     def get_reported_results(self) -> dict[str, Any]:
-        return {
-            "avg_wall_ns": self.avg_wall_ns,
-            "stderr_wall_ns": self.stderr_wall_ns
-        }
+        return {"avg_wall_ns": self.avg_wall_ns, "stderr_wall_ns": self.stderr_wall_ns}
 
     def __iadd__(self, other: BaseReporter) -> Self:
         if isinstance(other, TimingReporter):
             # use parallel Welford's algorithm formula
             total_shots = self._shots + other._shots
             delta = other.avg_wall_ns - self.avg_wall_ns
-            self._sum_of_square_deviations = \
-                self._sum_of_square_deviations + \
-                other._sum_of_square_deviations + \
-                delta**2 * self._shots * other._shots / total_shots
+            self._sum_of_square_deviations = (
+                self._sum_of_square_deviations
+                + other._sum_of_square_deviations
+                + delta**2 * self._shots * other._shots / total_shots
+            )
             self._sum_wall_ns += other._sum_wall_ns
             self._shots = total_shots
             return self

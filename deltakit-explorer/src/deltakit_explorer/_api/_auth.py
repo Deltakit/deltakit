@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """Authentication-related functions and variables."""
+
 from __future__ import annotations
 
 import os
@@ -36,9 +37,7 @@ def get_token() -> str:
             "and use `Client.set_token` function to "
             "register it."
         )
-        raise RuntimeError(
-            msg
-        )
+        raise RuntimeError(msg)
     return token
 
 

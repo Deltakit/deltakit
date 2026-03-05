@@ -52,8 +52,8 @@ def test_variables_reading_to_environ(mocker):
     [
         ("win32", Path.home() / "AppData/Local/deltakit-explorer/.env"),
         ("darwin", Path.home() / "Library/Application Support/deltakit-explorer/.env"),
-        ("linux", Path.home() / ".config/deltakit-explorer/.env")
-    ]
+        ("linux", Path.home() / ".config/deltakit-explorer/.env"),
+    ],
 )
 def test_platform_specific_paths(mocker, platform, path):
     mocker.patch("sys.platform", platform)
@@ -65,8 +65,7 @@ def test_platform_specific_paths(mocker, platform, path):
 
 
 @pytest.mark.parametrize(
-    ("platform", "envvar"),
-    [ ("win32", "APPDATA"), ("linux", "XDG_CONFIG_HOME")]
+    ("platform", "envvar"), [("win32", "APPDATA"), ("linux", "XDG_CONFIG_HOME")]
 )
 def test_platform_specific_paths_is_overridden(mocker, platform, envvar):
     os.environ[envvar] = str(Path.home() / "mock")

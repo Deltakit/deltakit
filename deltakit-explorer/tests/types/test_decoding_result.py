@@ -135,13 +135,19 @@ def test_join_raises_on_nonaligned_rows(items):
 
 def test_decoding_result_eq():
     res1 = DecodingResult(
-        0, 1, [0., 1., 2.], 2,
+        0,
+        1,
+        [0.0, 1.0, 2.0],
+        2,
         predictions_format=DataFormat.F01,
-        predictionsFile={"uid": "duck://30300a30310a"}
+        predictionsFile={"uid": "duck://30300a30310a"},
     )
     res2 = DecodingResult(
-        0, 1, [0., 3., 7.], 2,
+        0,
+        1,
+        [0.0, 3.0, 7.0],
+        2,
         predictions_format=DataFormat.CSV,
-        predictionsFile={"uid": "duck://302c300a302c310a"}
+        predictionsFile={"uid": "duck://302c300a302c310a"},
     )
     assert res1 == res2

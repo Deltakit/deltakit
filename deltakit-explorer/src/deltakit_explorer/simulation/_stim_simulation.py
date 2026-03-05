@@ -1,6 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
-"""`Simulation` module aggregates calls to different simulation backends.
-"""
+"""`Simulation` module aggregates calls to different simulation backends."""
 
 from __future__ import annotations
 
@@ -68,14 +67,20 @@ def simulate_with_stim(
         raise ValueError(msg)
 
     if client is not None:
-        circuit = str(stim_circuit.as_stim_circuit()) if not isinstance(stim_circuit, str) else stim_circuit
+        circuit = (
+            str(stim_circuit.as_stim_circuit())
+            if not isinstance(stim_circuit, str)
+            else stim_circuit
+        )
         if result_file is not None:
             msg = "Use of `client` is currently incompatible with `result_file`."
             raise NotImplementedError(msg)
         measurements, leakage_flags = client.simulate_stim_circuit(circuit, shots=shots)
         return measurements, leakage_flags
 
-    circuit = stim.Circuit(stim_circuit) if isinstance(stim_circuit, str) else stim_circuit
+    circuit = (
+        stim.Circuit(stim_circuit) if isinstance(stim_circuit, str) else stim_circuit
+    )
     sampler = circuit.compile_sampler()
     # E.g. if we under 100MB, save to RAM
     # result_size = circuit.num_measurements * shots
@@ -89,7 +94,5 @@ def simulate_with_stim(
         format=data_format.value,
     )
     return Measurements(
-        Path(result_file),
-        data_format=data_format,
-        data_width=circuit.num_measurements
+        Path(result_file), data_format=data_format, data_width=circuit.num_measurements
     ), None
