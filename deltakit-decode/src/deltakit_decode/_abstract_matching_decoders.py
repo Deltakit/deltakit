@@ -276,10 +276,9 @@ class ClusteringDecoder(MatchingDecoder):
             simple_form_logical = {tuple(sorted((a, b))) for a, b in logical}
             no_logical_edges_view = nx.subgraph_view(
                 self.decoding_graph.graph,
-                filter_edge=lambda a, b, _logical=simple_form_logical: tuple(
-                    sorted((a, b))
-                )
-                not in _logical,
+                filter_edge=lambda a, b, _logical=simple_form_logical: (
+                    tuple(sorted((a, b))) not in _logical
+                ),
             )
             if any(nx.has_path(no_logical_edges_view, a, b) for a, b in logical):
                 return False

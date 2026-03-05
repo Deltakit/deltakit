@@ -172,9 +172,12 @@ class RepetitionCode(CSSCode):
             else:
                 stabilisers_second.append(stabiliser)
 
-        _sort_fun: Callable[[Stabiliser], int] = lambda stab: (  # noqa: E731
-            stab.ancilla_qubit.unique_identifier.x + 1
-        ) % (2 * self.distance)
+        _sort_fun: Callable[[Stabiliser], int] = lambda stab: (
+            (  # noqa: E731
+                stab.ancilla_qubit.unique_identifier.x + 1
+            )
+            % (2 * self.distance)
+        )
 
         stabilisers_first.sort(key=_sort_fun)
         stabilisers_second.sort(key=_sort_fun)
