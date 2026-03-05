@@ -3,7 +3,6 @@
 This module implements a repetition code for quantum memory and stability experiments.
 """
 
-
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
