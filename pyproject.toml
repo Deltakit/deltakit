@@ -60,9 +60,9 @@ test = [
 lint = ["mypy~=1.17", "ruff~=0.14", "typos~=1.34", "deptry~=0.23", "pydoclint~=0.8"]
 docs_extras = [
   "tqdm~=4.67",
-  "stim~=1.11; python_version >= '3.10' and python_version < '3.12'",
-  "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim~=1.15; python_version >= '3.13'",
+  "stim>=1.12; python_version < '3.12'",
+  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
+  "stim>=1.15; python_version >= '3.13'",
   "numpy~=2.0",
   "matplotlib~=3.10,>=3.10.7",
   "pandas~=2.2,>=2.2.2",

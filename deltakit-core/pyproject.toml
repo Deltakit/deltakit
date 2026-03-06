@@ -35,9 +35,9 @@ dependencies = [
   "numpy>=1.26",
   "numpy~=2.1; python_version >= '3.13'",
   "networkx~=3.1",
-  "stim~=1.11; python_version >= '3.10' and python_version < '3.12'",
-  "stim~=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim~=1.15; python_version >= '3.13'",
+  "stim>=1.12; python_version < '3.12'",
+  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
+  "stim>=1.15; python_version >= '3.13'",
   "typing_extensions~=4.0",
   "packaging>=25.0",
 ]
