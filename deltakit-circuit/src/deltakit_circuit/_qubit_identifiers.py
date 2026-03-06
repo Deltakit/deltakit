@@ -2,6 +2,7 @@
 """An abstraction of instructions for stim."""
 
 from __future__ import annotations
+from typing_extensions import override
 
 import warnings
 from collections import abc
@@ -177,10 +178,16 @@ class Coordinate(tuple[float, ...]):
     """
 
     def __new__(cls, coordinate: tuple[float, ...] | float, *coordinates: float):
-        if isinstance(coordinate, (int, float)):
-            return super().__new__(cls, (coordinate, *coordinates))
-        assert len(coordinates) == 0
-        return super().__new__(cls, coordinate)
+        if isinstance(coordinate, tuple):
+            if coordinates:
+                coords_str = ", ".join(map(str, coordinates))
+                msg = (
+                    "Cannot create a tuple[float, ...] from the provided inputs: "
+                    f"{coordinate}, {coords_str}."
+                )
+                raise ValueError(msg)
+            return super().__new__(cls, coordinate)
+        return super().__new__(cls, (coordinate, *coordinates))
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Coordinate) and super().__eq__(other)
