@@ -176,8 +176,11 @@ class Coordinate(tuple[float, ...]):
         Any number of floats to specify the coordinate.
     """
 
-    def __new__(cls, *coordinates: float):
-        return super().__new__(cls, coordinates)
+    def __new__(cls, coordinate: tuple[float, ...] | float, *coordinates: float):
+        if isinstance(coordinate, (int, float)):
+            return super().__new__(cls, (coordinate, *coordinates))
+        assert len(coordinates) == 0
+        return super().__new__(cls, coordinate)
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Coordinate) and super().__eq__(other)
