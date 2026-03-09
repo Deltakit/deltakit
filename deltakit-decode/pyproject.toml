@@ -32,8 +32,8 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit>=0.7.1",
-  "deltakit-core>=0.7.1",
+  "deltakit-circuit>=0.8.0",
+  "deltakit-core>=0.8.0",
   "numpy>=1.26",
   "networkx~=3.1",
   "seaborn~=0.12",
