@@ -4,6 +4,10 @@
 
 ## v0.8.0 (2026-03-09)
 
+### Breaking Changes
+
+- Support for Stim v1.11 is discontinued. Minimal supported Stim version is v1.12.
+
 ### Bug Fixes
 
 - Do not use isinstance checks in dem parser ([#237](https://github.com/Deltakit/deltakit/pull/237),
