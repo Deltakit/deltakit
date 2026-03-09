@@ -28,21 +28,19 @@ from deltakit_explorer.types._types import JSONable
 
 
 class TestQECExperimentDefinitionAndNested:
-
     @pytest.mark.parametrize(
-            ("mspec", "mres"),
-            [
-                (None, None),
-                (MatrixSpecifications(0, 1, [23, 45], [67, 89]),
-                {"paramL": 0, "paramM": 1, "mAPowers": [23, 45], "mBPowers": [67, 89]}),
-            ]
+        ("mspec", "mres"),
+        [
+            (None, None),
+            (
+                MatrixSpecifications(0, 1, [23, 45], [67, 89]),
+                {"paramL": 0, "paramM": 1, "mAPowers": [23, 45], "mBPowers": [67, 89]},
+            ),
+        ],
     )
     @pytest.mark.parametrize(
-            ("sizes", "sres"),
-            [
-                (None, None),
-                (Sizes(sizes=[1, 2, 3]), {"sizes": [1, 2, 3]})
-            ]
+        ("sizes", "sres"),
+        [(None, None), (Sizes(sizes=[1, 2, 3]), {"sizes": [1, 2, 3]})],
     )
     def test_get_experiment_definition(self, mspec, mres, sizes, sres):
         definition = QECExperimentDefinition(
@@ -72,13 +70,16 @@ class TestQECExperimentDefinitionAndNested:
 
     def test_get_rotated_planar_z_quantum_memory(self):
         definition = QECExperimentDefinition.get_rotated_planar_z_quantum_memory(
-            3, 3, basis_gates=["CX", "H"],
+            3,
+            3,
+            basis_gates=["CX", "H"],
         )
         assert definition.code_type == QECECodeType.ROTATED_PLANAR
         assert definition.observable_basis == PauliBasis.Z
         assert definition.experiment_type == QECExperimentType.QUANTUM_MEMORY
         assert definition.get_parameters_gql_string() == {
-            'sizes': {'sizes': [3, 3]}, 'matrixSpecifications': None,
+            "sizes": {"sizes": [3, 3]},
+            "matrixSpecifications": None,
         }
 
     def test_matrix_specifications(self):
@@ -92,24 +93,21 @@ class TestQECExperimentDefinitionAndNested:
 
     def test_sizes(self):
         spec = Sizes(sizes=[1, 2, 3])
-        assert spec.to_gql() == {
-            "sizes": [1, 2, 3]
-        }
+        assert spec.to_gql() == {"sizes": [1, 2, 3]}
 
     @pytest.mark.parametrize(
-            ("mspec", "mres"),
-            [
-                (None, None),
-                (MatrixSpecifications(0, 1, [23, 45], [67, 89]),
-                {"paramL": 0, "paramM": 1, "mAPowers": [23, 45], "mBPowers": [67, 89]}),
-            ]
+        ("mspec", "mres"),
+        [
+            (None, None),
+            (
+                MatrixSpecifications(0, 1, [23, 45], [67, 89]),
+                {"paramL": 0, "paramM": 1, "mAPowers": [23, 45], "mBPowers": [67, 89]},
+            ),
+        ],
     )
     @pytest.mark.parametrize(
-            ("sizes", "sres"),
-            [
-                (None, None),
-                (Sizes(sizes=[1, 2, 3]), {"sizes": [1, 2, 3]})
-            ]
+        ("sizes", "sres"),
+        [(None, None), (Sizes(sizes=[1, 2, 3]), {"sizes": [1, 2, 3]})],
     )
     def test_generate_circuit_parameters(self, mspec, mres, sizes, sres):
         gql = CircuitParameters(mspec, sizes).to_gql()
@@ -120,7 +118,10 @@ class TestQECExperimentDefinitionAndNested:
 
     def test_from_matrix_specification(self):
         parameters = CircuitParameters.from_matrix_specification(
-            6, 5, [3, 1, 2], [3, 1, 0],
+            6,
+            5,
+            [3, 1, 2],
+            [3, 1, 0],
         )
         assert parameters.to_gql() == {
             "sizes": None,
@@ -129,15 +130,13 @@ class TestQECExperimentDefinitionAndNested:
                 "paramM": 5,
                 "mAPowers": [3, 1, 2],
                 "mBPowers": [3, 1, 0],
-            }
+            },
         }
 
 
 class TestInternalClasses:
-
     @pytest.mark.parametrize(
-        "data",
-        [np.array([[0, 0, 1, 0, 1]] * 3), [[0, 0, 1, 0, 1]] * 3]
+        "data", [np.array([[0, 0, 1, 0, 1]] * 3), [[0, 0, 1, 0, 1]] * 3]
     )
     @pytest.mark.parametrize(
         "data_format", [DataFormat.B8, DataFormat.CSV, DataFormat.F01]
@@ -146,8 +145,7 @@ class TestInternalClasses:
         holder = RAMData(content=data, data_format=data_format)
         assert holder.as_01_string() == "00101\n" * 3
         assert holder.as_b8_bytes() == b"\x14" * 3
-        assert np.allclose(
-            holder.as_numpy(), [[0, 0, 1, 0, 1]] * 3)
+        assert np.allclose(holder.as_numpy(), [[0, 0, 1, 0, 1]] * 3)
 
         assert holder.get_width() == 5
 
@@ -167,9 +165,7 @@ class TestInternalClasses:
 
 
 class TestTypedDataString:
-
     class NewTypeData(TypedData):
-
         def as_01_string(self):
             pass
 
@@ -179,22 +175,20 @@ class TestTypedDataString:
         def as_numpy(self):
             pass
 
-
     def test_typed_data_string_as_datastring(self):
         ds = TypedDataString(DataFormat.F01, DataString("0101"), 4)
         assert ds.as_data_string() == "duck://30313031"
 
     def test_typed_data_string_from_data(self):
-        ds = TypedDataString.from_data(
-            RAMData(DataFormat.CSV, [[0, 1, 0, 1]], 4)
-        )
+        ds = TypedDataString.from_data(RAMData(DataFormat.CSV, [[0, 1, 0, 1]], 4))
         assert ds.as_data_string() == "duck://302c312c302c310a"
 
     def test_typed_data_string_from_file(self):
         TypedDataString.from_data(
             TypedDataFile(
                 DataFormat.F01,
-                pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
+                pathlib.Path(__file__).parent
+                / "../resources/rep_code_noisy_stim_dets.01",
             )
         )
 
@@ -220,14 +214,13 @@ class TestTypedDataString:
 
 
 class TestTypedDataFile:
-
     @pytest.mark.parametrize(
         ("data", "data_format"),
         [
             (b"00101\n00101", DataFormat.F01),
             (b"0,0,1,0,1\n0,0,1,0,1", DataFormat.CSV),
             (b"\x14\x14", DataFormat.B8),
-        ]
+        ],
     )
     def test_typed_data_files(self, data, data_format, tmp_path):
         p = tmp_path / "data"
@@ -248,7 +241,7 @@ class TestTypedDataFile:
             ds.as_b8_bytes()
 
     def test_ramdata_as_numpy(self):
-        data = RAMData(data_format=DataFormat.B8, content=[[1,0],[0,1]])
+        data = RAMData(data_format=DataFormat.B8, content=[[1, 0], [0, 1]])
         arr = data.as_numpy()
         assert arr.shape == (2, 2)
 
@@ -262,7 +255,9 @@ class TestTypedDataFile:
 
     @pytest.mark.parametrize("num_parts", [1, 2, 3])
     def test_binarydatatype_split_and_combine(self, num_parts):
-        data = BinaryDataType([[1,0],[0,1], [1,0],[0,1]], data_format=DataFormat.B8)
+        data = BinaryDataType(
+            [[1, 0], [0, 1], [1, 0], [0, 1]], data_format=DataFormat.B8
+        )
         parts = data.split(num_parts)
         assert len(parts) == num_parts
         combined = BinaryDataType.combine(parts)
@@ -270,10 +265,10 @@ class TestTypedDataFile:
 
 
 class TestQECExperiment:
-
     def test_qec_experiment_from_circuit_and_measurements_no_sweeps(self):
         exp = QECExperiment.from_circuit_and_measurements(
-            pathlib.Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim",
+            pathlib.Path(__file__).parent
+            / "../resources/rep_code_mutated_default_noise_data.stim",
             pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
             DataFormat.F01,
         )
@@ -281,7 +276,8 @@ class TestQECExperiment:
 
     def test_qec_experiment_from_circuit_and_measurements_with_sweeps(self):
         exp = QECExperiment.from_circuit_and_measurements(
-            pathlib.Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim",
+            pathlib.Path(__file__).parent
+            / "../resources/rep_code_mutated_default_noise_data.stim",
             pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
             DataFormat.F01,
             pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
@@ -290,11 +286,15 @@ class TestQECExperiment:
         assert exp.measurements.as_numpy().shape == (5000, 8)
         assert exp.sweep_bits.as_numpy().shape == (5000, 8)
 
-    def test_qec_experiment_from_circuit_and_measurements_with_failed_sweeps_raises(self):
+    def test_qec_experiment_from_circuit_and_measurements_with_failed_sweeps_raises(
+        self,
+    ):
         msg = "sweep_path and sweep_format should be both provided, or should both be None."
         with pytest.raises(ValueError, match=msg):
             QECExperiment.from_circuit_and_measurements(
-                pathlib.Path("tests/resources/rep_code_mutated_default_noise_data.stim"),
+                pathlib.Path(
+                    "tests/resources/rep_code_mutated_default_noise_data.stim"
+                ),
                 pathlib.Path("tests/resources/rep_code_noisy_stim_dets.01"),
                 DataFormat.F01,
                 pathlib.Path("tests/resources/rep_code_noisy_stim_dets.01"),
@@ -302,7 +302,6 @@ class TestQECExperiment:
 
 
 class TestNoiseModel:
-
     def test_get_ion_trap_noise(self):
         model = PhysicalNoiseModel.get_ion_trap_noise()
         assert pytest.approx(model.time_reset) == 1e-5
@@ -318,7 +317,6 @@ class TestNoiseModel:
 
 
 class TestJSONable:
-
     @dataclass
     class DummyJSONable(JSONable):
         data: bytes

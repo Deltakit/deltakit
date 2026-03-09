@@ -3,7 +3,6 @@
 This module consists of individual circuit optimisation functions.
 """
 
-
 import itertools
 
 from deltakit_circuit import (

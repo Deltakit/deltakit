@@ -44,7 +44,9 @@ def _equal_or_less_brute_force_search(
     return None
 
 
-def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: int) -> float:
+def _calculate_lep(
+    lambda0: float, lambda_: float, distance: int, num_rounds: int
+) -> float:
     """Returns the probability of observing a logical error on a code of fixed
     distance after a number of rounds.
 
@@ -55,6 +57,7 @@ def _calculate_lep(lambda0: float, lambda_: float, distance: int, num_rounds: in
     lep_per_round = lambda0 * lambda_ ** (-(distance + 1) / 2)
     # At `lep_per_round` << 1 this is be approximated as `lep_per_round * num_rounds`
     return 0.5 * (1 - (1 - 2 * lep_per_round) ** num_rounds)
+
 
 def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> float:
     """Returns the number of QuOps, given distance.
@@ -77,13 +80,14 @@ def predict_quops_at_distance(lambda0: float, lambda_: float, distance: int) -> 
             f"Distance provided: {distance}"
         )
         raise ValueError(msg)
-    return 1. / _calculate_lep(lambda0, lambda_, distance, distance)
+    return 1.0 / _calculate_lep(lambda0, lambda_, distance, distance)
+
 
 def predict_distance_for_quops(
     lambda0: float,
     lambda_: float,
     num_quops: float,
-    max_distance: int=999,
+    max_distance: int = 999,
 ) -> int:
     """Returns the nearest odd distance that achieves the desired
     number of QuOps.
@@ -120,7 +124,7 @@ def predict_distance_for_quops(
         msg = "Lambda should be greater than 1 to ensure error suppression"
         raise ValueError(msg)
 
-    required_lep = 1. / num_quops
+    required_lep = 1.0 / num_quops
     distance = _equal_or_less_brute_force_search(
         lambda x: _calculate_lep(lambda0, lambda_, x, x),
         required_lep,

@@ -15,8 +15,4 @@ class FakeResponse:
         return self.status_code < 400
 
     def json(self):
-        return {
-            "status": self.status,
-            "type": "simulate",
-            "request_id": "some_id"
-        }
+        return {"status": self.status, "type": "simulate", "request_id": "some_id"}

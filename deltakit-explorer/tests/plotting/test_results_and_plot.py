@@ -18,7 +18,6 @@ from deltakit_explorer.plotting.results import (
 mpl.use("Agg")
 
 
-
 class TestComputeLambdaPlot:
     def test_output_type(self, lambda_results, distances):
         result = interpolate_lambda(lambda_results, distances)
@@ -48,6 +47,7 @@ class TestComputeLambdaPlot:
         result = interpolate_lambda(lambda_results, distances)
         with pytest.raises(AttributeError):
             result.distances = np.array([1, 2, 3])
+
 
 class TestComputeLepprPlot:
     def test_output_type(self, leppr_results, num_rounds):
@@ -81,6 +81,7 @@ class TestComputeLepprPlot:
         result = interpolate_leppr(leppr_results, num_rounds)
         with pytest.raises(AttributeError):
             result.rounds = np.array([1, 2, 3])
+
 
 class TestPlot:
     def test_plot_with_lambda_result(self, lambda_results, distances):

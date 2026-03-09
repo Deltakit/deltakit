@@ -184,7 +184,7 @@ class CSSCode(StabiliserCode):
 
     @staticmethod
     def _check_duplicate_stabilisers(
-        stabilisers: tuple[tuple[Stabiliser, ...], ...]
+        stabilisers: tuple[tuple[Stabiliser, ...], ...],
     ) -> None:
         for ind_lay, simultaneous_stabilisers in enumerate(stabilisers):
             if len(simultaneous_stabilisers) != len(set(simultaneous_stabilisers)):
@@ -201,11 +201,15 @@ class CSSCode(StabiliserCode):
         """
         for x_log_op in x_logical_operators:
             if len(set(x_log_op)) < len(x_log_op):
-                msg = "One of the X-logical operators contains duplicate PauliX objects."
+                msg = (
+                    "One of the X-logical operators contains duplicate PauliX objects."
+                )
                 raise ValueError(msg)
         for z_log_op in z_logical_operators:
             if len(set(z_log_op)) < len(z_log_op):
-                msg = "One of the Z-logical operators contains duplicate PauliZ objects."
+                msg = (
+                    "One of the Z-logical operators contains duplicate PauliZ objects."
+                )
                 raise ValueError(msg)
 
     @staticmethod
@@ -484,12 +488,7 @@ class CSSCode(StabiliserCode):
             # raise an error if the lengths of paulis in the current stabiliser layer
             # are not all the same
             if (
-                len(
-                    {
-                        len(stabiliser.paulis)
-                        for stabiliser in simultaneous_stabilisers
-                    }
-                )
+                len({len(stabiliser.paulis) for stabiliser in simultaneous_stabilisers})
                 > 1
             ):
                 msg = (
@@ -616,7 +615,9 @@ class CSSCode(StabiliserCode):
 
     def measure_z_logicals(self) -> CSSStage:
         if len(self.z_logical_operators) == 0:
-            msg = "No logical Z operators provided so cannot measure logical Z operators."
+            msg = (
+                "No logical Z operators provided so cannot measure logical Z operators."
+            )
             raise NotImplementedError(msg)
         return CSSStage(
             first_round_measurements=[MZ(qubit) for qubit in self._data_qubits],
@@ -628,7 +629,9 @@ class CSSCode(StabiliserCode):
 
     def measure_x_logicals(self) -> CSSStage:
         if len(self.x_logical_operators) == 0:
-            msg = "No logical X operators provided so cannot measure logical X operators."
+            msg = (
+                "No logical X operators provided so cannot measure logical X operators."
+            )
             raise NotImplementedError(msg)
         return CSSStage(
             first_round_measurements=[MX(qubit) for qubit in self._data_qubits],
@@ -713,10 +716,14 @@ class CSSCode(StabiliserCode):
             )
             raise ValueError(msg)
         if num_qubits_log_x not in [0, num_qubits]:
-            msg = "The matrix log_x_ops has a different number of columns to h_x or h_z."
+            msg = (
+                "The matrix log_x_ops has a different number of columns to h_x or h_z."
+            )
             raise ValueError(msg)
         if num_qubits_log_z not in [0, num_qubits]:
-            msg = "The matrix log_z_ops has a different number of columns to h_x or h_z."
+            msg = (
+                "The matrix log_z_ops has a different number of columns to h_x or h_z."
+            )
             raise ValueError(msg)
 
         def _check_and_return_entry(entry):
@@ -802,9 +809,10 @@ class CSSCode(StabiliserCode):
         # transformed, so we cannot rely on the qubit coordinates
         all_x_stabilisers = list(itertools.chain.from_iterable(self._x_stabilisers))
         all_z_stabilisers = list(itertools.chain.from_iterable(self._z_stabilisers))
-        x_parity_mat, z_parity_mat = np.zeros(
-            (len(all_x_stabilisers), len(self.data_qubits)), dtype=np.uint8
-        ), np.zeros((len(all_z_stabilisers), len(self.data_qubits)), dtype=np.uint8)
+        x_parity_mat, z_parity_mat = (
+            np.zeros((len(all_x_stabilisers), len(self.data_qubits)), dtype=np.uint8),
+            np.zeros((len(all_z_stabilisers), len(self.data_qubits)), dtype=np.uint8),
+        )
 
         # turn stabilisers into rows of the matrices.
         # note that since stabilisers are kept in Sets, the order

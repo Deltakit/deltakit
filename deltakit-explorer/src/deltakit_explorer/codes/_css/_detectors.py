@@ -3,6 +3,7 @@
 This module contains standalone functions related to detectors used to generating
 stabiliser code circuits.
 """
+
 import itertools
 import warnings
 from collections import defaultdict
@@ -118,7 +119,9 @@ def _get_coordinate_from_data_qubits(
         *tuple(
             float(np.mean([qubit_coord[i] for qubit_coord in qubit_coords]))
             for i in range(qubit_coord_len)
-        ), 0)
+        ),
+        0,
+    )
     return Coordinate(*full_coord)
 
 
@@ -193,7 +196,10 @@ def _calculate_detector_coordinates(
                     first_coord = (
                         detector_coord[0] - 0.3 + 0.6 * i_index / (detector_count - 1)
                     )
-                    full_coord = (first_coord, *tuple(coord for coord in detector_coord[1:]))
+                    full_coord = (
+                        first_coord,
+                        *tuple(coord for coord in detector_coord[1:]),
+                    )
                     detector_coords[index] = Coordinate(*full_coord)
 
         # check again for repeats as some shifted coordinates with different original
@@ -382,7 +388,8 @@ def _get_joint_sub_super_stabilisers_ind(
             [previous_stabilisers[ind_prev] for ind_prev in indices_prev],
         )
         if (
-            current_stabilisers[ind_curr].operator_repr != previous_stabiliser_product.operator_repr
+            current_stabilisers[ind_curr].operator_repr
+            != previous_stabiliser_product.operator_repr
         ):
             del sub_stabilisers_ind[ind_curr]
 
@@ -393,7 +400,8 @@ def _get_joint_sub_super_stabilisers_ind(
             [current_stabilisers[ind_curr] for ind_curr in indices_curr],
         )
         if (
-            previous_stabilisers[ind_prev].operator_repr != current_stabiliser_product.operator_repr
+            previous_stabilisers[ind_prev].operator_repr
+            != current_stabiliser_product.operator_repr
         ):
             del super_stabilisers_ind[ind_prev]
     # Convert these dictionaries into the list format

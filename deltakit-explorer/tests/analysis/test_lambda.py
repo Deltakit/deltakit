@@ -11,6 +11,7 @@ from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stdde
 def rng() -> np.random.Generator:
     return np.random.default_rng(4957349587)
 
+
 class TestCalculateLambda:
     @pytest.mark.parametrize(
         ("method", "distances", "lambda_", "lambda0", "relative_stddev"),
@@ -19,7 +20,7 @@ class TestCalculateLambda:
             ((5, 7, 9), (5, 9, 13), tuple(range(5, 50, 6))),
             (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
             (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
-            (10**(-x) for x in (1, 3, 5, 7, 9))
+            (10 ** (-x) for x in (1, 3, 5, 7, 9)),
         ),
     )
     def test_synthetic_values(
@@ -31,10 +32,14 @@ class TestCalculateLambda:
         relative_stddev: float,
         rng: np.random.Generator,
     ) -> None:
-        lepprs = np.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
+        lepprs = np.asarray(
+            [1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances]
+        )
         relative_stddevs = rng.normal(0, relative_stddev, size=len(distances))
         lepprs_stddev = (1 + relative_stddevs) * lepprs
-        res = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev, method)
+        res = calculate_lambda_and_lambda_stddev(
+            distances, lepprs, lepprs_stddev, method
+        )
         # Test that the estimated quantities are within 3*sigma of the real one.
         assert pytest.approx(res.lambda_, abs=3 * res.lambda_stddev) == lambda_
         assert pytest.approx(res.lambda0, abs=3 * res.lambda0_stddev) == lambda0
@@ -80,12 +85,14 @@ class TestCalculateLambda:
             ((5, 7, 9), (5, 9, 13)),
             (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
             (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
-            (10**(-x) for x in (1, 3, 5, 7, 9))
+            (10 ** (-x) for x in (1, 3, 5, 7, 9)),
         ),
     )
     def test_different_methods_agree(
         self,
-        methods: tuple[Literal["d", "(d+1)/2", "direct"], Literal["d", "(d+1)/2", "direct"]],
+        methods: tuple[
+            Literal["d", "(d+1)/2", "direct"], Literal["d", "(d+1)/2", "direct"]
+        ],
         distances: tuple[int, ...],
         lambda_: float,
         lambda0: float,
@@ -93,7 +100,9 @@ class TestCalculateLambda:
         rng: np.random.Generator,
     ) -> None:
         m1, m2 = methods
-        lepprs = np.asarray([1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances])
+        lepprs = np.asarray(
+            [1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances]
+        )
         relative_stddevs = rng.normal(0, relative_stddev, size=len(distances))
         lepprs_stddev = (1 + relative_stddevs) * lepprs
         res1 = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stddev, m1)

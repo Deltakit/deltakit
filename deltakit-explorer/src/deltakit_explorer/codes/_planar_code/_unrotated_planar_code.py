@@ -2,6 +2,7 @@
 """
 This module stores an implementation of the unrotated planar code.
 """
+
 import itertools
 from pathlib import Path
 from typing import Literal
@@ -175,7 +176,6 @@ class UnrotatedPlanarCode(PlanarCode):
             z_logical = {PauliZ(qubit) for qubit in horizontal_logical_qubits}
 
         return (x_logical,), (z_logical,)
-
 
     @override
     def draw_patch(

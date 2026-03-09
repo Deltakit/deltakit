@@ -115,6 +115,7 @@ class TestNativeGateSetAndTimes:
     def test_add_invalid_gate(self):
         class MY_GATE(Gate):
             stim_string = "MY_GATE"
+
         native_gate_set = NativeGateSetAndTimes()
         with pytest.raises(ValueError, match=r"Unknown gate..."):
             native_gate_set.add_gate(MY_GATE, 2.71)
@@ -135,10 +136,13 @@ class TestNativeGateSetAndTimes:
         gate_set = getattr(native_gate_set, gate_type_attr)
         assert gate_set[gate] == 1.0
 
-    @pytest.mark.parametrize("native_gates", [
-        None,
-        NativeGateSet([H], [ISWAP], [RY], [MY]),
-    ])
+    @pytest.mark.parametrize(
+        "native_gates",
+        [
+            None,
+            NativeGateSet([H], [ISWAP], [RY], [MY]),
+        ],
+    )
     def test_from_times(self, native_gates):
         time_1_qubit_gate = 25e-9
         time_2_qubit_gate = 34e-9
@@ -146,7 +150,11 @@ class TestNativeGateSetAndTimes:
         time_reset = 160e-9
 
         native_gates_times = NativeGateSetAndTimes.from_times(
-            time_1_qubit_gate, time_2_qubit_gate, time_reset, time_measurement, native_gates=native_gates,
+            time_1_qubit_gate,
+            time_2_qubit_gate,
+            time_reset,
+            time_measurement,
+            native_gates=native_gates,
         )
 
         if native_gates is None:
@@ -159,10 +167,18 @@ class TestNativeGateSetAndTimes:
         assert set(native_gates_times.reset_gates.values()) == {time_reset}
 
         # The returned native gate set has the same gates as the provided/exhaustive gate
-        assert set(native_gates_times.one_qubit_gates.keys()) == set(native_gates.one_qubit_gates)
-        assert set(native_gates_times.two_qubit_gates.keys()) == set(native_gates.two_qubit_gates)
-        assert set(native_gates_times.measurement_gates.keys()) == set(native_gates.measurement_gates)
-        assert set(native_gates_times.reset_gates.keys()) == set(native_gates.reset_gates)
+        assert set(native_gates_times.one_qubit_gates.keys()) == set(
+            native_gates.one_qubit_gates
+        )
+        assert set(native_gates_times.two_qubit_gates.keys()) == set(
+            native_gates.two_qubit_gates
+        )
+        assert set(native_gates_times.measurement_gates.keys()) == set(
+            native_gates.measurement_gates
+        )
+        assert set(native_gates_times.reset_gates.keys()) == set(
+            native_gates.reset_gates
+        )
 
 
 class TestNativeGateSet:
@@ -195,13 +211,19 @@ class TestExhaustiveGateSet:
         return ExhaustiveGateSet()
 
     def test_1q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.one_qubit_gates == dict.fromkeys(ONE_QUBIT_GATES, 1)
+        assert default_exhaustive_gateset.one_qubit_gates == dict.fromkeys(
+            ONE_QUBIT_GATES, 1
+        )
 
     def test_2q_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.two_qubit_gates == dict.fromkeys(TWO_QUBIT_GATES, 1)
+        assert default_exhaustive_gateset.two_qubit_gates == dict.fromkeys(
+            TWO_QUBIT_GATES, 1
+        )
 
     def test_reset_gateset_output(self, default_exhaustive_gateset):
         assert default_exhaustive_gateset.reset_gates == dict.fromkeys(RESET_GATES, 1)
 
     def test_measurement_gateset_output(self, default_exhaustive_gateset):
-        assert default_exhaustive_gateset.measurement_gates == dict.fromkeys(MEASUREMENT_GATES, 1)
+        assert default_exhaustive_gateset.measurement_gates == dict.fromkeys(
+            MEASUREMENT_GATES, 1
+        )

@@ -18,10 +18,7 @@ def test_converter_file_serialisation(destination, tmp_path):
         destination_format=destination,
         result_file=path,
     )
-    np.allclose(
-        Measurements(path, destination, 4).as_numpy(),
-        data
-    )
+    np.allclose(Measurements(path, destination, 4).as_numpy(), data)
 
 
 def test_converter_file_serialisation_raises(tmp_path):

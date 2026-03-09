@@ -82,6 +82,7 @@ class TestPhenomenologicalNoise:
         with pytest.raises(TypeError, match="positional argument"):
             PhenomenologicalNoise(0.01)
 
+
 class TestToyPhenomenologicalNoise:
     def test_noise_profiles_are_initialised_to_empty_lists(self):
         noise_model = ToyPhenomenologicalNoise()

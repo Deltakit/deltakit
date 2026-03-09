@@ -1,4 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
+import pickle
 from copy import deepcopy
 
 import pytest
@@ -413,3 +414,12 @@ def test_accessing_stim_id_when_unique_id_can_be_used():
 @pytest.mark.parametrize("rec", list(range(-1, -10, -1)))
 def test_measurement_record_hash(rec: int):
     assert hash(MeasurementRecord(rec)) == hash(MeasurementRecord(rec))
+
+
+@pytest.mark.parametrize(
+    "coords", [Coordinate(1, 2, 4), Coordinate(1), Coordinate(-1, 5, 20)]
+)
+def test_coordinate_is_roundtrip_picklable(coords: Coordinate) -> None:
+    dump = pickle.dumps(coords)
+    recovered = pickle.loads(dump)
+    assert recovered == coords

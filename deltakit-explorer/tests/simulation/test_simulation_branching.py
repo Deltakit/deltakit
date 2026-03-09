@@ -69,7 +69,8 @@ def test_leakage_simulation_calls_server_v1(mocker):
     client = Client.get_instance(api_version=1)
     mocker.patch.object(client._api, "_get_query", return_value="query")
     mocker_execute = mocker.patch.object(
-        client._api, "execute_query",
+        client._api,
+        "execute_query",
         return_value={"simulateWithStim": [{"uid": "duck://3232"}]},
     )
     mmts, _ = client.simulate_stim_circuit(circuit, 100)

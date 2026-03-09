@@ -2,6 +2,7 @@
 """This module contains an implementation of a data string wrapper,
 which allows to send arbitrary data inside a request, without creating files.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -121,9 +122,7 @@ class DataString:
                 " Expected that string starts with `duck://` and only "
                 "contains characters `0123456789abcdef`"
             )
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
         return DataString(cls._hex_string_to_bytes(data_string[7:]))
 
     @property

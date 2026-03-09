@@ -57,12 +57,14 @@ def plot(
         Plotting a Lambda fit curve::
 
             from deltakit_explorer.plotting.results import interpolate_lambda
+
             lambda_result = interpolate_lambda(lambda_data, distances)
             fig, ax = plot(lambda_result)
 
         Plotting a LEPPR fit curve::
 
             from deltakit_explorer.plotting.results import interpolate_leppr
+
             leppr_result = interpolate_leppr(leppr_data, num_rounds)
             fig, ax = plot(leppr_result)
     """

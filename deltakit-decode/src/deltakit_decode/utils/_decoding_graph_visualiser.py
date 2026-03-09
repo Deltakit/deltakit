@@ -23,12 +23,20 @@ class VisDecodingGraph3D:
     def __init__(self, decoding_graph: NXDecodingGraph):
         self.decoding_graph = decoding_graph
 
-        self.palette = ["#ff7500", "#dc4405", "#00968f",
-                        "#3ccbda", "#cf6f7f", "#1d3c34", "#006f62"]
+        self.palette = [
+            "#ff7500",
+            "#dc4405",
+            "#00968f",
+            "#3ccbda",
+            "#cf6f7f",
+            "#1d3c34",
+            "#006f62",
+        ]
         self.logical_palette = ["#780116", "#F7B538", "#DB7C26", "#D8572A", "#C32F27"]
 
-    def _categorise_nodes(self, nodes: Iterable[int]
-                          ) -> tuple[set[int], set[int], set[int]]:
+    def _categorise_nodes(
+        self, nodes: Iterable[int]
+    ) -> tuple[set[int], set[int], set[int]]:
         """Categorise nodes to three types: boundary, boundary-adjacent or bulk"""
         boundary_nodes: set[int] = set()
         boundary_adj_nodes: set[int] = set()
@@ -45,23 +53,27 @@ class VisDecodingGraph3D:
                 bulk_nodes.add(node)
         return (boundary_nodes, boundary_adj_nodes, bulk_nodes)
 
-    def _separate_boundary_edges(self, edges: Iterable[DecodingEdge]
-                                 ) -> tuple[set[DecodingEdge], set[DecodingEdge]]:
+    def _separate_boundary_edges(
+        self, edges: Iterable[DecodingEdge]
+    ) -> tuple[set[DecodingEdge], set[DecodingEdge]]:
         """Categorise edges to four types: to-boundary, spacelike, timelike or hook"""
         boundary_edges: set[DecodingEdge] = set()
         normal_edges: set[DecodingEdge] = set()
         for edge in edges:
             u, v = edge
-            if (self.decoding_graph.detector_is_boundary(u)
-                    or self.decoding_graph.detector_is_boundary(v)):
+            if self.decoding_graph.detector_is_boundary(
+                u
+            ) or self.decoding_graph.detector_is_boundary(v):
                 boundary_edges.add(edge)
             else:
                 normal_edges.add(edge)
         return (boundary_edges, normal_edges)
 
-    def _categorise_edges(self, edges: Iterable[DecodingEdge]
-                          ) -> tuple[set[DecodingEdge], set[DecodingEdge],
-                                     set[DecodingEdge], set[DecodingEdge]]:
+    def _categorise_edges(
+        self, edges: Iterable[DecodingEdge]
+    ) -> tuple[
+        set[DecodingEdge], set[DecodingEdge], set[DecodingEdge], set[DecodingEdge]
+    ]:
         """Categorise edges to four types: to-boundary, spacelike, timelike or hook"""
         boundary_edges: set[DecodingEdge] = set()
         spacelike_edges: set[DecodingEdge] = set()
@@ -69,8 +81,9 @@ class VisDecodingGraph3D:
         hook_edges: set[DecodingEdge] = set()
         for edge in edges:
             u, v = edge
-            if (self.decoding_graph.detector_is_boundary(u)
-                    or self.decoding_graph.detector_is_boundary(v)):
+            if self.decoding_graph.detector_is_boundary(
+                u
+            ) or self.decoding_graph.detector_is_boundary(v):
                 boundary_edges.add(edge)
             elif edge.is_timelike(self.decoding_graph.detector_records):
                 timelike_edges.add(edge)
@@ -139,7 +152,7 @@ class VisDecodingGraph3D:
         error_edges: OrderedDecodingEdges | None = None,
         logicals: list[set[DecodingEdge]] | None = None,
         categorise_edges: bool = False,
-        show: bool = True
+        show: bool = True,
     ) -> go.Figure:
         """Plots the DecodingGraph in 3D based on the coordinates (h, v, t)
         of the nodes of the graph.
@@ -164,8 +177,11 @@ class VisDecodingGraph3D:
             If the figure is shown or just returned. Default True.
         """
         traces = self.get_plot_3d_traces(
-            syndrome, correction_edges, error_edges, logicals,
-            categorise_edges=categorise_edges
+            syndrome,
+            correction_edges,
+            error_edges,
+            logicals,
+            categorise_edges=categorise_edges,
         )
         fig = go.Figure(data=traces, layout=get_default_layout())
         if show:
@@ -175,14 +191,16 @@ class VisDecodingGraph3D:
     def get_node_traces(self) -> list[go.Trace]:
         """Add nodes of the base graph to traces."""
         _, boundary_adj_nodes, bulk_nodes = self._categorise_nodes(
-            self.decoding_graph.nodes)
+            self.decoding_graph.nodes
+        )
         all_nodes = [boundary_adj_nodes, bulk_nodes]
         node_names = ["Boundary-adjacent node", "Bulk node"]
         colors = ["rgb(65, 212, 228)", "rgb(24, 110, 98)"]
         traces = []
         for node_set, name, color in zip(all_nodes, node_names, colors):
             scatter = get_scatter_for_node(
-                self.decoding_graph, node_set, name, color, 8, "circle")
+                self.decoding_graph, node_set, name, color, 8, "circle"
+            )
             if scatter is not None:
                 traces.append(scatter)
         return traces
@@ -224,16 +242,12 @@ class VisDecodingGraph3D:
                 traces.append(edge_trace)
         return traces
 
-    def get_syndrome_traces(
-        self, syndrome: OrderedSyndrome
-    ) -> list[go.Trace]:
+    def get_syndrome_traces(self, syndrome: OrderedSyndrome) -> list[go.Trace]:
         """Given a lit up syndrome, add its nodes to traces"""
         traces = []
         if any(s not in self.decoding_graph.nodes for s in syndrome):
-            msg = (
-                f"SyndromeBits must belong to DecodingGraph. \
+            msg = f"SyndromeBits must belong to DecodingGraph. \
                             Invalid syndrome: {syndrome}"
-            )
             raise ValueError(msg)
         if len(syndrome) != 0:
             scatter = get_scatter_for_node(
@@ -242,17 +256,14 @@ class VisDecodingGraph3D:
                 "Syndrome",
                 "rgba(255, 140, 0, 0.9)",
                 13,
-                "circle"
+                "circle",
             )
             traces.append(scatter)
         return traces
 
-    def highlight_edges_traces(self,
-                               edges: OrderedDecodingEdges,
-                               edge_type: str,
-                               color: str,
-                               linestyle: str
-                               ) -> go.Trace:
+    def highlight_edges_traces(
+        self, edges: OrderedDecodingEdges, edge_type: str, color: str, linestyle: str
+    ) -> go.Trace:
         """Highlight given set of edges in set colour with the edge type as label."""
         boundary_edges, normal_edges = self._separate_boundary_edges(edges)
 
@@ -292,7 +303,7 @@ class VisDecodingGraph3D:
             edges=correction_edges,
             edge_type="Correction",
             color="rgba(255, 187, 0, 0.8)",
-            linestyle="solid"
+            linestyle="solid",
         )
 
     def get_error_edges_traces(
@@ -303,7 +314,7 @@ class VisDecodingGraph3D:
             edges=error_edges,
             edge_type="Error",
             color="rgba(220, 68, 5, 0.8)",
-            linestyle="dash"
+            linestyle="dash",
         )
 
     def get_logical_edges_traces(
@@ -312,19 +323,18 @@ class VisDecodingGraph3D:
         """Add logical edges to traces."""
         traces = []
         for i, edges in enumerate(logicals):
-            color_idx = i % len(self.logical_palette)   # cycle colors if needed
+            color_idx = i % len(self.logical_palette)  # cycle colors if needed
             traces += self.highlight_edges_traces(
                 edges=OrderedDecodingEdges(edges),
                 edge_type=f"Logical L{i}",
                 color=self.logical_palette[color_idx],
-                linestyle="solid"
+                linestyle="solid",
             )
         return traces
 
 
 def get_default_layout() -> go.Layout:
-    """Return Layout object for formatting the figure
-    """
+    """Return Layout object for formatting the figure"""
     return go.Layout(
         showlegend=True,
         scene={
@@ -356,7 +366,7 @@ def get_default_layout() -> go.Layout:
             # aspectratio=dict(x=1, y=1, z=1),
             "camera": {
                 "eye": {"x": 0.2, "y": 0.9, "z": 0.2},
-                "projection": {"type": "orthographic"}
+                "projection": {"type": "orthographic"},
                 # use type="perspective" for a more immersive 3D experience
             },
         },
@@ -372,7 +382,7 @@ def get_scatter_for_node(
     color: str | None = None,
     markersize: float | None = None,
     symbol: str | None = None,
-    avoid_boundaries: bool = False
+    avoid_boundaries: bool = False,
 ) -> go.Scatter3d:
     """Given a set of syndromes, plot them in 3D with specified style parameters"""
     if nodes is None:
@@ -409,24 +419,26 @@ def get_line_for_edge(
     color: str | None = None,
     linewidth: float | None = None,
     linestyle: str | None = None,
-    avoid_boundaries: bool = False
+    avoid_boundaries: bool = False,
 ) -> go.Scatter3d:
     """Given a set of edges, plot them in 3D with specified style parameters"""
     if edges is None:
         edges = graph.edges
     if avoid_boundaries:
-        edges = [e for e in edges if not (graph.detector_is_boundary(
-            e.first) or graph.detector_is_boundary(e.second))]
+        edges = [
+            e
+            for e in edges
+            if not (
+                graph.detector_is_boundary(e.first)
+                or graph.detector_is_boundary(e.second)
+            )
+        ]
     x_edges, y_edges, z_edges = [], [], []
     edge_syndromes = []
     edge_weights = []
     for edge in edges:
-        first_coord = graph.detector_records[
-            edge.first
-        ].full_coord
-        second_coord = graph.detector_records[
-            edge.second
-        ].full_coord
+        first_coord = graph.detector_records[edge.first].full_coord
+        second_coord = graph.detector_records[edge.second].full_coord
         x_edges += [first_coord[0], second_coord[0], None]
         y_edges += [first_coord[1], second_coord[1], None]
         z_edges += [first_coord[2], second_coord[2], None]

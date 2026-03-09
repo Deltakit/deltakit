@@ -3,6 +3,7 @@
 This module contains common implementation parts for planar codes.
 Other planar code classes derive from PlanarCode.
 """
+
 import warnings
 from abc import ABC, abstractmethod
 from enum import Enum

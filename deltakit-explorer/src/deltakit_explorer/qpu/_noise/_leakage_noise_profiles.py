@@ -40,7 +40,6 @@ def two_qubit_gate_leakage_noise_profile(pL: float) -> NoiseProfile:
             )
         ]
 
-
     return leakage_two_qubit_gate
 
 

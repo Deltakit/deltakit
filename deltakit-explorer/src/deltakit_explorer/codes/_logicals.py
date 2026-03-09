@@ -273,7 +273,10 @@ def css_code_compute_logicals(
     Returns:
         a tuple ``(lx, lz)`` representing the X and Z logicals.
     """
-    def compute_lz(_hx: NDArray[np.floating], _hz: NDArray[np.floating]) -> NDArray[np.floating]:
+
+    def compute_lz(
+        _hx: NDArray[np.floating], _hz: NDArray[np.floating]
+    ) -> NDArray[np.floating]:
         # lz logical operators
         # lz\in ker{hx} AND \notin Im(Hz.T)
 

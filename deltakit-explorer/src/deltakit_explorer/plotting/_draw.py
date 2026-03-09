@@ -218,10 +218,14 @@ def _draw_code(
             fig.savefig(filename, bbox_extra_artists=(legend,), bbox_inches="tight")
         elif backend == "pgf":
             fig.savefig(
-                filename.parent / f"{filename.name}.pgf", bbox_extra_artists=(legend,), bbox_inches="tight"
+                filename.parent / f"{filename.name}.pgf",
+                bbox_extra_artists=(legend,),
+                bbox_inches="tight",
             )
         elif backend == "svg":
             fig.savefig(
-                filename.parent / f"{filename.name}.svg", bbox_extra_artists=(legend,), bbox_inches="tight"
+                filename.parent / f"{filename.name}.svg",
+                bbox_extra_artists=(legend,),
+                bbox_inches="tight",
             )
     return fig, ax

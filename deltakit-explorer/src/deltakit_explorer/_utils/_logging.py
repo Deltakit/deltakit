@@ -7,7 +7,6 @@ the `reqid=[...]` fields in this file. Each request to the server is accompanied
 a unique string, which may be used to facilitate incident investigation.
 """
 
-
 from __future__ import annotations
 
 import inspect

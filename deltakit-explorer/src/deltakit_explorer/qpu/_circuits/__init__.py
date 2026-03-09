@@ -8,7 +8,6 @@ and can be removed, adjusting imports within other `deltakit_explorer` modules
 accordingly.
 """
 
-
 from deltakit_explorer.qpu._circuits._circuit_functions import (
     merge_layers,
     remove_identities,

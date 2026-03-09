@@ -3,6 +3,7 @@
 This module contains standalone functions which help extract information from
 stabilisers.
 """
+
 from collections.abc import Iterable, Sequence
 
 from deltakit_circuit import GateLayer, PauliX, PauliY, PauliZ, Qubit

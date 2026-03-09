@@ -57,7 +57,9 @@ def test_binary_data_size_raises():
 def test_get_decoding_request_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    stim_file = (
+        Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    )
     circuit = stim.Circuit.from_file(stim_file)
     circuit_text = str(circuit)
     assert get_decoding_request_size_estimate(circuit, shots, data_format) == expected
@@ -108,7 +110,9 @@ def test_get_decoding_request_size_estimate_with_leakage(
 def test_get_decoding_response_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    stim_file = (
+        Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    )
     circuit = stim.Circuit.from_file(stim_file)
     circuit_text = str(circuit)
     assert get_decoding_response_size_estimate(circuit, shots, data_format) == expected
@@ -132,7 +136,9 @@ def test_get_decoding_response_size_estimate(
 def test_get_simulation_response_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    stim_file = (
+        Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
+    )
     circuit = stim.Circuit.from_file(stim_file)
     circuit_text = str(circuit)
     assert (
@@ -173,11 +179,14 @@ def test_simulation_response_size_estimate_with_leakage(
         == expected
     )
 
+
 def test_get_binary_data_size_b8():
     assert get_binary_data_size(8, 2, DataFormat.B8) == 2
 
+
 def test_get_binary_data_size_csv():
     assert get_binary_data_size(3, 2, DataFormat.CSV) == 12
+
 
 def test_get_binary_data_size_invalid():
     with pytest.raises(NotImplementedError):

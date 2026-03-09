@@ -16,7 +16,6 @@ from deltakit_explorer.types import QECExperimentDefinition
 
 
 class TestLogging:
-
     def setup_class(self):
         """Redirect logging to a temporary file"""
 
@@ -89,7 +88,8 @@ class TestLogging:
         client = Client("base")
         with pytest.raises(Exception):
             client.generate_circuit(
-                QECExperimentDefinition.get_repetition_z_quantum_memory(-1, -1))
+                QECExperimentDefinition.get_repetition_z_quantum_memory(-1, -1)
+            )
         self.logfile.seek(0)
         loglines = self.logfile.readlines()
         assert "generate_circuit" in loglines[-2]
@@ -132,7 +132,9 @@ class TestLogging:
             ),
         ],
     )
-    def test_log_method_correct_format_and_content(self, log_path: Path, method, ref_text):
+    def test_log_method_correct_format_and_content(
+        self, log_path: Path, method, ref_text
+    ):
         method("test", "test")
         with log_path.open() as logfile:
             text = logfile.read()
@@ -159,7 +161,7 @@ class TestLogging:
             Logging.info(long_text, f"fake_uid_{i}")
         files = [
             get_log_directory() / LOG_FILENAME,
-            *[get_log_directory() / f"{LOG_FILENAME}.{i}" for i in range(1, 4)]
+            *[get_log_directory() / f"{LOG_FILENAME}.{i}" for i in range(1, 4)],
         ]
 
         # cleanup
@@ -171,7 +173,7 @@ class TestLogging:
     def test_string_shortening(self, log_path: Path):
         local1 = "12345" * 1000
         local2 = "asdfbdx" * 100
-        args = { "local1": local1, "local2": local2, "log_path": log_path }
+        args = {"local1": local1, "local2": local2, "log_path": log_path}
         Logging.info_and_generate_uid(args)
         with log_path.open() as logfile:
             text = logfile.read()
@@ -183,49 +185,44 @@ class TestLogging:
             # reqid 16 bytes in hex
             + 32
             # surrounding
-            + len("[2025-02-12 14:54:30,397.397][logging][INFO]"
-                  "     api:logging.py:76 test_string_shortening({}); reqid=[]")
+            + len(
+                "[2025-02-12 14:54:30,397.397][logging][INFO]"
+                "     api:logging.py:76 test_string_shortening({}); reqid=[]"
+            )
         )
-
 
     def test_set_log_to_console_off(self):
         Logging.set_log_to_console(False)
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 0
-
 
     def test_set_log_to_console_on(self):
         Logging.set_log_to_console(True)
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 1
         Logging.set_log_to_console(False)
-
 
     def test_set_log_to_console_on_off(self):
         Logging.set_log_to_console(True)
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 1
         Logging.set_log_to_console(False)
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 0
 
@@ -234,16 +231,14 @@ class TestLogging:
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 0
         Logging.set_log_to_console(True)
         handlers = [
             handler
             for handler in Logging.logger.handlers
-            if type(handler)
-            is logging.StreamHandler
+            if type(handler) is logging.StreamHandler
         ]
         assert len(handlers) == 1
         Logging.set_log_to_console(False)

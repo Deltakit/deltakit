@@ -3,8 +3,6 @@
 This module implements a repetition code for quantum memory and stability experiments.
 """
 
-from collections.abc import Callable
-
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit._basic_types import Coord2D, Coord2DDelta
@@ -172,9 +170,8 @@ class RepetitionCode(CSSCode):
             else:
                 stabilisers_second.append(stabiliser)
 
-        _sort_fun: Callable[[Stabiliser], int] = lambda stab: (  # noqa: E731
-            stab.ancilla_qubit.unique_identifier.x + 1
-        ) % (2 * self.distance)
+        def _sort_fun(stab: Stabiliser) -> int:
+            return (stab.ancilla_qubit.unique_identifier.x + 1) % (2 * self.distance)
 
         stabilisers_first.sort(key=_sort_fun)
         stabilisers_second.sort(key=_sort_fun)

@@ -78,10 +78,13 @@ class TestToyNoise:
             NoiseContext(circuit, layer)
         ) == [depolarize_1]
 
-    @pytest.mark.parametrize(("toy_noise", "str_val"), [
-        (ToyNoise(p=0.123), "toy_noise_1e-01"),
-        (ToyNoise(p=0.123, p_measurement_flip=0.234), "toy_noise_1e-01_2e-01")
-    ])
+    @pytest.mark.parametrize(
+        ("toy_noise", "str_val"),
+        [
+            (ToyNoise(p=0.123), "toy_noise_1e-01"),
+            (ToyNoise(p=0.123, p_measurement_flip=0.234), "toy_noise_1e-01_2e-01"),
+        ],
+    )
     def test_toy_noise_str(self, toy_noise, str_val):
         assert str(toy_noise) == str_val
 

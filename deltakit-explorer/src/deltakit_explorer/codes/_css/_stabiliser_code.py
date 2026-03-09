@@ -246,9 +246,7 @@ class StabiliserCode(ABC):
             corresponding to one logical X operator.
         """
         return (
-            self._x_logical_operators
-            if self._x_logical_operators is not None
-            else ()
+            self._x_logical_operators if self._x_logical_operators is not None else ()
         )
 
     @x_logical_operators.setter
@@ -289,9 +287,7 @@ class StabiliserCode(ABC):
             corresponding to one logical Z operator.
         """
         return (
-            self._z_logical_operators
-            if self._z_logical_operators is not None
-            else ()
+            self._z_logical_operators if self._z_logical_operators is not None else ()
         )
 
     @z_logical_operators.setter

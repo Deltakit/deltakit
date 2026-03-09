@@ -14,7 +14,9 @@ from deltakit_explorer._utils import _utils as utils
 
 def test_set_token(mocker):
     randint = random.randint(100000, 999999)
-    mocker.patch("deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}")
+    mocker.patch(
+        "deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}"
+    )
     token = "2134"  # nosec B105
     _auth.set_token(token)
     assert _auth.get_token() == token
@@ -22,7 +24,9 @@ def test_set_token(mocker):
 
 def test_if_no_token_raises(mocker):
     randint = random.randint(100000, 999999)
-    mocker.patch("deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}")
+    mocker.patch(
+        "deltakit_explorer._utils._utils.APP_NAME", f"qec-testplorer-{randint}"
+    )
     utils.override_persisted_variables({}, utils.get_config_file_path())
     os.environ.pop(_auth.TOKEN_VARIABLE)
     with pytest.raises(RuntimeError, match=r"^Token could not be found neither"):
@@ -41,7 +45,7 @@ def test_http_verification_is_set():
         )
 
 
-@pytest.mark.filterwarnings('ignore:Unverified HTTPS')
+@pytest.mark.filterwarnings("ignore:Unverified HTTPS")
 def test_http_verification_is_unset():
     # Related to `test_http_verification_is_set above`, but this time
     # we don't require HTTPS verification, so we should *not* get an `SSLError`.

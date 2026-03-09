@@ -14,8 +14,13 @@ def pytest_addoption(parser: Parser):
     parser : Parser
         A pytest parser instance to add command line options to.
     """
-    parser.addoption("--random-repeats", type=str, default="low",
-                     choices=["low", "medium", "high"], action="store")
+    parser.addoption(
+        "--random-repeats",
+        type=str,
+        default="low",
+        choices=["low", "medium", "high"],
+        action="store",
+    )
 
 
 def pytest_generate_tests(metafunc: Metafunc):
@@ -34,7 +39,8 @@ def pytest_generate_tests(metafunc: Metafunc):
         repeat_options.update(marker.kwargs)
     if metafunc.definition.get_closest_marker("random") is not None:
         number_of_repeats = repeat_options[
-            metafunc.config.getoption("--random-repeats")]
+            metafunc.config.getoption("--random-repeats")
+        ]
         metafunc.definition.add_marker(pytest.mark.repeat(number_of_repeats))
 
 

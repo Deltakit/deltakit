@@ -9,32 +9,31 @@ from deltakit_explorer.types import DataString
 
 
 class TestDataString:
-
     def test_string_to_bytes(self):
         dstring = DataString.from_data_string("duck://0a0d24")  # \r\n$
         assert dstring.data == b"\n\r$"
 
     @pytest.mark.parametrize(
-            ("input_data", "encoding"),
-            [
-                ("", "utf-8"),
-                ("aaa", "utf-8"),
-                ("!$%", "utf-8"),
-                ("", "ascii"),
-                ("aaa", "ascii"),
-                ("!$%", "ascii")
-            ]
+        ("input_data", "encoding"),
+        [
+            ("", "utf-8"),
+            ("aaa", "utf-8"),
+            ("!$%", "utf-8"),
+            ("", "ascii"),
+            ("aaa", "ascii"),
+            ("!$%", "ascii"),
+        ],
     )
     def test_to_string_succeeds(self, input_data, encoding):
         dstring = DataString(input_data.encode(encoding))
         assert dstring.to_string(encoding) == input_data
 
     @pytest.mark.parametrize(
-            "input_bytes",
-            [
-                [b"\xc0"],
-                ["ö".encode()],
-            ]
+        "input_bytes",
+        [
+            [b"\xc0"],
+            ["ö".encode()],
+        ],
     )
     def test_to_string_fails(self, input_bytes):
         dstring = DataString(input_bytes)

@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """Enums used across the client library."""
+
 from __future__ import annotations
 
 from enum import Enum

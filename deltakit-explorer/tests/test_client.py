@@ -7,4 +7,4 @@ from deltakit_explorer import __version__
 
 
 def test_version():
-    assert importlib.metadata.version('deltakit_explorer') == __version__
+    assert importlib.metadata.version("deltakit_explorer") == __version__

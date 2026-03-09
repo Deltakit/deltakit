@@ -51,11 +51,12 @@ def plot_logical_error_probability_per_round(
     Example:
 
         >>> from deltakit_explorer.analysis import (
-        ...     calculate_lep_and_lep_stddev, compute_logical_error_per_round,
+        ...     calculate_lep_and_lep_stddev,
+        ...     compute_logical_error_per_round,
         ... )
-        >>> num_failed_shots=[34, 151, 356]
-        >>> num_shots=[500000] * 3
-        >>> num_rounds=[2, 4, 6]
+        >>> num_failed_shots = [34, 151, 356]
+        >>> num_shots = [500000] * 3
+        >>> num_rounds = [2, 4, 6]
         >>> res = compute_logical_error_per_round(
         ...     num_failed_shots=num_failed_shots,
         ...     num_shots=num_shots,
@@ -110,10 +111,7 @@ def plot_logical_error_probability_per_round(
         label=f"Logical error probabilities (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
-    leppr_result = interpolate_leppr(
-        leppr_data, num_rounds, num_sigmas=num_sigmas
-
-    )
+    leppr_result = interpolate_leppr(leppr_data, num_rounds, num_sigmas=num_sigmas)
 
     plot(leppr_result, fig=fig, ax=ax)
 

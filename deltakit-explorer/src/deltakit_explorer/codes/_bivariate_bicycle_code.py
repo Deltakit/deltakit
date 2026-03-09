@@ -6,6 +6,7 @@ qLDPC codes as specified in https://arxiv.org/pdf/2308.07915.pdf.
 The code is flexible and should allow exploration of codes with parameters
 other than those listed in the paper.
 """
+
 from __future__ import annotations
 
 from functools import reduce

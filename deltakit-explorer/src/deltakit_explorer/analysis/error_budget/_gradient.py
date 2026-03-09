@@ -298,7 +298,7 @@ def get_lambda_gradient(
     # parameter.
     gradient: list[float] = []
     gradient_stddev: list[float] = []
-    for npi, noise_parameter in enumerate(central_point):
+    for npi, noise_parameter in enumerate(central_point.ravel()):
         start = 1 + fitting_parameters.num_points_per_parameters * npi
         end = 1 + fitting_parameters.num_points_per_parameters * (npi + 1)
         # Index 0 is ``central_point``, so it can be included in all estimations.
@@ -307,7 +307,7 @@ def get_lambda_gradient(
         y = lambda_reciprocals[0, column_indices]
         stddevs = lambda_reciprocal_stddevs[0, column_indices]
         derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
-            x, y, stddevs, noise_parameter, degree=fitting_parameters.fitting_degree
+            x, y, stddevs, float(noise_parameter), degree=fitting_parameters.fitting_degree
         )
         gradient.append(derivative)
         gradient_stddev.append(derivative_stddev)

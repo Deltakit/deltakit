@@ -97,9 +97,9 @@ def compute_logical_error_per_round(
     isort = np.argsort(num_rounds)
     num_rounds = np.asarray(num_rounds)[isort]
     logical_error_probabilities = np.asarray(logical_error_probabilities)[isort]
-    logical_error_probabilities_stddev = np.asarray(
-        logical_error_probabilities_stddev
-    )[isort]
+    logical_error_probabilities_stddev = np.asarray(logical_error_probabilities_stddev)[
+        isort
+    ]
 
     # Check that we do not have duplicate data for the same number of rounds as that
     # will confuse the numerical methods used in this function.

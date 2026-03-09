@@ -33,8 +33,14 @@ StimBatchOutput: TypeAlias = tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]
 
 
 class StimDecoderManager(
-        NoiseModelDecoderManager[StimOutput, stim.Circuit, tuple[bool, ...],
-                                 StimBatchOutput, npt.NDArray[np.uint8]]):
+    NoiseModelDecoderManager[
+        StimOutput,
+        stim.Circuit,
+        tuple[bool, ...],
+        StimBatchOutput,
+        npt.NDArray[np.uint8],
+    ]
+):
     """Decoder manager to support Stim circuits being used for noise generation, and
     Stim observables to define decoder success.
 
@@ -59,22 +65,25 @@ class StimDecoderManager(
     """
 
     def __init__(
-            self,
-            stim_noise_circuit: stim.Circuit,
-            decoder: GraphDecoder,
-            noise_model: NoiseModel[stim.Circuit, StimOutput] | None = None,
-            reporters: list[BaseReporter] | None = None,
-            metadata: dict[str, str] | None = None,
-            seed: int | None = None,
-            batch_size: int = int(1e4)):
+        self,
+        stim_noise_circuit: stim.Circuit,
+        decoder: GraphDecoder,
+        noise_model: NoiseModel[stim.Circuit, StimOutput] | None = None,
+        reporters: list[BaseReporter] | None = None,
+        metadata: dict[str, str] | None = None,
+        seed: int | None = None,
+        batch_size: int = int(1e4),
+    ):
         if noise_model is None:
             noise_model = SampleStimNoise()
-        super().__init__(noise_model,
-                         len(decoder.logicals),
-                         reporters,
-                         metadata,
-                         seed=seed,
-                         batch_size=batch_size)
+        super().__init__(
+            noise_model,
+            len(decoder.logicals),
+            reporters,
+            metadata,
+            seed=seed,
+            batch_size=batch_size,
+        )
         self._stim_noise_circuit = stim_noise_circuit
         self._decoder = decoder
 
@@ -85,23 +94,30 @@ class StimDecoderManager(
         self._decoder.logicals."""
         return self._empirical_decoding_error_distribution.fails_per_logical.tolist()
 
-    def _analyse_correction(self, error: StimOutput, correction: tuple[bool, ...]
-                            ) -> bool:
+    def _analyse_correction(
+        self, error: StimOutput, correction: tuple[bool, ...]
+    ) -> bool:
         _, target_logical_flip = error
         return target_logical_flip != correction
 
     def _decode_from_error(self, error: StimOutput) -> tuple[bool, ...]:
         syndrome, target_logical_flip = error
         correction = self._decoder.decode_to_logical_flip(syndrome)
-        self._empirical_decoding_error_distribution.record_error(correction,
-                                                                 target_logical_flip)
+        self._empirical_decoding_error_distribution.record_error(
+            correction, target_logical_flip
+        )
         return correction
 
-    def _decode_batch_from_error(self, errors: StimBatchOutput) -> npt.NDArray[np.uint8]:
+    def _decode_batch_from_error(
+        self, errors: StimBatchOutput
+    ) -> npt.NDArray[np.uint8]:
         syndrome_batch, actual_observables = errors
-        predicted_observables = self._decoder.decode_batch_to_logical_flip(syndrome_batch)
+        predicted_observables = self._decoder.decode_batch_to_logical_flip(
+            syndrome_batch
+        )
         self._empirical_decoding_error_distribution.batch_record_errors(
-            predicted_observables, actual_observables)
+            predicted_observables, actual_observables
+        )
         return predicted_observables
 
     def get_reporter_results(self) -> dict[str, Any]:
@@ -169,12 +185,13 @@ class B8DecoderManager(DecoderManager):
     """
 
     def __init__(
-            self,
-            syndrome_b8_input: Path | bytes,
-            logical_flip_b8_input: Path | bytes,
-            decoder: GraphDecoder,
-            reporters: list[BaseReporter] | None = None,
-            metadata: dict[str, Any] | None = None):
+        self,
+        syndrome_b8_input: Path | bytes,
+        logical_flip_b8_input: Path | bytes,
+        decoder: GraphDecoder,
+        reporters: list[BaseReporter] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ):
         super().__init__(len(decoder.logicals), reporters, metadata)
         if reporters:
             warn("Reporters on a B8DecoderManager will not be used.", stacklevel=2)
@@ -186,11 +203,11 @@ class B8DecoderManager(DecoderManager):
         raise NotImplementedError()
 
     def run_batch_shots(self, batch_limit: int | None) -> tuple[int, int]:
-        detector_num = len(self._decoder.decoding_graph.nodes) - \
-            len(self._decoder.decoding_graph.boundaries)
+        detector_num = len(self._decoder.decoding_graph.nodes) - len(
+            self._decoder.decoding_graph.boundaries
+        )
         num_logicals = len(self._decoder.logicals)
-        syndrome_generator = b8_to_syndromes(self._syndrome_b8_input,
-                                             detector_num)
+        syndrome_generator = b8_to_syndromes(self._syndrome_b8_input, detector_num)
         target_generator = b8_to_logical_flip(self._logical_flip_b8_input, num_logicals)
         syndrome_and_targets: Iterable[tuple[OrderedSyndrome, tuple[bool, ...]]]
         syndrome_and_targets = zip(syndrome_generator, target_generator)
@@ -205,32 +222,39 @@ class B8DecoderManager(DecoderManager):
         return self.shots, self.fails
 
 
-class GraphDecoderManager(NoiseModelDecoderManager[
-    AbstractSet[EdgeT], HyperMultiGraph, tuple[bool, ...],
-        list[AbstractSet[EdgeT]], list[tuple[bool, ...]]]):
+class GraphDecoderManager(
+    NoiseModelDecoderManager[
+        AbstractSet[EdgeT],
+        HyperMultiGraph,
+        tuple[bool, ...],
+        list[AbstractSet[EdgeT]],
+        list[tuple[bool, ...]],
+    ]
+):
     """Decoder manager for a graph decoder with an edge-based noise model. In
     this representation, an edge corresponds to a possible error event and
     the nodes of the edge correspond to the syndromes triggered by the error.
     """
 
     def __init__(
-            self,
-            noise_model: NoiseModel,
-            decoder: GraphDecoder[HyperMultiGraph],
-            decoding_graph: HyperMultiGraph | None = None,
-            logicals: Sequence[AbstractSet[DecodingHyperEdge | int]] | None = None,
-            reporters: list[BaseReporter] | None = None,
-            metadata: dict[str, str] | None = None,
-            seed: int | None = None,
-            batch_size: int = int(1e4)):
-        super().__init__(noise_model,
-                         len(logicals
-                             if logicals is not None
-                             else decoder.logicals),
-                         reporters,
-                         metadata,
-                         seed=seed,
-                         batch_size=batch_size)
+        self,
+        noise_model: NoiseModel,
+        decoder: GraphDecoder[HyperMultiGraph],
+        decoding_graph: HyperMultiGraph | None = None,
+        logicals: Sequence[AbstractSet[DecodingHyperEdge | int]] | None = None,
+        reporters: list[BaseReporter] | None = None,
+        metadata: dict[str, str] | None = None,
+        seed: int | None = None,
+        batch_size: int = int(1e4),
+    ):
+        super().__init__(
+            noise_model,
+            len(logicals if logicals is not None else decoder.logicals),
+            reporters,
+            metadata,
+            seed=seed,
+            batch_size=batch_size,
+        )
         self._decoder = decoder
         self._decoding_graph = decoding_graph or decoder.decoding_graph
         self._logicals = logicals if logicals is not None else decoder.logicals
@@ -242,12 +266,14 @@ class GraphDecoderManager(NoiseModelDecoderManager[
         self._decoder.logicals."""
         return self._empirical_decoding_error_distribution.fails_per_logical.tolist()
 
-    def _analyse_correction(self,
-                            error: AbstractSet[EdgeT],
-                            correction: tuple[bool, ...],
-                            ) -> bool:
-        target_logical_flip = tuple(len(error & logical) % 2 == 1
-                                for logical in self._logicals)
+    def _analyse_correction(
+        self,
+        error: AbstractSet[EdgeT],
+        correction: tuple[bool, ...],
+    ) -> bool:
+        target_logical_flip = tuple(
+            len(error & logical) % 2 == 1 for logical in self._logicals
+        )
         return target_logical_flip != correction
 
     @property
@@ -274,14 +300,17 @@ class GraphDecoderManager(NoiseModelDecoderManager[
     def _decode_from_error(self, error: AbstractSet[EdgeT]) -> tuple[bool, ...]:
         syndrome = self._decoding_graph.error_to_syndrome(error)
         correction = self._decoder.decode_to_logical_flip(syndrome)
-        target_logical_flip = tuple(len(error & logical) % 2 == 1
-                                    for logical in self._logicals)
-        self._empirical_decoding_error_distribution.record_error(correction,
-                                                                 target_logical_flip)
+        target_logical_flip = tuple(
+            len(error & logical) % 2 == 1 for logical in self._logicals
+        )
+        self._empirical_decoding_error_distribution.record_error(
+            correction, target_logical_flip
+        )
         return correction
 
-    def _decode_batch_from_error(self, errors: list[AbstractSet[EdgeT]]
-                                 ) -> list[tuple[bool, ...]]:
+    def _decode_batch_from_error(
+        self, errors: list[AbstractSet[EdgeT]]
+    ) -> list[tuple[bool, ...]]:
         return [self._decode_from_error(error) for error in errors]
 
     def get_reporter_results(self) -> dict[str, Any]:

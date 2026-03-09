@@ -4,6 +4,7 @@ This module contains an implementation of a QPU simulator class.
 The class provides native gate compilation, noise addition and
 execution time computation features. This is a fully-functional class.
 """
+
 # pylint: disable=too-many-branches
 from collections.abc import Iterable
 from copy import deepcopy
@@ -26,7 +27,6 @@ from deltakit_explorer.qpu._noise import NoiseParameters, PhenomenologicalNoise
 class CircuitSchedule(NamedTuple):
     active_times_list: list[dict[Qubit, float]]
     previous_layer_times: list[float]
-
 
 
 class QPU:
@@ -365,9 +365,7 @@ class QPU:
             Compiled circuit with noise added.
         """
         return remove_identities(
-            self.add_noise_to_circuit(
-                self.compile_circuit(circuit, remove_paulis)
-            )
+            self.add_noise_to_circuit(self.compile_circuit(circuit, remove_paulis))
         )
 
     @staticmethod

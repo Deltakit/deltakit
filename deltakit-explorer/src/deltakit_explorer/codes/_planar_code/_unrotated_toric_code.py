@@ -3,6 +3,7 @@
 This module includes implementation of the unrotated toric code. The code
 represents two logical qubits.
 """
+
 import itertools
 from pathlib import Path
 from typing import Literal
@@ -159,7 +160,6 @@ class UnrotatedToricCode(PlanarCode):
         )
 
         return (x_logicals, z_logicals)
-
 
     @override
     def draw_patch(
