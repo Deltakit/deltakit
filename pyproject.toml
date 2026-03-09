@@ -32,10 +32,10 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit>=0.7.1",
-  "deltakit-core>=0.7.1",
-  "deltakit-decode>=0.7.1",
-  "deltakit-explorer>=0.7.1",
+  "deltakit-circuit>=0.8.0",
+  "deltakit-core>=0.8.0",
+  "deltakit-decode>=0.8.0",
+  "deltakit-explorer>=0.8.0",
 ]
 
 [project.urls]
