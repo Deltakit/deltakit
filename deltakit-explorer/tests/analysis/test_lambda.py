@@ -1,4 +1,5 @@
 import itertools
+from math import floor
 from typing import Literal
 
 import numpy as np
@@ -17,7 +18,7 @@ class TestCalculateLambda:
         ("method", "distances", "lambda_", "lambda0", "relative_stddev"),
         itertools.product(
             ("d", "(d+1)/2", "direct"),
-            ((5, 7, 9), (5, 9, 13), tuple(range(5, 50, 6))),
+            ((5, 7, 9), (5, 6, 7, 8, 9), tuple(range(5, 50, 6))),
             (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
             (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
             (10 ** (-x) for x in (1, 3, 5, 7, 9)),
@@ -33,7 +34,7 @@ class TestCalculateLambda:
         rng: np.random.Generator,
     ) -> None:
         lepprs = np.asarray(
-            [1 / (lambda0 * lambda_ ** ((d + 1) / 2)) for d in distances]
+            [1 / (lambda0 * lambda_ ** floor((d + 1) / 2)) for d in distances]
         )
         relative_stddevs = rng.normal(0, relative_stddev, size=len(distances))
         lepprs_stddev = (1 + relative_stddevs) * lepprs
