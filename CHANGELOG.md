@@ -2,6 +2,38 @@
 
 <!-- version list -->
 
+## v0.8.0 (2026-03-09)
+
+### Breaking Changes
+
+- Support for Stim v1.11 is discontinued. Minimal supported Stim version is v1.12.
+
+### Bug Fixes
+
+- Do not use isinstance checks in dem parser ([#237](https://github.com/Deltakit/deltakit/pull/237),
+  [`eed7123`](https://github.com/Deltakit/deltakit/commit/eed7123bf4c806574e61405de813a15644cac4a2))
+
+- Numpy dimension issue in error budget ([#236](https://github.com/Deltakit/deltakit/pull/236),
+  [`7b6eb37`](https://github.com/Deltakit/deltakit/commit/7b6eb3752c63b368385d7cf801dc8cac52deeb7c))
+
+- Picklable Coordinate ([#239](https://github.com/Deltakit/deltakit/pull/239),
+  [`d78fdc0`](https://github.com/Deltakit/deltakit/commit/d78fdc0ac270447fe87cf7a5ef9b8ad4792e9039))
+
+### Documentation
+
+- Document mutation in compilation functions ([#209](https://github.com/Deltakit/deltakit/pull/209),
+  [`d559a1a`](https://github.com/Deltakit/deltakit/commit/d559a1a76e68debe1803d7dfee7eee2dba042b50))
+
+### Features
+
+- Generic Plotting Framework for Lambda and LEPPR Results
+  ([#227](https://github.com/Deltakit/deltakit/pull/227),
+  [`da36a8a`](https://github.com/Deltakit/deltakit/commit/da36a8a10bbb472cc69adc27662b426d0f69f4a6))
+
+- Refactor draw patch ([#225](https://github.com/Deltakit/deltakit/pull/225),
+  [`b555ea5`](https://github.com/Deltakit/deltakit/commit/b555ea5f24848acd8d8bbcea985e3844d7fdf663))
+
+
 ## v0.7.1 (2026-02-10)
 
 ### Features

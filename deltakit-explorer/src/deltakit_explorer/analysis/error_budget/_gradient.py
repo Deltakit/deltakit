@@ -307,7 +307,11 @@ def get_lambda_gradient(
         y = lambda_reciprocals[0, column_indices]
         stddevs = lambda_reciprocal_stddevs[0, column_indices]
         derivative, derivative_stddev = _approximate_derivative_at_point_from_values(
-            x, y, stddevs, float(noise_parameter), degree=fitting_parameters.fitting_degree
+            x,
+            y,
+            stddevs,
+            float(noise_parameter),
+            degree=fitting_parameters.fitting_degree,
         )
         gradient.append(derivative)
         gradient_stddev.append(derivative_stddev)

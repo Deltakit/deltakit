@@ -35,7 +35,11 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Build all deltakit packages wheels and sdists
-        run: uv build --no-sources --all-packages
+        run: |
+          for pkg in "deltakit" "deltakit-circuit" "deltakit-core" "deltakit-decode" "deltakit-explorer"
+          do
+            uv build --package "$pkg"
+          done
 
       - name: Upload all deltakit packages wheels and sdists
         uses: actions/upload-artifact@v4
