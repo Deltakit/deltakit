@@ -11,7 +11,7 @@ from deltakit_explorer.analysis import (
 )
 from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
 from deltakit_explorer.analysis._lambda import (
-    LambdaResults,
+    LambdaData,
     calculate_lambda_and_lambda_stddev,
 )
 
@@ -76,7 +76,7 @@ def compute_lambda_and_stddev_from_results(
 def _compute_lambda_from_results(
     num_rounds_by_distance: Mapping[int, Sequence[int]],
     data: pd.DataFrame,
-) -> LambdaResults:
+) -> LambdaData:
     lepprs: list[float] = []
     leppr_stddevs: list[float] = []
     distances = sorted(num_rounds_by_distance.keys())

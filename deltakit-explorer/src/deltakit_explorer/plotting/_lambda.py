@@ -7,7 +7,7 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis._lambda import LambdaResults as LambdaData
+from deltakit_explorer.analysis._lambda import LambdaData
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import interpolate_lambda
 

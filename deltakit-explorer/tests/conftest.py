@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from deltakit_explorer._utils._utils import DELTAKIT_SERVER_URL_ENV
-from deltakit_explorer.analysis._lambda import LambdaResults
+from deltakit_explorer.analysis._lambda import LambdaData
 from deltakit_explorer.analysis._leppr import LogicalErrorProbabilityPerRoundResults
 
 
@@ -21,8 +21,8 @@ def random_generator():
 
 
 @pytest.fixture
-def lambda_results() -> LambdaResults:
-    return LambdaResults(
+def lambda_results() -> LambdaData:
+    return LambdaData(
         lambda_=3.0,
         lambda_stddev=0.1,
         lambda0=1.5,

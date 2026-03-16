@@ -11,7 +11,7 @@ import scipy.optimize
 
 
 @dataclass(frozen=True)
-class LambdaResults:
+class LambdaData:
     """Named-tuple-like class containing computation results from
     :func:`calculate_lambda_and_lambda_stddev`.
 
@@ -35,7 +35,7 @@ _LambdaFittingCallable = Callable[
         npt.NDArray[np.float64] | Sequence[float],
         npt.NDArray[np.float64] | Sequence[float],
     ],
-    LambdaResults,
+    LambdaData,
 ]
 
 
@@ -43,7 +43,7 @@ def _lambda_fit_with_d(
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
-) -> LambdaResults:
+) -> LambdaData:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
     of ``lep_per_round`` with ``distance``.
     """
@@ -86,14 +86,14 @@ def _lambda_fit_with_d(
             - 2 * cov[0, 1]
         )
     )
-    return LambdaResults(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
+    return LambdaData(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
 
 
 def _lambda_fit_with_d_plus_1_over_2(
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
-) -> LambdaResults:
+) -> LambdaData:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
     of ``lep_per_round`` with ``(distance + 1) / 2``.
     """
@@ -122,14 +122,14 @@ def _lambda_fit_with_d_plus_1_over_2(
     lambda_value_stddev = float(lambda_value * slope_stddev)
     lambda0 = float(np.exp(-offset))
     lambda0_stddev = float(lambda0 * offset_stddev)
-    return LambdaResults(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
+    return LambdaData(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
 
 
 def _lambda_fit_with_direct(
     distances: npt.NDArray[np.int_] | Sequence[int],
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
-) -> LambdaResults:
+) -> LambdaData:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting
     ``lep_per_round`` to ``1 / Λ_0 * Λ**(-(distance + 1) / 2)`` directly.
 
@@ -159,7 +159,7 @@ def _lambda_fit_with_direct(
         maxfev=10000,
     )
     lamb0_stddev, lamb_stddev = np.sqrt(np.diagonal(cov))
-    return LambdaResults(
+    return LambdaData(
         float(lamb), float(lamb_stddev), float(lamb0), float(lamb0_stddev)
     )
 
@@ -178,7 +178,7 @@ def calculate_lambda_and_lambda_stddev(
     lep_per_round: npt.NDArray[np.float64] | Sequence[float],
     lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
     method: Literal["d", "(d+1)/2", "direct"] = "(d+1)/2",
-) -> LambdaResults:
+) -> LambdaData:
     """Calculate the error suppression factor (Λ) and its standard deviation.
 
     Requires the logical error probability (LEP) per round (which may be approximated
@@ -213,7 +213,7 @@ def calculate_lambda_and_lambda_stddev(
             2 should be preferred in general.
 
     Returns:
-        LambdaResults: detailed results of the computation.
+        LambdaData: detailed results of the computation.
 
     Note:
         For values of Λ very close to 1 (``abs(Λ - 1) < 1e-7``) and

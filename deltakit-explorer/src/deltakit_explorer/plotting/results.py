@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from deltakit_explorer.analysis._lambda import LambdaResults as LambdaData
+from deltakit_explorer.analysis._lambda import LambdaData
 from deltakit_explorer.analysis._leppr import (
     LogicalErrorProbabilityPerRoundResults as LEPPRData,
 )
