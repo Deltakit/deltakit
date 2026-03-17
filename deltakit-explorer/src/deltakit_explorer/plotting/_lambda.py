@@ -15,8 +15,8 @@ from deltakit_explorer.plotting.results import interpolate_lambda
 def plot_lambda(
     lambda_data: LambdaData,
     distances: npt.NDArray[np.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
-    lep_per_round_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
+    leppr: npt.NDArray[np.float64] | Sequence[float],
+    leppr_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
@@ -32,8 +32,8 @@ def plot_lambda(
         lambda_data: Results from
             :func:`~deltakit_explorer.analysis.calculate_lambda_and_lambda_stddev`.
         distances: The distances of the code.
-        lep_per_round: The logical error probabilities per round.
-        lep_per_round_stddev: The standard deviation of the logical error
+        leppr: The logical error probabilities per round (leppr).
+        leppr_stddev: The standard deviation of the logical error
             probabilities per round. If None, no error bars will be plotted.
             Default is None.
         num_sigmas: number of sigmas to consider when plotting error bars.
@@ -46,16 +46,16 @@ def plot_lambda(
         The matplotlib Figure and Axes objects containing the plot.
 
     Example:
-        from deltakit_explorer.analysis import LambdaData
+        from deltakit_explorer.analysis import LambdaResults
 
-        lambda_data = LambdaData(
+        lambda_data = LambdaResults(
             lambda_=3.16, lambda_stddev=0.45, lambda0=0.5, lambda0_stddev=0.1
         )
         fig, ax = plot_lambda(
             lambda_data=lambda_data,
             distances=[5, 7, 9],
-            lep_per_round=[0.15, 0.1, 0.05],
-            lep_per_round_stddev=[0.01, 0.008, 0.005],
+            leppr=[0.15, 0.1, 0.05],
+            leppr_stddev=[0.01, 0.008, 0.005],
         )
         ax.set_yscale("log")
         plt.show()
@@ -73,27 +73,27 @@ def plot_lambda(
     assert ax is not None
     assert fig is not None
 
-    lengths = {len(distances), len(lep_per_round)}
-    if lep_per_round_stddev is not None:
-        lengths.add(len(lep_per_round_stddev))
+    lengths = {len(distances), len(leppr)}
+    if leppr_stddev is not None:
+        lengths.add(len(leppr_stddev))
     if len(lengths) > 1:
         msg = (
-            "The lengths of 'distances', 'lep_per_round' and 'lep_per_round_stddev' "
+            "The lengths of 'distances', 'leppr' and 'leppr_stddev' "
             f"must be the same. Got the following lengths: {lengths}."
         )
         raise ValueError(msg)
 
     isort = np.argsort(distances)
     distances = np.asarray(distances)[isort]
-    lep_per_round = np.asarray(lep_per_round)[isort]
-    if lep_per_round_stddev is not None:
-        lep_per_round_stddev = num_sigmas * np.asarray(lep_per_round_stddev)[isort]
+    leppr = np.asarray(leppr)[isort]
+    if leppr_stddev is not None:
+        leppr_stddev = num_sigmas * np.asarray(leppr_stddev)[isort]
 
     # Plot the logical error probabilities per round
     ax.errorbar(
         distances,
-        lep_per_round,
-        yerr=lep_per_round_stddev,
+        leppr,
+        yerr=leppr_stddev,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
