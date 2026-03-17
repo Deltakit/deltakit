@@ -11,7 +11,7 @@ from deltakit_explorer.plotting._leppr import plot_logical_error_probability_per
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import (
     LambdaResult,
-    LEPPRResult,
+    LogicalErrorProbabilityPerRoundResult,
     interpolate_lambda,
     interpolate_leppr,
 )

@@ -9,10 +9,10 @@ import pytest
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import (
     LambdaResult,
-    LEPPRResult,
     interpolate_lambda,
     interpolate_leppr,
 )
+from deltakit_explorer.plotting.results import LogicalErrorProbabilityPerRoundResult as LEPPRResult
 
 # Use non-interactive backend for CI
 mpl.use("Agg")

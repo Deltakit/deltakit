@@ -7,7 +7,7 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis._lambda import LambdaData
+from deltakit_explorer.analysis import LambdaData
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import interpolate_lambda
 
@@ -46,9 +46,9 @@ def plot_lambda(
         The matplotlib Figure and Axes objects containing the plot.
 
     Example:
-        from deltakit_explorer.analysis import LambdaResults
+        from deltakit_explorer.analysis import LambdaData
 
-        lambda_data = LambdaResults(
+        lambda_data = LambdaData(
             lambda_=3.16, lambda_stddev=0.45, lambda0=0.5, lambda0_stddev=0.1
         )
         fig, ax = plot_lambda(

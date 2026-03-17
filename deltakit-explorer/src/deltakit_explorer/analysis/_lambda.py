@@ -23,7 +23,7 @@ class LambdaData:
         lambda0_stddev (float): Λ_0 standard deviation.
     """
 
-    lambda_: float
+    lambda_: float  # lambda_ avoids shadowing the built-in `lambda` keyword
     lambda_stddev: float
     lambda0: float
     lambda0_stddev: float

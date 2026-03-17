@@ -10,7 +10,9 @@ from matplotlib.figure import Figure
 
 from deltakit_explorer.plotting.results import (
     LambdaResult,
-    LEPPRResult,
+)
+from deltakit_explorer.plotting.results import (
+    LogicalErrorProbabilityPerRoundResult as LEPPRResult,
 )
 
 

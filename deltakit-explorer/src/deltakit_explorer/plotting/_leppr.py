@@ -7,13 +7,13 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundResults
+from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundData as LEPPRData
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import interpolate_leppr
 
 
 def plot_logical_error_probability_per_round(
-    leppr_data: LogicalErrorProbabilityPerRoundResults,
+    leppr_data: LEPPRData,
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
     logical_error_probability_stddev: (

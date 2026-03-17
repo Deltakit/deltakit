@@ -9,7 +9,7 @@ from scipy.optimize import curve_fit
 
 
 @dataclass(frozen=True)
-class LogicalErrorProbabilityPerRoundResults:
+class LogicalErrorProbabilityPerRoundData:
     """Named-tuple-like class containing computation results from
     :func:`compute_logical_error_per_round`.
 
@@ -32,7 +32,7 @@ def compute_logical_error_per_round(
     logical_error_probabilities_stddev: npt.NDArray[np.floating] | Sequence[float],
     *,
     force_include_single_round: bool = False,
-) -> LogicalErrorProbabilityPerRoundResults:
+) -> LogicalErrorProbabilityPerRoundData:
     """Compute the logical error probability per round from different logical error
     probability computations.
 
@@ -170,7 +170,7 @@ def compute_logical_error_per_round(
         estimated_logical_error_per_round_stddev = (
             lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
         )
-        return LogicalErrorProbabilityPerRoundResults(
+        return LogicalErrorProbabilityPerRoundData(
             estimated_logical_error_per_round,
             estimated_logical_error_per_round_stddev,
             0,
@@ -251,7 +251,7 @@ def compute_logical_error_per_round(
     estimated_spam_error_stddev = float(
         (1 - 2 * estimated_spam_error) * offset_stddev / 2
     )
-    return LogicalErrorProbabilityPerRoundResults(
+    return LogicalErrorProbabilityPerRoundData(
         estimated_logical_error_per_round,
         estimated_logical_error_per_round_stddev,
         estimated_spam_error,

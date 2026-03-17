@@ -8,18 +8,16 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 
-from deltakit_explorer.analysis._lambda import LambdaData
-from deltakit_explorer.analysis._leppr import (
-    LogicalErrorProbabilityPerRoundResults as LEPPRData,
+from deltakit_explorer.analysis import LambdaData
+from deltakit_explorer.analysis import (
+    LogicalErrorProbabilityPerRoundData as LEPPRData,
 )
 
 
 def _lambda_interpolated(
     lambda0: float,
     lambda_: float,
-    distances: npt.NDArray[
-        np.int_ | np.floating
-    ],  # lambda_ avoids shadowing the built-in `lambda` keyword
+    distances: npt.NDArray[np.int_ | np.floating],
 ) -> npt.NDArray[np.floating]:
     """Estimate the logical error probability per round for given parameters.
 
@@ -218,8 +216,8 @@ def interpolate_lambda(
 
 
 @dataclass(frozen=True)
-class LEPPRResult(Interpolated):
-    """Result type holding the data needed to plot a LEPPR fit.
+class LogicalErrorProbabilityPerRoundResult(Interpolated):
+    """Result type holding the data needed to plot a LogicalErrorProbabilityPerRound (LEPPR) fit.
 
     Attributes:
         rounds: Interpolated rounds grid for the fit curve.
@@ -246,7 +244,7 @@ def interpolate_leppr(
     *,
     num_sigmas: int = 3,
     num_points: int = 200,
-) -> LEPPRResult:
+) -> LogicalErrorProbabilityPerRoundResult:
     """Compute the interpolated LEPPR fit curve and its error band.
 
     Args:
@@ -276,7 +274,7 @@ def interpolate_leppr(
 
     fit_label = f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
 
-    return LEPPRResult(
+    return LogicalErrorProbabilityPerRoundResult(
         rounds=rounds_interpolated,
         interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),

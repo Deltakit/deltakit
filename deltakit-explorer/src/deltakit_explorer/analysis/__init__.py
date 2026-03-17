@@ -6,9 +6,12 @@ from deltakit_explorer.analysis._analysis import (
     get_exp_fit,
     get_lambda_fit,
 )
-from deltakit_explorer.analysis._lambda import calculate_lambda_and_lambda_stddev
+from deltakit_explorer.analysis._lambda import (
+    LambdaData,
+    calculate_lambda_and_lambda_stddev,
+)
 from deltakit_explorer.analysis._leppr import (
-    LogicalErrorProbabilityPerRoundResults,
+    LogicalErrorProbabilityPerRoundData,
     compute_logical_error_per_round,
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
