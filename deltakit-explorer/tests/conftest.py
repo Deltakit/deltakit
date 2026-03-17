@@ -7,9 +7,7 @@ import numpy as np
 import pytest
 
 from deltakit_explorer._utils._utils import DELTAKIT_SERVER_URL_ENV
-from deltakit_explorer.analysis import (
-    LambdaData,
-)
+from deltakit_explorer.analysis import LambdaData
 from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundData as LEPPRData,
 )
