@@ -51,9 +51,9 @@ class LambdaData:
 
 _LambdaFittingCallable = Callable[
     [
-        npt.NDArray[np.int_] | Sequence[int],
-        npt.NDArray[np.float64] | Sequence[float],
-        npt.NDArray[np.float64] | Sequence[float],
+        npt.NDArray[np.int_],
+        npt.NDArray[np.float64],
+        npt.NDArray[np.float64],
     ],
     LambdaData,
 ]
