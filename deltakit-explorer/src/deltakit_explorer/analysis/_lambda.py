@@ -12,21 +12,41 @@ import scipy.optimize
 
 @dataclass(frozen=True)
 class LambdaData:
-    """Named-tuple-like class containing computation results from
-    :func:`calculate_lambda_and_lambda_stddev`.
+    """Container for error suppression parameters and associated data.
+
+    This dataclass stores the fitted error suppression factor (Λ) and
+    prefactor (Λ₀), along with their standard deviations and the underlying
+    data used for the fit.
+
+    The error model assumes an exponential decay of the logical error
+    probability per round (leepr) ε_d with the error suppression factors and
+    code distance:
+
+        ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
+
+    where:
+        - Λ (lambda) is the error suppression factor
+        - Λ₀ (lambda_0) is a multiplicative offset
+        - d is the code distance
 
     Attributes:
-        lambda_ (float): computed error suppression factor.
-        lambda_stddev (float): lambda standard deviation.
-        lambda0 (float): computed error suppression multiplicative offset (value of Λ_0
-            in the expression ``Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]``).
-        lambda0_stddev (float): Λ_0 standard deviation.
+        lambda_: Error suppression factor. The trailing underscore
+            avoids shadowing the Python keyword ``lambda``.
+        lambda_std: Error suppression factor standard deviation.
+        lambda0: Error suppression prefactor.
+        lambda0_std: Error suppression prefactor standard deviation.
+        distances: Code distances.
+        leppr: Logical error probability per round.
+        leppr_std: Logical error probability per round standard deviation.
     """
 
-    lambda_: float  # lambda_ avoids shadowing the built-in `lambda` keyword
-    lambda_stddev: float
+    lambda_: float
+    lambda_std: float
     lambda0: float
-    lambda0_stddev: float
+    lambda0_std: float
+    distances: npt.NDArray[np.int_]
+    leppr: npt.NDArray[np.float64]
+    leppr_std: npt.NDArray[np.float64]
 
 
 _LambdaFittingCallable = Callable[
