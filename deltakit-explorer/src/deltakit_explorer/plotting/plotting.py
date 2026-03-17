@@ -8,9 +8,7 @@ from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.plotting.results import (
-    LambdaResult,
-)
+from deltakit_explorer.plotting.results import LambdaResult
 from deltakit_explorer.plotting.results import (
     LogicalErrorProbabilityPerRoundResult as LEPPRResult,
 )
