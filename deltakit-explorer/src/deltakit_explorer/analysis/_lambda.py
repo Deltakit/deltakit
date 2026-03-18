@@ -67,50 +67,92 @@ class LambdaFitMethod(StrEnum):
     CURVE = "curve"
     """Non-linear fit."""
 
+
+def _lambda_shifted_fit(
+    distances: npt.NDArray[np.int_],
+    leppr: npt.NDArray[np.float64],
+    leppr_std: npt.NDArray[np.float64],
 ) -> LambdaData:
-    """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
-    of ``lep_per_round`` with ``distance``.
+    """Estimate error suppression factors Λ and Λ₀ via linear fit and shifted distances.
+
+    From the logical error probability per round (leppr) ε_d relationship
+    with error suppression factors and code distance:
+
+        ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
+
+    This function fits a linear model to the logarithm of the leppr
+    as a function of the distance:
+
+        ln(ε_d) = -ln(Λ₀) - (d+1)/2 · ln(Λ)
+
+    A linear fit of ln(ε_d) versus shifted distance d gives:
+
+        slope  = -ln(Λ) / 2
+        offset = -ln(Λ₀) - ln(Λ) / 2
+
+    Recovering the original parameters:
+
+         Λ  = exp(-2 · slope)
+         Λ₀ = exp(-offset - ln(Λ)/2)
+
+    Standard deviations for both fitted parameters are also computed using
+    standard formulae found in:
+    https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
+
+        σ(ln(Λ)/2) = σ(Λ) / (2 · Λ)
+
+        σ(-offset - ln(Λ)/2)
+            = sqrt( σ(offset)² + σ(Λ)² / (4 · Λ²)
+                    - 2 · cov(offset, ln(Λ)/2) )
+
+        σ(Λ₀)
+            = Λ₀ · sqrt( σ(offset)² + σ(Λ)² / (4 · Λ²)
+                         - 2 · cov(offset, ln(Λ)/2) )
+
+    Attributes:
+        distances: Code distances.
+        leppr: Logical error probability per round.
+        leppr_std: Logical error probability per round standard deviation.
+
+    Returns:
+        LambdaData: A container for error suppression parameters.
     """
-    # Prepare data for the fit.
-    lep_per_round = np.asarray(lep_per_round, dtype=np.float64)
-    logleppr = np.log(lep_per_round)
-    logleppr_stddev = lep_stddev_per_round / lep_per_round
-    # Fitting with numpy.polyfit to be able to provide standard deviations and recover a
-    # covariance matrix as numpy.polynomial.Polyfit is not able to do that yet.
+    # Prepare log data for linear fit.
+    log_leppr = np.log(leppr)
+    log_leppr_std = leppr_std / leppr
+    # Fitting with numpy.polyfit provides
+    # standard deviations and a covariance matrix.
     (slope, offset), cov = np.polyfit(
-        distances, logleppr, 1, w=1 / logleppr_stddev, full=False, cov="unscaled"
+        distances,  # Shifted distances.
+        log_leppr,
+        1,
+        w=1 / log_leppr_std,
+        full=False,
+        cov="unscaled",
     )
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
-    # Recovering the numbers of interest. Maths representing what has been performed:
-    # We start from Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
-    # Applying ln:  ln(Ɛ_d) = - ln(Λ_0) - (d+1)/2 * ln(Λ)
-    #                       = - ln(Λ_0) - ln(Λ)/2 - d * ln(Λ)/2
-    # The linear fit performed above gave us slope  = -ln(Λ)/2
-    #                                        offset = -ln(Λ_0) - ln(Λ)/2
-    lambda_value = float(np.exp(-2 * slope))
-    lambda_value_stddev = float(lambda_value * 2 * slope_stddev)
-    lambda0 = float(np.exp(-offset - np.log(lambda_value) / 2))
-    # Λ_0 = exp(-offset - ln(Λ)/2)
-    # Error analysis (to compute the standard deviation of Λ_0) done with the formulas
-    # in https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae:
-    # σ(ln(Λ)/2) = σ(Λ) / (2 * Λ)
-    # σ(offset) is obtained from the covariance matrix
-    # σ(-offset - ln(Λ)/2) = √(σ(offset)² + σ(ln(Λ) / 2)²
-    #                          - 2 * covariance(offset, ln(Λ) / 2))
-    #                      = √(σ(offset)² + σ(Λ)² / (4 * Λ²)
-    #                          - 2 * covariance(offset, ln(Λ) / 2))
-    # σ(exp(-offset - ln(Λ)/2)) = exp(-offset - ln(Λ)/2) * σ(-offset - ln(Λ)/2)
-    #                           = Λ_0 * √(σ(offset)² + σ(Λ)² / (4 * Λ²)
-    #                                     - 2 * covariance(offset, ln(Λ) / 2))
-    lambda0_stddev = float(
-        lambda0
+    slope_std, offset_std = np.sqrt(np.diagonal(cov))
+    # Estimate error suppression factors.
+    estimated_lambda = float(np.exp(-2 * slope))
+    estimated_lambda_std = float(estimated_lambda * 2 * slope_std)
+    estimated_lambda0 = float(np.exp(-offset - np.log(estimated_lambda) / 2))
+    # Uncertainty propagation.
+    estimated_lambda0_std = float(
+        estimated_lambda0
         * np.sqrt(
-            offset_stddev**2
-            + lambda_value_stddev**2 / (4 * lambda_value**2)
+            offset_std**2
+            + estimated_lambda_std**2 / (4 * estimated_lambda**2)
             - 2 * cov[0, 1]
         )
     )
-    return LambdaData(lambda_value, lambda_value_stddev, lambda0, lambda0_stddev)
+    return LambdaData(
+        lambda_=estimated_lambda,
+        lambda_std=estimated_lambda_std,
+        lambda0=estimated_lambda0,
+        lambda0_std=estimated_lambda0_std,
+        distances=distances,
+        leppr=leppr,
+        leppr_std=leppr_std,
+    )
 
 
 def _lambda_fit_with_d_plus_1_over_2(
