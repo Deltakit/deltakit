@@ -3,7 +3,7 @@ from __future__ import annotations
 import warnings
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from enum import Enum
 
 import numpy as np
 import numpy.typing as npt
@@ -59,7 +59,7 @@ _LambdaFitCallable = Callable[
 ]
 
 
-class LambdaFitMethod(StrEnum):
+class LambdaFitMethod(str, Enum):
     SHIFTED = "shifted"
     """Linear fit with shifted distances over logarithmic values."""
     LIN = "lin"
