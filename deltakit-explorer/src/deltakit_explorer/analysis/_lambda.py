@@ -277,9 +277,7 @@ def _lambda_curve_fit(
     )
 
 
-_LAMBDA_FIT_METHODS: dict[
-    LambdaFitMethod, _LambdaFitCallable
-] = {
+_LAMBDA_FIT_METHODS: dict[LambdaFitMethod, _LambdaFitCallable] = {
     LambdaFitMethod.SHIFTED: _lambda_shifted_fit,
     LambdaFitMethod.LIN: _lambda_lin_fit,
     LambdaFitMethod.CURVE: _lambda_curve_fit,

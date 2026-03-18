@@ -38,9 +38,7 @@ class TestCalculateLambda:
         )
         relative_stds = rng.normal(0, relative_std, size=len(distances))
         lepprs_std = (1 + relative_stds) * lepprs
-        res = calculate_lambda_and_lambda_std(
-            distances, lepprs, lepprs_std, method
-        )
+        res = calculate_lambda_and_lambda_std(distances, lepprs, lepprs_std, method)
         # Test that the estimated quantities are within 3*sigma of the real one.
         assert pytest.approx(res.lambda_, abs=3 * res.lambda_std) == lambda_
         assert pytest.approx(res.lambda0, abs=3 * res.lambda0_std) == lambda0
