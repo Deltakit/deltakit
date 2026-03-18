@@ -251,31 +251,35 @@ def _lambda_lin_fit(
                 -1 / lamb0 * x * lamb ** (-x - 1),
             ]
         ),
-        # Both parameters below are needed for crazy values of lambda and lambda0 to
-        # make sure the method converges to the correct value.
-        bounds=(0, np.inf),
+        bounds=(0, np.inf),  # Ensure convergence in pathological cases.
         maxfev=10000,
     )
-    lamb0_stddev, lamb_stddev = np.sqrt(np.diagonal(cov))
+    lamb0_std, lamb_std = np.sqrt(np.diagonal(cov))
     return LambdaData(
-        float(lamb), float(lamb_stddev), float(lamb0), float(lamb0_stddev)
+        lambda_=float(lamb),
+        lambda_std=float(lamb_std),
+        lambda0=float(lamb0),
+        lambda0_std=float(lamb0_std),
+        distances=distances,
+        leppr=leppr,
+        leppr_std=leppr_std,
     )
 
 
-_LAMBDA_FITTING_METHODS: dict[
-    Literal["d", "(d+1)/2", "direct"], _LambdaFittingCallable
+_LAMBDA_FIT_METHODS: dict[
+    LambdaFitMethod, _LambdaFitCallable
 ] = {
-    "d": _lambda_fit_with_d,
-    "(d+1)/2": _lambda_fit_with_d_plus_1_over_2,
-    "direct": _lambda_fit_with_direct,
+    LambdaFitMethod.SHIFTED: _lambda_shifted_fit,
+    LambdaFitMethod.LIN: _lambda_lin_fit,
+    LambdaFitMethod.CURVE: _lambda_curve_fit,
 }
 
 
-def calculate_lambda_and_lambda_stddev(
+def calculate_lambda_and_lambda_std(
     distances: npt.NDArray[np.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
-    method: Literal["d", "(d+1)/2", "direct"] = "(d+1)/2",
+    leppr: npt.NDArray[np.float64] | Sequence[float],
+    leppr_std: npt.NDArray[np.float64] | Sequence[float],
+    method: LambdaFitMethod | str = LambdaFitMethod.LIN,
 ) -> LambdaData:
     """Calculate the error suppression factor (Λ) and its standard deviation.
 
