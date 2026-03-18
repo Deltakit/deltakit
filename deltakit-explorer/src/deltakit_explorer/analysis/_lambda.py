@@ -341,7 +341,10 @@ def calculate_lambda_and_lambda_std(
 
     """
     method = LambdaFitMethod(method)
-    # Sort inputs by distance.
+    if not (len(distances) == len(leppr) == len(leppr_std)):
+        msg = "Input data do not match lengths."
+        raise ValueError(msg)
+    # Sort inputs by increasing distance.
     isort = np.argsort(distances)
     distances = np.asarray(distances)[isort]
     leppr = np.asarray(leppr)[isort]
