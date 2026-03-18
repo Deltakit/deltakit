@@ -109,7 +109,7 @@ def _lambda_shifted_fit(
             = Λ₀ · sqrt( σ(offset)² + σ(Λ)² / (4 · Λ²)
                          - 2 · cov(offset, ln(Λ)/2) )
 
-    Attributes:
+    Args:
         distances: Code distances.
         leppr: Logical error probability per round.
         leppr_std: Logical error probability per round standard deviation.
@@ -189,7 +189,7 @@ def _lambda_lin_fit(
         σ(Λ)  = Λ · σ(slope)
         σ(Λ₀) = Λ₀ · σ(offset)
 
-    Attributes:
+    Args:
         distances: Code distances.
         leppr: Logical error probability per round.
         leppr_std: Logical error probability per round standard deviation.
@@ -242,7 +242,7 @@ def _lambda_curve_fit(
     This function fits a curve model to the leppr
     as a function of the distance.
 
-    Attributes:
+    Args:
         distances: Code distances.
         leppr: Logical error probability per round.
         leppr_std: Logical error probability per round standard deviation.
@@ -292,62 +292,52 @@ def calculate_lambda_and_lambda_std(
     leppr_std: npt.NDArray[np.float64] | Sequence[float],
     method: LambdaFitMethod | str = LambdaFitMethod.LIN,
 ) -> LambdaData:
-    """Calculate the error suppression factor (Λ) and its standard deviation.
+    """Estimate the error suppression factor (Λ) and its standard deviation.
 
-    Requires the logical error probability (LEP) per round (which may be approximated
-    as LEP / num_rounds for small LEP or computed with
-    :func:`compute_logical_error_per_round` for a more precise approximation), and its
-    standard deviation (also returned by :func:`compute_logical_error_per_round`).
+    This function fits the scaling of the logical error probability per round
+    (leppr) and its standard deviation (leppr_std) as a function of code distance
+    in order to extract the error suppression factor Λ and the prefactor Λ₀,
+    along with their standard deviations.
 
-    By providing the logical error probability for increasing code distances,
-    one can obtain an estimate for how error suppression scales with distances.
-    Note that lambda is a "rule of thumb". This approximation is unreliable near
-    threshold and for low code distances. If such a regime is detected, a warning will
-    be emitted by this function.
+    The leppr can be approximated as ``lep / num_rounds`` for small error rates,
+    or computed together with its standard deviation more accurately using
+    `compute_logical_error_per_round`.
+
+    By supplying LEPPR values at increasing code distances, this routine
+    estimates how quickly logical errors are suppressed as the code grows.
+    Note that Λ is a heuristic quantity: estimates may be unreliable near
+    threshold and for small distances. In such cases, a warning is emitted.
+
+    Reference:
+       Fig. S15 of Supplementary information of
+       "Quantum error correction below the surface code threshold"
+       at https://www.nature.com/articles/s41586-024-08449-y#Sec8
 
     Args:
-        distances (npt.NDArray[numpy.int\\_] | Sequence[int]): Distances at which
-            ``lep_per_round`` and ``lep_stddev_per_round`` are provided. Should only
-            contain odd distances. Estimations of Λ may be unreliable when data from
-            distance 3 is used and the value of Λ is low (see Fig. S15 of Supplementary
-            information of "Quantum error correction below the surface code threshold"
-            at https://www.nature.com/articles/s41586-024-08449-y#Sec8). If such a
-            situation is encountered, a warning will be emitted.
-        lep_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
-            logical error probabilities per round computed for each code distance in
-            ``distances``. Should be the same size as ``distances``.
-        lep_stddev_per_round (npt.NDArray[numpy.float64] | Sequence[float]):
-            standard deviation of the logical error probabilities per round computed for
-            each code distance in ``distances``. Should be the same size as
-            ``distances``.
-        method (Literal["d", "(d+1)/2", "direct"]): mathematical method used to fit the
-            data. Defaults to "(d+1)/2". All 3 methods show remarkable numerical
-            agreement, but "direct" is slower than both "d" and "(d+1)/2", so these last
-            2 should be preferred in general.
+        distances: Code distances corresponding to the provided leppr data points.
+        leppr: Logical error probability per round for each distance.
+        leppr_std: Leppr standard deviation for each distance.
+        method: Method used to fit the data. The default is "lin".
 
     Returns:
-        LambdaData: detailed results of the computation.
+        LambdaData: Container for Λ, Λ₀, their standard deviations, and the input data.
 
-    Note:
-        For values of Λ very close to 1 (``abs(Λ - 1) < 1e-7``) and
-        ``method == "direct"``, this function might emit a
-        ``scipy.optimize._optimize.OptimizeWarning`` with the message ``"Covariance of
-        the parameters could not be estimated"``.
+    Raises:
+        ValueError: When input data do not match sizes or when duplicated data is provided.
 
-        Realistically, that condition is not expected to occur in practice due to
-        sampling noise and sampling overhead, but it might be checked by synthetic
-        data (e.g., in unit-tests).
+    Notes:
+        When Λ is very close to 1 (``abs(Λ - 1) < 1e-7``) and ``method == "curve"``,
+        the fit may trigger a ``scipy.optimize.OptimizeWarning`` indicating that
+        the covariance of the parameters could not be estimated. This situation is
+        unlikely with real experimental data but may occur with synthetic inputs.
 
     Examples:
-        Fitting the Λ value given information for 5, 7, and 9 round of a QEC
-        experiment::
-
-            res = calculate_lambda_and_lambda_stddev(
-                distances=[5, 7, 9],
-                lep_per_round=[1.992e-04, 4.314e-05, 7.556e-06],
-                lep_stddev_per_round=[1.2e-05, 9.3e-06, 3.9e-06],
-            )
-            lambda_, lambda_stddev = res.lambda_, res.lambda_stddev
+        >>> res = calculate_lambda_and_lambda_std(
+        ...     distances=[5, 7, 9],
+        ...     leppr=[1.992e-04, 4.314e-05, 7.556e-06],
+        ...     leppr_std=[1.2e-05, 9.3e-06, 3.9e-06],
+        ... )
+        >>> res.lambda_, res.lambda_std
 
     """
     method = LambdaFitMethod(method)
