@@ -350,17 +350,16 @@ def calculate_lambda_and_lambda_std(
             lambda_, lambda_stddev = res.lambda_, res.lambda_stddev
 
     """
-    # Make sure that the inputs are numpy arrays sorted by distance
+    method = LambdaFitMethod(method)
+    # Sort inputs by distance.
     isort = np.argsort(distances)
     distances = np.asarray(distances)[isort]
-    lep_per_round = np.asarray(lep_per_round)[isort]
-    lep_stddev_per_round = np.asarray(lep_stddev_per_round)[isort]
-
-    # Check that we do not have duplicate data for the same distance as that will
-    # confuse the numerical methods used in this function.
+    leppr = np.asarray(leppr)[isort]
+    leppr_std = np.asarray(leppr_std)[isort]
+    # Check for duplicated data for the same distance to avoid
+    # numerical instability.
     unique_counts = np.unique_counts(distances)
-    non_unique_entries_mask = unique_counts.counts > 1
-    if np.any(non_unique_entries_mask):
+    if np.any(non_unique_entries_mask := unique_counts.counts > 1):
         non_unique_values = unique_counts.values[non_unique_entries_mask].tolist()
         msg = (
             "Multiple entries were provided for the following distances: "
@@ -368,18 +367,10 @@ def calculate_lambda_and_lambda_std(
         )
         raise ValueError(msg)
 
-    if method not in _LAMBDA_FITTING_METHODS:
-        warnings.warn(
-            "Got a fitting method that is not supported by this function "
-            f"('{method}'). Valid methods are {list(_LAMBDA_FITTING_METHODS)}."
-        )
-    lambda_fit_func: _LambdaFittingCallable = _LAMBDA_FITTING_METHODS.get(
-        method, _lambda_fit_with_d
-    )
-    res = lambda_fit_func(distances, lep_per_round, lep_stddev_per_round)
-    if res.lambda_ < 1.5 and min(distances) < 5:
+    lambda_fit: LambdaData = _LAMBDA_FIT_METHODS[method](distances, leppr, leppr_std)
+    if lambda_fit.lambda_ < 1.5 and min(distances) < 5:
         warnings.warn(
             "Lambda estimation is unreliable at low code distances and low values of "
             "lambda. Please use distance 5 as a minimum.",
         )
-    return res
+    return lambda_fit
