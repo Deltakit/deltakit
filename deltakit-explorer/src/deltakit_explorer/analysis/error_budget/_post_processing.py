@@ -7,14 +7,13 @@ import pandas as pd
 
 from deltakit_explorer.analysis import (
     LambdaData,
-    calculate_lambda_and_lambda_stddev,
+    calculate_lambda_and_lambda_std,
     calculate_lep_and_lep_stddev,
     compute_logical_error_per_round,
 )
 from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundData as LEPPRData,
 )
-
 
 def _filter_non_close_noise_parameters(
     data: pd.DataFrame,

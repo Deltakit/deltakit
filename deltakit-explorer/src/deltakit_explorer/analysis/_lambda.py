@@ -49,7 +49,7 @@ class LambdaData:
     leppr_std: npt.NDArray[np.float64]
 
 
-_LambdaFittingCallable = Callable[
+_LambdaFitCallable = Callable[
     [
         npt.NDArray[np.int_],
         npt.NDArray[np.float64],
