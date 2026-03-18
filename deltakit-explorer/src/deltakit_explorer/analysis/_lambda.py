@@ -59,10 +59,14 @@ _LambdaFitCallable = Callable[
 ]
 
 
-def _lambda_fit_with_d(
-    distances: npt.NDArray[np.int_] | Sequence[int],
-    lep_per_round: npt.NDArray[np.float64] | Sequence[float],
-    lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float],
+class LambdaFitMethod(StrEnum):
+    SHIFTED = "shifted"
+    """Linear fit with shifted distances over logarithmic values."""
+    LIN = "lin"
+    """Linear fit over logarithmic values."""
+    CURVE = "curve"
+    """Non-linear fit."""
+
 ) -> LambdaData:
     """Compute Λ, Λ_0 and their associated standard deviations by fitting the logarithm
     of ``lep_per_round`` with ``distance``.
