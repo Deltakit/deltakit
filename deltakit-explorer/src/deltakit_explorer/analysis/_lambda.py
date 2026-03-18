@@ -227,23 +227,34 @@ def _lambda_lin_fit(
     )
 
 
+def _lambda_curve_fit(
+    distances: npt.NDArray[np.int_],
+    leppr: npt.NDArray[np.float64],
+    leppr_std: npt.NDArray[np.float64],
 ) -> LambdaData:
-    """Compute Λ, Λ_0 and their associated standard deviations by fitting
-    ``lep_per_round`` to ``1 / Λ_0 * Λ**(-(distance + 1) / 2)`` directly.
+    """Estimate error suppression factors Λ and Λ₀ with curve fit.
 
-    This method does not rely on least-square polynomial fitting but rather on a more
-    generic method. As such, it requires more time to converge.
+    From the logical error probability per round (leppr) ε_d relationship
+    with error suppression factors and code distance:
+
+        ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
+
+    This function fits a curve model to the leppr
+    as a function of the distance.
+
+    Attributes:
+        distances: Code distances.
+        leppr: Logical error probability per round.
+        leppr_std: Logical error probability per round standard deviation.
+
+    Returns:
+        LambdaData: A container for error suppression parameters.
     """
-    # Prepare data for the fit.
-    distances = np.asarray(distances, dtype=np.int_)
-    # Here we are not fitting a polynomial anymore but directly the formula:
-    #   Ɛ_d = 1 / [ Λ_0 * Λ**((d+1)/2) ]
-    # with ``x`` that is ``(d+1)/2``.
     (lamb0, lamb), cov = scipy.optimize.curve_fit(
         lambda x, lamb0, lamb: 1 / lamb0 * lamb ** (-x),
         (distances + 1) / 2,
-        lep_per_round,
-        sigma=lep_stddev_per_round,
+        leppr,
+        sigma=leppr_std,
         absolute_sigma=True,
         jac=lambda x, lamb0, lamb: np.transpose(
             [
