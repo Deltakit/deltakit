@@ -5,7 +5,10 @@ from math import sqrt
 import numpy as np
 import pytest
 
-from deltakit_explorer.analysis import calculate_lep_and_lep_stddev, compute_logical_error_per_round
+from deltakit_explorer.analysis import (
+    calculate_lep_and_lep_stddev,
+    compute_logical_error_per_round,
+)
 
 
 class TestLEPPerRoundComputation:
@@ -13,14 +16,23 @@ class TestLEPPerRoundComputation:
         fails = [498, 151, 34]
         shots = [500000] * 3
 
-        with pytest.raises(ValueError):
-            calculate_lep_and_lep_stddev(fails=[498, 151,], shots=shots)
+        with pytest.raises(ValueError, match="do not match lengths."):
+            calculate_lep_and_lep_stddev(
+                fails=[
+                    498,
+                    151,
+                ],
+                shots=shots,
+            )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="do not match lengths."):
             calculate_lep_and_lep_stddev(fails=fails, shots=[500000] * 2)
 
-        with pytest.raises(ValueError):
-            calculate_lep_and_lep_stddev(fails=fails * (-1), shots=[500000] * 2)
+        with pytest.raises(ValueError, match="must have non-negative"):
+            calculate_lep_and_lep_stddev(fails=[498, 151, -34], shots=shots)
+
+        with pytest.raises(ValueError, match="must have non-negative"):
+            calculate_lep_and_lep_stddev(fails=fails, shots=[500_000, -500_000, 500_000])
 
     @pytest.mark.parametrize(
         ("leppr", "spam_error"),
