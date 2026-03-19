@@ -173,16 +173,15 @@ def interpolate_lambda(
     num_sigmas: int = 3,
     num_points: int = 200,
 ) -> LambdaResult:
-    """Compute the interpolated Lambda fit curve and its error band.
+    """Interpolate the Λ fit and compute confidence bands.
 
     Args:
-        lambda_data: Results from calculate_lambda_and_lambda_stddev (a :class:`LambdaData` instance).
-        distances: The code distances used for interpolation.
+        lambda_data: Result of a fit containing Λ, Λ₀, their standard deviations, and the original data.
         num_sigmas: Number of standard deviations for the error band. Default 3.
         num_points: Number of interpolation points. Default 200.
 
     Returns:
-        The interpolated fit data with error boundaries.
+        A container for the interpolated fit data with error boundaries and confidence interval.
     """
     lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
     lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
