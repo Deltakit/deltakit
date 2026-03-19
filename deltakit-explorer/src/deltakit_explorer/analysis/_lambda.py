@@ -99,14 +99,14 @@ def _lambda_shifted_fit(
     standard formulae found in:
     https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
 
-        σ(ln(Λ)/2) = σ(Λ) / (2 · Λ)
+        (ln(Λ)/2) = Δ(Λ) / (2 · Λ)
 
-        σ(-offset - ln(Λ)/2)
-            = sqrt( σ(offset)² + σ(Λ)² / (4 · Λ²)
+        Δ(-offset - ln(Λ)/2)
+            = sqrt( Δ(offset)² + Δ(Λ)² / (4 · Λ²)
                     - 2 · cov(offset, ln(Λ)/2) )
 
-        σ(Λ₀)
-            = Λ₀ · sqrt( σ(offset)² + σ(Λ)² / (4 · Λ²)
+        Δ(Λ₀)
+            = Λ₀ · sqrt( Δ(offset)² + Δ(Λ)² / (4 · Λ²)
                          - 2 · cov(offset, ln(Λ)/2) )
 
     Args:
@@ -186,8 +186,8 @@ def _lambda_lin_fit(
     standard formulae found in:
     https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
 
-        σ(Λ)  = Λ · σ(slope)
-        σ(Λ₀) = Λ₀ · σ(offset)
+        Δ(Λ)  = Λ · Δ(slope)
+        Δ(Λ₀) = Λ₀ · Δ(offset)
 
     Args:
         distances: Code distances.
