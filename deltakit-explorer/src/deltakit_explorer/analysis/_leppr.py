@@ -403,7 +403,8 @@ def calculate_lep_and_lep_stddev(
             shots=[500000] * 3,
         )
     """
-    fails, shots = np.asarray(fails), np.asarray(shots)
+    fails = np.asarray([fails]) if isinstance(fails, int) else np.asarray(fails)
+    shots = np.asarray([shots]) if isinstance(shots, int) else np.asarray(shots)
     if len(fails) != len(shots):
         msg = "Input data do not match lengths."
         raise ValueError(msg)
