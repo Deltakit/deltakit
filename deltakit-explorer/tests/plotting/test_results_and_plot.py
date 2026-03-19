@@ -21,32 +21,32 @@ mpl.use("Agg")
 
 
 class TestComputeLambdaPlot:
-    def test_output_type(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances)
+    def test_output_type(self, lambda_results):
+        result = interpolate_lambda(lambda_results)
         assert isinstance(result, LambdaResult)
 
-    def test_default_num_points(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances)
+    def test_default_num_points(self, lambda_results):
+        result = interpolate_lambda(lambda_results)
         assert len(result.distances) == 200
         assert len(result.interpolated) == 200
         assert len(result.lower_boundary) == 200
         assert len(result.upper_boundary) == 200
 
-    def test_custom_num_points(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances, num_points=50)
+    def test_custom_num_points(self, lambda_results):
+        result = interpolate_lambda(lambda_results, num_points=50)
         assert len(result.distances) == 50
 
     def test_distance_range(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances)
+        result = interpolate_lambda(lambda_results)
         assert result.distances[0] == pytest.approx(distances[0])
         assert result.distances[-1] == pytest.approx(distances[-1])
 
-    def test_interpolated_values_positive(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances)
+    def test_interpolated_values_positive(self, lambda_results):
+        result = interpolate_lambda(lambda_results)
         assert np.all(result.interpolated >= 0)
 
-    def test_frozen_dataclass(self, lambda_results, distances):
-        result = interpolate_lambda(lambda_results, distances)
+    def test_frozen_dataclass(self, lambda_results):
+        result = interpolate_lambda(lambda_results)
         with pytest.raises(AttributeError):
             result.distances = np.array([1, 2, 3])
 
@@ -86,8 +86,8 @@ class TestComputeLepprPlot:
 
 
 class TestPlot:
-    def test_plot_with_lambda_result(self, lambda_results, distances):
-        lambda_result = interpolate_lambda(lambda_results, distances)
+    def test_plot_with_lambda_result(self, lambda_results):
+        lambda_result = interpolate_lambda(lambda_results)
         fig, ax = plot(lambda_result)
         assert fig is not None
         assert ax is not None
@@ -104,16 +104,16 @@ class TestPlot:
         assert ax.get_xlabel() == "Rounds"
         plt.close(fig)
 
-    def test_plot_with_existing_fig_ax(self, lambda_results, distances):
-        lambda_result = interpolate_lambda(lambda_results, distances)
+    def test_plot_with_existing_fig_ax(self, lambda_results):
+        lambda_result = interpolate_lambda(lambda_results)
         fig, ax = plt.subplots()
         returned_fig, returned_ax = plot(lambda_result, fig=fig, ax=ax)
         assert returned_fig is fig
         assert returned_ax is ax
         plt.close(fig)
 
-    def test_plot_raises_on_mismatched_fig_ax(self, lambda_results, distances):
-        lambda_result = interpolate_lambda(lambda_results, distances)
+    def test_plot_raises_on_mismatched_fig_ax(self, lambda_results):
+        lambda_result = interpolate_lambda(lambda_results)
         fig, _ = plt.subplots()
         with pytest.raises(ValueError, match="both `None` or both set"):
             plot(lambda_result, fig=fig, ax=None)
