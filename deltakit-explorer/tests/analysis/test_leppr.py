@@ -32,7 +32,9 @@ class TestLEPPerRoundComputation:
             calculate_lep_and_lep_stddev(fails=[498, 151, -34], shots=shots)
 
         with pytest.raises(ValueError, match="must have non-negative"):
-            calculate_lep_and_lep_stddev(fails=fails, shots=[500_000, -500_000, 500_000])
+            calculate_lep_and_lep_stddev(
+                fails=fails, shots=[500_000, -500_000, 500_000]
+            )
 
     @pytest.mark.parametrize(
         ("leppr", "spam_error"),
