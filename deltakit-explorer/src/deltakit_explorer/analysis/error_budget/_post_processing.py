@@ -15,6 +15,7 @@ from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundData as LEPPRData,
 )
 
+
 def _filter_non_close_noise_parameters(
     data: pd.DataFrame,
     noise_parameters: npt.NDArray[np.floating],
