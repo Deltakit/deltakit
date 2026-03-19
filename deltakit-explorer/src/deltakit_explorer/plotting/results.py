@@ -169,7 +169,6 @@ class LambdaResult(Interpolated):
 
 def interpolate_lambda(
     lambda_data: LambdaData,
-    distances: npt.NDArray[np.int_],
     *,
     num_sigmas: int = 3,
     num_points: int = 200,
