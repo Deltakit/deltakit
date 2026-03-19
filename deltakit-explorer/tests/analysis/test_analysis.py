@@ -86,7 +86,9 @@ class TestCalculateLep:
     def test_calculate_lep_returns_correct_values(self):
         true_leps = [0.1, 0.02, 0.005]
         true_lep_stddevs = [0.00948683, 0.00442719, 0.00223047]
-        leps, lep_stddevs = calculate_lep_and_lep_stddev(fails=[100, 20, 5], shots=[1000] * 3)
+        leps, lep_stddevs = calculate_lep_and_lep_stddev(
+            fails=[100, 20, 5], shots=[1000] * 3
+        )
         np.testing.assert_allclose(leps, true_leps)
         np.testing.assert_allclose(lep_stddevs, true_lep_stddevs, atol=1e-8)
 
