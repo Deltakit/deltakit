@@ -15,13 +15,13 @@ from deltakit_explorer.analysis import (
 
 
 def _lambda_interpolated(
-    lambda0: float,
-    lambda_: float,
-    distances: npt.NDArray[np.int_ | np.floating],
+    lambda0: npt.NDArray[np.float64],
+    lambda_: npt.NDArray[np.float64],
+    distances: npt.NDArray[np.int_],
 ) -> npt.NDArray[np.floating]:
-    """Estimate the logical error probability per round for given parameters.
+    """Interpolate the logical error probability per round for given parameters.
 
-    The estimate is based on the formula
+    The interpolation is based on the formula
 
         ε = (1 / Λ₀) * Λ**(-(d + 1) / 2)
 
