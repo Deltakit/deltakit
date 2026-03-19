@@ -14,6 +14,32 @@ def rng() -> np.random.Generator:
 
 
 class TestCalculateLambda:
+    def test_raise_error_for_mismatch_inputs(self) -> None:
+        distances = [5, 7, 9]
+        leppr = [1.992e-04, 4.314e-05, 7.556e-06]
+        leppr_std = [1.2e-05, 9.3e-06, 3.9e-06]
+
+        with pytest.raises(ValueError):
+            calculate_lambda_and_lambda_std(
+                distances=[5,7],
+                leppr=leppr,
+                leppr_std=leppr_std,
+            )
+
+        with pytest.raises(ValueError):
+            calculate_lambda_and_lambda_std(
+                distances=distances,
+                leppr=[1.992e-04, 4.314e-05],
+                leppr_std=leppr_std,
+            )
+
+        with pytest.raises(ValueError):
+            calculate_lambda_and_lambda_std(
+                distances=distances,
+                leppr=leppr,
+                leppr_std=[1.2e-05, 9.3e-06],
+            )
+
     @pytest.mark.parametrize(
         ("method", "distances", "lambda_", "lambda0", "relative_std"),
         itertools.product(
