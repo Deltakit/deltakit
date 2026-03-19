@@ -31,8 +31,8 @@ def _lambda_interpolated(
       - Λ is the error suppression factor,
       - d is the code distance.
 
-    For each distance in ``distances``, this function computes the corresponding
-    logical error probability using the supplied ``lambda_`` (Λ) and ``lambda0`` (Λ₀).
+    For each distance, this function computes the corresponding
+    logical error probability using the supplied Λ and Λ₀.
 
     Args:
         lambda0: Normalisation constant Λ₀.
@@ -58,7 +58,7 @@ def _lep_interpolated(
     where:
       - F is the overall fidelity of the computation,
       - Fs is the fidelity of SPAM-related operations,
-      - Fε is the fidelity of a single quantum error-correction round,
+       Fε is the fidelity of a single quantum error-correction round,
       - r is the number of error-correction rounds performed.
 
     Each fidelity value is derived from its associated error probability using
