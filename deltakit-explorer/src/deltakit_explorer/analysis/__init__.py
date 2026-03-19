@@ -2,7 +2,6 @@
 """Description of ``deltakit.explorer.analysis`` namespace here."""
 
 from deltakit_explorer.analysis._analysis import (
-    calculate_lep_and_lep_stddev,
     get_exp_fit,
     get_lambda_fit,
 )
@@ -12,6 +11,7 @@ from deltakit_explorer.analysis._lambda import (
 )
 from deltakit_explorer.analysis._leppr import (
     LogicalErrorProbabilityPerRoundData,
+    calculate_lep_and_lep_stddev,
     compute_logical_error_per_round,
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
