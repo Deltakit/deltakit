@@ -386,6 +386,9 @@ def calculate_lep_and_lep_stddev(
         fails: The number of logical failures.
         shots: The number of shots the experiment was run for.
 
+    Raises:
+        ValueError: When inputs do not match lengths or have non-negative entries.
+
     Returns:
         A tuple consisting of:
             - the logical error probability
