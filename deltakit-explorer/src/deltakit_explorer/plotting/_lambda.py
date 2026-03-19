@@ -12,6 +12,7 @@ def plot_lambda(
     lambda_data: LambdaData,
     *,
     num_sigmas: int = 3,
+    num_points: int = 200,
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
