@@ -35,13 +35,9 @@ def plot_lambda(
         The matplotlib Figure and Axes objects containing the plot.
 
     Example:
-        from deltakit_explorer.analysis import LambdaData
+        from deltakit_explorer.analysis import calculate_lambda_and_lambda_std
 
-        lambda_data = LambdaData(
-            lambda_=3.16,
-            lambda_std=0.45,
-            lambda0=0.5,
-            lambda0_std=0.1,
+        lambda_data = calculate_lambda_and_lambda_std(
             distances=[5, 7, 9],
             leppr=[0.15, 0.1, 0.05],
             leppr_stddev=[0.01, 0.008, 0.005],
