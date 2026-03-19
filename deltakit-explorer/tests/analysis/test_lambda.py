@@ -21,7 +21,7 @@ class TestCalculateLambda:
 
         with pytest.raises(ValueError):
             calculate_lambda_and_lambda_std(
-                distances=[5,7],
+                distances=[5, 7],
                 leppr=leppr,
                 leppr_std=leppr_std,
             )
