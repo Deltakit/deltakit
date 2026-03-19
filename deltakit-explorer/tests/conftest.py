@@ -26,9 +26,12 @@ def random_generator():
 def lambda_results() -> LambdaData:
     return LambdaData(
         lambda_=3.0,
-        lambda_stddev=0.1,
+        lambda_std=0.1,
         lambda0=1.5,
-        lambda0_stddev=0.05,
+        lambda0_std=0.05,
+        distances=np.array([5, 7, 9]),
+        leppr=np.array([0.0246, 0.0082, 0.0027]),
+        leppr_std=np.array([0.00246, 0.00082, 0.00027]),
     )
 
 
