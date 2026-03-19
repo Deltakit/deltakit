@@ -16,24 +16,19 @@ def plot_lambda(
     fig: Figure | None = None,
     ax: Axes | None = None,
 ) -> tuple[Figure, Axes]:
-    """Plot Λ-fitting data.
+    """Interpolate and plot Λ-fitted data.
 
-    This function plots both the logical error-probability per round that has been used
+    This function interpolates and plots both the logical error-probability per round that has been used
     to compute Λ, the associated error-rates if provided, and the resulting fit, showing
     how close the fit is from actual data.
 
     Args:
-        lambda_data: Results from
-            :func:`~deltakit_explorer.analysis.calculate_lambda_and_lambda_stddev`.
-        distances: The distances of the code.
-        leppr: The logical error probabilities per round (leppr).
-        leppr_stddev: The standard deviation of the logical error
-            probabilities per round. If None, no error bars will be plotted.
-            Default is None.
-        num_sigmas: number of sigmas to consider when plotting error bars.
-        fig: a matplotlib Figure object to plot on. If None, a new figure
+        lambda_data: Result of a fit containing Λ, Λ₀, their standard deviations, and the original data.
+        num_sigmas: Number of standard deviations for the error band. Default 3.
+        num_points: Number of interpolation points. Default 200.
+        fig: A matplotlib Figure object to plot on. If None, a new figure
             will be created. Default is None.
-        ax: a matplotlib Axes object to plot on. If None, a new axes will
+        ax: A matplotlib Axes object to plot on. If None, a new axes will
             be created. Default is None.
 
     Returns:
