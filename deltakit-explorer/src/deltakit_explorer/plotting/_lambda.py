@@ -67,33 +67,19 @@ def plot_lambda(
     assert ax is not None
     assert fig is not None
 
-    lengths = {len(distances), len(leppr)}
-    if leppr_stddev is not None:
-        lengths.add(len(leppr_stddev))
-    if len(lengths) > 1:
-        msg = (
-            "The lengths of 'distances', 'leppr' and 'leppr_stddev' "
-            f"must be the same. Got the following lengths: {lengths}."
-        )
-        raise ValueError(msg)
-
-    isort = np.argsort(distances)
-    distances = np.asarray(distances)[isort]
-    leppr = np.asarray(leppr)[isort]
-    if leppr_stddev is not None:
-        leppr_stddev = num_sigmas * np.asarray(leppr_stddev)[isort]
-
     # Plot the logical error probabilities per round
     ax.errorbar(
-        distances,
-        leppr,
-        yerr=leppr_stddev,
+        lambda_data.distances,
+        lambda_data.leppr,
+        yerr=lambda_data.leppr_std,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
 
-    lambda_result = interpolate_lambda(lambda_data, distances, num_sigmas=num_sigmas)
+    lambda_result = interpolate_lambda(
+        lambda_data, num_sigmas=num_sigmas, num_points=num_points
+    )
 
     plot(lambda_result, fig=fig, ax=ax)
     return fig, ax
