@@ -38,13 +38,16 @@ def plot_lambda(
         from deltakit_explorer.analysis import LambdaData
 
         lambda_data = LambdaData(
-            lambda_=3.16, lambda_stddev=0.45, lambda0=0.5, lambda0_stddev=0.1
-        )
-        fig, ax = plot_lambda(
-            lambda_data=lambda_data,
+            lambda_=3.16,
+            lambda_std=0.45,
+            lambda0=0.5,
+            lambda0_std=0.1,
             distances=[5, 7, 9],
             leppr=[0.15, 0.1, 0.05],
             leppr_stddev=[0.01, 0.008, 0.005],
+        )
+        fig, ax = plot_lambda(
+            lambda_data=lambda_data,
         )
         ax.set_yscale("log")
         plt.show()
