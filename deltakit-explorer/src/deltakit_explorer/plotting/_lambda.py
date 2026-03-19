@@ -1,8 +1,4 @@
-from collections.abc import Sequence
-
 import matplotlib.pyplot as plt
-import numpy as np
-import numpy.typing as npt
 from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
@@ -14,9 +10,6 @@ from deltakit_explorer.plotting.results import interpolate_lambda
 
 def plot_lambda(
     lambda_data: LambdaData,
-    distances: npt.NDArray[np.int_] | Sequence[int],
-    leppr: npt.NDArray[np.float64] | Sequence[float],
-    leppr_stddev: npt.NDArray[np.float64] | Sequence[float] | None = None,
     *,
     num_sigmas: int = 3,
     fig: Figure | None = None,
