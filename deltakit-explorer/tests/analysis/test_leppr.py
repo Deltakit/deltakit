@@ -5,11 +5,23 @@ from math import sqrt
 import numpy as np
 import pytest
 
-from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
-from deltakit_explorer.analysis._leppr import compute_logical_error_per_round
+from deltakit_explorer.analysis import calculate_lep_and_lep_stddev, compute_logical_error_per_round
 
 
 class TestLEPPerRoundComputation:
+    def test_raise_exception_for_mismatch_inputs(self) -> None:
+        fails = [498, 151, 34]
+        shots = [500000] * 3
+
+        with pytest.raises(ValueError):
+            calculate_lep_and_lep_stddev(fails=[498, 151,], shots=shots)
+
+        with pytest.raises(ValueError):
+            calculate_lep_and_lep_stddev(fails=fails, shots=[500000] * 2)
+
+        with pytest.raises(ValueError):
+            calculate_lep_and_lep_stddev(fails=fails * (-1), shots=[500000] * 2)
+
     @pytest.mark.parametrize(
         ("leppr", "spam_error"),
         itertools.product((1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2)),
