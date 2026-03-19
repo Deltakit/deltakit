@@ -395,10 +395,10 @@ def calculate_lep_and_lep_stddev(
         Calculating logical error probability and standard deviation
         given number of fails, and number of shots::
 
-            lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
-                fails=[498, 151, 34],
-                shots=[500000] * 3,
-            )
+        lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
+            fails=[498, 151, 34],
+            shots=[500000] * 3,
+        )
     """
     fails, shots = np.asarray(fails), np.asarray(shots)
     if len(fails) != len(shots):
