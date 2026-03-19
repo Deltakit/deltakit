@@ -386,22 +386,22 @@ def calculate_lep_and_lep_stddev(
         fails: The number of logical failures.
         shots: The number of shots the experiment was run for.
 
+    Returns:
+        A tuple consisting of the logical error probability
+        and its standard deviation.
+
     Raises:
         ValueError: When inputs do not match lengths or have non-negative entries.
 
-    Returns:
-        A tuple consisting of:
-            - the logical error probability
-            - its standard deviation
-
     Examples:
         Calculating logical error probability and standard deviation
-        given number of fails, and number of shots::
+        given number of fails, and number of shots:
 
-        lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
-            fails=[498, 151, 34],
-            shots=[500000] * 3,
-        )
+        >>> lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
+        ...    fails=[498, 151, 34],
+        ...    shots=[500000] * 3,
+        ... )
+
     """
     fails = np.asarray([fails]) if isinstance(fails, int) else np.asarray(fails)
     shots = np.asarray([shots]) if isinstance(shots, int) else np.asarray(shots)
