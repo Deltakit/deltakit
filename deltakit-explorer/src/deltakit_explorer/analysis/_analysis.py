@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-
 import numpy as np
 import numpy.typing as npt
 from deltakit_core.deprecation import deprecated
@@ -116,43 +114,6 @@ def get_exp_fit(
     probs_interpolated = (1.0 - np.array(y_interpolated, dtype=np.float64)) * 0.5
 
     return epsilon, rounds_interpolated, probs_interpolated, yerr
-
-
-def calculate_lep_and_lep_stddev(
-    fails: npt.NDArray[np.int_] | Sequence[int] | int,
-    shots: npt.NDArray[np.int_] | Sequence[int] | int,
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Calculate the logical error probability and its standard deviation.
-
-    Args:
-        fails (npt.NDArray[np.int\\_] | Sequence[int] | int):
-            The number of logical failures.
-        shots (npt.NDArray[np.int\\_] | Sequence[int] | int):
-            The number of shots the experiment was run for.
-
-    Returns:
-        tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-            A tuple consisting of
-            - the logical error probability;
-            - the standard deviation of the logical error probability.
-
-    Examples:
-        Calculating logical error probability and standard deviation
-        given number of fails, and number of shots::
-
-            lep, lep_stddev = Analysis.calculate_lep_and_lep_stddev(
-                fails=[498, 151, 34],
-                shots=[500000] * 3,
-            )
-    """
-    fails, shots = np.asarray(fails), np.asarray(shots)
-    lep = fails / shots
-    if np.any(lep <= 0):
-        msg = "Must have > 0 fails to calculate logical error probability."
-        raise ValueError(msg)
-    lep_stddev = np.sqrt(lep * (1 - lep) / shots)
-
-    return lep, lep_stddev
 
 
 @deprecated(

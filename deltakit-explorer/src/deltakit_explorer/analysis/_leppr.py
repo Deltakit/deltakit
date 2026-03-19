@@ -171,10 +171,10 @@ def compute_logical_error_per_round(
             lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
         )
         return LogicalErrorProbabilityPerRoundData(
-            estimated_logical_error_per_round,
-            estimated_logical_error_per_round_stddev,
-            0,
-            0,
+            leppr=estimated_logical_error_per_round,
+            leppr_stddev=estimated_logical_error_per_round_stddev,
+            spam_error=0,
+            spam_error_stddev=0,
         )
 
     # Check if the heuristic guideline on the number of rounds is verified.
@@ -252,10 +252,10 @@ def compute_logical_error_per_round(
         (1 - 2 * estimated_spam_error) * offset_stddev / 2
     )
     return LogicalErrorProbabilityPerRoundData(
-        estimated_logical_error_per_round,
-        estimated_logical_error_per_round_stddev,
-        estimated_spam_error,
-        estimated_spam_error_stddev,
+        leppr=estimated_logical_error_per_round,
+        leppr_stddev=estimated_logical_error_per_round_stddev,
+        spam_error=estimated_spam_error,
+        spam_error_stddev=estimated_spam_error_stddev,
     )
 
 
@@ -374,3 +374,40 @@ def simulate_different_round_numbers_for_lep_per_round_estimation(
         nshots.append(nshot)
 
     return np.asarray(nrounds), np.asarray(nfails), np.asarray(nshots)
+
+
+def calculate_lep_and_lep_stddev(
+    fails: npt.NDArray[np.int_] | Sequence[int] | int,
+    shots: npt.NDArray[np.int_] | Sequence[int] | int,
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    """Calculate the logical error probability (lep) and its standard deviation.
+
+    Args:
+        fails: The number of logical failures.
+        shots: The number of shots the experiment was run for.
+
+    Returns:
+        A tuple consisting of:
+            - the logical error probability
+            - its standard deviation
+
+    Examples:
+        Calculating logical error probability and standard deviation
+        given number of fails, and number of shots::
+
+            lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
+                fails=[498, 151, 34],
+                shots=[500000] * 3,
+            )
+    """
+    fails, shots = np.asarray(fails), np.asarray(shots)
+    if len(fails) != len(shots):
+        msg = "Input data do not match lengths."
+        raise ValueError(msg)
+    lep = fails / shots
+    if np.any(lep <= 0):
+        msg = "Must have > 0 fails to calculate logical error probability."
+        raise ValueError(msg)
+    lep_stddev = np.sqrt(lep * (1 - lep) / shots)
+
+    return lep, lep_stddev
