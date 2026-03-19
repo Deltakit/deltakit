@@ -183,28 +183,27 @@ def interpolate_lambda(
     Returns:
         A container for the interpolated fit data with error boundaries and confidence interval.
     """
-    lambda_, lambda_stddev = lambda_data.lambda_, lambda_data.lambda_stddev
-    lambda0, lambda0_stddev = lambda_data.lambda0, lambda_data.lambda0_stddev
+    # Interpolate and broadcast distances
+    distances_interpolated = np.linspace(
+        lambda_data.distances[0], lambda_data.distances[-1], num_points
+    )[None, :]
 
-    distances_interpolated = np.linspace(distances[0], distances[-1], num_points)
-    interpolated = _lambda_interpolated(lambda0, lambda_, distances_interpolated)
-    lower_boundary = _lambda_interpolated(
-        lambda0 - num_sigmas * lambda0_stddev,
-        lambda_ - num_sigmas * lambda_stddev,
-        distances_interpolated,
-    )
-    upper_boundary = _lambda_interpolated(
-        lambda0 + num_sigmas * lambda0_stddev,
-        lambda_ + num_sigmas * lambda_stddev,
-        distances_interpolated,
+    # Offsets
+    offsets = np.array([-num_sigmas, 0.0, num_sigmas]) * lambda_data.lambda0_std
+
+    # Broadcast interpolatable parameters
+    lambda0_vals = (lambda_data.lambda0 + offsets)[:, None]
+    lambda_vals = (lambda_data.lambda_ + offsets)[:, None]
+
+    # Compute all curves at once
+    lower_boundary, interpolated, upper_boundary = _lambda_interpolated(
+        lambda0_vals, lambda_vals, distances_interpolated
     )
 
-    fit_label = (
-        f"Fit, Λ={lambda_:.4f} ± {num_sigmas * lambda_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
-    )
+    fit_label = f"Fit, Λ={lambda_data.lambda_:.4f} ± {offsets[2]:.4f} ({num_sigmas}σ)"  # noqa: RUF001
 
     return LambdaResult(
-        distances=distances_interpolated,
+        distances=distances_interpolated[0, :],
         interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
