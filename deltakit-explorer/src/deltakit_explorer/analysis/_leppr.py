@@ -398,8 +398,8 @@ def calculate_lep_and_lep_stddev(
         given number of fails, and number of shots:
 
         >>> lep, lep_stddev = analysis.calculate_lep_and_lep_stddev(
-        ...    fails=[498, 151, 34],
-        ...    shots=[500000] * 3,
+        ...     fails=[498, 151, 34],
+        ...     shots=[500000] * 3,
         ... )
 
     """
