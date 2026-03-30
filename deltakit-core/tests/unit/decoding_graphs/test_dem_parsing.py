@@ -5,10 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-try:
-    import lestim as stim
-except ImportError:
-    import stim
+import deltakit_stim as stim
 from pytest_mock import MockerFixture
 
 from deltakit_core.decoding_graphs import (

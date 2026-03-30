@@ -3,10 +3,7 @@ from pathlib import Path
 
 import pytest
 
-try:
-    import lestim as stim
-except ImportError:
-    import stim
+import deltakit_stim as stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,

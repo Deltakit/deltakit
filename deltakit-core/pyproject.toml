@@ -78,7 +78,7 @@ dev = [
 known_first_party = ["deltakit_core"]
 
 [tool.deptry.per_rule_ignores]
-DEP001 = ["lestim"]
+DEP001 = ["deltakit_stim"]
 
 [tool.mypy]
 files = "src/**/*.py"
@@ -90,7 +90,7 @@ module = ["stim"]
 follow_untyped_imports = true
 
 [[tool.mypy.overrides]]
-module = ["lestim"]
+module = ["deltakit_stim"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
