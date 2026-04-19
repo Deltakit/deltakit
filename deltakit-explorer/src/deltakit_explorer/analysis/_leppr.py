@@ -22,6 +22,7 @@ class LogicalErrorProbabilityPerRoundData:
 
     leppr: float
     leppr_stddev: float
+    num_rounds: npt.NDArray[np.int_]
     spam_error: float
     spam_error_stddev: float
 
@@ -391,7 +392,7 @@ def calculate_lep_and_lep_stddev(
         and its standard deviation.
 
     Raises:
-        ValueError: When inputs do not match lengths or have non-negative entries.
+        ValueError: When inputs do not match lengths or have non-positive entries.
 
     Examples:
         Calculating logical error probability and standard deviation
