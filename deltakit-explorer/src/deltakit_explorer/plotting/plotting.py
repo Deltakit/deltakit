@@ -54,19 +54,21 @@ def plot(
         TypeError: If the ``result`` type is not supported.
 
     Examples:
-        Plotting a Lambda fit curve::
+
+        Plotting a Lambda fit curve:
 
             from deltakit_explorer.plotting.results import interpolate_lambda
 
             lambda_result = interpolate_lambda(lambda_data, distances)
             fig, ax = plot(lambda_result)
 
-        Plotting a LEPPR fit curve::
+        Plotting a LEPPR fit curve:
 
             from deltakit_explorer.plotting.results import interpolate_leppr
 
             leppr_result = interpolate_leppr(leppr_data, num_rounds)
             fig, ax = plot(leppr_result)
+
     """
     if (fig is None) ^ (ax is None):
         msg = "The 'fig' and 'ax' parameters should either be both `None` or both set."
