@@ -52,35 +52,35 @@ class TestComputeLambdaPlot:
 
 
 class TestComputeLepprPlot:
-    def test_output_type(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds)
+    def test_output_type(self, leppr_results):
+        result = interpolate_leppr(leppr_results)
         assert isinstance(result, LEPPRResult)
 
-    def test_default_num_points(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds)
+    def test_default_num_points(self, leppr_results):
+        result = interpolate_leppr(leppr_results)
         assert len(result.rounds) == 200
         assert len(result.interpolated) == 200
         assert len(result.lower_boundary) == 200
         assert len(result.upper_boundary) == 200
 
-    def test_custom_num_points(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds, num_points=100)
+    def test_custom_num_points(self, leppr_results):
+        result = interpolate_leppr(leppr_results, num_points=100)
         assert len(result.rounds) == 100
 
     def test_rounds_range(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds)
+        result = interpolate_leppr(leppr_results)
         assert result.rounds[0] == pytest.approx(num_rounds[0])
         assert result.rounds[-1] == pytest.approx(num_rounds[-1])
 
-    def test_boundaries_clipped(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds)
+    def test_boundaries_clipped(self, leppr_results):
+        result = interpolate_leppr(leppr_results)
         assert np.all(result.lower_boundary >= 0)
         assert np.all(result.lower_boundary <= 1)
         assert np.all(result.upper_boundary >= 0)
         assert np.all(result.upper_boundary <= 1)
 
-    def test_frozen_dataclass(self, leppr_results, num_rounds):
-        result = interpolate_leppr(leppr_results, num_rounds)
+    def test_frozen_dataclass(self, leppr_results):
+        result = interpolate_leppr(leppr_results)
         with pytest.raises(AttributeError):
             result.rounds = np.array([1, 2, 3])
 
@@ -95,8 +95,8 @@ class TestPlot:
         assert ax.get_xlabel() == "Code distance"
         plt.close(fig)
 
-    def test_plot_with_leppr_result(self, leppr_results, num_rounds):
-        leppr_result = interpolate_leppr(leppr_results, num_rounds)
+    def test_plot_with_leppr_result(self, leppr_results):
+        leppr_result = interpolate_leppr(leppr_results)
         fig, ax = plot(leppr_result)
         assert fig is not None
         assert ax is not None

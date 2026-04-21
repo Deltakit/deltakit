@@ -40,6 +40,7 @@ def leppr_results() -> LEPPRData:
     return LEPPRData(
         leppr=0.001,
         leppr_stddev=0.0001,
+        num_rounds=np.array([2, 4, 6]),
         spam_error=0.01,
         spam_error_stddev=0.001,
     )
