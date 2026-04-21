@@ -27,15 +27,10 @@ def plot(
     This function inspects the type of ``result`` and calls the appropriate
     rendering logic:
 
-    - :class:`~deltakit_explorer.plotting.results.LambdaResult` -- renders the
-      error-suppression factor Λ fit curve with error bands.
-    - :class:`~deltakit_explorer.plotting.results.LEPPRResult` -- renders the
-      logical error probability per round fit curve with error bands.
+    - `LambdaResult`: Render error-suppression factor Λ fit curve with error bands.
+    - `LEPPRResult`: Renders the logical error probability per round fit curve with error bands.
 
-    This enables users to compute the plot data separately (via
-    :meth:`~deltakit_explorer.plotting.results.interpolate_lambda` or
-    :meth:`~deltakit_explorer.plotting.results.interpolate_leppr`) and then
-    render with a single call.
+    This enables users to compute the plot data separately (via `interpolate_lambda` or `interpolate_leppr`) and then render with a single call.
 
     Args:
         result: The precomputed plot data.
@@ -94,7 +89,7 @@ def plot(
         case _:
             msg = (
                 f"Unsupported result type: {type(result).__name__}. "
-                "Expected LambdaResult or LEPPRResult."
+                "Expected `LambdaResult` or `LEPPRResult`."
             )
             raise TypeError(msg)
 
