@@ -19,7 +19,7 @@ def _lambda_interpolated(
     lambda_: npt.NDArray[np.float64],
     distances: npt.NDArray[np.int_],
 ) -> npt.NDArray[np.floating]:
-    """Interpolate the logical error probability per round for given parameters.
+    """Interpolate the logical error probability per round for the given parameters.
 
     The interpolation is based on the formula
 
@@ -49,7 +49,7 @@ def _lambda_interpolated(
 def _lep_interpolated(
     spam: float, leppr: float, rounds_interpolated: npt.NDArray[np.floating]
 ) -> npt.NDArray[np.floating]:
-    """Compute the logical error probability corresponding to the given parameters.
+    """Compute the logical error probability for the given parameters.
 
     The expected computation fidelity is modelled as
 
