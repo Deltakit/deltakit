@@ -250,27 +250,34 @@ def interpolate_leppr(
 
     Returns:
         The interpolated fit data with error boundaries.
+
     """
-    leppr, leppr_stddev = leppr_data.leppr, leppr_data.leppr_stddev
-    spam, spam_stddev = leppr_data.spam_error, leppr_data.spam_error_stddev
+    # Interpolate and broadcast distances
+    rounds_interpolated = np.linspace(
+        leppr_data.num_rounds[0], leppr_data.num_rounds[-1], num_points
+    )[None, :]
 
-    rounds_interpolated = np.linspace(num_rounds[0], num_rounds[-1], num_points)
-    interpolated = _lep_interpolated(spam, leppr, rounds_interpolated)
-    lower_boundary = _lep_interpolated(
-        spam - num_sigmas * spam_stddev,
-        leppr - num_sigmas * leppr_stddev,
-        rounds_interpolated,
+    # Offsets
+    spam_offsets = (
+        np.array([-num_sigmas, 0.0, num_sigmas]) * leppr_data.spam_error_stddev
     )
-    upper_boundary = _lep_interpolated(
-        spam + num_sigmas * spam_stddev,
-        leppr + num_sigmas * leppr_stddev,
-        rounds_interpolated,
+    leppr_offsets = np.array([-num_sigmas, 0.0, num_sigmas]) * leppr_data.leppr_stddev
+
+    # Broadcast interpolatable parameters
+    spam_vals = (leppr_data.spam_error + spam_offsets)[:, None]
+    leppr_vals = (leppr_data.leppr + leppr_offsets)[:, None]
+
+    # Compute all curves at once
+    lower_boundary, interpolated, upper_boundary = _lep_interpolated(
+        spam_vals, leppr_vals, rounds_interpolated
     )
 
-    fit_label = f"Fit, ε={leppr:.4f} ± {num_sigmas * leppr_stddev:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+    fit_label = (
+        f"Fit, ε={leppr_data.leppr:.4f} ± {leppr_offsets[2]:.4f} ({num_sigmas}σ)"  # noqa: RUF001
+    )
 
     return LogicalErrorProbabilityPerRoundResult(
-        rounds=rounds_interpolated,
+        rounds=rounds_interpolated[0, :],
         interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
