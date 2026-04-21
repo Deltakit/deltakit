@@ -237,7 +237,6 @@ class LogicalErrorProbabilityPerRoundResult(Interpolated):
 
 def interpolate_leppr(
     leppr_data: LEPPRData,
-    num_rounds: npt.NDArray[np.int_],
     *,
     num_sigmas: int = 3,
     num_points: int = 200,
@@ -246,7 +245,6 @@ def interpolate_leppr(
 
     Args:
         leppr_data: Results from compute_logical_error_per_round.
-        num_rounds: The number of rounds used for interpolation.
         num_sigmas: Number of standard deviations for the error band. Default 3.
         num_points: Number of interpolation points. Default 200.
 
