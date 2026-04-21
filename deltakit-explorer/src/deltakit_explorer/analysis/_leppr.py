@@ -10,14 +10,14 @@ from scipy.optimize import curve_fit
 
 @dataclass(frozen=True)
 class LogicalErrorProbabilityPerRoundData:
-    """Named-tuple-like class containing computation results from
-    :func:`compute_logical_error_per_round`.
+    """Container class to hold `compute_logical_error_per_round` results.
 
     Attributes:
-        leppr (float): Logical Error Probability Per Round (LEPPR).
-        leppr_stddev (float): LEPPR standard deviation.
-        spam_error (float): computed SPAM error probability.
-        spam_error_stddev (float): SPAM error probability standard deviation.
+        leppr: Logical Error Probability Per Round (LEPPR).
+        leppr_stddev: LEPPR standard deviation.
+        num_rounds: Number of rounds.
+        spam_error: Computed SPAM error probability.
+        spam_error_stddev: SPAM error probability standard deviation.
     """
 
     leppr: float
@@ -174,6 +174,7 @@ def compute_logical_error_per_round(
         return LogicalErrorProbabilityPerRoundData(
             leppr=estimated_logical_error_per_round,
             leppr_stddev=estimated_logical_error_per_round_stddev,
+            num_rounds=rounds,
             spam_error=0,
             spam_error_stddev=0,
         )
@@ -255,6 +256,7 @@ def compute_logical_error_per_round(
     return LogicalErrorProbabilityPerRoundData(
         leppr=estimated_logical_error_per_round,
         leppr_stddev=estimated_logical_error_per_round_stddev,
+        num_rounds=num_rounds,
         spam_error=estimated_spam_error,
         spam_error_stddev=estimated_spam_error_stddev,
     )
