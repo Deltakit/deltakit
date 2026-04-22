@@ -47,6 +47,11 @@ class LambdaData:
     leppr: npt.NDArray[np.float64]
     leppr_std: npt.NDArray[np.float64]
 
+    def __post_init__(self) -> None:
+        if not (len(distances) == len(leppr) == len(leppr_std)):
+            msg = "Mismatch in array lengths for 'distances', 'leppr' and 'leppr_std'."
+            raise ValueError(msg)
+
 
 _LambdaFitCallable = Callable[
     [
