@@ -15,7 +15,7 @@ class LogicalErrorProbabilityPerRoundData:
     Attributes:
         leppr: Logical Error Probability Per Round (LEPPR).
         leppr_stddev: LEPPR standard deviation.
-        num_rounds: Number of rounds.
+        num_rounds: Array containing the number of rounds.
         spam_error: Computed SPAM error probability.
         spam_error_stddev: SPAM error probability standard deviation.
     """
