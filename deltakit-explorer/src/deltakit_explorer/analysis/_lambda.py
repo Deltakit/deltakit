@@ -293,7 +293,7 @@ _LAMBDA_FIT_METHODS: dict[LambdaFitMethod, _LambdaFitCallable] = {
 }
 
 
-def calculate_lambda_and_lambda_std(
+def calculate_lambda_and_lambda_stddev(
     distances: npt.NDArray[np.int_] | Sequence[int],
     leppr: npt.NDArray[np.float64] | Sequence[float],
     leppr_std: npt.NDArray[np.float64] | Sequence[float],

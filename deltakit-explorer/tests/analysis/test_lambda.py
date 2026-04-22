@@ -5,7 +5,7 @@ from typing import Literal
 import numpy as np
 import pytest
 
-from deltakit_explorer.analysis import calculate_lambda_and_lambda_std
+from deltakit_explorer.analysis import calculate_lambda_and_lambda_stddev
 
 
 @pytest.fixture
@@ -20,21 +20,21 @@ class TestCalculateLambda:
         leppr_std = [1.2e-05, 9.3e-06, 3.9e-06]
 
         with pytest.raises(ValueError):
-            calculate_lambda_and_lambda_std(
+            calculate_lambda_and_lambda_stddev(
                 distances=[5, 7],
                 leppr=leppr,
                 leppr_std=leppr_std,
             )
 
         with pytest.raises(ValueError):
-            calculate_lambda_and_lambda_std(
+            calculate_lambda_and_lambda_stddev(
                 distances=distances,
                 leppr=[1.992e-04, 4.314e-05],
                 leppr_std=leppr_std,
             )
 
         with pytest.raises(ValueError):
-            calculate_lambda_and_lambda_std(
+            calculate_lambda_and_lambda_stddev(
                 distances=distances,
                 leppr=leppr,
                 leppr_std=[1.2e-05, 9.3e-06],
@@ -64,7 +64,7 @@ class TestCalculateLambda:
         )
         relative_stds = rng.normal(0, relative_std, size=len(distances))
         lepprs_std = (1 + relative_stds) * lepprs
-        res = calculate_lambda_and_lambda_std(distances, lepprs, lepprs_std, method)
+        res = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_std, method)
         # Test that the estimated quantities are within 3*sigma of the real one.
         assert pytest.approx(res.lambda_, abs=3 * res.lambda_std) == lambda_
         assert pytest.approx(res.lambda0, abs=3 * res.lambda0_std) == lambda0
@@ -78,7 +78,7 @@ class TestCalculateLambda:
         lepprs = [0.01, 0.01, 0.001]
         lepprs_stds = [1e-10, 1e-10, 1e-10]
         with pytest.raises(ValueError, match="^Multiple entries were provided"):
-            calculate_lambda_and_lambda_std(distances, lepprs, lepprs_stds)
+            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stds)
 
     @pytest.mark.parametrize(
         ("lamb", "distances"),
@@ -94,7 +94,7 @@ class TestCalculateLambda:
         lepprs_stds = [1e-10 for _ in distances]
         msg = "^Lambda estimation is unreliable at low code distances and low values of lambda."
         with pytest.warns(UserWarning, match=msg):
-            calculate_lambda_and_lambda_std(distances, lepprs, lepprs_stds)
+            calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stds)
 
     @pytest.mark.parametrize(
         ("methods", "distances", "lambda_", "lambda0", "relative_std"),
@@ -123,8 +123,8 @@ class TestCalculateLambda:
         )
         relative_stds = rng.normal(0, relative_std, size=len(distances))
         lepprs_std = (1 + relative_stds) * lepprs
-        res1 = calculate_lambda_and_lambda_std(distances, lepprs, lepprs_std, m1)
-        res2 = calculate_lambda_and_lambda_std(distances, lepprs, lepprs_std, m2)
+        res1 = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_std, m1)
+        res2 = calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_std, m2)
         # Estimations of lambda and lambda0 are already checked by another test, so we
         # only check that the standard deviations actually agree here.
         assert pytest.approx(res1.lambda_std, rel=1e-6) == res2.lambda_std

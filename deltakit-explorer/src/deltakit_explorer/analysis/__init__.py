@@ -7,7 +7,7 @@ from deltakit_explorer.analysis._analysis import (
 )
 from deltakit_explorer.analysis._lambda import (
     LambdaData,
-    calculate_lambda_and_lambda_std,
+    calculate_lambda_and_lambda_stddev,
 )
 from deltakit_explorer.analysis._leppr import (
     LogicalErrorProbabilityPerRoundData,
