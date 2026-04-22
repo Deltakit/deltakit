@@ -297,7 +297,7 @@ def calculate_lambda_and_lambda_std(
     distances: npt.NDArray[np.int_] | Sequence[int],
     leppr: npt.NDArray[np.float64] | Sequence[float],
     leppr_std: npt.NDArray[np.float64] | Sequence[float],
-    method: LambdaFitMethod | str = LambdaFitMethod.LIN,
+    method: LambdaFitMethod = LambdaFitMethod.LIN,
 ) -> LambdaData:
     """Estimate the error suppression factor (Λ) and its standard deviation.
 
