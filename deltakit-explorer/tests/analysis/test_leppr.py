@@ -22,10 +22,10 @@ class TestLEPPerRoundComputation:
         with pytest.raises(ValueError, match="do not match lengths."):
             calculate_lep_and_lep_stddev(fails=fails, shots=[500000] * 2)
 
-        with pytest.raises(ValueError, match="must have strictly positive"):
+        with pytest.raises(ValueError, match="must be strictly positive"):
             calculate_lep_and_lep_stddev(fails=[498, 151, -34], shots=shots)
 
-        with pytest.raises(ValueError, match="must have strictly positive"):
+        with pytest.raises(ValueError, match="must be strictly positive"):
             calculate_lep_and_lep_stddev(
                 fails=fails, shots=[500_000, -500_000, 500_000]
             )
