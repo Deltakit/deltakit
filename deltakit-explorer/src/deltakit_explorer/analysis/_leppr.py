@@ -412,7 +412,7 @@ def calculate_lep_and_lep_stddev(
         msg = "Input data do not match lengths."
         raise ValueError(msg)
     if np.any(fails <= 0) or np.any(shots <= 0):
-        msg = "Both `fail` and `shots` must have non-negative entries to calculate logical error probability."
+        msg = "Both `fail` and `shots` must be strictly positive entries to calculate the logical error probability."
         raise ValueError(msg)
     lep = fails / shots
     lep_stddev = np.sqrt(lep * (1 - lep) / shots)
