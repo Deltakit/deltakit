@@ -68,8 +68,6 @@ class TestCurveFit:
             )
 
 
-
-
 class TestGetLambdaFit:
     def test_get_lambda_fit_returns_correct_values(self):
         true_lep_fit = [0.000201, 0.000039, 0.00000758]
