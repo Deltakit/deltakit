@@ -65,7 +65,7 @@ def plot_lambda(
     ax.errorbar(
         lambda_data.distances,
         lambda_data.leppr,
-        yerr=lambda_data.leppr_std,
+        yerr=lambda_data.leppr_std * num_sigmas,
         fmt=".",
         color=RIVERLANE_PLOT_COLOURS[1],
         label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
