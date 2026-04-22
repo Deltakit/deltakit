@@ -18,9 +18,9 @@ class LambdaData:
     prefactor (Λ₀), along with their standard deviations and the underlying
     data used for the fit.
 
-    The error model assumes an exponential decay of the logical error
-    probability per round (leepr) ε_d with the error suppression factors and
-    code distance:
+    The error model assumes an exponential decay wrt the error suppression
+    factor and code distance for the logical error probability per round
+    (leppr) ε_d:
 
         ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
 
@@ -30,14 +30,13 @@ class LambdaData:
         - d is the code distance
 
     Attributes:
-        lambda_: Error suppression factor. The trailing underscore
-            avoids shadowing the Python keyword ``lambda``.
+        lambda_: Error suppression factor. The underscore avoids shadowing Python keyword ``lambda``.
         lambda_std: Error suppression factor standard deviation.
         lambda0: Error suppression prefactor.
         lambda0_std: Error suppression prefactor standard deviation.
-        distances: Code distances.
-        leppr: Logical error probability per round.
-        leppr_std: Logical error probability per round standard deviation.
+        distances: An array of code distances.
+        leppr: An array for leppr computed for all code distances.
+        leppr_std: An array for leppr standard deviation computed for all code distances.
     """
 
     lambda_: float
@@ -235,7 +234,7 @@ def _lambda_curve_fit(
     """Estimate error suppression factors Λ and Λ₀ with curve fit.
 
     From the logical error probability per round (leppr) ε_d relationship
-    with error suppression factors and code distance:
+    with the error suppression factor and code distance:
 
         ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
 
