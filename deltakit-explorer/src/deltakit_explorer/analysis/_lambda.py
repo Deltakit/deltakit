@@ -63,11 +63,11 @@ _LambdaFitCallable = Callable[
 ]
 
 
-class LambdaFitMethod(str, Enum):
+class LambdaFitMethod(Enum):
     SHIFTED = "shifted"
-    """Linear fit with shifted distances over logarithmic values."""
+    """Linear fit with shifted distances d over logarithmic values."""
     LIN = "lin"
-    """Linear fit over logarithmic values."""
+    """Linear fit with distances (d+1)/2 over logarithmic values."""
     CURVE = "curve"
     """Non-linear fit."""
 
@@ -124,8 +124,11 @@ def _lambda_shifted_fit(
     # Prepare log data for linear fit.
     log_leppr = np.log(leppr)
     log_leppr_std = leppr_std / leppr
-    # Fitting with numpy.polyfit provides
-    # standard deviations and a covariance matrix.
+    # Fitting with the old 'numpy.polyfit' API provides
+    # standard deviations and a covariance matrix over the
+    # new 'numpy.polynomial.Polyfit' API.
+    # See for instance the transition guide:
+    # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
         distances,  # Shifted distances.
         log_leppr,
@@ -204,8 +207,11 @@ def _lambda_lin_fit(
     # Prepare log data for linear fit.
     log_leppr = np.log(leppr)
     log_leppr_std = leppr_std / leppr
-    # Fitting with numpy.polyfit provides
-    # standard deviations and a covariance matrix.
+    # Fitting with the old 'numpy.polyfit' API provides
+    # standard deviations and a covariance matrix over the
+    # new 'numpy.polynomial.Polyfit' API.
+    # See for instance the transition guide:
+    # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
         (distances + 1) / 2,
         log_leppr,
@@ -243,8 +249,7 @@ def _lambda_curve_fit(
 
         ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
 
-    This function fits a curve model to the leppr
-    as a function of the distance.
+    This function fits a curve model to the leppr as a function of the distance.
 
     Args:
         distances: Code distances.
@@ -297,8 +302,10 @@ def calculate_lambda_and_lambda_std(
     """Estimate the error suppression factor (Λ) and its standard deviation.
 
     This function fits the scaling of the logical error probability per round
-    (leppr) and its standard deviation (leppr_std) as a function of code distance
-    in order to extract the error suppression factor Λ and the prefactor Λ₀,
+    (leppr) and propagates its standard deviation (leppr_std) through the
+    fitting method as a function of code distance.
+
+    It extracts the error suppression factor Λ and the prefactor Λ₀,
     along with their standard deviations.
 
     The leppr can be approximated as ``lep / num_rounds`` for small error rates,
