@@ -50,14 +50,14 @@ def plot(
 
     Examples:
 
-        Plotting a Lambda fit curve:
+        Plotting a Lambda fit curve::
 
             from deltakit_explorer.plotting.results import interpolate_lambda
 
             lambda_result = interpolate_lambda(lambda_data, distances)
             fig, ax = plot(lambda_result)
 
-        Plotting a LEPPR fit curve:
+        Plotting a LEPPR fit curve::
 
             from deltakit_explorer.plotting.results import interpolate_leppr
 
