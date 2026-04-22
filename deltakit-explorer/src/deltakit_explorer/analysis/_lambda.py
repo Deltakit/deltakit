@@ -310,12 +310,16 @@ def calculate_lambda_and_lambda_stddev(
 
     The leppr can be approximated as ``lep / num_rounds`` for small error rates,
     or computed together with its standard deviation more accurately using
-    `compute_logical_error_per_round`.
+    :func:`compute_logical_error_per_round`.
 
-    By supplying LEPPR values at increasing code distances, this routine
+    By supplying leppr values at increasing code distances, this routine
     estimates how quickly logical errors are suppressed as the code grows.
     Note that Λ is a heuristic quantity: estimates may be unreliable near
     threshold and for small distances. In such cases, a warning is emitted.
+
+    All three fitting methods show remarkable numerical agreement.
+    LambdaFitMethod.CURVE is slower than both LambdaFitMethod.SHIFTED and
+    LambdaFitMethod.LIN, the later two should be preferred in general.
 
     Reference:
        Fig. S15 of Supplementary information of
@@ -323,9 +327,9 @@ def calculate_lambda_and_lambda_stddev(
        at https://www.nature.com/articles/s41586-024-08449-y#Sec8
 
     Args:
-        distances: Code distances corresponding to the provided leppr data points.
-        leppr: Logical error probability per round for each distance.
-        leppr_std: Leppr standard deviation for each distance.
+        distances: An array for code distances as leppr data points.
+        leppr: An array for leppr computed for all distances. Must be of same size as 'distances'.
+        leppr_std: An array for leppr standard deviation for each distance. Must be of same size as 'distances'.
         method: Method used to fit the data. The default is "lin".
 
     Returns:
