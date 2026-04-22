@@ -17,13 +17,7 @@ class TestLEPPerRoundComputation:
         shots = [500000] * 3
 
         with pytest.raises(ValueError, match="do not match lengths."):
-            calculate_lep_and_lep_stddev(
-                fails=[
-                    498,
-                    151,
-                ],
-                shots=shots,
-            )
+            calculate_lep_and_lep_stddev(fails=[498, 151], shots=shots)
 
         with pytest.raises(ValueError, match="do not match lengths."):
             calculate_lep_and_lep_stddev(fails=fails, shots=[500000] * 2)
