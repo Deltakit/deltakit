@@ -18,9 +18,8 @@ class LambdaData:
     prefactor (Λ₀), along with their standard deviations and the underlying
     data used for the fit.
 
-    The error model assumes an exponential decay wrt the error suppression
-    factor and code distance for the logical error probability per round
-    (leppr) ε_d:
+    The error model assumes an exponential decay of base 1/Λ wrt the code distance
+    for the logical error probability per round (leppr) ε_d:
 
         ε_d ≈ 1 / (Λ₀ · Λ^((d+1)/2))
 
@@ -37,6 +36,10 @@ class LambdaData:
         distances: An array of code distances.
         leppr: An array for leppr computed for all code distances.
         leppr_std: An array for leppr standard deviation computed for all code distances.
+
+    Note:
+        This class maintains the invariant that the lengths for 'distances', 'leppr' and 'leppr_std'
+        match.
     """
 
     lambda_: float
@@ -65,9 +68,9 @@ _LambdaFitCallable = Callable[
 
 class LambdaFitMethod(Enum):
     SHIFTED = "shifted"
-    """Linear fit with shifted distances d over logarithmic values."""
+    """Linear fit with 'd' over logarithmic values."""
     LIN = "lin"
-    """Linear fit with distances (d+1)/2 over logarithmic values."""
+    """Linear fit with '(d+1)/2' over logarithmic values."""
     CURVE = "curve"
     """Non-linear fit."""
 
