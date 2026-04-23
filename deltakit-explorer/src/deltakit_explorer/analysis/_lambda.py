@@ -133,7 +133,7 @@ def _lambda_shifted_fit(
     # See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
-        distances,  # Shifted distances.
+        distances,
         log_leppr,
         1,
         w=1 / log_leppr_std,
