@@ -186,14 +186,14 @@ def interpolate_lambda(
     # Reshape distances into a (1, num_points) array for vectorisation
     distances_interpolated = np.linspace(
         lambda_data.distances[0], lambda_data.distances[-1], num_points
-    ).reshape(1, -1)
+    ).reshape(1, num_points)
 
     # Offsets
     offsets = np.array([-num_sigmas, 0.0, num_sigmas]) * lambda_data.lambda0_std
 
-    # Reshape interpolatable parameters into (3, 1) arrays for vectorisation
-    lambda0_vals = (lambda_data.lambda0 + offsets).reshape(-1, 1)
-    lambda_vals = (lambda_data.lambda_ + offsets).reshape(-1, 1)
+    # Reshape interpolable parameters into (3, 1) arrays for vectorisation
+    lambda0_vals = (lambda_data.lambda0 + offsets).reshape(3, 1)
+    lambda_vals = (lambda_data.lambda_ + offsets).reshape(3, 1)
 
     # Compute all curves at once
     lower_boundary, interpolated, upper_boundary = _lambda_interpolated(
@@ -203,7 +203,7 @@ def interpolate_lambda(
     fit_label = f"Fit, Λ={lambda_data.lambda_:.4f} ± {offsets[2]:.4f} ({num_sigmas}σ)"  # noqa: RUF001
 
     return LambdaResult(
-        distances=distances_interpolated.reshape(-1),  # Reshape back into 1D array.
+        distances=distances_interpolated.ravel(),  # Reshape back into 1D array.
         interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
@@ -255,7 +255,7 @@ def interpolate_leppr(
     # Reshape rounds into a (1, num_points) array for vectorisation
     rounds_interpolated = np.linspace(
         leppr_data.num_rounds[0], leppr_data.num_rounds[-1], num_points
-    ).reshape(1, -1)
+    ).reshape(1, num_points)
 
     # Offsets
     spam_offsets = (
@@ -263,9 +263,9 @@ def interpolate_leppr(
     )
     leppr_offsets = np.array([-num_sigmas, 0.0, num_sigmas]) * leppr_data.leppr_stddev
 
-    # Reshape interpolatable parameters into (3, 1) arrays for vectorisation
-    spam_vals = (leppr_data.spam_error + spam_offsets).reshape(-1, 1)
-    leppr_vals = (leppr_data.leppr + leppr_offsets).reshape(-1, 1)
+    # Reshape interpolable parameters into (3, 1) arrays for vectorisation
+    spam_vals = (leppr_data.spam_error + spam_offsets).reshape(3, 1)
+    leppr_vals = (leppr_data.leppr + leppr_offsets).reshape(3, 1)
 
     # Compute all curves at once
     lower_boundary, interpolated, upper_boundary = _lep_interpolated(
@@ -277,7 +277,7 @@ def interpolate_leppr(
     )
 
     return LogicalErrorProbabilityPerRoundResult(
-        rounds=rounds_interpolated.reshape(-1),  # Reshape back into 1D array
+        rounds=rounds_interpolated.ravel(),  # Reshape back into 1D array
         interpolated=np.clip(interpolated, 0, 1),
         lower_boundary=np.clip(lower_boundary, 0, 1),
         upper_boundary=np.clip(upper_boundary, 0, 1),
