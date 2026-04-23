@@ -127,10 +127,8 @@ def _lambda_shifted_fit(
     # Prepare log data for linear fit.
     log_leppr = np.log(leppr)
     log_leppr_std = leppr_std / leppr
-    # Fitting with the old 'numpy.polyfit' API provides
-    # standard deviations and a covariance matrix over the
-    # new 'numpy.polynomial.Polyfit' API.
-    # See for instance the transition guide:
+    # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
+    # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
         distances,
@@ -210,10 +208,8 @@ def _lambda_lin_fit(
     # Prepare log data for linear fit.
     log_leppr = np.log(leppr)
     log_leppr_std = leppr_std / leppr
-    # Fitting with the old 'numpy.polyfit' API provides
-    # standard deviations and a covariance matrix over the
-    # new 'numpy.polynomial.Polyfit' API.
-    # See for instance the transition guide:
+    # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
+    # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
         (distances + 1) / 2,
