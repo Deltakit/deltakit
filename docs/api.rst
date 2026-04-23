@@ -441,7 +441,7 @@ Description of ``deltakit.explorer.analysis`` namespace here.
 .. autosummary::
     :toctree: _build/generated/
 
-    analysis.calculate_lambda_and_lambda_std
+    analysis.calculate_lambda_and_lambda_stddev
     analysis.calculate_lep_and_lep_stddev
     analysis.get_exp_fit
     analysis.get_lambda_fit

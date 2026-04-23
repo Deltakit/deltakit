@@ -242,12 +242,12 @@ df
 ```
 
 To estimate the error scaling parameter $\Lambda$, use the
-{meth}`calculate_lambda_and_lambda_std <deltakit.explorer.analysis.calculate_lambda_and_lambda_std>`
+{meth}`calculate_lambda_and_lambda_stddev <deltakit.explorer.analysis.calculate_lambda_and_lambda_stddev>`
 function:
 
 ```{code-cell} ipython3
-from deltakit.explorer.analysis import calculate_lambda_and_lambda_std
-res = calculate_lambda_and_lambda_std(distances, leps, leps_std)
+from deltakit.explorer.analysis import calculate_lambda_and_lambda_stddev
+res = calculate_lambda_and_lambda_stddev(distances, leps, leps_std)
 res.lambda_
 ```
 
