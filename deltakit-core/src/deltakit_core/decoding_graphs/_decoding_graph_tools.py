@@ -135,8 +135,8 @@ def parse_stim_circuit(
     Returns
     -------
     Tuple[NXDecodingGraph, List[Set[DecodingEdge]], deltakit_stim.Circuit]
-        The decoding graph, the logicals, and the Deltakit_Stim circuit. The Deltakit_Stim
-        circuit will be unchanged.
+        The decoding graph, the logicals, and the Deltakit_Stim circuit. The
+        deltakit-stim circuit will be unchanged.
     """
 
     dem = stim_circuit_to_graph_dem(stim_circuit)

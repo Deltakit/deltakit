@@ -38,7 +38,7 @@ def deltakit_stim_circuit_planar_5x5x2() -> deltakit_stim.Circuit:
     )
 
 
-class TestParseDeltakit_StimCircuit:
+class TestParseDeltakitStimCircuit:
     @pytest.fixture(
         params=[
             deltakit_stim_circuit_rep_5x4(),
