@@ -2,12 +2,8 @@
 import tempfile
 from pathlib import Path
 
+import deltakit_stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 
 from deltakit_core.data_formats import (
     b8_to_logical_flip,
@@ -81,7 +77,7 @@ class TestB8ReadWriteMethods:
         bitsstr = " ".join(reversed(f"{bits:0{length}b}"))
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "tmp.dat"
-            stim.Circuit(f"X 1\nM {bitsstr}").compile_sampler().sample_write(
+            deltakit_stim.Circuit(f"X 1\nM {bitsstr}").compile_sampler().sample_write(
                 shots=2, filepath=str(path), format="b8"
             )
             res = list(b8_to_measurements(path, length))

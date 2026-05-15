@@ -1,12 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from pathlib import Path
 
+import deltakit_stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
@@ -297,9 +293,9 @@ class TestGraphToJSON:
             "surface_code:unrotated_memory_z",
         ],
     )
-    def stim_circuit(self, request):
+    def deltakit_stim_circuit(self, request):
         distance = 5
-        return stim.Circuit.generated(
+        return deltakit_stim.Circuit.generated(
             request.param,
             distance=distance,
             rounds=distance,
@@ -309,9 +305,9 @@ class TestGraphToJSON:
         )
 
     def test_full_graph_to_json_on_code_tasks_matches_original_graph(
-        self, stim_circuit
+        self, deltakit_stim_circuit
     ):
-        graph, logicals, _ = parse_stim_circuit(stim_circuit)
+        graph, logicals, _ = parse_stim_circuit(deltakit_stim_circuit)
         json_str = graph_to_json(graph, logicals, full=True)
         reconstructed_graph, reconstructed_logicals = nx_graph_from_json(json_str)
         assert set(reconstructed_graph.nodes) == set(graph.nodes)
@@ -323,8 +319,10 @@ class TestGraphToJSON:
         assert reconstructed_graph.detector_records == graph.detector_records
         assert reconstructed_graph.edge_records == graph.edge_records
 
-    def test_graph_to_json_on_code_tasks_matches_original_graph(self, stim_circuit):
-        graph, logicals, _ = parse_stim_circuit(stim_circuit)
+    def test_graph_to_json_on_code_tasks_matches_original_graph(
+        self, deltakit_stim_circuit
+    ):
+        graph, logicals, _ = parse_stim_circuit(deltakit_stim_circuit)
         json_str = graph_to_json(graph, logicals)
         reconstructed_graph, reconstructed_logicals = nx_graph_from_json(json_str)
         assert set(reconstructed_graph.nodes) == set(graph.nodes)
@@ -501,15 +499,15 @@ def test_worst_case_num_detectors_returns_0_for_1_target_logical_error():
     assert worst_case_num_detectors(graph, 1) == 0
 
 
-def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
-    stim_rep_code = stim.Circuit.generated(
+def test_deltakit_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
+    deltakit_stim_rep_code = deltakit_stim.Circuit.generated(
         "repetition_code:memory",
         distance=5,
         rounds=5,
         after_clifford_depolarization=0.1,
     )
 
-    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") == -1
+    assert str(stim_circuit_to_graph_dem(deltakit_stim_rep_code)).find("^") == -1
 
 
 @pytest.mark.parametrize(
@@ -519,12 +517,14 @@ def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
         "surface_code:unrotated_memory_z",
     ],
 )
-def test_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(code_task: str) -> None:
-    stim_rep_code = stim.Circuit.generated(
+def test_deltakit_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(
+    code_task: str,
+) -> None:
+    deltakit_stim_rep_code = deltakit_stim.Circuit.generated(
         code_task, distance=5, rounds=5, after_clifford_depolarization=0.1
     )
 
-    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") != -1
+    assert str(stim_circuit_to_graph_dem(deltakit_stim_rep_code)).find("^") != -1
 
 
 @pytest.mark.parametrize(
@@ -536,7 +536,7 @@ def test_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(code_task: str) 
 )
 @pytest.mark.parametrize("distance", [3, 5, 7])
 def test_compute_graph_distance(code_task: str, distance: int) -> None:
-    stim_circ = stim.Circuit.generated(
+    deltakit_stim_circ = deltakit_stim.Circuit.generated(
         code_task,
         distance=distance,
         rounds=distance,
@@ -544,7 +544,7 @@ def test_compute_graph_distance(code_task: str, distance: int) -> None:
         before_measure_flip_probability=0.01,
         before_round_data_depolarization=0.01,
     )
-    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    graph, logicals, deltakit_stim_circ = parse_stim_circuit(deltakit_stim_circ)
     assert compute_graph_distance(graph, logicals) == distance
 
 
@@ -557,7 +557,7 @@ def test_compute_graph_distance(code_task: str, distance: int) -> None:
 )
 @pytest.mark.parametrize("distance", [3, 5, 7])
 def test_compute_graph_weighted_distance(code_task: str, distance: int) -> None:
-    stim_circ = stim.Circuit.generated(
+    deltakit_stim_circ = deltakit_stim.Circuit.generated(
         code_task,
         distance=distance,
         rounds=distance,
@@ -565,7 +565,7 @@ def test_compute_graph_weighted_distance(code_task: str, distance: int) -> None:
         before_measure_flip_probability=0.01,
         before_round_data_depolarization=0.01,
     )
-    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    graph, logicals, deltakit_stim_circ = parse_stim_circuit(deltakit_stim_circ)
     computed_distance = compute_graph_distance(graph, logicals, weighted=True)
     assert isinstance(computed_distance, float)
     min_weight = min(record.weight for record in graph.edge_records.values())
@@ -580,16 +580,18 @@ REFERENCE_DATA_DIR = Path(__file__).parent.parent.parent / "reference_data"
 @pytest.mark.parametrize(
     ("circuit_path", "expected_distance"),
     [
-        (Path("stim/circuit_logical_off_boundary.stim"), 3),
-        (Path("stim/circuit_two_equivalent_logicals.stim"), 3),
-        (Path("stim/circuit_multi_logicals.stim"), 3),
+        (Path("deltakit_stim/circuit_logical_off_boundary.stim"), 3),
+        (Path("deltakit_stim/circuit_two_equivalent_logicals.stim"), 3),
+        (Path("deltakit_stim/circuit_multi_logicals.stim"), 3),
     ],
 )
 def test_compute_graph_distance_from_file(
     circuit_path: Path, expected_distance: int
 ) -> None:
-    stim_circ = stim.Circuit.from_file(REFERENCE_DATA_DIR / circuit_path)
-    graph, logicals, stim_circ = parse_stim_circuit(stim_circ)
+    deltakit_stim_circ = deltakit_stim.Circuit.from_file(
+        REFERENCE_DATA_DIR / circuit_path
+    )
+    graph, logicals, deltakit_stim_circ = parse_stim_circuit(deltakit_stim_circ)
     assert compute_graph_distance(graph, logicals) == expected_distance
 
 
@@ -602,7 +604,7 @@ def test_compute_graph_distance_from_file(
 )
 def test_unweight_graph(code_task: str) -> None:
     distance = 5
-    stim_circ = stim.Circuit.generated(
+    deltakit_stim_circ = deltakit_stim.Circuit.generated(
         code_task,
         distance=distance,
         rounds=distance,
@@ -610,7 +612,7 @@ def test_unweight_graph(code_task: str) -> None:
         before_measure_flip_probability=0.01,
         before_round_data_depolarization=0.01,
     )
-    unweighted_graph, _, stim_circ = parse_stim_circuit(stim_circ)
+    unweighted_graph, _, deltakit_stim_circ = parse_stim_circuit(deltakit_stim_circ)
     unweight_graph(unweighted_graph)
     assert all(
         record["weight"] == 1 for record in unweighted_graph.edge_records.values()

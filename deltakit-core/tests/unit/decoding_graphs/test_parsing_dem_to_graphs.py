@@ -1,12 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 import math
 
+import deltakit_stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
@@ -19,14 +15,14 @@ from deltakit_core.decoding_graphs import (
 
 
 def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed_hyper():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=1,
         distance=3,
         before_round_data_depolarization=0.01,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=True)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
     nodes = OrderedSyndrome(range(8))
     edges = {
         (0,),
@@ -60,14 +56,14 @@ def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed_hyper():
 
 
 def dem_nodes_edges_logials_repetition_code_4_round_decomposed_hyper():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "repetition_code:memory",
         rounds=4,
         distance=5,
         before_round_data_depolarization=0.1,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=True)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
     nodes = OrderedSyndrome(range(20))
     edges = {
         (8, 4),
@@ -125,13 +121,13 @@ def dem_nodes_edges_logials_repetition_code_4_round_decomposed_hyper():
 
 
 def dem_nodes_edges_logicals_RP_3x3_X_2_round_not_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=2,
         distance=3,
         before_round_data_depolarization=0.03,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=False)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=False)
     nodes = OrderedSyndrome(range(16))
     edges = {
         (11,),
@@ -180,13 +176,13 @@ def dem_nodes_edges_logicals_RP_3x3_X_2_round_not_decomposed():
 
 
 def dem_nodes_edges_logicals_P_3x3_Z_2_round_not_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:unrotated_memory_z",
         rounds=2,
         distance=3,
         before_round_data_depolarization=0.03,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=False)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=False)
     nodes = OrderedSyndrome(range(24))
     edges = {
         (0, 1),
@@ -259,14 +255,14 @@ def dem_nodes_edges_logicals_P_3x3_Z_2_round_not_decomposed():
 
 
 def dem_nodes_edges_logicals_2_round_dist_3_colorcode_not_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "color_code:memory_xyz",
         rounds=2,
         distance=3,
         before_round_data_depolarization=0.03,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=False)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=False)
     nodes = OrderedSyndrome(range(6))
     edges = {
         (0, 1, 2),
@@ -305,14 +301,14 @@ def dem_nodes_edges_logicals_2_round_dist_3_colorcode_not_decomposed():
 
 
 def dem_nodes_edges_logicals_repetition_code_4_round_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "repetition_code:memory",
         rounds=4,
         distance=5,
         before_round_data_depolarization=0.1,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=True)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
     nodes = OrderedSyndrome(range(21))
     edge_indices = {
         (8, 4),
@@ -365,14 +361,14 @@ def dem_nodes_edges_logicals_repetition_code_4_round_decomposed():
 
 @pytest.fixture(scope="module")
 def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=1,
         distance=3,
         before_round_data_depolarization=0.01,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=True)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
     nodes = OrderedSyndrome(range(9))
     edge_indices = {
         (8, 0),
@@ -401,14 +397,14 @@ def dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed():
 
 
 def dem_nodes_edges_logicals_RP_3x3_Z_2_round_decomposed():
-    stim_circuit = stim.Circuit.generated(
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_z",
         rounds=2,
         distance=3,
         before_round_data_depolarization=0.01,
         before_measure_flip_probability=0.1,
     )
-    dem = stim_circuit.detector_error_model(decompose_errors=True)
+    dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
     nodes = OrderedSyndrome(range(17))
     edge_indices = {
         (0, 16),
@@ -463,7 +459,9 @@ def dem_to_graph_method(request):
 
 
 def test_there_are_no_multi_edges_in_the_graph(dem_to_graph_method):
-    dem = stim.DetectorErrorModel("\n".join(["error(0.01) D0 D1", "error(0.02) D0 D1"]))
+    dem = deltakit_stim.DetectorErrorModel(
+        "\n".join(["error(0.01) D0 D1", "error(0.02) D0 D1"])
+    )
     graph, _ = dem_to_graph_method(dem)
     assert len(graph.edges) == len({edge.vertices for edge in graph.edges})
 
@@ -471,15 +469,15 @@ def test_there_are_no_multi_edges_in_the_graph(dem_to_graph_method):
 @pytest.mark.parametrize(
     "dem",
     [
-        stim.DetectorErrorModel(
+        deltakit_stim.DetectorErrorModel(
             "\n".join(["error(0.01) D0 D1 L0", "error(0.02) D0 D1 L0"])
         ),
-        stim.DetectorErrorModel(
+        deltakit_stim.DetectorErrorModel(
             "\n".join(
                 ["error(0.01) D0 D1 L0", "error(0.06) D0 D1", "error(0.02) D0 D1 L0"]
             )
         ),
-        stim.DetectorErrorModel(
+        deltakit_stim.DetectorErrorModel(
             "\n".join(
                 [
                     "error(0.01) D0 D1 L0",
@@ -489,7 +487,7 @@ def test_there_are_no_multi_edges_in_the_graph(dem_to_graph_method):
                 ]
             )
         ),
-        stim.DetectorErrorModel(
+        deltakit_stim.DetectorErrorModel(
             "\n".join(
                 [
                     "error(0.01) D0 D1 L1",
@@ -509,9 +507,9 @@ def test_there_are_no_multi_edges_in_the_logicals(dem, dem_to_graph_method):
 @pytest.mark.parametrize(
     ("dem", "expected_weight"),
     [
-        (stim.DetectorErrorModel("error(0.1) D0 D1"), 2.1972245773362196),
+        (deltakit_stim.DetectorErrorModel("error(0.1) D0 D1"), 2.1972245773362196),
         (
-            stim.DetectorErrorModel(
+            deltakit_stim.DetectorErrorModel(
                 "\n".join(["error(0.1) D0 D1", "error(0.2) D0 D1"])
             ),
             1.0459685551826876,
@@ -519,21 +517,21 @@ def test_there_are_no_multi_edges_in_the_logicals(dem, dem_to_graph_method):
     ],
 )
 def test_edge_weights_correctly_calculated(
-    dem_to_graph_method, dem: stim.DetectorErrorModel, expected_weight: float
+    dem_to_graph_method, dem: deltakit_stim.DetectorErrorModel, expected_weight: float
 ):
     graph, _ = dem_to_graph_method(dem)
     assert math.isclose(graph.edge_records[graph.edges[0]].weight, expected_weight)
 
 
 def test_dem_with_coordinateless_detectors_adds_nodes_to_graph(dem_to_graph_method):
-    graph, _ = dem_to_graph_method(stim.DetectorErrorModel("detector D0"))
+    graph, _ = dem_to_graph_method(deltakit_stim.DetectorErrorModel("detector D0"))
     assert 0 in graph.detector_records
 
 
 def test_dem_with_single_coordinate_detector_has_correct_detector_record(
     dem_to_graph_method,
 ):
-    graph, _ = dem_to_graph_method(stim.DetectorErrorModel("detector(3) D0"))
+    graph, _ = dem_to_graph_method(deltakit_stim.DetectorErrorModel("detector(3) D0"))
     assert graph.detector_records[0].time == 3
 
 
@@ -572,7 +570,7 @@ class TestDemToDecodingHyperGraph:
         assert int_edges == expected_int_edges
 
     def test_untracked_logicals_cause_warning(self):
-        dem = stim.DetectorErrorModel(
+        dem = deltakit_stim.DetectorErrorModel(
             """
             error(0.2) D0
             detector(0, 4, 0) D0
@@ -588,7 +586,7 @@ class TestDemToDecodingHyperGraph:
         reason="Still considering what the weight of such edges should be"
     )
     def test_edges_with_zero_p_err_are_added_to_the_graph(self):
-        dem = stim.DetectorErrorModel("error(0) D0 D1")
+        dem = deltakit_stim.DetectorErrorModel("error(0) D0 D1")
         graph, _ = dem_to_hypergraph_and_logicals(dem)
         assert DecodingHyperEdge({0, 1}, p_err=0) in graph.edges
 
@@ -596,20 +594,20 @@ class TestDemToDecodingHyperGraph:
         ("dem", "expected_logicals"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0 L0", "error(0.1) D1 L1"])
                 ),
                 [{DecodingHyperEdge({0})}, {DecodingHyperEdge({1})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
                 [{DecodingHyperEdge({0, 1})}, {DecodingHyperEdge({0, 1})}],
             ),
         ],
     )
     def test_dem_with_multiple_logicals_give_expected_logicals(
         self,
-        dem: stim.DetectorErrorModel,
+        dem: deltakit_stim.DetectorErrorModel,
         expected_logicals: list[set[DecodingHyperEdge]],
     ):
         _, logicals = dem_to_hypergraph_and_logicals(dem)
@@ -617,7 +615,7 @@ class TestDemToDecodingHyperGraph:
 
 
 class TestDemToNXGraph:
-    """Test conversion from stim detector error model to NXDecodingGraph via
+    """Test conversion from deltakit_stim detector error model to NXDecodingGraph via
     the `dem_to_decoding_graph_and_logicals` function.
     """
 
@@ -654,9 +652,9 @@ class TestDemToNXGraph:
     @pytest.mark.parametrize(
         "nongraphlike_edge",
         [
-            stim.DetectorErrorModel("error(0.1) D1 D2 ^ D3 D4 D5"),
-            stim.DetectorErrorModel("error(0.1) D0 D1 D2 D5"),
-            stim.DetectorErrorModel("error(0.1) D0 D1 D2"),
+            deltakit_stim.DetectorErrorModel("error(0.1) D1 D2 ^ D3 D4 D5"),
+            deltakit_stim.DetectorErrorModel("error(0.1) D0 D1 D2 D5"),
+            deltakit_stim.DetectorErrorModel("error(0.1) D0 D1 D2"),
         ],
     )
     def test_error_is_raised_if_edge_has_no_graphlike_degree(self, nongraphlike_edge):
@@ -671,7 +669,7 @@ class TestDemToNXGraph:
         reason="Still considering what the weight of such edges should be"
     )
     def test_edges_with_zero_p_err_are_added_to_the_graph(self):
-        dem = stim.DetectorErrorModel("error(0) D0 D1")
+        dem = deltakit_stim.DetectorErrorModel("error(0) D0 D1")
         graph, _ = dem_to_decoding_graph_and_logicals(dem)
         assert DecodingEdge({0, 1}, p_err=0) in graph.edges
 
@@ -679,23 +677,25 @@ class TestDemToNXGraph:
         ("dem", "expected_logicals"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0 L0", "error(0.1) D1 L1"])
                 ),
                 [{DecodingEdge(0, 2)}, {DecodingEdge(1, 2)}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
                 [{DecodingEdge(0, 1)}, {DecodingEdge(0, 1)}],
             ),
             # (
-            #     stim.DetectorErrorModel("error(0.01) D3 D1 L1 ^ L2"),
+            #     deltakit_stim.DetectorErrorModel("error(0.01) D3 D1 L1 ^ L2"),
             #     [set(), {DecodingEdge(3, 1)}, set()]
             # )
         ],
     )
     def test_dem_with_multiple_logicals_give_expected_logicals(
-        self, dem: stim.DetectorErrorModel, expected_logicals: list[set[DecodingEdge]]
+        self,
+        dem: deltakit_stim.DetectorErrorModel,
+        expected_logicals: list[set[DecodingEdge]],
     ):
         _, logicals = dem_to_decoding_graph_and_logicals(dem)
         assert logicals == expected_logicals
@@ -703,9 +703,9 @@ class TestDemToNXGraph:
     @pytest.mark.parametrize(
         "dem",
         [
-            stim.DetectorErrorModel("error(0.01) L2"),
-            stim.DetectorErrorModel("error(0.01) D0 D1 ^ D2 D3 L0 ^ L2"),
-            stim.DetectorErrorModel("error(0.01) D0 D3 ^ L3 ^ D0 L2"),
+            deltakit_stim.DetectorErrorModel("error(0.01) L2"),
+            deltakit_stim.DetectorErrorModel("error(0.01) D0 D1 ^ D2 D3 L0 ^ L2"),
+            deltakit_stim.DetectorErrorModel("error(0.01) D0 D3 ^ L3 ^ D0 L2"),
         ],
     )
     def test_warning_raised_for_degree_0_edge(self, dem):
@@ -716,7 +716,7 @@ class TestDemToNXGraph:
 
 class TestExampleRPlanar3x3x1DemToDecodingGraph:
     """Integration test to verify that the RPlanar 3x3x1
-    stim detector error model is correctly converted to a QECF NXDecodingGraph object.
+    deltakit_stim detector error model is correctly converted to a QECF NXDecodingGraph object.
     """
 
     @pytest.fixture(scope="class")

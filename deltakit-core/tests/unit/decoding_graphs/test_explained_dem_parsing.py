@@ -4,12 +4,8 @@ from __future__ import annotations
 import math
 from typing import Literal
 
+import deltakit_stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 from pytest_mock.plugin import MockerFixture
 
 from deltakit_core.decoding_graphs import (
@@ -30,10 +26,10 @@ DepolariseNoiseT = Literal["DEPOLARIZE1", "DEPOLARIZE2"]
 NoiseChannelT = PauliNoiseT | DepolariseNoiseT
 
 
-def _get_stim_target(
+def _get_deltakit_stim_target(
     noise_channel: NoiseChannelT | str,
-) -> stim.CircuitTargetsInsideInstruction:
-    return stim.CircuitTargetsInsideInstruction(
+) -> deltakit_stim.CircuitTargetsInsideInstruction:
+    return deltakit_stim.CircuitTargetsInsideInstruction(
         gate=noise_channel,
         args=[0.01],
         target_range_start=0,
@@ -43,11 +39,11 @@ def _get_stim_target(
 
 
 def _get_error_location(noise_channel: NoiseChannelT, p_err: float):
-    return stim.CircuitErrorLocation(
+    return deltakit_stim.CircuitErrorLocation(
         tick_offset=0,
         flipped_pauli_product=[],
         flipped_measurement=None,
-        instruction_targets=stim.CircuitTargetsInsideInstruction(
+        instruction_targets=deltakit_stim.CircuitTargetsInsideInstruction(
             gate=noise_channel,
             args=[p_err],
             target_range_start=0,
@@ -87,7 +83,7 @@ def test_error_is_raised_if_depolarising_probability_is_above_mixing_probability
 @pytest.mark.parametrize(
     "bad_target",
     [
-        _get_stim_target(gate)
+        _get_deltakit_stim_target(gate)
         for gate in (
             "CORRELATED_ERROR",
             "ELSE_CORRELATED_ERROR",
@@ -108,7 +104,7 @@ def test_noise_probability_calls_independent_probability_method_when_given_depol
     mocked_noise = mocker.patch(
         "deltakit_core.decoding_graphs._explained_dem_parsing.depolarising_as_independent"
     )
-    noise_probability(_get_stim_target(gate_name))
+    noise_probability(_get_deltakit_stim_target(gate_name))
     # Last number of the gate name defines the number of qubits to act on.
     mocked_noise.assert_called_once_with(0.01, int(gate_name[-1]))
 
@@ -117,14 +113,16 @@ def test_noise_probability_calls_independent_probability_method_when_given_depol
 def test_noise_probability_returns_gate_probability_of_pauli_error(
     pauli_error: PauliNoiseT,
 ):
-    assert noise_probability(_get_stim_target(pauli_error)) == 0.01
+    assert noise_probability(_get_deltakit_stim_target(pauli_error)) == 0.01
 
 
 class TestExplainedDemParsing:
     def test_error_is_raised_if_target_separator_is_in_the_explained_dem(self):
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(dem_target=stim.target_separator(), coords=[])
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_separator(), coords=[]
+                )
             ],
             circuit_error_locations=[],
         )
@@ -134,14 +132,15 @@ class TestExplainedDemParsing:
             parse_explained_dem([error])
 
     def test_error_with_multiple_dem_terms_has_all_nodes_in_graph(self):
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0),
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
                     coords=[1.0, 2.0, 3.0],
                 ),
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(1), coords=[0.0, 1.2, 1]
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(1),
+                    coords=[0.0, 1.2, 1],
                 ),
             ],
             circuit_error_locations=[],
@@ -149,10 +148,10 @@ class TestExplainedDemParsing:
         assert parse_explained_dem([error]).nodes == [0, 1]
 
     def test_coordinate_information_in_explained_error_is_in_detector_records(self):
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0),
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
                     coords=[1.0, 2.0, 3.0],
                 )
             ],
@@ -162,10 +161,10 @@ class TestExplainedDemParsing:
         assert graph.detector_records[0] == DetectorRecord((1.0, 2.0), time=3.0)
 
     def test_error_with_no_circuit_error_locations_has_no_edges(self):
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0),
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
                     coords=[1.0, 2.0, 3.0],
                 ),
             ],
@@ -175,10 +174,11 @@ class TestExplainedDemParsing:
 
     def test_there_is_an_edge_for_every_error_location_in_an_error(self):
         mock_error_location = _get_error_location("X_ERROR", 0.01)
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0), coords=[0.0]
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
+                    coords=[0.0],
                 )
             ],
             circuit_error_locations=[mock_error_location, mock_error_location],
@@ -188,10 +188,11 @@ class TestExplainedDemParsing:
     def test_edge_records_have_the_correct_p_err(self):
         p_err = 0.01
         mock_error_location = _get_error_location("X_ERROR", p_err)
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0), coords=[0.0]
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
+                    coords=[0.0],
                 )
             ],
             circuit_error_locations=[mock_error_location],
@@ -204,15 +205,16 @@ class TestExplainedDemParsing:
         self, logicals_affected: list[int]
     ):
         mock_error_location = _get_error_location("X_ERROR", 0.01)
-        error = stim.ExplainedError(
+        error = deltakit_stim.ExplainedError(
             dem_error_terms=[
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_relative_detector_id(0), coords=[0.01, 0.02]
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_relative_detector_id(0),
+                    coords=[0.01, 0.02],
                 ),
             ]
             + [
-                stim.DemTargetWithCoords(
-                    dem_target=stim.target_logical_observable_id(el), coords=[]
+                deltakit_stim.DemTargetWithCoords(
+                    dem_target=deltakit_stim.target_logical_observable_id(el), coords=[]
                 )
                 for el in logicals_affected
             ],

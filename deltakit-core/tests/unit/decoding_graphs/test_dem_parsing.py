@@ -3,12 +3,8 @@ from collections.abc import Iterable
 from itertools import chain
 from unittest.mock import MagicMock
 
+import deltakit_stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 from pytest_mock import MockerFixture
 
 from deltakit_core.decoding_graphs import (
@@ -48,8 +44,8 @@ def empty_handler(*args, **kwargs): ...
 
 def dem_repeat(
     num_repeats: int, instructions: Iterable[str]
-) -> stim.DetectorErrorModel:
-    return stim.DetectorErrorModel(
+) -> deltakit_stim.DetectorErrorModel:
+    return deltakit_stim.DetectorErrorModel(
         "\n".join(chain((f"repeat {num_repeats} {{",), instructions, ("}",)))
     )
 
@@ -62,7 +58,7 @@ class TestDemParser:
     def test_detector_offset_is_increased_when_parsing_shift_detectors_instruction(
         self, empty_parser: DemParser
     ):
-        empty_parser.parse(stim.DetectorErrorModel("shift_detectors 2"))
+        empty_parser.parse(deltakit_stim.DetectorErrorModel("shift_detectors 2"))
         assert empty_parser._detector_offset == 2
 
     def test_detector_offset_increased_when_parsing_shift_detectors_in_repeat_block(
@@ -78,7 +74,7 @@ class TestDemParser:
     def test_coordinate_offset_is_increased_when_parsing_shift_detectors_with_coordinates(
         self, empty_parser: DemParser
     ):
-        empty_parser.parse(stim.DetectorErrorModel("shift_detectors(1, 1) 0"))
+        empty_parser.parse(deltakit_stim.DetectorErrorModel("shift_detectors(1, 1) 0"))
         assert empty_parser._coordinate_offset == CoordinateOffset((1, 1))
 
     def test_coordinate_offset_is_increased_when_parsing_shift_detectors_in_repeat_block(
@@ -101,7 +97,7 @@ class TestErrorHandling:
     def test_error_handler_is_called_when_parsing_error_instruction(
         self, mock_error_handler: MagicMock, mock_parser: DemParser
     ):
-        dem = stim.DetectorErrorModel("error(0.01) D0 D1")
+        dem = deltakit_stim.DetectorErrorModel("error(0.01) D0 D1")
         mock_parser.parse(dem)
         mock_error_handler.assert_called_once_with(dem[0], 0)
 
@@ -112,13 +108,15 @@ class TestErrorHandling:
         error = "error(0.01) D0 D1"
         mock_parser.parse(dem_repeat(num_repeats, [error]))
         assert mock_error_handler.call_count == num_repeats
-        mock_error_handler.assert_called_with(stim.DetectorErrorModel(error)[0], 0)
+        mock_error_handler.assert_called_with(
+            deltakit_stim.DetectorErrorModel(error)[0], 0
+        )
 
     def test_error_handler_called_with_correct_detector_offset(
         self, mock_error_handler: MagicMock, mock_parser: DemParser
     ):
         detector_offset = 3
-        dem = stim.DetectorErrorModel(
+        dem = deltakit_stim.DetectorErrorModel(
             "\n".join([f"shift_detectors {detector_offset}", "error(0.01) D0 D1"])
         )
         mock_parser.parse(dem)
@@ -129,7 +127,7 @@ class TestErrorHandling:
     ):
         num_repeats = 3
         detector_shift = 2
-        error = stim.DetectorErrorModel("error(0.01) D0 D1")
+        error = deltakit_stim.DetectorErrorModel("error(0.01) D0 D1")
         mock_parser.parse(
             dem_repeat(num_repeats, [f"shift_detectors {detector_shift}"]) + error
         )
@@ -150,7 +148,7 @@ class TestDetectorHandling:
     def test_detector_handler_is_called_when_parsing_detector_instruction(
         self, mock_detector_handler: MagicMock, mock_parser: DemParser
     ):
-        dem = stim.DetectorErrorModel("detector D0")
+        dem = deltakit_stim.DetectorErrorModel("detector D0")
         mock_parser.parse(dem)
         mock_detector_handler.assert_called_once_with(dem[0], 0, CoordinateOffset())
 
@@ -162,20 +160,22 @@ class TestDetectorHandling:
         mock_parser.parse(dem_repeat(num_repeats, [detector]))
         assert mock_detector_handler.call_count == num_repeats
         mock_detector_handler.assert_called_with(
-            stim.DetectorErrorModel(detector)[0], 0, CoordinateOffset()
+            deltakit_stim.DetectorErrorModel(detector)[0], 0, CoordinateOffset()
         )
 
     def test_detector_handler_called_with_correct_detector_offset_after_shift_instruction(
         self, mock_detector_handler: MagicMock, mock_parser: DemParser
     ):
-        dem = stim.DetectorErrorModel("\n".join(["shift_detectors 2", "detector D0"]))
+        dem = deltakit_stim.DetectorErrorModel(
+            "\n".join(["shift_detectors 2", "detector D0"])
+        )
         mock_parser.parse(dem)
         mock_detector_handler.assert_called_once_with(dem[-1], 2, CoordinateOffset())
 
     def test_detector_handler_called_with_correct_coordinate_offset_after_shift_instruction(
         self, mock_detector_handler: MagicMock, mock_parser: DemParser
     ):
-        dem = stim.DetectorErrorModel(
+        dem = deltakit_stim.DetectorErrorModel(
             "\n".join(["shift_detectors(1, 3) 0", "detector D0"])
         )
         mock_parser.parse(dem)
@@ -190,7 +190,7 @@ class TestDetectorHandling:
         detector_shift = 3
         dem = dem_repeat(
             num_repeats, [f"shift_detectors {detector_shift}"]
-        ) + stim.DetectorErrorModel("detector D3")
+        ) + deltakit_stim.DetectorErrorModel("detector D3")
         mock_parser.parse(dem)
         mock_detector_handler.assert_called_once_with(
             dem[-1], num_repeats * detector_shift, CoordinateOffset()
@@ -202,7 +202,7 @@ class TestDetectorHandling:
         num_repeats = 4
         dem = dem_repeat(
             num_repeats, ["shift_detectors(1, 1, 1) 0"]
-        ) + stim.DetectorErrorModel("detector D3")
+        ) + deltakit_stim.DetectorErrorModel("detector D3")
         mock_parser.parse(dem)
         mock_detector_handler.assert_called_once_with(
             dem[-1], 0, CoordinateOffset((4, 4, 4))
@@ -221,7 +221,7 @@ class TestLogicalObservableHandling:
     def test_logical_observable_called_with_correct_logical_instruction(
         self, mock_logical_handler: MagicMock, mock_parser: DemParser
     ):
-        dem = stim.DetectorErrorModel("logical_observable L0")
+        dem = deltakit_stim.DetectorErrorModel("logical_observable L0")
         mock_parser.parse(dem)
         mock_logical_handler.assert_called_once_with(dem[0])
 
@@ -238,7 +238,7 @@ class TestDetectorRecorder:
     def test_calling_detector_recorder_with_detector_instruction_adds_to_dictionary(
         self, detector_recorder: DetectorRecorder
     ):
-        dem = stim.DetectorErrorModel("detector(0, 0) D1")
+        dem = deltakit_stim.DetectorErrorModel("detector(0, 0) D1")
         detector_recorder(dem[0], 0, CoordinateOffset())
         assert detector_recorder.detector_records == {1: DetectorRecord((0,), 0)}
 
@@ -246,11 +246,11 @@ class TestDetectorRecorder:
         ("detector_error_model", "expected_detector_records"),
         [
             (
-                stim.DetectorErrorModel("detector(0, 1, 1) D0"),
+                deltakit_stim.DetectorErrorModel("detector(0, 1, 1) D0"),
                 {0: DetectorRecord((0, 1), 1)},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["shift_detectors(1, 1, 0) 1", "detector(1, 1, 1) D2"])
                 ),
                 {3: DetectorRecord((2, 2), 1)},
@@ -260,7 +260,7 @@ class TestDetectorRecorder:
     def test_parsing_dem_file_with_detector_recorder_gives_correct_detector_records(
         self,
         dem_parser: DemParser,
-        detector_error_model: stim.DetectorErrorModel,
+        detector_error_model: deltakit_stim.DetectorErrorModel,
         expected_detector_records: dict[int, DetectorRecord],
     ):
         dem_parser.parse(detector_error_model)
@@ -279,7 +279,7 @@ class TestDetectorCounter:
     def test_calling_detector_counter_with_detector_instruction_adds_to_counts(
         self, detector_counter: DetectorCounter
     ):
-        dem = stim.DetectorErrorModel("detector(0, 0) D1\nerror(0.01) D1")
+        dem = deltakit_stim.DetectorErrorModel("detector(0, 0) D1\nerror(0.01) D1")
         detector_counter(dem[1], 0)
         assert detector_counter.counter == {1: 1}
 
@@ -287,7 +287,7 @@ class TestDetectorCounter:
         ("detector_error_model", "expected_detector_counts"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "detector(0, 1, 1) D0\n"
                     "detector(0, 1, 0) D1\n"
                     "error(0.01) D0 D1\n"
@@ -297,7 +297,7 @@ class TestDetectorCounter:
                 {1: 2, 2: 1},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "detector(0, 1, 1) D0\n"
                     "detector(0, 1, 0) D1\n"
                     "detector(0, 2, 0) D2\n"
@@ -316,7 +316,7 @@ class TestDetectorCounter:
         self,
         detector_counter: DetectorCounter,
         dem_parser: DemParser,
-        detector_error_model: stim.DetectorErrorModel,
+        detector_error_model: deltakit_stim.DetectorErrorModel,
         expected_detector_counts: dict[int, int],
     ):
         dem_parser.parse(detector_error_model)
@@ -326,7 +326,7 @@ class TestDetectorCounter:
         ("detector_error_model", "expected_detector_max"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "detector(0, 1, 1) D0\n"
                     "detector(0, 1, 0) D1\n"
                     "error(0.01) D0 D1\n"
@@ -336,7 +336,7 @@ class TestDetectorCounter:
                 2,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "detector(0, 1, 1) D0\n"
                     "detector(0, 1, 0) D1\n"
                     "detector(0, 2, 0) D2\n"
@@ -355,7 +355,7 @@ class TestDetectorCounter:
         self,
         detector_counter: DetectorCounter,
         dem_parser: DemParser,
-        detector_error_model: stim.DetectorErrorModel,
+        detector_error_model: deltakit_stim.DetectorErrorModel,
         expected_detector_max: int,
     ):
         dem_parser.parse(detector_error_model)
@@ -373,16 +373,18 @@ class TestObservableWarning:
         with pytest.warns(
             UserWarning, match="Isolated logical observables L1 declared in DEM file."
         ):
-            observable_parser.parse(stim.DetectorErrorModel("logical_observable L1"))
+            observable_parser.parse(
+                deltakit_stim.DetectorErrorModel("logical_observable L1")
+            )
 
 
 class TestLogicalsInEdges:
     @pytest.mark.skip(
-        reason="Stim doesn't allow adjacent separators in the DEM format."
+        reason="Deltakit-Stim doesn't allow adjacent separators in the DEM format."
     )
     def test_logical_in_edges_with_empty_edges_does_not_add_empty_edge(self):
         error_handler = LogicalsInEdges(0)
-        dem = stim.DetectorErrorModel("error(0.01) D0 ^ ^ D1")
+        dem = deltakit_stim.DetectorErrorModel("error(0.01) D0 ^ ^ D1")
         error_handler(dem[0], 0)
         assert error_handler.edges == {
             DecodingHyperEdge({0}, p_err=0.01),
@@ -393,17 +395,17 @@ class TestLogicalsInEdges:
         ("dem", "detector_offset", "expected_edge_records"),
         [
             (
-                stim.DetectorErrorModel("error(0.01) D0 D1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 D1"),
                 0,
                 {DecodingHyperEdge({0, 1}): EdgeRecord(p_err=0.01)},
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 D1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 D1"),
                 2,
                 {DecodingHyperEdge({2, 3}): EdgeRecord(p_err=0.01)},
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 ^ D1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 ^ D1"),
                 0,
                 {
                     DecodingHyperEdge({0}): EdgeRecord(p_err=0.01),
@@ -411,7 +413,7 @@ class TestLogicalsInEdges:
                 },
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 ^ D1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 ^ D1"),
                 4,
                 {
                     DecodingHyperEdge({4}): EdgeRecord(p_err=0.01),
@@ -422,7 +424,7 @@ class TestLogicalsInEdges:
     )
     def test_calling_without_logical_errors_adds_edges_at_correct_offset(
         self,
-        dem: stim.DetectorErrorModel,
+        dem: deltakit_stim.DetectorErrorModel,
         detector_offset: int,
         expected_edge_records: dict[DecodingHyperEdge, EdgeRecord],
     ):
@@ -434,32 +436,32 @@ class TestLogicalsInEdges:
         ("dem", "detector_offset", "expected_logicals"),
         [
             (
-                stim.DetectorErrorModel("error(0.01) D0 L0"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 L0"),
                 0,
                 [{DecodingHyperEdge({0})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 L0"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 L0"),
                 2,
                 [{DecodingHyperEdge({2})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 ^ D1 L0"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 ^ D1 L0"),
                 0,
                 [{DecodingHyperEdge({1})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 L0 ^ D1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 L0 ^ D1"),
                 0,
                 [{DecodingHyperEdge({0})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 L2"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 L2"),
                 0,
                 [set(), set(), {DecodingHyperEdge({0})}],
             ),
             (
-                stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
+                deltakit_stim.DetectorErrorModel("error(0.01) D0 D1 L0 L1"),
                 0,
                 [{DecodingHyperEdge({0, 1})}, {DecodingHyperEdge({0, 1})}],
             ),
@@ -467,7 +469,7 @@ class TestLogicalsInEdges:
     )
     def test_calling_with_logical_error_adds_edges_to_correct_logicals(
         self,
-        dem: stim.DetectorErrorModel,
+        dem: deltakit_stim.DetectorErrorModel,
         detector_offset: int,
         expected_logicals: list[set[DecodingHyperEdge]],
     ):
@@ -506,7 +508,7 @@ class TestLogicalsInEdges:
     )
     def test_parsing_dem_with_logicals_in_edges_has_expected_edges_and_logicals(
         self,
-        dem: stim.DetectorErrorModel,
+        dem: deltakit_stim.DetectorErrorModel,
         expected_edges: set[DecodingHyperEdge],
         expected_logicals: list[set[DecodingHyperEdge]],
     ):
@@ -518,15 +520,15 @@ class TestLogicalsInEdges:
         assert parser.error_handler.logicals == expected_logicals
 
     @pytest.mark.parametrize(
-        "stim_circuit",
+        "deltakit_stim_circuit",
         [
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z",
                 distance=3,
                 rounds=3,
                 after_clifford_depolarization=0.01,
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z",
                 distance=10,
                 rounds=10,
@@ -536,13 +538,17 @@ class TestLogicalsInEdges:
     )
     @pytest.mark.parametrize("decompose_errors", [False, True])
     def test_each_logical_is_subset_of_all_edges(
-        self, stim_circuit: stim.Circuit, decompose_errors: bool
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, decompose_errors: bool
     ):
         parser = DemParser(
-            LogicalsInEdges(stim_circuit.num_observables), empty_handler, empty_handler
+            LogicalsInEdges(deltakit_stim_circuit.num_observables),
+            empty_handler,
+            empty_handler,
         )
         parser.parse(
-            stim_circuit.detector_error_model(decompose_errors=decompose_errors)
+            deltakit_stim_circuit.detector_error_model(
+                decompose_errors=decompose_errors
+            )
         )
         assert all(
             logical.issubset(parser.error_handler.edges)

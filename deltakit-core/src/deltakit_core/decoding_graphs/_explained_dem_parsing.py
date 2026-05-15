@@ -45,7 +45,9 @@ def depolarising_as_independent(probability: float, num_qubits: int) -> float:
     return float((1 - (1 - p_with_i) ** exponent) / 2)
 
 
-def noise_probability(noise_channel: deltakit_stim.CircuitTargetsInsideInstruction) -> float:
+def noise_probability(
+    noise_channel: deltakit_stim.CircuitTargetsInsideInstruction,
+) -> float:
     """Calculate the independent probability of a Pauli error happening from a
     given deltakit_stim noise gate.
 

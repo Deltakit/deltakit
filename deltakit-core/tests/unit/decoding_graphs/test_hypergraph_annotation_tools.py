@@ -1,12 +1,8 @@
 """Unit tests for hypergraph annotation utilities focused on edge-based window ids."""
 
+import deltakit_stim
 import networkx as nx
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import stim
 
 from deltakit_core.decoding_graphs._decoding_graph import (
     DecodingCode,
@@ -26,7 +22,7 @@ from deltakit_core.decoding_graphs._hypergraph_annotations_tools import (
 @pytest.fixture(scope="module")
 def rotmem_code() -> DecodingCode:
     """Build a DecodingCode (hypergraph + logicals) for a rotated memory Z surface code."""
-    circuit = stim.Circuit.generated(
+    circuit = deltakit_stim.Circuit.generated(
         code_task="surface_code:rotated_memory_z",
         distance=5,
         rounds=25,
