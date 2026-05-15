@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from collections.abc import Set as AbstractSet
 from typing import no_type_check
 
+import deltakit_stim
 import networkx as nx
 import numpy as np
 
@@ -30,7 +31,6 @@ from deltakit_core.decoding_graphs._dem_parsing import (
     dem_to_decoding_graph_and_logicals,
 )
 
-import deltakit_stim
 
 def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
     """Given some decoding edges, filter to those that directly correspond to a data
