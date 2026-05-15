@@ -30,11 +30,7 @@ from deltakit_core.decoding_graphs._dem_parsing import (
     dem_to_decoding_graph_and_logicals,
 )
 
-try:
-    import lestim as stim
-except ImportError:
-    import stim
-
+import deltakit_stim
 
 def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
     """Given some decoding edges, filter to those that directly correspond to a data
@@ -127,19 +123,19 @@ def is_single_connected_component(graph: NXDecodingGraph) -> bool:
 
 
 def parse_stim_circuit(
-    stim_circuit: stim.Circuit,
-) -> tuple[NXDecodingGraph, list[set[DecodingEdge]], stim.Circuit]:
-    """Parse a Stim file into a decoding graph and the relevant logicals.
+    stim_circuit: deltakit_stim.Circuit,
+) -> tuple[NXDecodingGraph, list[set[DecodingEdge]], deltakit_stim.Circuit]:
+    """Parse a Deltakit_Stim file into a decoding graph and the relevant logicals.
 
     Parameters
     ----------
-    stim_circuit : stim.Circuit
-        Input Stim circuit to parse.
+    stim_circuit : deltakit_stim.Circuit
+        Input Deltakit_Stim circuit to parse.
 
     Returns
     -------
-    Tuple[NXDecodingGraph, List[Set[DecodingEdge]], stim.Circuit]
-        The decoding graph, the logicals, and the Stim circuit. The Stim
+    Tuple[NXDecodingGraph, List[Set[DecodingEdge]], deltakit_stim.Circuit]
+        The decoding graph, the logicals, and the Deltakit_Stim circuit. The Deltakit_Stim
         circuit will be unchanged.
     """
 
@@ -149,16 +145,16 @@ def parse_stim_circuit(
 
 
 def stim_circuit_to_graph_dem(
-    stim_circuit: stim.Circuit, approximate_disjoint_errors: bool = True
-) -> stim.DetectorErrorModel:
-    """For a given stim circuit, return the graph-like detector error model.
+    stim_circuit: deltakit_stim.Circuit, approximate_disjoint_errors: bool = True
+) -> deltakit_stim.DetectorErrorModel:
+    """For a given deltakit_stim circuit, return the graph-like detector error model.
     If the non-decomposed DEM is graph-like, that will be returned. Otherwise,
     the decomposed DEM will be returned.
 
     Parameters
     ----------
-    stim_circuit : stim.Circuit
-        Stim circuit to get the DEM for
+    stim_circuit : deltakit_stim.Circuit
+        Deltakit_Stim circuit to get the DEM for
     approximate_disjoint_errors : bool, optional
         Iff True, disjoint error approximations will be allowed.
     """

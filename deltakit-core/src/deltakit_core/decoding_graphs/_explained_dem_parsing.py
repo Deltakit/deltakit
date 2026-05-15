@@ -1,10 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 from collections import defaultdict
 
-try:
-    import lestim as stim
-except ImportError:
-    import stim
+import deltakit_stim
 
 from deltakit_core.decoding_graphs._decoding_graph import (
     AnyEdgeT,
@@ -48,14 +45,14 @@ def depolarising_as_independent(probability: float, num_qubits: int) -> float:
     return float((1 - (1 - p_with_i) ** exponent) / 2)
 
 
-def noise_probability(noise_channel: stim.CircuitTargetsInsideInstruction) -> float:
+def noise_probability(noise_channel: deltakit_stim.CircuitTargetsInsideInstruction) -> float:
     """Calculate the independent probability of a Pauli error happening from a
-    given stim noise gate.
+    given deltakit_stim noise gate.
 
     Parameters
     ----------
-    noise_channel : stim.CircuitTargetsInsideInstruction
-        The stim noise channel
+    noise_channel : deltakit_stim.CircuitTargetsInsideInstruction
+        The deltakit_stim noise channel
 
     Returns
     -------
@@ -79,16 +76,16 @@ def noise_probability(noise_channel: stim.CircuitTargetsInsideInstruction) -> fl
 
 
 def parse_explained_dem(
-    explained_dem: list[stim.ExplainedError],
+    explained_dem: list[deltakit_stim.ExplainedError],
 ) -> DecodingHyperMultiGraph:
     """Parse an explained DEM into a hyper-multi-graph. Information about
     which logicals an edge affects is stored in the edge record of that edge
 
     Parameters
     ----------
-    explained_dem : List[stim.ExplainedError]
+    explained_dem : List[deltakit_stim.ExplainedError]
         The explained DEM which comes from the
-        `stim.Circuit.explain_detector_error_model_errors` method.
+        `deltakit_stim.Circuit.explain_detector_error_model_errors` method.
 
     Returns
     -------
