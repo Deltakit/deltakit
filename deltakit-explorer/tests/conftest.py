@@ -16,4 +16,3 @@ def pytest_sessionstart(session):  # noqa: ARG001
 @pytest.fixture(scope="session")
 def random_generator():
     return np.random.default_rng()
-

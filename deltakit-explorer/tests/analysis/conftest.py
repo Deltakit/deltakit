@@ -9,6 +9,7 @@ from deltakit_explorer.analysis import (
     LogicalErrorProbabilityPerRoundData as LEPPRData,
 )
 
+
 @pytest.fixture
 def lambda_results() -> LambdaData:
     return LambdaData(
