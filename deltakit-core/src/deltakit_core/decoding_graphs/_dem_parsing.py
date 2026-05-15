@@ -106,8 +106,15 @@ class DetectorRecorder(DetectorHandler):
 
 
 def observable_warning(logical_observable: deltakit_stim.DemInstruction) -> None:
-    """Type of logical observable handler which raises a warning when this
-    instruction is encountered."""
+    """Logical observable warning handler.
+
+    Args:
+        logical_observable: The logical observable as a DEM instruction.
+
+    Warning:
+        Logger warning: when logical observables are isolated in DEM.
+
+    """
     logicals = " ".join(
         f"L{target.val}"
         for target in cast(
@@ -294,8 +301,15 @@ def dem_to_hypergraph_and_logicals(
     def error_handler_no_multiedges(
         error: deltakit_stim.DemInstruction, detector_offset: int
     ):
-        """Type of error handler for constructing decoding hypergraph and
-        logicals hyperedges which are not multiedges from error instructions."""
+        """Error handler for constructing decoding hypergraph and logicals hyperedges.
+
+        This is triggered when they are not multiedges from error instructions.
+
+        Args:
+            error: The error as a DEM instruction.
+            detector_offset: The detector offset.
+
+        """
         for vertices, p_err, logicals in collect_edges(error, detector_offset):
             hyperedge = DecodingHyperEdge(vertices)
             old_hyperedge_record = edge_records.get(hyperedge)
@@ -355,8 +369,14 @@ def dem_to_decoding_graph_and_logicals(
     def error_handler(
         error: deltakit_stim.DemInstruction, detector_offset: int
     ) -> None:
-        """Type of error handler for constructing decoding graph and
-        logical edges from error instructions."""
+        """Error handler for constructing decoding graph and
+        logical edges from error instructions.
+
+        Args:
+            error: The error as a DEM instruction.
+            detector_offset: The detector offset.
+
+        """
         degree_target = 2
         for vertices, p_err, logicals in collect_edges(error, detector_offset):
             if (degree := len(vertices)) == 0:
@@ -391,8 +411,15 @@ def dem_to_decoding_graph_and_logicals(
         detector_offset: int,
         coordinate_offset: CoordinateOffset,
     ) -> None:
-        """Type of detector handler for adding coordinate annotated detectors
-        to the decoding graph."""
+        """Ddetector handler for adding coordinate annotated detectors
+        to the decoding graph.
+
+        Args:
+            detector: A detector as a DEM instruction.
+            detector_offset: The detector offset.
+            coordinate_offset: The coordinate offset.
+
+        """
         detector_index = (
             detector_offset
             + cast(list[deltakit_stim.DemTarget], detector.targets_copy())[0].val
