@@ -194,8 +194,6 @@ src/deltakit_explorer/analysis/error_budget/_discretisation.py
     DOC201: Function `get_logarithmic_points` does not have a return section in docstring
     DOC501: Function `get_logarithmic_points` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `get_logarithmic_points` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
-    DOC601: Class `DiscretisationStrategy`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC603: Class `DiscretisationStrategy`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [LINEAR: , LOGARITHMIC: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
 src/deltakit_explorer/analysis/error_budget/_generation.py
     DOC111: Function `_generate_surface_code_memory_decoder_manager`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
