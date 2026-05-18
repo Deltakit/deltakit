@@ -172,8 +172,6 @@ src/deltakit_core/decoding_graphs/_decoding_graph_tools.py
     DOC003: Function/method `unweight_graph`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_core/decoding_graphs/_dem_parsing.py
-    DOC101: Function `observable_warning`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `observable_warning`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_observable: stim.DemInstruction].
     DOC003: Function/method `collect_edges`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC101: Method `LogicalsInEdges.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `LogicalsInEdges.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [num_logicals: int].
@@ -181,15 +179,9 @@ src/deltakit_core/decoding_graphs/_dem_parsing.py
     DOC103: Method `DemParser.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_handler: DH, error_handler: EH, observable_handler: ObservableHandler].
     DOC003: Function/method `parse`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `dem_to_hypergraph_and_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `error_handler_no_multiedges`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `error_handler_no_multiedges`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_offset: int, error: stim.DemInstruction].
     DOC003: Function/method `dem_to_decoding_graph_and_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Function `error_handler`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `error_handler`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [detector_offset: int, error: stim.DemInstruction].
     DOC501: Function `error_handler` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `error_handler` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
-    DOC101: Function `detector_handler`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `detector_handler`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [coordinate_offset: CoordinateOffset, detector: stim.DemInstruction, detector_offset: int].
     DOC003: Function/method `max_num_detectors`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_core/decoding_graphs/_explained_dem_parsing.py
