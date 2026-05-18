@@ -234,6 +234,7 @@ class TypedData(ABC):  # pragma: nocover
         data_width: If data is serialisable, data_width supports b8 format parsing.
 
     """
+
     data_format: DataFormat
     content: Any
     data_width: int = -1
@@ -751,6 +752,7 @@ class NoiseModel(ABC):
         ENDPOINT_RESULT_FIELDNAME: Endpoints name noise addition results differently.
 
     """
+
     ENDPOINT: ClassVar[APIEndpoints]
     ENDPOINT_RESULT_FIELDNAME: ClassVar[str]
 
@@ -781,6 +783,7 @@ class PhysicalNoiseModel(NoiseModel):
         p_readout_flip: Probability of a flip while measuring a qubit.
 
     """
+
     ENDPOINT: ClassVar[APIEndpoints] = APIEndpoints.ADD_NOISE
     ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addNoiseToStimCircuit"
 
@@ -1023,4 +1026,5 @@ class QubitCoordinateToDetectorMapping:
     all detectors IDs, associated with these coordinates.
 
     """
+
     detector_map: dict[tuple[float, ...], list[int]]

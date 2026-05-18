@@ -126,6 +126,7 @@ class QECExperimentDefinition(JSONable):
         parameters: Parameters of circuit generation.
 
     """
+
     experiment_type: QECExperimentType
     code_type: QECECodeType
     observable_basis: PauliBasis

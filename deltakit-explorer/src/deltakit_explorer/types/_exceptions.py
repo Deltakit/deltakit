@@ -11,6 +11,7 @@ class ServerException(Exception):  # pragma: nocover
         message: Error message from server
 
     """
+
     message: str
 
     def __init__(self, message: str):

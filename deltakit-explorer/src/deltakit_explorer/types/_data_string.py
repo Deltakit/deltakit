@@ -51,8 +51,9 @@ class DataString:
 
     Attributes:
         empty: Empty data string
-    
+
     """
+
     empty: str = "duck://"
 
     def __init__(self, data: bytes | str = b"") -> None:
