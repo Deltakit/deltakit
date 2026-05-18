@@ -76,12 +76,17 @@ def get_logarithmic_points(
 
 class DiscretisationStrategy(Enum):
     """Strategy to use to generate discretisation point for fitting a noisy function
-    with a polynomial."""
+    with a polynomial.
+
+
+    Attributes:
+        LINEAR: Linearly spaced points between the discretisation space boundaries.
+        LOGARITHMIC: Logarithmically spaced points between the discretisation space boundaries.
+
+    """
 
     LINEAR = auto()
-    """Linearly spaced points between the discretisation space boundaries."""
     LOGARITHMIC = auto()
-    """Logarithmically spaced points between the discretisation space boundaries."""
 
     def __call__(
         self, a: float, b: float, c: float, num_points: int, degree: int, /
