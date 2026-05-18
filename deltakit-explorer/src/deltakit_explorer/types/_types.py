@@ -747,7 +747,7 @@ class NoiseModel(ABC):
 
     Attributes:
         ENDPOINT: Each noise model has a corresponding service endpoint,
-    which is responsible for applying this model to a circuit.
+            which is responsible for applying this model to a circuit.
         ENDPOINT_RESULT_FIELDNAME: Endpoints name noise addition results differently.
 
     """
@@ -765,6 +765,9 @@ class PhysicalNoiseModel(NoiseModel):
 
 
     Attributes:
+        ENDPOINT: Each noise model has a corresponding service endpoint,
+            which is responsible for applying this model to a circuit.
+        ENDPOINT_RESULT_FIELDNAME: Endpoints name noise addition results differently.
         t_1: T1 time (relaxation from |1> to |0>), seconds.
         t_2: T2 time (dephasing), seconds.
         time_1_qubit_gate: Time to execute a 1-qubit gate.
@@ -857,6 +860,9 @@ class SI1000NoiseModel(NoiseModel):
     See https://arxiv.org/pdf/2312.04522v1 (Appendix A) for details.
 
     Attributes:
+        ENDPOINT: Each noise model has a corresponding service endpoint,
+            which is responsible for applying this model to a circuit.
+        ENDPOINT_RESULT_FIELDNAME: Endpoints name noise addition results differently.
         p: Probability of a Pauli error.
         p_l: Probability of a leakage error.
 

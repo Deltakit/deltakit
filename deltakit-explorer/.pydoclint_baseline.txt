@@ -747,12 +747,9 @@ src/deltakit_explorer/types/_types.py
     DOC111: Method `Measurements.to_detectors_and_observables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC501: Method `Measurements.to_detectors_and_observables` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `Measurements.to_detectors_and_observables` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
-    DOC601: Class `NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC601: Class `PhysicalNoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC201: Method `PhysicalNoiseModel.get_floor_superconducting_noise` does not have a return section in docstring
     DOC201: Method `PhysicalNoiseModel.get_superconducting_noise` does not have a return section in docstring
     DOC201: Method `PhysicalNoiseModel.get_ion_trap_noise` does not have a return section in docstring
-    DOC601: Class `SI1000NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC301: Class `DecodingResult`: __init__() should not have a docstring; please combine it with the docstring of the class
     DOC101: Method `DecodingResult.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `DecodingResult.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [counts: list[int] | None, fails: int, predictionsFile: dict[str, str | None] | None, predictions_format: DataFormat, shots: int, times: list[float] | None].
