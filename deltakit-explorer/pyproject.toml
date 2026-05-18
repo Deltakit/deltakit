@@ -122,6 +122,7 @@ follow_untyped_imports = true
 testpaths = ["./tests/"]
 
 [tool.pydoclint]
+ignore = ["DOC606"]  # Ignore checking ClassVar.
 style = 'google'
 exclude = '\.git|\.venv.*'
 # We do not want type hints to be duplicated in docstrings.
