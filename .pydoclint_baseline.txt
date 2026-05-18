@@ -1262,24 +1262,7 @@ deltakit-explorer/src/deltakit_explorer/_utils/_utils.py
 --------------------
 deltakit-explorer/src/deltakit_explorer/analysis/_analysis.py
     DOC111: Function `get_exp_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC111: Function `calculate_lep_and_lep_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Function `calculate_lep_and_lep_stddev` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `calculate_lep_and_lep_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
     DOC111: Function `get_lambda_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
---------------------
-deltakit-explorer/src/deltakit_explorer/analysis/_lambda.py
-    DOC101: Function `_lambda_fit_with_d`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_d`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_d` does not have a return section in docstring
-    DOC101: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_d_plus_1_over_2` does not have a return section in docstring
-    DOC101: Function `_lambda_fit_with_direct`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_direct`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_direct` does not have a return section in docstring
-    DOC111: Function `calculate_lambda_and_lambda_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Function `calculate_lambda_and_lambda_stddev` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `calculate_lambda_and_lambda_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
 --------------------
 deltakit-explorer/src/deltakit_explorer/analysis/_leppr.py
     DOC111: Function `compute_logical_error_per_round`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
