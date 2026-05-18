@@ -5,10 +5,13 @@ from __future__ import annotations
 
 
 class ServerException(Exception):  # pragma: nocover
-    """Exception, which happened on a server side."""
+    """Exception, which happened on a server side.
 
+    Attributes:
+        message: Error message from server
+
+    """
     message: str
-    """Error message from server"""
 
     def __init__(self, message: str):
         self.message = message

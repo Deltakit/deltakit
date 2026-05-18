@@ -115,25 +115,23 @@ class QECExperiment:
 
 @dataclass
 class QECExperimentDefinition(JSONable):
-    """Definition, essential to generate a QEC experiment circuit."""
+    """Definition, essential to generate a QEC experiment circuit.
 
+    Attributes:
+        experiment_type: Type of experiment, e.g. Quantum Memory or Stability.
+        code_type: QEC code, e.g. Rotated Planar Code.
+        observable_basis: Basis, in which observable is measured. E.g. X or Z.
+        num_rounds: Number of experiment rounds.
+        basis_gates: If circuit is generated with a specific basis gate set.
+        parameters: Parameters of circuit generation.
+
+    """
     experiment_type: QECExperimentType
-    """Type of experiment, e.g. Quantum Memory or Stability."""
-
     code_type: QECECodeType
-    """QEC code, e.g. Rotated Planar Code."""
-
     observable_basis: PauliBasis
-    """Basis, in which observable is measured. E.g. X or Z."""
-
     num_rounds: int
-    """Number of experiment rounds."""
-
     basis_gates: list[str] | None = None
-    """If circuit is generated with a specific basis gate set."""
-
     parameters: CircuitParameters | None = None
-    """Parameters of circuit generation."""
 
     def get_parameters_gql_string(self) -> dict[str, Any] | None:
         """

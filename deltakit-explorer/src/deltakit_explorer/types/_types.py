@@ -226,16 +226,17 @@ class CircuitParameters(JSONable):
 
 @dataclass
 class TypedData(ABC):  # pragma: nocover
-    """Basic class for all typed data manipulation activities."""
+    """Basic class for all typed data manipulation activities.
 
+    Attributes:
+        data_format: Format in which the data is stored. b8, 01, or csv.
+        content: File name, on in-RAM array object.
+        data_width: If data is serialisable, data_width supports b8 format parsing.
+
+    """
     data_format: DataFormat
-    """Format in which the data is stored. b8, 01, or csv."""
-
     content: Any
-    """File name, on in-RAM array object."""
-
     data_width: int = -1
-    """If data is serialisable, data_width supports b8 format parsing."""
 
     @abstractmethod
     def as_01_string(self) -> str:
@@ -742,15 +743,16 @@ class LeakageFlags(BinaryDataType):
 
 @dataclass
 class NoiseModel(ABC):
-    """Generic noise model class."""
+    """Generic noise model class.
 
-    ENDPOINT: ClassVar[APIEndpoints]
-    """
-    Each noise model has a corresponding service endpoint,
+    Attributes:
+        ENDPOINT: Each noise model has a corresponding service endpoint,
     which is responsible for applying this model to a circuit.
+        ENDPOINT_RESULT_FIELDNAME: Endpoints name noise addition results differently.
+
     """
+    ENDPOINT: ClassVar[APIEndpoints]
     ENDPOINT_RESULT_FIELDNAME: ClassVar[str]
-    """Endpoints name noise addition results differently."""
 
 
 @dataclass
@@ -760,43 +762,36 @@ class PhysicalNoiseModel(NoiseModel):
     Physically-inspired noise model. This noise model
     is built on physical characteristics of qubits and
     gates.
-    """
 
+
+    Attributes:
+        t_1: T1 time (relaxation from |1> to |0>), seconds.
+        t_2: T2 time (dephasing), seconds.
+        time_1_qubit_gate: Time to execute a 1-qubit gate.
+        time_2_qubit_gate: Time to execute a 2-qubit gate.
+        time_measurement: Time to measure a qubit.
+        time_reset: Time to reset a qubit.
+        p_1_qubit_gate_error: Probability of a flip while doing a 1-qubit gate.
+        p_2_qubit_gate_error: Probability of a flip while doing a 2-qubit gate.
+        p_reset_error: Probability of a flip while doing a reset.
+        p_meas_qubit_error: Probability of incorrect measurement.
+        p_readout_flip: Probability of a flip while measuring a qubit.
+
+    """
     ENDPOINT: ClassVar[APIEndpoints] = APIEndpoints.ADD_NOISE
     ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addNoiseToStimCircuit"
 
     t_1: float
-    """T1 time (relaxation from |1> to |0>), seconds."""
-
     t_2: float
-    """T2 time (dephasing), seconds."""
-
     time_1_qubit_gate: float
-    """Time to execute a 1-qubit gate."""
-
     time_2_qubit_gate: float
-    """Time to execute a 2-qubit gate."""
-
     time_measurement: float
-    """Time to measure a qubit."""
-
     time_reset: float
-    """Time to reset a qubit."""
-
     p_1_qubit_gate_error: float
-    """Probability of a flip while doing a 1-qubit gate."""
-
     p_2_qubit_gate_error: float
-    """Probability of a flip while doing a 2-qubit gate."""
-
     p_reset_error: float
-    """Probability of a flip while doing a reset."""
-
     p_meas_qubit_error: float
-    """Probability of incorrect measurement."""
-
     p_readout_flip: float
-    """Probability of a flip while measuring a qubit."""
 
     @staticmethod
     def get_floor_superconducting_noise():
@@ -856,21 +851,22 @@ class PhysicalNoiseModel(NoiseModel):
 
 @dataclass
 class SI1000NoiseModel(NoiseModel):
-    """
-    The SI 1000
-    (Superconducting Inspired with 1000 nanosecond cycle)
+    """The SI 1000 (Superconducting Inspired with 1000 nanosecond cycle)
     noise model, with leakage.
+
     See https://arxiv.org/pdf/2312.04522v1 (Appendix A) for details.
+
+    Attributes:
+        p: Probability of a Pauli error.
+        p_l: Probability of a leakage error.
+
     """
 
     ENDPOINT: ClassVar[APIEndpoints] = APIEndpoints.ADD_SI1000_NOISE
     ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addSi1000NoiseToStimCircuit"
 
     p: float
-    """Probability of a Pauli error."""
-
     p_l: float
-    """Probability of a leakage error."""
 
 
 class DecodingResult:
@@ -991,30 +987,34 @@ class DecodingResult:
 
 @dataclass
 class Decoder:
-    """Common settings for decoding."""
+    """Common settings for decoding.
+
+    Attributes:
+        decoder_type: Decoding algorithm.
+        use_experimental_graph: If set to True, data will be split into halves.
+            One half of the data will be used for training experimental
+            decoder error graph, and the other half will be decoded with
+            this graph. And vice versa.
+        parallel_jobs: Server will perform data-parallel decoding, if more cores
+            are requested.
+        parameters: Decoders may have individual settings. They may be passed as
+            dictionary items.
+
+    """
 
     decoder_type: DecoderType
-    """Decoding algorithm."""
-
     use_experimental_graph: bool = False
-    """If set to True, data will be split into halves.
-    One half of the data will be used for training experimental
-    decoder error graph, and the other half will be decoded with
-    this graph. And vice versa."""
-
     parallel_jobs: int = 1
-    """Server will perform data-parallel decoding, if more cores
-    are requested."""
-
     parameters: dict[str, Any] = field(default_factory=dict)
-    """Decoders may have individual settings. They may be passed as
-    dictionary items."""
 
 
 @dataclass
 class QubitCoordinateToDetectorMapping:
-    """Mapping of detectors to qubit coordinates."""
+    """Mapping of detectors to qubit coordinates.
 
+    Attributes:
+        detector_map: Keys are detector coordinates, values are a list of
+    all detectors IDs, associated with these coordinates.
+
+    """
     detector_map: dict[tuple[float, ...], list[int]]
-    """Keys are detector coordinates, values are a list of
-    all detectors IDs, associated with these coordinates."""

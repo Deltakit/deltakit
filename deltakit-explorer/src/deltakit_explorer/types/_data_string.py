@@ -47,10 +47,13 @@ class DataString:
     Data strings result in additional processing on client and server side,
     they introduce redundancy in data, and they also increase network traffic
     between client and server nodes.
-    """
 
+
+    Attributes:
+        empty: Empty data string
+    
+    """
     empty: str = "duck://"
-    """Empty data string"""
 
     def __init__(self, data: bytes | str = b"") -> None:
         """Construct an object from the data.
