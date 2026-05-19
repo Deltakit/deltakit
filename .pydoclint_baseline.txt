@@ -1262,24 +1262,7 @@ deltakit-explorer/src/deltakit_explorer/_utils/_utils.py
 --------------------
 deltakit-explorer/src/deltakit_explorer/analysis/_analysis.py
     DOC111: Function `get_exp_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC111: Function `calculate_lep_and_lep_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Function `calculate_lep_and_lep_stddev` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `calculate_lep_and_lep_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
     DOC111: Function `get_lambda_fit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
---------------------
-deltakit-explorer/src/deltakit_explorer/analysis/_lambda.py
-    DOC101: Function `_lambda_fit_with_d`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_d`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_d` does not have a return section in docstring
-    DOC101: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_d_plus_1_over_2`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_d_plus_1_over_2` does not have a return section in docstring
-    DOC101: Function `_lambda_fit_with_direct`: Docstring contains fewer arguments than in function signature.
-    DOC103: Function `_lambda_fit_with_direct`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [distances: npt.NDArray[np.int_] | Sequence[int], lep_per_round: npt.NDArray[np.float64] | Sequence[float], lep_stddev_per_round: npt.NDArray[np.float64] | Sequence[float]].
-    DOC201: Function `_lambda_fit_with_direct` does not have a return section in docstring
-    DOC111: Function `calculate_lambda_and_lambda_stddev`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Function `calculate_lambda_and_lambda_stddev` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `calculate_lambda_and_lambda_stddev` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
 --------------------
 deltakit-explorer/src/deltakit_explorer/analysis/_leppr.py
     DOC111: Function `compute_logical_error_per_round`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
@@ -1317,6 +1300,8 @@ deltakit-explorer/src/deltakit_explorer/analysis/error_budget/_discretisation.py
     DOC201: Function `get_logarithmic_points` does not have a return section in docstring
     DOC501: Function `get_logarithmic_points` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `get_logarithmic_points` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC606: Class `DiscretisationStrategy`, Attribute `LINEAR`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `DiscretisationStrategy`, Attribute `LOGARITHMIC`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `DiscretisationStrategy`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `DiscretisationStrategy`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [LINEAR: , LOGARITHMIC: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
@@ -1678,10 +1663,6 @@ deltakit-explorer/src/deltakit_explorer/plotting/_leppr.py
     DOC501: Function `plot_logical_error_probability_per_round` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Function `plot_logical_error_probability_per_round` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
 --------------------
-deltakit-explorer/src/deltakit_explorer/plotting/_visualisation.py
-    DOC111: Function `defect_diagram`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC111: Function `defect_rates`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
---------------------
 deltakit-explorer/src/deltakit_explorer/qpu/_circuits/_circuit_functions.py
     DOC003: Function/method `merge_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `_calculate_offset_annotation_layers`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
@@ -1778,6 +1759,7 @@ deltakit-explorer/src/deltakit_explorer/simulation/_stim_simulation.py
     DOC503: Function `simulate_with_stim` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError', 'ValueError'].
 --------------------
 deltakit-explorer/src/deltakit_explorer/types/_data_string.py
+    DOC606: Class `DataString`, Attribute `empty`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `DataString`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `DataString`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [empty: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC301: Class `DataString`: __init__() should not have a docstring; please combine it with the docstring of the class
@@ -1793,6 +1775,7 @@ deltakit-explorer/src/deltakit_explorer/types/_data_string.py
     DOC103: Method `DataString.to_string`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [encoding: str].
 --------------------
 deltakit-explorer/src/deltakit_explorer/types/_exceptions.py
+    DOC606: Class `ServerException`, Attribute `message`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `ServerException`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `ServerException`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [message: str]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC101: Method `ServerException.__init__`: Docstring contains fewer arguments than in function signature.
@@ -1802,6 +1785,12 @@ deltakit-explorer/src/deltakit_explorer/types/_experiment_types.py
     DOC601: Class `QECExperiment`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `QECExperiment`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [detectors: DetectionEvents | None, leakage_flags: LeakageFlags | None, measurements: Measurements | None, noisy_circuit: str, observables: ObservableFlips | None, sweep_bits: BinaryDataType | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC111: Method `QECExperiment.from_circuit_and_measurements`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC606: Class `QECExperimentDefinition`, Attribute `experiment_type`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `QECExperimentDefinition`, Attribute `code_type`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `QECExperimentDefinition`, Attribute `observable_basis`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `QECExperimentDefinition`, Attribute `num_rounds`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `QECExperimentDefinition`, Attribute `basis_gates`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `QECExperimentDefinition`, Attribute `parameters`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `QECExperimentDefinition`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `QECExperimentDefinition`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [basis_gates: list[str] | None, code_type: QECECodeType, experiment_type: QECExperimentType, num_rounds: int, observable_basis: PauliBasis, parameters: CircuitParameters | None]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC201: Method `QECExperimentDefinition.get_parameters_gql_string` does not have a return section in docstring
@@ -1832,6 +1821,9 @@ deltakit-explorer/src/deltakit_explorer/types/_types.py
     DOC201: Method `CircuitParameters.from_sizes` does not have a return section in docstring
     DOC111: Method `CircuitParameters.from_matrix_specification`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC201: Method `CircuitParameters.to_gql` does not have a return section in docstring
+    DOC606: Class `TypedData`, Attribute `data_format`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `TypedData`, Attribute `content`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `TypedData`, Attribute `data_width`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `TypedData`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `TypedData`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [content: Any, data_format: DataFormat, data_width: int]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC201: Method `TypedData.as_01_string` does not have a return section in docstring
@@ -1879,13 +1871,28 @@ deltakit-explorer/src/deltakit_explorer/types/_types.py
     DOC111: Method `Measurements.to_detectors_and_observables`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC501: Method `Measurements.to_detectors_and_observables` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `Measurements.to_detectors_and_observables` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC606: Class `NoiseModel`, Attribute `ENDPOINT`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `NoiseModel`, Attribute `ENDPOINT_RESULT_FIELDNAME`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `NoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC606: Class `PhysicalNoiseModel`, Attribute `t_1`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `t_2`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `time_1_qubit_gate`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `time_2_qubit_gate`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `time_measurement`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `time_reset`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `p_1_qubit_gate_error`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `p_2_qubit_gate_error`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `p_reset_error`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `p_meas_qubit_error`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `PhysicalNoiseModel`, Attribute `p_readout_flip`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `PhysicalNoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PhysicalNoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str], p_1_qubit_gate_error: float, p_2_qubit_gate_error: float, p_meas_qubit_error: float, p_readout_flip: float, p_reset_error: float, t_1: float, t_2: float, time_1_qubit_gate: float, time_2_qubit_gate: float, time_measurement: float, time_reset: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC201: Method `PhysicalNoiseModel.get_floor_superconducting_noise` does not have a return section in docstring
     DOC201: Method `PhysicalNoiseModel.get_superconducting_noise` does not have a return section in docstring
     DOC201: Method `PhysicalNoiseModel.get_ion_trap_noise` does not have a return section in docstring
+    DOC606: Class `SI1000NoiseModel`, Attribute `p`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `SI1000NoiseModel`, Attribute `p_l`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `SI1000NoiseModel`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `SI1000NoiseModel`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [ENDPOINT: ClassVar[APIEndpoints], ENDPOINT_RESULT_FIELDNAME: ClassVar[str], p: float, p_l: float]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC301: Class `DecodingResult`: __init__() should not have a docstring; please combine it with the docstring of the class
@@ -1894,8 +1901,13 @@ deltakit-explorer/src/deltakit_explorer/types/_types.py
     DOC201: Method `DecodingResult.get_logical_error_probability` does not have a return section in docstring
     DOC201: Method `DecodingResult.get_standard_deviation` does not have a return section in docstring
     DOC111: Method `DecodingResult.combine`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC606: Class `Decoder`, Attribute `decoder_type`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `Decoder`, Attribute `use_experimental_graph`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `Decoder`, Attribute `parallel_jobs`: This attribute is documented inline, but it should be documented in the class docstring instead.
+    DOC606: Class `Decoder`, Attribute `parameters`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `Decoder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `Decoder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [decoder_type: DecoderType, parallel_jobs: int, parameters: dict[str, Any], use_experimental_graph: bool]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
+    DOC606: Class `QubitCoordinateToDetectorMapping`, Attribute `detector_map`: This attribute is documented inline, but it should be documented in the class docstring instead.
     DOC601: Class `QubitCoordinateToDetectorMapping`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `QubitCoordinateToDetectorMapping`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [detector_map: dict[tuple[float, ...], list[int]]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
 --------------------
