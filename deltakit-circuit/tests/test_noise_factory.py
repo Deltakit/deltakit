@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from copy import deepcopy
 
+import deltakit_stim
 import pytest
-import stim
 
 import deltakit_circuit as sp
 
@@ -535,85 +535,89 @@ def test_measurement_noise_profile_does_not_change_qubit_id_type_for_MPP_gate():
 
 
 def test_after_clifford_depolarisation_adds_a_noise_channel_for_each_clifford_gate():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.H(0), sp.gates.CX(1, 2), sp.gates.MX(4)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.after_clifford_depolarisation(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert len(stim_circuit.noise_layers()) == 1
-    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    assert len(deltakit_stim_circuit.noise_layers()) == 1
+    assert len(deltakit_stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_after_clifford_depolarisation_adds_correct_noise_channels():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.H(0), sp.gates.CX(1, 2), sp.gates.MX(4)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.after_clifford_depolarisation(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert stim_circuit.noise_layers()[0].noise_channels == (
+    assert deltakit_stim_circuit.noise_layers()[0].noise_channels == (
         sp.noise_channels.Depolarise1(0, 0.1),
         sp.noise_channels.Depolarise2(1, 2, 0.1),
     )
 
 
 def test_before_measure_flip_probability_adds_an_error_for_each_measurement_operation():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.MX(0), sp.gates.MRZ(1), sp.gates.H(5)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.before_measure_flip_probability(0.1), sp.Circuit.LayerAdjacency.BEFORE
     )
-    assert len(stim_circuit.noise_layers()) == 1
-    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    assert len(deltakit_stim_circuit.noise_layers()) == 1
+    assert len(deltakit_stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_before_measure_flip_probability_adds_correct_errors():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.MX(0), sp.gates.MRZ(1), sp.gates.H(5)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.before_measure_flip_probability(0.1), sp.Circuit.LayerAdjacency.BEFORE
     )
-    assert stim_circuit.noise_layers()[0].noise_channels == (
+    assert deltakit_stim_circuit.noise_layers()[0].noise_channels == (
         sp.noise_channels.PauliXError(1, 0.1),
         sp.noise_channels.PauliZError(0, 0.1),
     )
 
 
 def test_after_reset_flip_probability_adds_an_error_for_each_reset_operation():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.RX(0), sp.gates.MRZ(1), sp.gates.H(4)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.after_reset_flip_probability(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert len(stim_circuit.noise_layers()) == 1
-    assert len(stim_circuit.noise_layers()[0].noise_channels) == 2
+    assert len(deltakit_stim_circuit.noise_layers()) == 1
+    assert len(deltakit_stim_circuit.noise_layers()[0].noise_channels) == 2
 
 
 def test_after_reset_flip_probability_adds_correct_errors():
-    stim_circuit = sp.Circuit(
+    deltakit_stim_circuit = sp.Circuit(
         sp.GateLayer([sp.gates.RX(0), sp.gates.MRZ(1), sp.gates.H(5)])
     )
-    stim_circuit.apply_gate_noise(
+    deltakit_stim_circuit.apply_gate_noise(
         sp.after_reset_flip_probability(0.1), sp.Circuit.LayerAdjacency.AFTER
     )
-    assert stim_circuit.noise_layers()[0].noise_channels == (
+    assert deltakit_stim_circuit.noise_layers()[0].noise_channels == (
         sp.noise_channels.PauliXError(1, 0.1),
         sp.noise_channels.PauliZError(0, 0.1),
     )
 
 
 @pytest.mark.parametrize(
-    ("clean_stim_circuit", "noisy_stim_circuit", "deltakit_circuit_noise_profile"),
+    (
+        "clean_deltakit_stim_circuit",
+        "noisy_deltakit_stim_circuit",
+        "deltakit_circuit_noise_profile",
+    ),
     [
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x", rounds=3, distance=3
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x",
                 rounds=3,
                 distance=3,
@@ -622,10 +626,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_clifford_depolarisation(0.333), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z", rounds=40, distance=40
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z",
                 rounds=40,
                 distance=40,
@@ -634,10 +638,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_clifford_depolarisation(0.01), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:unrotated_memory_z", rounds=20, distance=20
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:unrotated_memory_z",
                 rounds=20,
                 distance=20,
@@ -646,8 +650,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_clifford_depolarisation(0.333), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated("color_code:memory_xyz", rounds=5, distance=5),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
+                "color_code:memory_xyz", rounds=5, distance=5
+            ),
+            deltakit_stim.Circuit.generated(
                 "color_code:memory_xyz",
                 rounds=5,
                 distance=5,
@@ -656,10 +662,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_clifford_depolarisation(0.333), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x", rounds=3, distance=3
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x",
                 rounds=3,
                 distance=3,
@@ -671,10 +677,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             ),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z", rounds=40, distance=40
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_z",
                 rounds=40,
                 distance=40,
@@ -686,10 +692,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             ),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:unrotated_memory_z", rounds=20, distance=20
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:unrotated_memory_z",
                 rounds=20,
                 distance=20,
@@ -701,8 +707,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             ),
         ),
         (
-            stim.Circuit.generated("color_code:memory_xyz", rounds=5, distance=5),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
+                "color_code:memory_xyz", rounds=5, distance=5
+            ),
+            deltakit_stim.Circuit.generated(
                 "color_code:memory_xyz",
                 rounds=5,
                 distance=5,
@@ -714,10 +722,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             ),
         ),
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x", rounds=3, distance=3
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x",
                 rounds=3,
                 distance=3,
@@ -726,8 +734,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_reset_flip_probability(0.333), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated("color_code:memory_xyz", rounds=5, distance=5),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
+                "color_code:memory_xyz", rounds=5, distance=5
+            ),
+            deltakit_stim.Circuit.generated(
                 "color_code:memory_xyz",
                 rounds=5,
                 distance=5,
@@ -736,8 +746,10 @@ def test_after_reset_flip_probability_adds_correct_errors():
             (sp.after_reset_flip_probability(0.333), sp.Circuit.LayerAdjacency.AFTER),
         ),
         (
-            stim.Circuit.generated("repetition_code:memory", rounds=13, distance=13),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
+                "repetition_code:memory", rounds=13, distance=13
+            ),
+            deltakit_stim.Circuit.generated(
                 "repetition_code:memory",
                 rounds=13,
                 distance=13,
@@ -747,26 +759,36 @@ def test_after_reset_flip_probability_adds_correct_errors():
         ),
     ],
 )
-def test_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_stim(
-    clean_stim_circuit, noisy_stim_circuit, deltakit_circuit_noise_profile
+def test_deltakit_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_deltakit_stim(
+    clean_deltakit_stim_circuit,
+    noisy_deltakit_stim_circuit,
+    deltakit_circuit_noise_profile,
 ):
-    """Stim exposes a number of types of noise in stim.Circuit.generated
+    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
     (e.g. after_clifford_depolarisation, before_measure_flip_probability).
     These tests check that deltakit_circuit can apply the noise transformations"""
-    expected_deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(noisy_stim_circuit)
-    deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(clean_stim_circuit)
+    expected_deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        noisy_deltakit_stim_circuit
+    )
+    deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        clean_deltakit_stim_circuit
+    )
     deltakit_circuit_circuit.apply_gate_noise(*deltakit_circuit_noise_profile)
     assert expected_deltakit_circuit_circuit == deltakit_circuit_circuit
 
 
 @pytest.mark.parametrize(
-    ("clean_stim_circuit", "noisy_stim_circuit", "deltakit_circuit_noise_profile"),
+    (
+        "clean_deltakit_stim_circuit",
+        "noisy_deltakit_stim_circuit",
+        "deltakit_circuit_noise_profile",
+    ),
     [
         (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x", rounds=3, distance=3
             ),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "surface_code:rotated_memory_x",
                 rounds=3,
                 distance=3,
@@ -780,8 +802,10 @@ def test_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_stim(
             ),
         ),
         (
-            stim.Circuit.generated("repetition_code:memory", rounds=5, distance=5),
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
+                "repetition_code:memory", rounds=5, distance=5
+            ),
+            deltakit_stim.Circuit.generated(
                 "repetition_code:memory",
                 rounds=5,
                 distance=5,
@@ -796,28 +820,34 @@ def test_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_stim(
         ),
     ],
 )
-def test_stim_circuits_can_be_manipulated_with_multiple_types_of_noise_exposed_in_stim_simultaneously(
-    clean_stim_circuit, noisy_stim_circuit, deltakit_circuit_noise_profile
+def test_deltakit_stim_circuits_can_be_manipulated_with_multiple_types_of_noise_exposed_in_deltakit_stim_simultaneously(
+    clean_deltakit_stim_circuit,
+    noisy_deltakit_stim_circuit,
+    deltakit_circuit_noise_profile,
 ):
-    """Stim exposes a number of types of noise in stim.Circuit.generated
+    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
     (e.g. after_clifford_depolarisation, before_measure_flip_probability).
     These tests check that deltakit_circuit can apply multiple of these noise
     transformations simultaneously"""
-    expected_deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(noisy_stim_circuit)
-    deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(clean_stim_circuit)
+    expected_deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        noisy_deltakit_stim_circuit
+    )
+    deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        clean_deltakit_stim_circuit
+    )
     deltakit_circuit_circuit.apply_gate_noise(*deltakit_circuit_noise_profile)
     assert expected_deltakit_circuit_circuit == deltakit_circuit_circuit
 
 
-def test_stim_circuits_can_be_manipulated_with_all_types_of_noise_exposed_in_stim_simultaneously():
-    """Stim exposes a number of types of noise in stim.Circuit.generated
+def test_deltakit_stim_circuits_can_be_manipulated_with_all_types_of_noise_exposed_in_deltakit_stim_simultaneously():
+    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
     (e.g. after_clifford_depolarisation, before_measure_flip_probability).
     These tests check that deltakit_circuit can apply all of these noise
     transformations simultaneously"""
-    clean_stim_circuit = stim.Circuit.generated(
+    clean_deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x", rounds=3, distance=3
     )
-    noisy_stim_circuit = stim.Circuit.generated(
+    noisy_deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=3,
         distance=3,
@@ -826,8 +856,12 @@ def test_stim_circuits_can_be_manipulated_with_all_types_of_noise_exposed_in_sti
         after_reset_flip_probability=0.2,
     )
 
-    expected_deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(noisy_stim_circuit)
-    deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(clean_stim_circuit)
+    expected_deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        noisy_deltakit_stim_circuit
+    )
+    deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
+        clean_deltakit_stim_circuit
+    )
     deltakit_circuit_circuit.apply_gate_noise(
         sp.after_clifford_depolarisation(0.333) + sp.after_reset_flip_probability(0.2),
         sp.Circuit.LayerAdjacency.AFTER,

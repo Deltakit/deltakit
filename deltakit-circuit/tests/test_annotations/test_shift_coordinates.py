@@ -1,13 +1,13 @@
 # (c) Copyright Riverlane 2020-2025.
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import ShiftCoordinates
 
 
-def test_shift_coordinates_stim_circuit_gives_expected_circuit(empty_circuit):
-    ShiftCoordinates((1, 2, 3, 4)).permute_stim_circuit(empty_circuit)
-    assert empty_circuit == stim.Circuit("SHIFT_COORDS(1, 2, 3, 4)")
+def test_shift_coordinates_deltakit_stim_circuit_gives_expected_circuit(empty_circuit):
+    ShiftCoordinates((1, 2, 3, 4)).permute_deltakit_stim_circuit(empty_circuit)
+    assert empty_circuit == deltakit_stim.Circuit("SHIFT_COORDS(1, 2, 3, 4)")
 
 
 def test_shift_coordinate_instances_are_equal_if_their_shifts_are_equal():

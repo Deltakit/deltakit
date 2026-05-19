@@ -4,7 +4,7 @@ from itertools import combinations
 import pytest
 
 from deltakit_circuit import Qubit
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
+from deltakit_circuit._deltakit_stim_identifiers import NoiseDeltakitStimIdentifier
 from deltakit_circuit.noise_channels import (
     PauliChannel1,
     PauliChannel2,
@@ -28,7 +28,7 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import Probability
 def test_pauli_noise_channels_string_matches_expected_string(
     noise_channel, expected_string
 ):
-    assert noise_channel.stim_string == expected_string
+    assert noise_channel.deltakit_stim_string == expected_string
 
 
 @pytest.mark.parametrize(
@@ -75,11 +75,11 @@ def test_channel_generator_from_prob_raises_error_with_wrong_args(
         PauliZError(Qubit(0), 0.3),
     ],
 )
-def test_stim_identifier_matches_expected_identifier_for_single_probability_noise(
+def test_deltakit_stim_identifier_matches_expected_identifier_for_single_probability_noise(
     noise_channel,
 ):
-    assert noise_channel.stim_identifier == NoiseStimIdentifier(
-        noise_channel.stim_string, (noise_channel.probability,)
+    assert noise_channel.deltakit_stim_identifier == NoiseDeltakitStimIdentifier(
+        noise_channel.deltakit_stim_string, (noise_channel.probability,)
     )
 
 
@@ -312,11 +312,11 @@ class TestPauliNoiseEquality:
     "noise_channel",
     [PauliChannel1(Qubit(0), 0.1, 0.2, 0.3), PauliChannel2(Qubit(0), Qubit(1), 0.2)],
 )
-def test_stim_identifier_matches_expected_identifier_for_multiple_probability_noise(
+def test_deltakit_stim_identifier_matches_expected_identifier_for_multiple_probability_noise(
     noise_channel,
 ):
-    assert noise_channel.stim_identifier == NoiseStimIdentifier(
-        noise_channel.stim_string, noise_channel.probabilities
+    assert noise_channel.deltakit_stim_identifier == NoiseDeltakitStimIdentifier(
+        noise_channel.deltakit_stim_string, noise_channel.probabilities
     )
 
 

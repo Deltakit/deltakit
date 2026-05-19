@@ -30,10 +30,10 @@ from deltakit_circuit import (
         (gates.HERALD_LEAKAGE_EVENT, "HERALD_LEAKAGE_EVENT"),
     ],
 )
-def test_all_measurement_gate_stim_string_match_expected_string(
+def test_all_measurement_gate_deltakit_stim_string_match_expected_string(
     measurement_gate, expected_string
 ):
-    assert measurement_gate.stim_string == expected_string
+    assert measurement_gate.deltakit_stim_string == expected_string
 
 
 @pytest.mark.parametrize(
@@ -68,7 +68,7 @@ def test_repr_of_non_inverted_one_qubit_measurement_gate_matches_expected_repres
     tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
         repr(measurement_gate_class(Qubit(3), probability, False, tag=tag))
-        == f"{measurement_gate_class.stim_string}{tag_repr}(Qubit(3), probability={probability})"
+        == f"{measurement_gate_class.deltakit_stim_string}{tag_repr}(Qubit(3), probability={probability})"
     )
 
 
@@ -85,7 +85,7 @@ def test_repr_of_inverted_one_qubit_measurement_gate_matches_expected_representa
     tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
         repr(measurement_gate_class(Qubit(3), 0.1, True, tag=tag))
-        == f"!{measurement_gate_class.stim_string}{tag_repr}(Qubit(3), probability=0.1)"
+        == f"!{measurement_gate_class.deltakit_stim_string}{tag_repr}(Qubit(3), probability=0.1)"
     )
 
 

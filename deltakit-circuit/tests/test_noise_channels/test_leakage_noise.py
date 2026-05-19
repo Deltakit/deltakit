@@ -3,8 +3,8 @@
 import pytest
 
 from deltakit_circuit import Qubit
+from deltakit_circuit._deltakit_stim_identifiers import NoiseDeltakitStimIdentifier
 from deltakit_circuit._qubit_identifiers import T
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 from deltakit_circuit.noise_channels import Leakage, Relax
 from deltakit_circuit.noise_channels._abstract_noise_channels import (
     OneQubitOneProbabilityNoiseChannel,
@@ -14,10 +14,10 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import (
 @pytest.mark.parametrize(
     ("depolarising_noise", "expected_string"), [(Leakage, "LEAKAGE"), (Relax, "RELAX")]
 )
-def test_leakage_noise_stim_string_matches_expected_string(
+def test_leakage_noise_deltakit_stim_string_matches_expected_string(
     depolarising_noise, expected_string
 ):
-    assert depolarising_noise.stim_string == expected_string
+    assert depolarising_noise.deltakit_stim_string == expected_string
 
 
 @pytest.fixture(params=[Leakage, Relax])
@@ -75,9 +75,11 @@ def test_leakage_qubit_type_is_qubit_class_when_given_generic_type(channel_type)
 @pytest.mark.parametrize(
     "noise_channel", [Leakage(Qubit(0), 0.1), Relax(Qubit(0), 0.2)]
 )
-def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
-    assert noise_channel.stim_identifier == NoiseStimIdentifier(
-        noise_channel.stim_string, (noise_channel.probability,)
+def test_deltakit_stim_identifier_matches_expected_deltakit_stim_identifier(
+    noise_channel,
+):
+    assert noise_channel.deltakit_stim_identifier == NoiseDeltakitStimIdentifier(
+        noise_channel.deltakit_stim_string, (noise_channel.probability,)
     )
 
 

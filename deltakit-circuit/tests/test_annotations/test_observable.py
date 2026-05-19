@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import MeasurementRecord, Observable
 
@@ -20,18 +20,18 @@ def test_observable_measurements_only_contain_unique_measurement_records():
     [
         (
             Observable(0, MeasurementRecord(-1)),
-            stim.Circuit("OBSERVABLE_INCLUDE(0) rec[-1]"),
+            deltakit_stim.Circuit("OBSERVABLE_INCLUDE(0) rec[-1]"),
         ),
         (
             Observable(4, MeasurementRecord(-3)),
-            stim.Circuit("OBSERVABLE_INCLUDE(4) rec[-3]"),
+            deltakit_stim.Circuit("OBSERVABLE_INCLUDE(4) rec[-3]"),
         ),
     ],
 )
-def test_observable_stim_circuit_returns_expected_circuit(
+def test_observable_deltakit_stim_circuit_returns_expected_circuit(
     observable, expected_circuit, empty_circuit
 ):
-    observable.permute_stim_circuit(empty_circuit)
+    observable.permute_deltakit_stim_circuit(empty_circuit)
     assert empty_circuit == expected_circuit
 
 
@@ -61,10 +61,10 @@ def test_repr_of_observable_matches_expected_representation(observable, expected
         ),
     ],
 )
-def test_all_measurement_record_indices_are_in_observable_stim_circuit(
+def test_all_measurement_record_indices_are_in_observable_deltakit_stim_circuit(
     observable: Observable, empty_circuit
 ):
-    observable.permute_stim_circuit(empty_circuit)
+    observable.permute_deltakit_stim_circuit(empty_circuit)
     circuit_string = str(empty_circuit)
     assert all(
         f"rec[{record.lookback_index}]" in circuit_string
@@ -80,7 +80,7 @@ def test_all_measurement_record_indices_are_in_observable_stim_circuit(
     ],
 )
 def test_observable_index_read(observable: Observable, index: int, empty_circuit):
-    observable.permute_stim_circuit(empty_circuit)
+    observable.permute_deltakit_stim_circuit(empty_circuit)
     assert observable.observable_index == index
 
 

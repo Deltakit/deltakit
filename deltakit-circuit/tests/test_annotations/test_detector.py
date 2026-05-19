@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from copy import copy, deepcopy
 
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import Coordinate, Detector, MeasurementRecord
 
@@ -74,18 +74,24 @@ class TestDetector:
     @pytest.mark.parametrize(
         ("detector", "expected_circuit"),
         [
-            (Detector([MeasurementRecord(-1)]), stim.Circuit("DETECTOR rec[-1]")),
-            (Detector(MeasurementRecord(-4)), stim.Circuit("DETECTOR rec[-4]")),
+            (
+                Detector([MeasurementRecord(-1)]),
+                deltakit_stim.Circuit("DETECTOR rec[-1]"),
+            ),
+            (
+                Detector(MeasurementRecord(-4)),
+                deltakit_stim.Circuit("DETECTOR rec[-4]"),
+            ),
             (
                 Detector(MeasurementRecord(-1), Coordinate(0, 1, 2)),
-                stim.Circuit("DETECTOR(0, 1, 2) rec[-1]"),
+                deltakit_stim.Circuit("DETECTOR(0, 1, 2) rec[-1]"),
             ),
         ],
     )
-    def test_stim_circuit_of_single_detector_with_single_record(
+    def test_deltakit_stim_circuit_of_single_detector_with_single_record(
         self, detector: Detector, expected_circuit, empty_circuit
     ):
-        detector.permute_stim_circuit(empty_circuit)
+        detector.permute_deltakit_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
@@ -116,10 +122,10 @@ class TestDetector:
             ),
         ],
     )
-    def test_stim_circuit_of_single_detector_with_multiple_records(
+    def test_deltakit_stim_circuit_of_single_detector_with_multiple_records(
         self, detector: Detector, empty_circuit
     ):
-        detector.permute_stim_circuit(empty_circuit)
+        detector.permute_deltakit_stim_circuit(empty_circuit)
         detector_circuit_str = str(empty_circuit)
         assert all(
             f"rec[{record.lookback_index}]" in detector_circuit_str

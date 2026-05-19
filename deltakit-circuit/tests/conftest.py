@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
+import deltakit_stim
 import pytest
-import stim
 
 
 @pytest.fixture
 def empty_circuit():
-    return stim.Circuit()
+    return deltakit_stim.Circuit()

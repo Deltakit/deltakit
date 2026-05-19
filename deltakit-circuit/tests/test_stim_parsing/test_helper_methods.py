@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
 
-from deltakit_circuit._parse_stim import group_targets
+from deltakit_circuit._parse_deltakit_stim import group_targets
 
 
 @pytest.mark.parametrize(

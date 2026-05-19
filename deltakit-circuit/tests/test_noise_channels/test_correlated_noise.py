@@ -5,7 +5,7 @@ from itertools import permutations
 import pytest
 
 from deltakit_circuit import PauliProduct, PauliX, PauliY, PauliZ, Qubit
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
+from deltakit_circuit._deltakit_stim_identifiers import NoiseDeltakitStimIdentifier
 from deltakit_circuit.noise_channels import CorrelatedError, ElseCorrelatedError
 
 EQUAL_ONE_QUBIT_PAULI_PRODUCTS = (
@@ -28,10 +28,10 @@ def pauli_product():
         (ElseCorrelatedError, "ELSE_CORRELATED_ERROR"),
     ],
 )
-def test_correlated_error_stim_string_matches_expected_string(
+def test_correlated_error_deltakit_stim_string_matches_expected_string(
     correlated_error, expected_string
 ):
-    assert correlated_error.stim_string == expected_string
+    assert correlated_error.deltakit_stim_string == expected_string
 
 
 @pytest.mark.parametrize(
@@ -169,9 +169,9 @@ def test_correlated_errors_that_have_different_pauli_products_are_not_approx_equ
         ElseCorrelatedError(PauliX(Qubit(0)), 0.1),
     ],
 )
-def test_stim_identifier_matches_expected_identifier(noise_channel):
-    assert noise_channel.stim_identifier == NoiseStimIdentifier(
-        noise_channel.stim_string, (noise_channel.probability,)
+def test_deltakit_stim_identifier_matches_expected_identifier(noise_channel):
+    assert noise_channel.deltakit_stim_identifier == NoiseDeltakitStimIdentifier(
+        noise_channel.deltakit_stim_string, (noise_channel.probability,)
     )
 
 

@@ -2,8 +2,8 @@
 import itertools
 from itertools import chain, permutations, product
 
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit
@@ -76,10 +76,10 @@ SYMMETRIC_GATES = (
         (gates.YCZ, "YCZ"),
     ],
 )
-def test_two_qubit_gate_stim_string_matches_expected_string(
+def test_two_qubit_gate_deltakit_stim_string_matches_expected_string(
     two_qubit_gate, expected_string
 ):
-    assert two_qubit_gate.stim_string == expected_string
+    assert two_qubit_gate.deltakit_stim_string == expected_string
 
 
 class TestFromConsecutive:
@@ -136,7 +136,7 @@ def test_repr_of_controlled_gates_matches_expected_representation(
     tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
         repr(two_qubit_gate(Qubit(1), Qubit(2), tag=tag))
-        == f"{two_qubit_gate.stim_string}{tag_repr}(control=Qubit(1), target=Qubit(2))"
+        == f"{two_qubit_gate.deltakit_stim_string}{tag_repr}(control=Qubit(1), target=Qubit(2))"
     )
 
 
@@ -150,7 +150,7 @@ def test_repr_of_uncontrolled_gate_matches_expected_representation(
     tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
         repr(two_qubit_gate(Qubit(1), Qubit(0), tag=tag))
-        == f"{two_qubit_gate.stim_string}{tag_repr}(Qubit(1), Qubit(0))"
+        == f"{two_qubit_gate.deltakit_stim_string}{tag_repr}(Qubit(1), Qubit(0))"
     )
 
 
@@ -263,14 +263,14 @@ class TestEquality:
 
 
 @pytest.mark.parametrize("two_qubit_gate", gates.TWO_QUBIT_GATES)
-def test_stim_targets_method_returns_stim_gate_targets_when_input_is_qubits(
+def test_deltakit_stim_targets_method_returns_deltakit_stim_gate_targets_when_input_is_qubits(
     two_qubit_gate,
 ):
     gate = two_qubit_gate(Qubit(0), Qubit(1))
     qubit_mapping = {Qubit(0): 0, Qubit(1): 1}
     assert all(
-        isinstance(target, stim.GateTarget)
-        for target in gate.stim_targets(qubit_mapping)
+        isinstance(target, deltakit_stim.GateTarget)
+        for target in gate.deltakit_stim_targets(qubit_mapping)
     )
 
 
@@ -278,7 +278,7 @@ def test_stim_targets_method_returns_stim_gate_targets_when_input_is_qubits(
     ("two_qubit_gate", "sweep_bit_index"),
     [(gates.CX, 0), (gates.CY, 0), (gates.CZ, 0), (gates.XCZ, 1), (gates.YCZ, 1)],
 )
-def test_stim_targets_are_sweep_bits_when_given_to_gate(
+def test_deltakit_stim_targets_are_sweep_bits_when_given_to_gate(
     two_qubit_gate, sweep_bit_index
 ):
     gate = (
@@ -287,14 +287,16 @@ def test_stim_targets_are_sweep_bits_when_given_to_gate(
         else two_qubit_gate(Qubit(0), SweepBit(0))
     )
     qubit_mapping = {Qubit(0): 0}
-    assert gate.stim_targets(qubit_mapping)[sweep_bit_index].is_sweep_bit_target
+    assert gate.deltakit_stim_targets(qubit_mapping)[
+        sweep_bit_index
+    ].is_sweep_bit_target
 
 
 @pytest.mark.parametrize(
     ("two_qubit_gate", "record_index"),
     [(gates.CX, 0), (gates.CY, 0), (gates.CZ, 0), (gates.XCZ, 1), (gates.YCZ, 1)],
 )
-def test_stim_targets_are_measurement_records_when_given_to_gate(
+def test_deltakit_stim_targets_are_measurement_records_when_given_to_gate(
     two_qubit_gate, record_index
 ):
     gate = (
@@ -303,7 +305,9 @@ def test_stim_targets_are_measurement_records_when_given_to_gate(
         else two_qubit_gate(Qubit(0), MeasurementRecord(-1))
     )
     qubit_mapping = {Qubit(0): 0}
-    assert gate.stim_targets(qubit_mapping)[record_index].is_measurement_record_target
+    assert gate.deltakit_stim_targets(qubit_mapping)[
+        record_index
+    ].is_measurement_record_target
 
 
 class TestQubitTransforms:

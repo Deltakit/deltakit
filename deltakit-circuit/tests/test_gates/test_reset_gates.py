@@ -2,8 +2,8 @@
 import itertools
 from itertools import permutations
 
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import Qubit
@@ -17,8 +17,10 @@ from deltakit_circuit._qubit_identifiers import Qubit
         (gates.RY, "RY"),
     ],
 )
-def test_reset_gate_stim_string_matches_expected_string(reset_gate, expected_string):
-    assert reset_gate.stim_string == expected_string
+def test_reset_gate_deltakit_stim_string_matches_expected_string(
+    reset_gate, expected_string
+):
+    assert reset_gate.deltakit_stim_string == expected_string
 
 
 @pytest.mark.parametrize(
@@ -43,7 +45,7 @@ def test_repr_of_reset_gate_matches_the_expected_representation(
     tag_repr = f"[{tag}]" if tag is not None else ""
     assert (
         repr(reset_gate(Qubit(3), tag=tag))
-        == f"{reset_gate.stim_string}{tag_repr}(Qubit(3))"
+        == f"{reset_gate.deltakit_stim_string}{tag_repr}(Qubit(3))"
     )
 
 
@@ -77,9 +79,13 @@ def test_qubit_property_of_gates_is_qubit_type_when_passed_generic_type(
 
 
 @pytest.mark.parametrize("reset_gate_class", gates.RESET_GATES)
-def test_stim_targets_are_stim_gate_target_instances(reset_gate_class):
+def test_deltakit_stim_targets_are_deltakit_stim_gate_target_instances(
+    reset_gate_class,
+):
     gate = reset_gate_class(Qubit(0))
-    assert isinstance(gate.stim_targets({Qubit(0): 0})[0], stim.GateTarget)
+    assert isinstance(
+        gate.deltakit_stim_targets({Qubit(0): 0})[0], deltakit_stim.GateTarget
+    )
 
 
 @pytest.mark.parametrize("reset_gate_class", gates.ONE_QUBIT_GATES)

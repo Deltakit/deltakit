@@ -2,7 +2,7 @@
 from deltakit_circuit.gates import GATE_MAPPING
 from deltakit_circuit.noise_channels import NOISE_CHANNEL_MAPPING
 
-ALL_STIM_GATE_STRINGS = (
+ALL_DELTAKIT_STIM_GATE_STRINGS = (
     "I",
     "X",
     "Y",
@@ -60,7 +60,7 @@ ALL_STIM_GATE_STRINGS = (
     "RZ",
 )
 
-ALL_STIM_NOISE_CHANNEL_STRINGS = (
+ALL_DELTAKIT_STIM_NOISE_CHANNEL_STRINGS = (
     "CORRELATED_ERROR",
     "DEPOLARIZE1",
     "DEPOLARIZE2",
@@ -74,12 +74,15 @@ ALL_STIM_NOISE_CHANNEL_STRINGS = (
 )
 
 
-def test_every_valid_stim_gate_can_be_mapped_to_a_deltakit_circuit_gate():
-    assert all(stim_string in GATE_MAPPING for stim_string in ALL_STIM_GATE_STRINGS)
-
-
-def test_every_valid_stim_noise_channel_can_be_mapped_to_a_deltakit_circuit_noise_channel():
+def test_every_valid_deltakit_stim_gate_can_be_mapped_to_a_deltakit_circuit_gate():
     assert all(
-        stim_string in NOISE_CHANNEL_MAPPING
-        for stim_string in ALL_STIM_NOISE_CHANNEL_STRINGS
+        deltakit_stim_string in GATE_MAPPING
+        for deltakit_stim_string in ALL_DELTAKIT_STIM_GATE_STRINGS
+    )
+
+
+def test_every_valid_deltakit_stim_noise_channel_can_be_mapped_to_a_deltakit_circuit_noise_channel():
+    assert all(
+        deltakit_stim_string in NOISE_CHANNEL_MAPPING
+        for deltakit_stim_string in ALL_DELTAKIT_STIM_NOISE_CHANNEL_STRINGS
     )

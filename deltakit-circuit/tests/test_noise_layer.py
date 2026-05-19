@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import permutations
 
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_circuit import (
     Circuit,
@@ -742,16 +742,25 @@ def test_adding_correlated_noise_on_the_same_channel_adds_both_noises(
     assert len(empty_layer.noise_channels) == 2
 
 
-class TestStimCircuit:
+class TestDeltakitStimCircuit:
     @pytest.mark.parametrize(
         ("noise_channel", "expected_circuit"),
         [
-            (noise_channels.PauliXError(Qubit(0), 0.2), stim.Circuit("X_ERROR(0.2) 0")),
-            (noise_channels.PauliYError(Qubit(2), 0.1), stim.Circuit("Y_ERROR(0.1) 2")),
-            (noise_channels.PauliZError(Qubit(1), 0.4), stim.Circuit("Z_ERROR(0.4) 1")),
+            (
+                noise_channels.PauliXError(Qubit(0), 0.2),
+                deltakit_stim.Circuit("X_ERROR(0.2) 0"),
+            ),
+            (
+                noise_channels.PauliYError(Qubit(2), 0.1),
+                deltakit_stim.Circuit("Y_ERROR(0.1) 2"),
+            ),
+            (
+                noise_channels.PauliZError(Qubit(1), 0.4),
+                deltakit_stim.Circuit("Z_ERROR(0.4) 1"),
+            ),
             (
                 noise_channels.PauliChannel1(Qubit(3), 0.1, 0.2, 0.3),
-                stim.Circuit("PAULI_CHANNEL_1(0.1, 0.2, 0.3) 3"),
+                deltakit_stim.Circuit("PAULI_CHANNEL_1(0.1, 0.2, 0.3) 3"),
             ),
             (
                 noise_channels.PauliChannel2(
@@ -773,7 +782,7 @@ class TestStimCircuit:
                     0.041,
                     0.04,
                 ),
-                stim.Circuit(
+                deltakit_stim.Circuit(
                     "PAULI_CHANNEL_2(0.02, 0.01, 0.04, 0.03, 0.013, "
                     "0.045, 0.056, 0.021, 0.052, 0.014, 0.031, 0.025, 0.042, 0.041, "
                     "0.04) 1 0"
@@ -781,23 +790,23 @@ class TestStimCircuit:
             ),
             (
                 noise_channels.Depolarise1(Qubit(9), 0.4),
-                stim.Circuit("DEPOLARIZE1(0.4) 9"),
+                deltakit_stim.Circuit("DEPOLARIZE1(0.4) 9"),
             ),
             (
                 noise_channels.Depolarise2(Qubit(2), Qubit(3), 0.5),
-                stim.Circuit("DEPOLARIZE2(0.5) 2 3"),
+                deltakit_stim.Circuit("DEPOLARIZE2(0.5) 2 3"),
             ),
             (
                 noise_channels.CorrelatedError(
                     PauliProduct([PauliX(Qubit(3)), PauliY(Qubit(2))]), 0.2
                 ),
-                stim.Circuit("CORRELATED_ERROR(0.2) X3 Y2"),
+                deltakit_stim.Circuit("CORRELATED_ERROR(0.2) X3 Y2"),
             ),
             (
                 noise_channels.ElseCorrelatedError(
                     PauliProduct([PauliZ(Qubit(2)), PauliZ(Qubit(3))]), 0.25
                 ),
-                stim.Circuit("ELSE_CORRELATED_ERROR(0.25) Z2 Z3"),
+                deltakit_stim.Circuit("ELSE_CORRELATED_ERROR(0.25) Z2 Z3"),
             ),
         ],
     )
@@ -805,7 +814,7 @@ class TestStimCircuit:
         self, empty_layer: NoiseLayer, noise_channel, expected_circuit, empty_circuit
     ):
         empty_layer.add_noise_channels(noise_channel)
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
@@ -817,12 +826,12 @@ class TestStimCircuit:
             noise_channels.Depolarise1,
         ],
     )
-    def test_same_single_qubit_noise_channels_are_on_same_stim_circuit_line(
+    def test_same_single_qubit_noise_channels_are_on_same_deltakit_stim_circuit_line(
         self, empty_layer: NoiseLayer, noise_channel_class, empty_circuit
     ):
         empty_layer.add_noise_channels(noise_channel_class(Qubit(0), 0.1))
         empty_layer.add_noise_channels(noise_channel_class(Qubit(1), 0.1))
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 1
 
     def test_two_uncorrelated_noise_channels_that_are_separated_get_merged_to_same_line(
@@ -835,10 +844,12 @@ class TestStimCircuit:
                 noise_channels.PauliXError(2, 0.1),
             ]
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
-        assert empty_circuit == stim.Circuit("X_ERROR(0.1) 0 2\nY_ERROR(0.2) 1")
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
+        assert empty_circuit == deltakit_stim.Circuit(
+            "X_ERROR(0.1) 0 2\nY_ERROR(0.2) 1"
+        )
 
-    def test_same_pauli_channel_1_noise_is_on_the_same_stim_circuit_line(
+    def test_same_pauli_channel_1_noise_is_on_the_same_deltakit_stim_circuit_line(
         self, empty_layer: NoiseLayer, empty_circuit
     ):
         probabilities = (0.1, 0.2, 0.3)
@@ -848,10 +859,10 @@ class TestStimCircuit:
         empty_layer.add_noise_channels(
             noise_channels.PauliChannel1(Qubit(1), *probabilities)
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 1
 
-    def test_same_pauli_channel_2_noise_is_on_the_same_stim_circuit_line(
+    def test_same_pauli_channel_2_noise_is_on_the_same_deltakit_stim_circuit_line(
         self, empty_layer: NoiseLayer, empty_circuit
     ):
         probabilities = (
@@ -877,37 +888,37 @@ class TestStimCircuit:
         empty_layer.add_noise_channels(
             noise_channels.PauliChannel2(Qubit(2), Qubit(3), *probabilities)
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 1
 
     @pytest.mark.parametrize(
-        ("noise_channel", "qubit_mapping", "expected_stim_circuit"),
+        ("noise_channel", "qubit_mapping", "expected_deltakit_stim_circuit"),
         [
             (
                 noise_channels.Depolarise1((0, 1), 0.2),
                 {Qubit((0, 1)): 0},
-                stim.Circuit("DEPOLARIZE1(0.2) 0"),
+                deltakit_stim.Circuit("DEPOLARIZE1(0.2) 0"),
             ),
             (
                 noise_channels.PauliChannel1(4, 0.01, 0.0, 0.0),
                 {Qubit(4): 2},
-                stim.Circuit("PAULI_CHANNEL_1(0.01, 0.0, 0.0) 2"),
+                deltakit_stim.Circuit("PAULI_CHANNEL_1(0.01, 0.0, 0.0) 2"),
             ),
         ],
     )
-    def test_noise_channel_with_qubit_mapping_matches_expected_stim_circuit(
+    def test_noise_channel_with_qubit_mapping_matches_expected_deltakit_stim_circuit(
         self,
         empty_layer: NoiseLayer,
         noise_channel,
         qubit_mapping,
-        expected_stim_circuit,
+        expected_deltakit_stim_circuit,
         empty_circuit,
     ):
         empty_layer.add_noise_channels(noise_channel)
-        empty_layer.permute_stim_circuit(empty_circuit, qubit_mapping)
-        assert empty_circuit == expected_stim_circuit
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit, qubit_mapping)
+        assert empty_circuit == expected_deltakit_stim_circuit
 
-    def test_correlated_errors_retain_their_order_in_stim(
+    def test_correlated_errors_retain_their_order_in_deltakit_stim(
         self, empty_layer: NoiseLayer, empty_circuit
     ):
         empty_layer.add_noise_channels(
@@ -918,8 +929,8 @@ class TestStimCircuit:
                 noise_channels.ElseCorrelatedError(PauliZ(1), 0.01),
             ]
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
-        assert empty_circuit == stim.Circuit(
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
+        assert empty_circuit == deltakit_stim.Circuit(
             "CORRELATED_ERROR(0.01) X0\n"
             "ELSE_CORRELATED_ERROR(0.01) Z0\n"
             "CORRELATED_ERROR(0.01) X1\n"

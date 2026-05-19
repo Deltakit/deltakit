@@ -2,7 +2,7 @@
 import pytest
 
 from deltakit_circuit import Qubit
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
+from deltakit_circuit._deltakit_stim_identifiers import NoiseDeltakitStimIdentifier
 from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
 
 
@@ -10,10 +10,10 @@ from deltakit_circuit.noise_channels import Depolarise1, Depolarise2
     ("depolarising_noise", "expected_string"),
     [(Depolarise1, "DEPOLARIZE1"), (Depolarise2, "DEPOLARIZE2")],
 )
-def test_depolarising_noise_stim_string_matches_expected_string(
+def test_depolarising_noise_deltakit_stim_string_matches_expected_string(
     depolarising_noise, expected_string
 ):
-    assert depolarising_noise.stim_string == expected_string
+    assert depolarising_noise.deltakit_stim_string == expected_string
 
 
 class TestDepolarisingNoiseEquality:
@@ -105,9 +105,11 @@ def test_depolarise2_qubit_types_are_qubit_classes_when_given_generic_type():
 @pytest.mark.parametrize(
     "noise_channel", [Depolarise1(Qubit(0), 0.1), Depolarise2(Qubit(0), Qubit(2), 0.2)]
 )
-def test_stim_identifier_matches_expected_stim_identifier(noise_channel):
-    assert noise_channel.stim_identifier == NoiseStimIdentifier(
-        noise_channel.stim_string, (noise_channel.probability,)
+def test_deltakit_stim_identifier_matches_expected_deltakit_stim_identifier(
+    noise_channel,
+):
+    assert noise_channel.deltakit_stim_identifier == NoiseDeltakitStimIdentifier(
+        noise_channel.deltakit_stim_string, (noise_channel.probability,)
     )
 
 

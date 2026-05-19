@@ -2,8 +2,8 @@
 import pickle
 from copy import deepcopy
 
+import deltakit_stim
 import pytest
-import stim
 
 import deltakit_circuit as sp
 from deltakit_circuit import (
@@ -224,10 +224,10 @@ class TestPauliProducts:
             (InvertiblePauliZ, "Z"),
         ],
     )
-    def test_pauli_gate_stim_identifier_matches_expected_identifier(
+    def test_pauli_gate_deltakit_stim_identifier_matches_expected_identifier(
         self, pauli_gate, expected_string
     ):
-        assert pauli_gate.stim_identifier == expected_string
+        assert pauli_gate.deltakit_stim_identifier == expected_string
 
     @pytest.mark.parametrize(
         "pauli_gate_type",
@@ -284,16 +284,18 @@ class TestPauliProducts:
             ),
         ],
     )
-    def test_all_items_in_gate_target_are_stim_gate_targets(self, pauli_product):
+    def test_all_items_in_gate_target_are_deltakit_stim_gate_targets(
+        self, pauli_product
+    ):
         qubit_mapping = {
             qubit: qubit.unique_identifier for qubit in pauli_product.qubits
         }
         assert all(
-            isinstance(target, stim.GateTarget)
-            for target in pauli_product.stim_targets(qubit_mapping)
+            isinstance(target, deltakit_stim.GateTarget)
+            for target in pauli_product.deltakit_stim_targets(qubit_mapping)
         )
 
-    def test_all_odd_items_in_measurement_pauli_product_stim_targets_are_target_combiners(
+    def test_all_odd_items_in_measurement_pauli_product_deltakit_stim_targets_are_target_combiners(
         self,
     ):
         pauli_product = MeasurementPauliProduct(
@@ -303,18 +305,21 @@ class TestPauliProducts:
             qubit: qubit.unique_identifier for qubit in pauli_product.qubits
         }
         assert all(
-            target == stim.target_combiner()
-            for target in pauli_product.stim_targets(qubit_mapping)[1::2]
+            target == deltakit_stim.target_combiner()
+            for target in pauli_product.deltakit_stim_targets(qubit_mapping)[1::2]
         )
 
-    def test_target_combiner_isnt_in_the_pauli_product_stim_targets(self):
+    def test_target_combiner_isnt_in_the_pauli_product_deltakit_stim_targets(self):
         pauli_product = PauliProduct(
             [PauliX(Qubit(0)), PauliY(Qubit(1)), PauliZ(Qubit(2))]
         )
         qubit_mapping = {
             qubit: qubit.unique_identifier for qubit in pauli_product.qubits
         }
-        assert stim.target_combiner() not in pauli_product.stim_targets(qubit_mapping)
+        assert (
+            deltakit_stim.target_combiner()
+            not in pauli_product.deltakit_stim_targets(qubit_mapping)
+        )
 
 
 @pytest.mark.parametrize("pauli_product_class", [PauliProduct, MeasurementPauliProduct])
@@ -325,33 +330,35 @@ def test_error_is_raised_if_any_qubits_in_pauli_product_are_equal(pauli_product_
         pauli_product_class((PauliX(0), PauliZ(0)))
 
 
-def test_coordinate_qubits_are_given_a_declaration_when_converted_into_stim(
+def test_coordinate_qubits_are_given_a_declaration_when_converted_into_deltakit_stim(
     empty_circuit,
 ):
     qubit = Qubit(Coordinate(5, 0))
-    qubit.permute_stim_circuit(empty_circuit, qubit_mapping={qubit: 4})
-    assert empty_circuit == stim.Circuit("QUBIT_COORDS(5, 0) 4")
+    qubit.permute_deltakit_stim_circuit(empty_circuit, qubit_mapping={qubit: 4})
+    assert empty_circuit == deltakit_stim.Circuit("QUBIT_COORDS(5, 0) 4")
 
 
-def test_qubit_not_parametrized_by_coordinates_has_an_empty_stim_circuit(empty_circuit):
-    Qubit((0, 1, 2)).permute_stim_circuit(empty_circuit, {})
-    assert empty_circuit == stim.Circuit()
+def test_qubit_not_parametrized_by_coordinates_has_an_empty_deltakit_stim_circuit(
+    empty_circuit,
+):
+    Qubit((0, 1, 2)).permute_deltakit_stim_circuit(empty_circuit, {})
+    assert empty_circuit == deltakit_stim.Circuit()
 
 
-def test_deltakit_circuit_coordinate_qubits_can_propagate_1_dimensional_coordinates_to_stim(
+def test_deltakit_circuit_coordinate_qubits_can_propagate_1_dimensional_coordinates_to_deltakit_stim(
     empty_circuit,
 ):
     qubit = Qubit(Coordinate(0))
-    qubit.permute_stim_circuit(empty_circuit, qubit_mapping={qubit: 0})
-    assert empty_circuit == stim.Circuit("QUBIT_COORDS(0) 0")
+    qubit.permute_deltakit_stim_circuit(empty_circuit, qubit_mapping={qubit: 0})
+    assert empty_circuit == deltakit_stim.Circuit("QUBIT_COORDS(0) 0")
 
 
-def test_qubit_coordinates_are_not_output_to_stim_file_repeat_blocks():
-    stim_circuit = sp.Circuit(
+def test_qubit_coordinates_are_not_output_to_deltakit_stim_file_repeat_blocks():
+    deltakit_stim_circuit = sp.Circuit(
         sp.Circuit(sp.GateLayer(sp.gates.X(sp.Qubit(Coordinate(0, 0)))), 2)
-    ).as_stim_circuit()
-    for instruction in stim_circuit:
-        if isinstance(instruction, stim.CircuitRepeatBlock):
+    ).as_deltakit_stim_circuit()
+    for instruction in deltakit_stim_circuit:
+        if isinstance(instruction, deltakit_stim.CircuitRepeatBlock):
             assert "QUBIT_COORDS" not in str(instruction.body_copy())
 
 
@@ -395,20 +402,20 @@ def test_identifier_is_not_a_generator():
         Qubit(i for i in [1, 2, 3])
 
 
-def test_error_for_accessing_not_set_stim_id():
-    with pytest.raises(ValueError, match=r".* has no stim identifier."):
+def test_error_for_accessing_not_set_deltakit_stim_id():
+    with pytest.raises(ValueError, match=r".* has no deltakit_stim identifier."):
         # ruff reports "useless attribute access" on the line below but the attribute
         # access is not really useless, as the goal is to call it and see if it raises
         # an exception, so this check is ignored for that line.
-        Qubit((2, 34)).stim_identifier  # noqa: B018
+        Qubit((2, 34)).deltakit_stim_identifier  # noqa: B018
 
 
-def test_accessing_stim_id_when_set():
-    assert Qubit(Coordinate(0, 1, 2, 3), 7).stim_identifier == 7
+def test_accessing_deltakit_stim_id_when_set():
+    assert Qubit(Coordinate(0, 1, 2, 3), 7).deltakit_stim_identifier == 7
 
 
-def test_accessing_stim_id_when_unique_id_can_be_used():
-    assert Qubit(7).stim_identifier == 7
+def test_accessing_deltakit_stim_id_when_unique_id_can_be_used():
+    assert Qubit(7).deltakit_stim_identifier == 7
 
 
 @pytest.mark.parametrize("rec", list(range(-1, -10, -1)))

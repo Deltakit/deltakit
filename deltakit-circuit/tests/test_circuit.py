@@ -2,8 +2,8 @@
 import contextlib
 from itertools import combinations
 
+import deltakit_stim
 import pytest
-import stim
 
 import deltakit_circuit as sp
 
@@ -635,7 +635,7 @@ def test_hash(empty_circuit: sp.Circuit):
 def test_circuit_with_tag_exports_does_not_raise(body) -> None:
     circuit_with_tags: sp.Circuit[int] = sp.Circuit()
     circuit_with_tags.append_layers([body])
-    circuit_with_tags.as_stim_circuit()
+    circuit_with_tags.as_deltakit_stim_circuit()
 
 
 class TestApplyingGateNoise:
@@ -1186,7 +1186,7 @@ class TestReorderingDetectors:
         ]
 
 
-class TestStimCircuit:
+class TestDeltakitStimCircuit:
     @pytest.mark.parametrize(
         ("deltakit_circuit_circuit", "expected_circuit"),
         [
@@ -1198,7 +1198,7 @@ class TestStimCircuit:
                         sp.GateLayer(sp.gates.MZ(sp.Qubit(1))),
                     ]
                 ),
-                stim.Circuit("X 0\nTICK\nCNOT 0 1\nTICK\nMZ 1"),
+                deltakit_stim.Circuit("X 0\nTICK\nCNOT 0 1\nTICK\nMZ 1"),
             ),
             (
                 sp.Circuit(
@@ -1206,7 +1206,7 @@ class TestStimCircuit:
                         sp.GateLayer(sp.gates.MPP(sp.PauliX(0))),
                     ]
                 ),
-                stim.Circuit("MPP X0"),
+                deltakit_stim.Circuit("MPP X0"),
             ),
             (
                 sp.Circuit(
@@ -1216,7 +1216,7 @@ class TestStimCircuit:
                         ),
                     ]
                 ),
-                stim.Circuit("MPP X0"),
+                deltakit_stim.Circuit("MPP X0"),
             ),
             (
                 sp.Circuit(
@@ -1226,7 +1226,7 @@ class TestStimCircuit:
                         ),
                     ]
                 ),
-                stim.Circuit("MPP X0"),
+                deltakit_stim.Circuit("MPP X0"),
             ),
             (
                 sp.Circuit(
@@ -1234,7 +1234,7 @@ class TestStimCircuit:
                         sp.GateLayer(sp.gates.MPP([sp.PauliX(0), sp.PauliY(1)])),
                     ]
                 ),
-                stim.Circuit("MPP X0*Y1"),
+                deltakit_stim.Circuit("MPP X0*Y1"),
             ),
             (
                 sp.Circuit(
@@ -1246,29 +1246,29 @@ class TestStimCircuit:
                         ),
                     ]
                 ),
-                stim.Circuit("MPP X0*Y1"),
+                deltakit_stim.Circuit("MPP X0*Y1"),
             ),
         ],
     )
-    def test_noiseless_deltakit_circuit_circuit_has_correct_stim_representation(
+    def test_noiseless_deltakit_circuit_circuit_has_correct_deltakit_stim_representation(
         self, deltakit_circuit_circuit, expected_circuit
     ):
-        assert deltakit_circuit_circuit.as_stim_circuit() == expected_circuit
+        assert deltakit_circuit_circuit.as_deltakit_stim_circuit() == expected_circuit
 
     # @pytest.mark.parametrize("measurement_gate", [
     #     gate(sp.Qubit(0), 0.0)
     #     for gate in (sp.gates.MEASUREMENT_GATES - {sp.gates.MPP})
     # ])
-    # def test_measurement_gate_with_zero_error_probability_does_not_add_error_to_stim(
+    # def test_measurement_gate_with_zero_error_probability_does_not_add_error_to_deltakit_stim(
     #         self, measurement_gate):
     #     deltakit_circuit_circuit = sp.Circuit(sp.GateLayer(measurement_gate))
-    #     assert deltakit_circuit_circuit.as_stim_circuit() == stim.Circuit(
-    #         f"{measurement_gate.stim_string} 0")
+    #     assert deltakit_circuit_circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit(
+    #         f"{measurement_gate.deltakit_stim_string} 0")
 
     def test_deltakit_circuit_circuit_can_be_converted_into_a_detector_error_model(
         self,
     ):
-        stim_circuit = stim.Circuit("""
+        deltakit_stim_circuit = deltakit_stim.Circuit("""
             X_ERROR(0.125) 0
             X_ERROR(0.25) 1
             CORRELATED_ERROR(0.375) X0 X1
@@ -1277,37 +1277,41 @@ class TestStimCircuit:
             DETECTOR rec[-1]
         """)
         assert (
-            stim_circuit.detector_error_model()
-            == sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model()
+            deltakit_stim_circuit.detector_error_model()
+            == sp.Circuit.from_deltakit_stim_circuit(
+                deltakit_stim_circuit
+            ).as_detector_error_model()
         )
 
-    def test_deltakit_circuit_circuit_circuits_wraps_all_the_dem_parameters_exposed_via_Stim(
+    def test_deltakit_circuit_circuit_circuits_wraps_all_the_dem_parameters_exposed_via_Deltakit_Stim(
         self,
     ):
         """This test does not contain an assertion. It simply tests that
         deltakit_circuit.Circuit.as_detector_error_model exposes the same arguments
-        as stim.Circuit.detector_error_model"""
-        stim_circuit = stim.Circuit("""
+        as deltakit_stim.Circuit.detector_error_model"""
+        deltakit_stim_circuit = deltakit_stim.Circuit("""
             X_ERROR(0.125) 0
             M 0
             DETECTOR rec[-1]
         """)
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
-            decompose_errors=True
-        )
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
-            flatten_loops=True
-        )
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
-            allow_gauge_detectors=True
-        )
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
-            approximate_disjoint_errors=0.1
-        )
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
-            ignore_decomposition_failures=True
-        )
-        sp.Circuit.from_stim_circuit(stim_circuit).as_detector_error_model(
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(decompose_errors=True)
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(flatten_loops=True)
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(allow_gauge_detectors=True)
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(approximate_disjoint_errors=0.1)
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(ignore_decomposition_failures=True)
+        sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ).as_detector_error_model(
             block_decomposition_from_introducing_remnant_edges=True
         )
 
@@ -1321,10 +1325,10 @@ class TestStimCircuit:
                 approximate_disjoint_errors=1.2
             )
 
-    def test_noisy_deltakit_circuit_circuit_has_correct_stim_representation(
+    def test_noisy_deltakit_circuit_circuit_has_correct_deltakit_stim_representation(
         self, noisy_circuit
     ):
-        assert noisy_circuit.as_stim_circuit() == stim.Circuit(
+        assert noisy_circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit(
             "X 0\nTICK\nX_ERROR(0.01) 0\nCNOT 0 1\nTICK\nDEPOLARIZE2(0.02) 0 1\nMX(0.01) 0"
         )
 
@@ -1369,7 +1373,9 @@ class TestStimCircuit:
     def test_deltakit_circuit_circuit_with_single_annotation_ends_with_expected_annotation_string(
         self, deltakit_circuit_circuit: sp.Circuit, expected_string: str
     ):
-        assert str(deltakit_circuit_circuit.as_stim_circuit()).endswith(expected_string)
+        assert str(deltakit_circuit_circuit.as_deltakit_stim_circuit()).endswith(
+            expected_string
+        )
 
     @pytest.mark.parametrize(
         ("deltakit_circuit_circuit", "qubit_mapping", "expected_string"),
@@ -1400,25 +1406,29 @@ class TestStimCircuit:
             ),
         ],
     )
-    def test_deltakit_circuit_circuit_with_mapping_gives_expected_stim_circuit(
+    def test_deltakit_circuit_circuit_with_mapping_gives_expected_deltakit_stim_circuit(
         self, deltakit_circuit_circuit: sp.Circuit, qubit_mapping, expected_string
     ):
         assert (
-            str(deltakit_circuit_circuit.as_stim_circuit(qubit_mapping))
+            str(deltakit_circuit_circuit.as_deltakit_stim_circuit(qubit_mapping))
             == expected_string
         )
 
-    def test_repeated_circuit_can_be_converted_into_correct_stim_circuit(self):
+    def test_repeated_circuit_can_be_converted_into_correct_deltakit_stim_circuit(self):
         circuit = sp.Circuit(sp.GateLayer(sp.gates.X(sp.Qubit(0))), iterations=4)
-        assert circuit.as_stim_circuit() == stim.Circuit("REPEAT 4 {\nX 0\n}")
+        assert circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit(
+            "REPEAT 4 {\nX 0\n}"
+        )
 
-    def test_deltakit_circuit_circuit_with_single_repeat_doesnt_create_stim_repeat_block(
+    def test_deltakit_circuit_circuit_with_single_repeat_doesnt_create_deltakit_stim_repeat_block(
         self,
     ):
         circuit = sp.Circuit(sp.GateLayer(sp.gates.X(sp.Qubit(0))), iterations=1)
-        assert circuit.as_stim_circuit() == stim.Circuit("X 0")
+        assert circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit("X 0")
 
-    def test_circuit_with_multiple_repeat_blocks_can_be_converted_to_stim(self):
+    def test_circuit_with_multiple_repeat_blocks_can_be_converted_to_deltakit_stim(
+        self,
+    ):
         circuit = sp.Circuit(
             [
                 sp.GateLayer([sp.gates.X(sp.Qubit(0))]),
@@ -1426,7 +1436,7 @@ class TestStimCircuit:
                 sp.Circuit(sp.GateLayer(sp.gates.CZ(0, 1)), 5),
             ]
         )
-        assert circuit.as_stim_circuit() == stim.Circuit("""
+        assert circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit("""
             X 0
             TICK
             REPEAT 3 {
@@ -1437,7 +1447,9 @@ class TestStimCircuit:
             }
         """)
 
-    def test_circuit_with_nested_repeats_can_be_converted_to_stim_circuit(self):
+    def test_circuit_with_nested_repeats_can_be_converted_to_deltakit_stim_circuit(
+        self,
+    ):
         circuit = sp.Circuit(
             [
                 sp.GateLayer([sp.gates.X(sp.Qubit(0))]),
@@ -1445,7 +1457,7 @@ class TestStimCircuit:
             ],
             5,
         )
-        assert circuit.as_stim_circuit() == stim.Circuit("""
+        assert circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit("""
             REPEAT 5 {
                 X 0
                 TICK
@@ -1486,28 +1498,36 @@ class TestStimCircuit:
             ),
         ],
     )
-    def test_ticks_are_not_placed_after_final_gate_layer_in_stim(
+    def test_ticks_are_not_placed_after_final_gate_layer_in_deltakit_stim(
         self, deltakit_circuit_circuit: sp.Circuit
     ):
-        stim_lines = str(deltakit_circuit_circuit.as_stim_circuit()).split("\n")
-        stim_identifiers = [line.split()[0] for line in stim_lines][::-1]
-        # Count backwards through the stim identifiers and get the first one
+        deltakit_stim_lines = str(
+            deltakit_circuit_circuit.as_deltakit_stim_circuit()
+        ).split("\n")
+        deltakit_stim_identifiers = [line.split()[0] for line in deltakit_stim_lines][
+            ::-1
+        ]
+        # Count backwards through the deltakit_stim identifiers and get the first one
         # that is a gate.
         last_gate_line_index = next(
             index
-            for index, stim_id in reversed(list(enumerate(stim_identifiers)))
-            if stim_id in sp.gates.GATE_MAPPING
+            for index, deltakit_stim_id in reversed(
+                list(enumerate(deltakit_stim_identifiers))
+            )
+            if deltakit_stim_id in sp.gates.GATE_MAPPING
         )
         with contextlib.suppress(IndexError):
-            assert stim_lines[last_gate_line_index + 1] != "TICK"
+            assert deltakit_stim_lines[last_gate_line_index + 1] != "TICK"
 
-    def test_stim_circuit_preserves_ordering_of_measurement_gates(
+    def test_deltakit_stim_circuit_preserves_ordering_of_measurement_gates(
         self, empty_circuit: sp.Circuit
     ):
         empty_circuit.append_layers(
             sp.GateLayer([sp.gates.MX(0), sp.gates.MZ(1), sp.gates.MX(2)])
         )
-        assert empty_circuit.as_stim_circuit() == stim.Circuit("MX 0\nMZ 1\nMX 2")
+        assert empty_circuit.as_deltakit_stim_circuit() == deltakit_stim.Circuit(
+            "MX 0\nMZ 1\nMX 2"
+        )
 
 
 class TestQubitTransforms:

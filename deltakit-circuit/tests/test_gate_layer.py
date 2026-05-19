@@ -3,8 +3,8 @@ import re
 from copy import copy, deepcopy
 from importlib.metadata import version
 
+import deltakit_stim
 import pytest
-import stim
 from packaging.version import Version
 
 from deltakit_circuit import (
@@ -28,8 +28,8 @@ from deltakit_circuit import (
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
 
-CURRENT_STIM_VERSION = Version(version("stim"))
-STIM_VERSION_V1_13_0 = Version("1.13.0")
+CURRENT_DELTAKIT_STIM_VERSION = Version(version("deltakit_stim"))
+DELTAKIT_STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 @pytest.fixture
@@ -473,69 +473,68 @@ def test_hash(empty_layer, gate_layer):
     assert hash(empty_layer) != hash(gate_layer)
 
 
-class TestStimCircuit:
+class TestDeltakitStimCircuit:
     @pytest.mark.parametrize(
         ("gate", "expected_circuit"),
         [
-            (gates.X(Qubit(4)), stim.Circuit("X 4")),
-            (gates.Y(Qubit(3)), stim.Circuit("Y 3")),
-            (gates.RX(Qubit(5)), stim.Circuit("RX 5")),
-            (gates.MX(Qubit(2)), stim.Circuit("MX 2")),
-            (~gates.MZ(Qubit(3)), stim.Circuit("MZ !3")),
-            (gates.MRY(Qubit(3)), stim.Circuit("MRY 3")),
-            (gates.MY(Qubit(4), 0.002), stim.Circuit("MY(0.002) 4")),
-            (~gates.MRX(Qubit(2), 0.8), stim.Circuit("MRX(0.8) !2")),
-            (gates.MY(Qubit(5), 0.0), stim.Circuit("MY 5")),
-            (~gates.MRX(Qubit(3), 0.0), stim.Circuit("MRX !3")),
+            (gates.X(Qubit(4)), deltakit_stim.Circuit("X 4")),
+            (gates.Y(Qubit(3)), deltakit_stim.Circuit("Y 3")),
+            (gates.RX(Qubit(5)), deltakit_stim.Circuit("RX 5")),
+            (gates.MX(Qubit(2)), deltakit_stim.Circuit("MX 2")),
+            (~gates.MZ(Qubit(3)), deltakit_stim.Circuit("MZ !3")),
+            (gates.MRY(Qubit(3)), deltakit_stim.Circuit("MRY 3")),
+            (gates.MY(Qubit(4), 0.002), deltakit_stim.Circuit("MY(0.002) 4")),
+            (~gates.MRX(Qubit(2), 0.8), deltakit_stim.Circuit("MRX(0.8) !2")),
+            (gates.MY(Qubit(5), 0.0), deltakit_stim.Circuit("MY 5")),
+            (~gates.MRX(Qubit(3), 0.0), deltakit_stim.Circuit("MRX !3")),
         ],
     )
-    def test_stim_circuit_of_layer_with_one_single_qubit_gate_is_expected(
+    def test_deltakit_stim_circuit_of_layer_with_one_single_qubit_gate_is_expected(
         self, empty_layer: GateLayer, gate, expected_circuit, empty_circuit
     ):
         empty_layer.add_gates(gate)
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
         ("gate", "expected_circuit"),
         [
-            (gates.CX(Qubit(0), Qubit(1)), stim.Circuit("CX 0 1")),
-            (gates.ISWAP_DAG(Qubit(4), Qubit(2)), stim.Circuit("ISWAP_DAG 4 2")),
-            (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
-            (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
-            (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
+            (gates.CX(Qubit(0), Qubit(1)), deltakit_stim.Circuit("CX 0 1")),
+            (
+                gates.ISWAP_DAG(Qubit(4), Qubit(2)),
+                deltakit_stim.Circuit("ISWAP_DAG 4 2"),
+            ),
+            (gates.CXSWAP(Qubit(0), Qubit(1)), deltakit_stim.Circuit("CXSWAP 0 1")),
+            (gates.ISWAP(Qubit(0), Qubit(1)), deltakit_stim.Circuit("ISWAP 0 1")),
+            (gates.SWAP(Qubit(0), Qubit(1)), deltakit_stim.Circuit("SWAP 0 1")),
         ],
     )
-    def test_stim_circuit_with_layer_that_contains_a_single_two_qubit_gate(
+    def test_deltakit_stim_circuit_with_layer_that_contains_a_single_two_qubit_gate(
         self, empty_layer: GateLayer, gate, expected_circuit, empty_circuit
     ):
         empty_layer.add_gates(gate)
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
-        # Enable CZSWAP test if Stim > 1.13.0.
-        # TODO: If the condition is met, this part is
-        # executed for every test parameter. There should
-        # be a clause for executing once.
-        if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
-            gate = gates.CZSWAP(Qubit(0), Qubit(1))
-            expected_circuit = stim.Circuit("CZSWAP 0 1")
-            empty_layer = GateLayer()
-            empty_circuit = stim.Circuit()
-            empty_layer.add_gates(gate)
-            empty_layer.permute_stim_circuit(empty_circuit)
-            assert empty_circuit == expected_circuit
+
+        gate = gates.CZSWAP(Qubit(0), Qubit(1))
+        expected_circuit = deltakit_stim.Circuit("CZSWAP 0 1")
+        empty_layer = GateLayer()
+        empty_circuit = deltakit_stim.Circuit()
+        empty_layer.add_gates(gate)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
+        assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
         ("mpp_gate", "expected_circuit"),
         [
-            (gates.MPP(PauliX(Qubit(0))), stim.Circuit("MPP X0")),
-            (gates.MPP(InvertiblePauliZ(Qubit(2))), stim.Circuit("MPP Z2")),
-            (gates.MPP(~InvertiblePauliY(Qubit(4))), stim.Circuit("MPP !Y4")),
+            (gates.MPP(PauliX(Qubit(0))), deltakit_stim.Circuit("MPP X0")),
+            (gates.MPP(InvertiblePauliZ(Qubit(2))), deltakit_stim.Circuit("MPP Z2")),
+            (gates.MPP(~InvertiblePauliY(Qubit(4))), deltakit_stim.Circuit("MPP !Y4")),
             (
                 gates.MPP(
                     MeasurementPauliProduct([PauliX(Qubit(2)), PauliY(Qubit(3))])
                 ),
-                stim.Circuit("MPP X2*Y3"),
+                deltakit_stim.Circuit("MPP X2*Y3"),
             ),
             (
                 gates.MPP(
@@ -547,18 +546,21 @@ class TestStimCircuit:
                         ]
                     )
                 ),
-                stim.Circuit("MPP !Z3*Z4*Z5"),
+                deltakit_stim.Circuit("MPP !Z3*Z4*Z5"),
             ),
-            (gates.MPP(PauliX(Qubit(0)), 0.001), stim.Circuit("MPP(0.001) X0")),
+            (
+                gates.MPP(PauliX(Qubit(0)), 0.001),
+                deltakit_stim.Circuit("MPP(0.001) X0"),
+            ),
             (
                 gates.MPP(~InvertiblePauliZ(Qubit(2)), 0.02),
-                stim.Circuit("MPP(0.02) !Z2"),
+                deltakit_stim.Circuit("MPP(0.02) !Z2"),
             ),
             (
                 gates.MPP(
                     MeasurementPauliProduct([PauliY(Qubit(3)), PauliZ(Qubit(4))]), 0.09
                 ),
-                stim.Circuit("MPP(0.09) Y3*Z4"),
+                deltakit_stim.Circuit("MPP(0.09) Y3*Z4"),
             ),
             (
                 gates.MPP(
@@ -571,7 +573,7 @@ class TestStimCircuit:
                     ),
                     0.02,
                 ),
-                stim.Circuit("MPP(0.02) Y0*!X1*Y2"),
+                deltakit_stim.Circuit("MPP(0.02) Y0*!X1*Y2"),
             ),
             (
                 gates.MPP(
@@ -584,61 +586,55 @@ class TestStimCircuit:
                     ),
                     0.01,
                 ),
-                stim.Circuit("MPP(0.01) X0*!Y1*!Z2"),
+                deltakit_stim.Circuit("MPP(0.01) X0*!Y1*!Z2"),
             ),
         ],
     )
-    def test_stim_circuit_with_layer_that_contains_a_single_mpp_gate(
+    def test_deltakit_stim_circuit_with_layer_that_contains_a_single_mpp_gate(
         self, empty_layer: GateLayer, mpp_gate, expected_circuit, empty_circuit
     ):
         empty_layer.add_gates(mpp_gate)
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
 
     # @pytest.mark.parametrize("gate_class",
     #                          gates.ONE_QUBIT_GATES | gates.RESET_GATES | gates.MEASUREMENT_GATES -
     #                          {gates.MPP}
     #                          )
-    # def test_stim_string_on_same_gate_is_on_the_same_line_for_single_qubit_gates(
+    # def test_deltakit_stim_string_on_same_gate_is_on_the_same_line_for_single_qubit_gates(
     #         self, empty_layer: GateLayer, gate_class, empty_circuit):
     #     empty_layer.add_gates([gate_class(Qubit(4)),
     #                            gate_class(Qubit(2))])
-    #     empty_layer.permute_stim_circuit(empty_circuit)
+    #     empty_layer.permute_deltakit_stim_circuit(empty_circuit)
     #     assert len(str(empty_circuit).split("\n")) == 1
 
     @pytest.mark.parametrize("gate_class", gates.ONE_QUBIT_GATES | gates.RESET_GATES)
-    def test_stim_string_of_same_gate_is_on_same_line_when_separated_by_other_gate(
+    def test_deltakit_stim_string_of_same_gate_is_on_same_line_when_separated_by_other_gate(
         self, empty_circuit, empty_layer: GateLayer, gate_class
     ):
         empty_layer.add_gates(
             [gate_class(Qubit(0)), gates.MX(Qubit(1)), gate_class(Qubit(2))]
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 2
 
     @pytest.mark.parametrize("gate_class", gates.TWO_QUBIT_GATES)
-    def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
+    def test_deltakit_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
     ) -> None:
-        if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0 and gate_class == gates.CZSWAP:
-            pytest.skip(
-                "CZSWAP gate has been introduced in Stim v1.13.0. "
-                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0. "
-                f"Current Stim version is {CURRENT_STIM_VERSION}."
-            )
         empty_layer.add_gates(
             [gate_class(Qubit(0), Qubit(1)), gate_class(Qubit(2), Qubit(3))]
         )
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 1
 
     # @pytest.mark.parametrize("gate_class", gates.MEASUREMENT_GATES \
     #     - {gates.MPP})
-    # def test_circuit_layer_stim_string_with_same_prob_measurement_is_on_one_line(
+    # def test_circuit_layer_deltakit_stim_string_with_same_prob_measurement_is_on_one_line(
     #         self, empty_layer: GateLayer, gate_class, empty_circuit):
     #     empty_layer.add_gates([gate_class(Qubit(4), 0.002),
     #                            gate_class(Qubit(1), 0.002)])
-    #     empty_layer.permute_stim_circuit(empty_circuit)
+    #     empty_layer.permute_deltakit_stim_circuit(empty_circuit)
     #     assert len(str(empty_circuit).split("\n")) == 1
 
     @pytest.mark.parametrize(
@@ -668,43 +664,43 @@ class TestStimCircuit:
             ),
         ],
     )
-    def test_gate_layer_stim_string_with_same_mpp_gates_is_on_one_line(
+    def test_gate_layer_deltakit_stim_string_with_same_mpp_gates_is_on_one_line(
         self, empty_layer: GateLayer, gate1, gate2, empty_circuit
     ):
         empty_layer.add_gates([gate1, gate2])
-        empty_layer.permute_stim_circuit(empty_circuit)
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
         assert len(str(empty_circuit).split("\n")) == 1
 
     def test_gate_layer_measurements_come_out_in_the_same_order_they_went_in(
         self, empty_layer: GateLayer, empty_circuit
     ):
         empty_layer.add_gates([gates.MX(Qubit(0)), gates.MZ(Qubit(1))])
-        empty_layer.permute_stim_circuit(empty_circuit)
-        assert empty_circuit == stim.Circuit("MX 0\nMZ 1")
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit)
+        assert empty_circuit == deltakit_stim.Circuit("MX 0\nMZ 1")
 
     @pytest.mark.parametrize(
-        ("gate", "qubit_mapping", "expected_stim_circuit"),
+        ("gate", "qubit_mapping", "expected_deltakit_stim_circuit"),
         [
-            (gates.X((0, 0)), {Qubit((0, 0)): 0}, stim.Circuit("X 0")),
-            (gates.Y((0, 0)), {Qubit((0, 0)): 3}, stim.Circuit("Y 3")),
+            (gates.X((0, 0)), {Qubit((0, 0)): 0}, deltakit_stim.Circuit("X 0")),
+            (gates.Y((0, 0)), {Qubit((0, 0)): 3}, deltakit_stim.Circuit("Y 3")),
             (
                 gates.SWAP("qubit1", "qubit2"),
                 {Qubit("qubit1"): 1, Qubit("qubit2"): 2},
-                stim.Circuit("SWAP 1 2"),
+                deltakit_stim.Circuit("SWAP 1 2"),
             ),
         ],
     )
-    def test_gate_layer_gives_expected_stim_circuit_when_giving_a_qubit_mapping(
+    def test_gate_layer_gives_expected_deltakit_stim_circuit_when_giving_a_qubit_mapping(
         self,
         empty_layer: GateLayer,
         gate,
         qubit_mapping,
-        expected_stim_circuit,
+        expected_deltakit_stim_circuit,
         empty_circuit,
     ):
         empty_layer.add_gates(gate)
-        empty_layer.permute_stim_circuit(empty_circuit, qubit_mapping)
-        assert empty_circuit == expected_stim_circuit
+        empty_layer.permute_deltakit_stim_circuit(empty_circuit, qubit_mapping)
+        assert empty_circuit == expected_deltakit_stim_circuit
 
 
 class TestQubitTransforms:

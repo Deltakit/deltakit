@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
+import deltakit_stim
 import pytest
-import stim
 
 import deltakit_circuit as sp
 from deltakit_circuit._detector_manipulation import (
@@ -81,18 +81,18 @@ class TestDetectorTrimming:
             _get_detectors_to_remove([2], [[2, 3], [4, 5]])
 
     @pytest.fixture
-    def stim_circuit_with_and_without_detectors_0_4_5_10(
+    def deltakit_stim_circuit_with_and_without_detectors_0_4_5_10(
         self,
-    ) -> tuple[stim.Circuit, stim.Circuit]:
+    ) -> tuple[deltakit_stim.Circuit, deltakit_stim.Circuit]:
         return (
-            stim.Circuit.generated(
+            deltakit_stim.Circuit.generated(
                 "repetition_code:memory",
                 rounds=4,
                 distance=5,
                 before_round_data_depolarization=0.1,
                 before_measure_flip_probability=0.1,
             ),
-            stim.Circuit(
+            deltakit_stim.Circuit(
                 """R 0 1 2 3 4 5 6 7 8
                 TICK
                 DEPOLARIZE1(0.1) 0 2 4 6 8
@@ -128,65 +128,72 @@ class TestDetectorTrimming:
         )
 
     @pytest.mark.parametrize(
-        ("stim_circuit", "detectors_to_remove", "expected_stim_circuit"),
+        (
+            "deltakit_stim_circuit",
+            "detectors_to_remove",
+            "expected_deltakit_stim_circuit",
+        ),
         [
             (
-                stim.Circuit("""DETECTOR(3, 0) rec[-3]
+                deltakit_stim.Circuit("""DETECTOR(3, 0) rec[-3]
                 DETECTOR(5, 0) rec[-2]
                 DETECTOR(7, 0) rec[-1]"""),
                 [0],
-                stim.Circuit("""DETECTOR(5, 0) rec[-2]
+                deltakit_stim.Circuit("""DETECTOR(5, 0) rec[-2]
                 DETECTOR(7, 0) rec[-1]"""),
             ),
             (
-                stim.Circuit("""DETECTOR(3, 0) rec[-3]
+                deltakit_stim.Circuit("""DETECTOR(3, 0) rec[-3]
                 DETECTOR(5, 0) rec[-2]
                 DETECTOR(7, 0) rec[-1]"""),
                 [0, 1, 2],
-                stim.Circuit(),
+                deltakit_stim.Circuit(),
             ),
             (
-                stim.Circuit("""DETECTOR(3, 0) rec[-3]
+                deltakit_stim.Circuit("""DETECTOR(3, 0) rec[-3]
                 X_ERROR(0.1) 1 3 5 7
                 MR 1 3 5 7
                 DETECTOR(5, 0) rec[-2]
                 DETECTOR(7, 0) rec[-1]"""),
                 [0, 2],
-                stim.Circuit("""X_ERROR(0.1) 1 3 5 7
+                deltakit_stim.Circuit("""X_ERROR(0.1) 1 3 5 7
                 MR 1 3 5 7
                 DETECTOR(5, 0) rec[-2]"""),
             ),
         ],
     )
     def test_detectors_can_be_removed_from_circuits_without_repeat_blocks(
-        self, stim_circuit, detectors_to_remove, expected_stim_circuit
+        self, deltakit_stim_circuit, detectors_to_remove, expected_deltakit_stim_circuit
     ):
-        stim_circuit = sp.trim_detectors(
-            stim_circuit, dem_detectors_to_eliminate=detectors_to_remove
+        deltakit_stim_circuit = sp.trim_detectors(
+            deltakit_stim_circuit, dem_detectors_to_eliminate=detectors_to_remove
         )
-        assert stim_circuit == expected_stim_circuit
+        assert deltakit_stim_circuit == expected_deltakit_stim_circuit
 
     def test_ability_to_trim_detectors_that_are_both_inside_and_outside_a_repeat_block(
-        self, stim_circuit_with_and_without_detectors_0_4_5_10
+        self, deltakit_stim_circuit_with_and_without_detectors_0_4_5_10
     ):
-        stim_circuit, expected_stim_circuit = (
-            stim_circuit_with_and_without_detectors_0_4_5_10
+        deltakit_stim_circuit, expected_deltakit_stim_circuit = (
+            deltakit_stim_circuit_with_and_without_detectors_0_4_5_10
         )
         nested_detector_indices = list(range(4, 13, 4)) + list(range(5, 14, 4))
-        stim_circuit = sp.trim_detectors(
-            stim_circuit, dem_detectors_to_eliminate=[0, 18, *nested_detector_indices]
+        deltakit_stim_circuit = sp.trim_detectors(
+            deltakit_stim_circuit,
+            dem_detectors_to_eliminate=[0, 18, *nested_detector_indices],
         )
-        assert sp.Circuit.from_stim_circuit(
-            stim_circuit
-        ) == sp.Circuit.from_stim_circuit(expected_stim_circuit)
+        assert sp.Circuit.from_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        ) == sp.Circuit.from_deltakit_stim_circuit(expected_deltakit_stim_circuit)
 
     def test_warning_is_raised_if_only_a_subset_of_a_detectors_ids_are_specified_for_elimination(
-        self, stim_circuit_with_and_without_detectors_0_4_5_10
+        self, deltakit_stim_circuit_with_and_without_detectors_0_4_5_10
     ):
-        stim_circuit, _ = stim_circuit_with_and_without_detectors_0_4_5_10
+        deltakit_stim_circuit, _ = (
+            deltakit_stim_circuit_with_and_without_detectors_0_4_5_10
+        )
         with pytest.warns(
             RuntimeWarning,
             match="Detector is being specified for removal via "
             "an incomplete list of DEM detector IDs.*",
         ):
-            sp.trim_detectors(stim_circuit, dem_detectors_to_eliminate=[4])
+            sp.trim_detectors(deltakit_stim_circuit, dem_detectors_to_eliminate=[4])
