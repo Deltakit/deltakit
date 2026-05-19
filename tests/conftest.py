@@ -1,4 +1,5 @@
 # (c) Copyright Riverlane 2020-2025.
+
 from pathlib import Path
 
 import pytest
