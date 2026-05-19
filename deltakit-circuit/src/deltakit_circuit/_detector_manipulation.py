@@ -1,36 +1,37 @@
 # (c) Copyright Riverlane 2020-2025.
-"""Functionality for removing a set of detectors from a stim file
+"""Functionality for removing a set of detectors from a deltakit_stim file
 using a Detector Error Model's detector indices as input"""
 
 from collections import defaultdict
 from collections.abc import Iterable
 from warnings import warn
 
-import stim
+import deltakit_stim
 
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._circuit import Circuit, Layer
 
 
 def trim_detectors(
-    stim_circuit: stim.Circuit, dem_detectors_to_eliminate: Iterable[int]
-) -> stim.Circuit:
+    deltakit_stim_circuit: deltakit_stim.Circuit,
+    dem_detectors_to_eliminate: Iterable[int],
+) -> deltakit_stim.Circuit:
     """Uses deltakit_circuit to remove a given set of detectors from a
-    stim circuit and returns the new stim circuit
+    deltakit_stim circuit and returns the new deltakit_stim circuit
 
     Parameters
     ----------
-    stim_circuit : stim.Circuit
-        A stim circuit from which detectors are to be removed
+    deltakit_stim_circuit : deltakit_stim.Circuit
+        A deltakit_stim circuit from which detectors are to be removed
 
     detectors_to_eliminate : Iterable[int]
         A set of detectors to be removed. A detector to be removed
         should be specified via an integers in a list. The integers
         associated with a detector must be determined in the same way as
         integers are assigned to detectors via
-        stim.Circuit.detector_error_model.
+        deltakit_stim.Circuit.detector_error_model.
 
-        Importantly, if a stim file specifies a detector within a repeat
+        Importantly, if a deltakit_stim file specifies a detector within a repeat
         block then to remove this detector you have to list all indices
         that that detector would be associated with in its corresponding
         detector error model, else the detector will not be eliminated
@@ -53,11 +54,11 @@ def trim_detectors(
 
     Returns
     -------
-    stim.Circuit
-        A copy of the original stim circuit without the detectors
+    deltakit_stim.Circuit
+        A copy of the original deltakit_stim circuit without the detectors
         specified via detectors_to_eliminate
     """
-    deltakit_circuit_circuit = Circuit.from_stim_circuit(stim_circuit)
+    deltakit_circuit_circuit = Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
     ordered_detector_calls = _get_ordered_detector_calls(deltakit_circuit_circuit)
     condensed_detector_calls = _condense_detector_calls(ordered_detector_calls)
     logical_detectors_to_eliminate = _get_detectors_to_remove(
@@ -66,7 +67,7 @@ def trim_detectors(
     deltakit_circuit_circuit, _ = _trim_detectors(
         deltakit_circuit_circuit, logical_detectors_to_eliminate
     )
-    return deltakit_circuit_circuit.as_stim_circuit()
+    return deltakit_circuit_circuit.as_deltakit_stim_circuit()
 
 
 def _get_ordered_detector_calls(deltakit_circuit_circuit: Circuit) -> list[Detector]:
@@ -100,9 +101,9 @@ def _get_detectors_to_remove(
     condensed_detector_calls: Iterable[Iterable[int]],
 ) -> list[int]:
     indices = []
-    for stim_index, call_indices in enumerate(condensed_detector_calls):
+    for deltakit_stim_index, call_indices in enumerate(condensed_detector_calls):
         if all(x in detectors_to_eliminate for x in call_indices):
-            indices.append(stim_index)
+            indices.append(deltakit_stim_index)
         elif any(x in detectors_to_eliminate for x in call_indices):
             warn(
                 "Detector is being specified for removal "

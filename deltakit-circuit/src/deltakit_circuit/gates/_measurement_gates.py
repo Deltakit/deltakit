@@ -7,7 +7,7 @@ import math
 from collections.abc import Iterable, Mapping
 from typing import ClassVar, get_args
 
-import stim
+import deltakit_stim
 
 from deltakit_circuit._qubit_identifiers import (
     MeasurementPauliProduct,
@@ -60,7 +60,7 @@ class MZ(OneQubitMeasurementGate[T]):
     # pylint: disable=invalid-name
 
     basis: ClassVar[PauliBasis] = PauliBasis.Z
-    stim_string: ClassVar[str] = f"M{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"M{basis.value}"
 
 
 class MRZ(OneQubitMeasurementGate[T]):
@@ -96,7 +96,7 @@ class MRZ(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Z
-    stim_string: ClassVar[str] = f"MR{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"MR{basis.value}"
 
 
 class MRX(OneQubitMeasurementGate[T]):
@@ -134,7 +134,7 @@ class MRX(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.X
-    stim_string: ClassVar[str] = f"MR{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"MR{basis.value}"
 
 
 class MRY(OneQubitMeasurementGate[T]):
@@ -176,7 +176,7 @@ class MRY(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Y
-    stim_string: ClassVar[str] = f"MR{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"MR{basis.value}"
 
 
 class MX(OneQubitMeasurementGate[T]):
@@ -213,7 +213,7 @@ class MX(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.X
-    stim_string: ClassVar[str] = f"M{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"M{basis.value}"
 
 
 class MY(OneQubitMeasurementGate[T]):
@@ -254,7 +254,7 @@ class MY(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Y
-    stim_string: ClassVar[str] = f"M{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"M{basis.value}"
 
 
 # pylint: disable=invalid-name
@@ -296,7 +296,7 @@ class HERALD_LEAKAGE_EVENT(OneQubitMeasurementGate[T]):
     """
 
     basis: ClassVar[PauliBasis | None] = None
-    stim_string: ClassVar[str] = "HERALD_LEAKAGE_EVENT"
+    deltakit_stim_string: ClassVar[str] = "HERALD_LEAKAGE_EVENT"
 
 
 class MPP(Gate[T]):
@@ -335,7 +335,7 @@ class MPP(Gate[T]):
     |   P -> P
     """
 
-    stim_string: ClassVar[str] = "MPP"
+    deltakit_stim_string: ClassVar[str] = "MPP"
 
     def __init__(
         self,
@@ -373,11 +373,11 @@ class MPP(Gate[T]):
     def transform_qubits(self, id_mapping: Mapping[T, U]):
         self._pauli_product.transform_qubits(id_mapping)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
         """Get all qubits for this gate in a tuple."""
-        return self.pauli_product.stim_targets(qubit_mapping)
+        return self.pauli_product.deltakit_stim_targets(qubit_mapping)
 
     @property
     def probability(self) -> float:
@@ -431,7 +431,7 @@ class MPP(Gate[T]):
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}({self.pauli_product}, "
+            f"{self.deltakit_stim_string}{tag_repr}({self.pauli_product}, "
             f"probability={self.probability})"
         )
 

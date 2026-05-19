@@ -23,7 +23,7 @@ class CorrelatedError(PauliProductNoise[T]):
         making up the error.
     """
 
-    stim_string: ClassVar[str] = "CORRELATED_ERROR"
+    deltakit_stim_string: ClassVar[str] = "CORRELATED_ERROR"
 
 
 class ElseCorrelatedError(PauliProductNoise[T]):
@@ -41,7 +41,7 @@ class ElseCorrelatedError(PauliProductNoise[T]):
         making up the error.
     """
 
-    stim_string: ClassVar[str] = "ELSE_CORRELATED_ERROR"
+    deltakit_stim_string: ClassVar[str] = "ELSE_CORRELATED_ERROR"
 
 
 _CorrelatedNoise = CorrelatedError[T] | ElseCorrelatedError[T]

@@ -233,13 +233,13 @@ def measurement_noise_profile(
 
     Examples
     --------
-    >>> import stim
+    >>> import deltakit_stim
     >>> import deltakit_circuit as sp
-    >>> stim_circuit = stim.Circuit.generated(
+    >>> deltakit_stim_circuit = deltakit_stim.Circuit.generated(
     ...     "surface_code:rotated_memory_z", rounds=3, distance=3
     ... )
-    >>> deltakit_circuit_circuit = sp.Circuit.from_stim_circuit(stim_circuit)
-    >>> deltakit_circuit_circuit.replace_gates(measurement_noise_profile(0.2))
+    >>> deltakit_circuit = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
+    >>> deltakit_circuit.replace_gates(measurement_noise_profile(0.2))
     """
     return {
         MX: lambda gate: gate.__class__(gate.qubit, error_probability),

@@ -51,7 +51,7 @@ class Leakage(OneQubitOneProbabilityNoiseChannel[T]):
         p/4: record that the qubit has left the computational subspace, apply Z
     """
 
-    stim_string: ClassVar[str] = "LEAKAGE"
+    deltakit_stim_string: ClassVar[str] = "LEAKAGE"
 
 
 class Relax(OneQubitOneProbabilityNoiseChannel[T]):
@@ -74,4 +74,4 @@ class Relax(OneQubitOneProbabilityNoiseChannel[T]):
 
     """
 
-    stim_string: ClassVar[str] = "RELAX"
+    deltakit_stim_string: ClassVar[str] = "RELAX"

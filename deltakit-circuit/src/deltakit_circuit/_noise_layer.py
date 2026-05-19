@@ -8,12 +8,17 @@ from collections.abc import Iterable, Mapping
 from itertools import chain, permutations
 from typing import Generic
 
-import stim
+import deltakit_stim
 
+from deltakit_circuit._deltakit_stim_identifiers import (
+    AppendArguments,
+    NoiseDeltakitStimIdentifier,
+)
+from deltakit_circuit._deltakit_stim_version_compatibility import (
+    is_deltakit_stim_tag_feature_available,
+)
 from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
-from deltakit_circuit._stim_identifiers import AppendArguments, NoiseStimIdentifier
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 from deltakit_circuit.noise_channels import (
     Leakage,
     Relax,
@@ -119,21 +124,21 @@ class NoiseLayer(Generic[T]):
     def _collect_noise_channels(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> list[AppendArguments]:
-        grouped_noise: defaultdict[NoiseStimIdentifier, list[stim.GateTarget]] = (
-            defaultdict(list)
-        )
+        grouped_noise: defaultdict[
+            NoiseDeltakitStimIdentifier, list[deltakit_stim.GateTarget]
+        ] = defaultdict(list)
         for noise_channel in self._uncorrelated_noise_channels:
-            grouped_noise[noise_channel.stim_identifier].extend(
-                noise_channel.stim_targets(qubit_mapping)
+            grouped_noise[noise_channel.deltakit_stim_identifier].extend(
+                noise_channel.deltakit_stim_targets(qubit_mapping)
             )
         uncorrelated_noise = [
-            AppendArguments(stim_string, tuple(targets), probabilities, tag)
-            for (stim_string, probabilities, tag), targets in grouped_noise.items()
+            AppendArguments(deltakit_stim_str, tuple(targets), probs, tag)
+            for (deltakit_stim_str, probs, tag), targets in grouped_noise.items()
         ]
         correlated_noise = [
             AppendArguments(
-                noise_channel.stim_string,
-                noise_channel.stim_targets(qubit_mapping),
+                noise_channel.deltakit_stim_str,
+                noise_channel.deltakit_stim_targets(qubit_mapping),
                 noise_channel.probabilities,
                 noise_channel.tag,
             )
@@ -141,23 +146,23 @@ class NoiseLayer(Generic[T]):
         ]
         return uncorrelated_noise + correlated_noise
 
-    def permute_stim_circuit(
+    def permute_deltakit_stim_circuit(
         self,
-        stim_circuit: stim.Circuit,
+        deltakit_stim_circuit: deltakit_stim.Circuit,
         qubit_mapping: Mapping[Qubit[T], int] | None = None,
     ):
-        """Updates stim_circuit with the stim circuit which contains the noise
-        channels specified in this NoiseLayer.
+        """Updates deltakit_stim_circuit with the deltakit_stim circuit which contains
+        the noise channels specified in this NoiseLayer.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The stim circuit to be updated with the stim representation of
-            this noise layer.
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to be updated with the deltakit_stim
+            representation of this noise layer.
 
         qubit_mapping : Mapping[Qubit[T], int] | None, optional
             A mapping between each qubit in this layer and an integer which is
-            necessary for outputting a stim circuit. By default None which
+            necessary for outputting a deltakit_stim circuit. By default None which
             means a default mapping is used.
         """
         qubit_mapping = (
@@ -165,15 +170,15 @@ class NoiseLayer(Generic[T]):
             if qubit_mapping is None
             else qubit_mapping
         )
-        for stim_string, targets, probabilities, tag in self._collect_noise_channels(
+        for deltakit_stim_str, targets, probs, tag in self._collect_noise_channels(
             qubit_mapping
         ):
             kwargs = (
                 {"tag": tag}
-                if tag is not None and is_stim_tag_feature_available()
+                if tag is not None and is_deltakit_stim_tag_feature_available()
                 else {}
             )
-            stim_circuit.append(stim_string, targets, probabilities, **kwargs)
+            deltakit_stim_circuit.append(deltakit_stim_str, targets, probs, **kwargs)
 
     def approx_equals(  # noqa: PLR0911
         self,

@@ -8,11 +8,11 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 from typing import ClassVar, Generic, TypeVar
 
-import stim
+import deltakit_stim
 from typing_extensions import Self
 
+from deltakit_circuit._deltakit_stim_identifiers import NoiseDeltakitStimIdentifier
 from deltakit_circuit._qubit_identifiers import PauliProduct, Qubit, T, U, _PauliGate
-from deltakit_circuit._stim_identifiers import NoiseStimIdentifier
 
 
 class ProbabilityError(ValueError):
@@ -28,11 +28,11 @@ class NoiseChannel(ABC, Generic[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
     """
 
-    stim_string: ClassVar[str]
+    deltakit_stim_string: ClassVar[str]
 
     def __init__(self, *_args, tag: str | None = None, **_kwargs) -> None:
         super().__init__()
@@ -49,10 +49,10 @@ class NoiseChannel(ABC, Generic[T]):
 
     @property
     @abstractmethod
-    def stim_identifier(self) -> NoiseStimIdentifier:
+    def deltakit_stim_identifier(self) -> NoiseDeltakitStimIdentifier:
         """Get the collection of things which uniquely define this object in
-        the context of stim. Each noise channel is unique from its stim
-        identifier and its probability.
+        the context of deltakit_stim. Each noise channel is unique from its
+        deltakit-stim identifier and its probability.
         """
 
     @property
@@ -61,10 +61,10 @@ class NoiseChannel(ABC, Generic[T]):
         """Get all the probabilities for this noise channel"""
 
     @abstractmethod
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        """Return all the stim targets which specifies this noise channel."""
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        """Return all the deltakit_stim targets which specifies this noise channel."""
 
     @abstractmethod
     def transform_qubits(self, id_mapping: Mapping[T, U]):
@@ -134,8 +134,8 @@ class OneProbabilityNoiseChannel(NoiseChannel[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -161,9 +161,9 @@ class OneProbabilityNoiseChannel(NoiseChannel[T]):
         return (self._probability,)
 
     @property
-    def stim_identifier(self) -> NoiseStimIdentifier:
-        return NoiseStimIdentifier(
-            self.__class__.stim_string, (self.probability,), self.tag
+    def deltakit_stim_identifier(self) -> NoiseDeltakitStimIdentifier:
+        return NoiseDeltakitStimIdentifier(
+            self.__class__.deltakit_stim_string, (self.probability,), self.tag
         )
 
 
@@ -172,8 +172,8 @@ class MultiProbabilityNoiseChannel(NoiseChannel[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
     """
 
     def __init__(
@@ -193,9 +193,9 @@ class MultiProbabilityNoiseChannel(NoiseChannel[T]):
         return self._probabilities
 
     @property
-    def stim_identifier(self) -> NoiseStimIdentifier:
-        return NoiseStimIdentifier(
-            self.__class__.stim_string, self.probabilities, self.tag
+    def deltakit_stim_identifier(self) -> NoiseDeltakitStimIdentifier:
+        return NoiseDeltakitStimIdentifier(
+            self.__class__.deltakit_stim_string, self.probabilities, self.tag
         )
 
 
@@ -207,8 +207,8 @@ class OneQubitNoiseChannel(NoiseChannel[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -233,9 +233,9 @@ class OneQubitNoiseChannel(NoiseChannel[T]):
         if (new_id := id_mapping.get(self._qubit.unique_identifier)) is not None:
             self._qubit = Qubit(new_id)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
+    ) -> tuple[deltakit_stim.GateTarget]:
         return (qubit_mapping[self._qubit],)
 
     @classmethod
@@ -259,8 +259,8 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -307,13 +307,13 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
         if (new_id2 := id_mapping.get(self._qubit2.unique_identifier)) is not None:
             self._qubit2 = Qubit(new_id2)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, stim.GateTarget]:
-        """Get all stim gate targets for this noise channel in a tuple."""
+    ) -> tuple[deltakit_stim.GateTarget, deltakit_stim.GateTarget]:
+        """Get all deltakit_stim gate targets for this noise channel in a tuple."""
         return (
-            self._qubit1.stim_targets(qubit_mapping)[0],
-            self._qubit2.stim_targets(qubit_mapping)[0],
+            self._qubit1.deltakit_stim_targets(qubit_mapping)[0],
+            self._qubit2.deltakit_stim_targets(qubit_mapping)[0],
         )
 
     @classmethod
@@ -374,8 +374,8 @@ class OneQubitOneProbabilityNoiseChannel(
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -414,7 +414,7 @@ class OneQubitOneProbabilityNoiseChannel(
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}({self.qubit}, "
+            f"{self.deltakit_stim_string}{tag_repr}({self.qubit}, "
             f"probability={self.probability})"
         )
 
@@ -424,8 +424,8 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -480,10 +480,10 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
     def transform_qubits(self, id_mapping: Mapping[T, U]):
         self._pauli_product.transform_qubits(id_mapping)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        return self.pauli_product.stim_targets(qubit_mapping)
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        return self.pauli_product.deltakit_stim_targets(qubit_mapping)
 
     def approx_equals(
         self, other: object, *, rel_tol: float = 1e-9, abs_tol: float = 0
@@ -509,6 +509,6 @@ class PauliProductNoise(OneProbabilityNoiseChannel[T]):
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}({self.pauli_product}, "
+            f"{self.deltakit_stim_string}{tag_repr}({self.pauli_product}, "
             f"probability={self.probability})"
         )

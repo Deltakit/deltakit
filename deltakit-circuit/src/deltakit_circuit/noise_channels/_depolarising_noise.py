@@ -34,7 +34,7 @@ class Depolarise1(OneQubitOneProbabilityNoiseChannel[T]):
     |   ``p/3: Z``
     """
 
-    stim_string: ClassVar[str] = "DEPOLARIZE1"
+    deltakit_stim_string: ClassVar[str] = "DEPOLARIZE1"
 
 
 class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
@@ -71,7 +71,7 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
     |   ``p/15: ZZ``
     """
 
-    stim_string: ClassVar[str] = "DEPOLARIZE2"
+    deltakit_stim_string: ClassVar[str] = "DEPOLARIZE2"
 
     def __init__(
         self,
@@ -106,7 +106,7 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
     def __repr__(self) -> str:
         tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}"
+            f"{self.deltakit_stim_string}{tag_repr}"
             f"(qubit1={self._qubit1}, qubit2={self._qubit2}, "
             f"probability={self.probability})"
         )

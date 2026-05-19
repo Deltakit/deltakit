@@ -42,7 +42,7 @@ class CX(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "CX"
+    deltakit_stim_string: ClassVar[str] = "CX"
 
 
 class CY(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
@@ -71,7 +71,7 @@ class CY(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "CY"
+    deltakit_stim_string: ClassVar[str] = "CY"
 
 
 class CZ(
@@ -112,7 +112,7 @@ class CZ(
     def __hash__(self) -> int:
         return hash((self.__class__, frozenset((self.control, self.target))))
 
-    stim_string: ClassVar[str] = "CZ"
+    deltakit_stim_string: ClassVar[str] = "CZ"
 
 
 class SWAP(SymmetricTwoQubitGate[T]):
@@ -137,7 +137,7 @@ class SWAP(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SWAP"
+    deltakit_stim_string: ClassVar[str] = "SWAP"
 
 
 class ISWAP(SymmetricTwoQubitGate[T]):
@@ -163,7 +163,7 @@ class ISWAP(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "ISWAP"
+    deltakit_stim_string: ClassVar[str] = "ISWAP"
 
 
 class ISWAP_DAG(SymmetricTwoQubitGate[T]):
@@ -189,7 +189,7 @@ class ISWAP_DAG(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "ISWAP_DAG"
+    deltakit_stim_string: ClassVar[str] = "ISWAP_DAG"
 
 
 class SQRT_XX(SymmetricTwoQubitGate[T]):
@@ -215,7 +215,7 @@ class SQRT_XX(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_XX"
+    deltakit_stim_string: ClassVar[str] = "SQRT_XX"
 
 
 class SQRT_XX_DAG(SymmetricTwoQubitGate[T]):
@@ -241,7 +241,7 @@ class SQRT_XX_DAG(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_XX_DAG"
+    deltakit_stim_string: ClassVar[str] = "SQRT_XX_DAG"
 
 
 class SQRT_YY(SymmetricTwoQubitGate[T]):
@@ -267,7 +267,7 @@ class SQRT_YY(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_YY"
+    deltakit_stim_string: ClassVar[str] = "SQRT_YY"
 
 
 class SQRT_YY_DAG(SymmetricTwoQubitGate[T]):
@@ -293,7 +293,7 @@ class SQRT_YY_DAG(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_YY_DAG"
+    deltakit_stim_string: ClassVar[str] = "SQRT_YY_DAG"
 
 
 class SQRT_ZZ(SymmetricTwoQubitGate[T]):
@@ -318,7 +318,7 @@ class SQRT_ZZ(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_ZZ"
+    deltakit_stim_string: ClassVar[str] = "SQRT_ZZ"
 
 
 class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
@@ -343,7 +343,7 @@ class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_ZZ_DAG"
+    deltakit_stim_string: ClassVar[str] = "SQRT_ZZ_DAG"
 
 
 class XCX(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
@@ -382,7 +382,7 @@ class XCX(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
     def __hash__(self) -> int:
         return hash((self.__class__, frozenset((self.control, self.target))))
 
-    stim_string: ClassVar[str] = "XCX"
+    deltakit_stim_string: ClassVar[str] = "XCX"
 
 
 class XCY(ControlledGate[Qubit[T], Qubit[T]]):
@@ -412,7 +412,7 @@ class XCY(ControlledGate[Qubit[T], Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "XCY"
+    deltakit_stim_string: ClassVar[str] = "XCY"
 
 
 class XCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
@@ -441,7 +441,7 @@ class XCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "XCZ"
+    deltakit_stim_string: ClassVar[str] = "XCZ"
 
 
 class YCX(ControlledGate[Qubit[T], Qubit[T]]):
@@ -471,7 +471,7 @@ class YCX(ControlledGate[Qubit[T], Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "YCX"
+    deltakit_stim_string: ClassVar[str] = "YCX"
 
 
 class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
@@ -510,7 +510,7 @@ class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
     def __hash__(self) -> int:
         return hash((self.__class__, frozenset((self.control, self.target))))
 
-    stim_string: ClassVar[str] = "YCY"
+    deltakit_stim_string: ClassVar[str] = "YCY"
 
 
 class YCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
@@ -539,7 +539,7 @@ class YCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "YCZ"
+    deltakit_stim_string: ClassVar[str] = "YCZ"
 
 
 class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
@@ -568,7 +568,7 @@ class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "CXSWAP"
+    deltakit_stim_string: ClassVar[str] = "CXSWAP"
 
 
 class CZSWAP(SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]):
@@ -597,7 +597,7 @@ class CZSWAP(SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "CZSWAP"
+    deltakit_stim_string: ClassVar[str] = "CZSWAP"
 
 
 _TwoQubitGate = (

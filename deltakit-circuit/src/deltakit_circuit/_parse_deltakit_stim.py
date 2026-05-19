@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
-"""Module which provides methods for parsing stim circuits into deltakit_circuit
-circuits."""
+"""Module which provides methods for parsing deltakit_stim circuits into
+deltakit_circuit circuits."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from collections.abc import Hashable, Iterable, Mapping, Sequence
 from itertools import tee, zip_longest
 from typing import TypeVar, cast
 
-import stim
+import deltakit_stim
 
 from deltakit_circuit._annotations._detector import Detector, MeasurementRecord
 from deltakit_circuit._annotations._observable import Observable
@@ -58,18 +58,20 @@ from deltakit_circuit.noise_channels import (
 )
 
 
-class InstructionNotImplemented(NotImplementedError):
-    """Derived error class for stim instructions which cannot be parsed by
+class InstructionNotImplementedError(NotImplementedError):
+    """Derived error class for deltakit_stim instructions which cannot be parsed by
     deltakit_circuit yet."""
 
     def __init__(
-        self, instruction: stim.CircuitInstruction | stim.CircuitRepeatBlock
+        self,
+        instruction: deltakit_stim.CircuitInstruction
+        | deltakit_stim.CircuitRepeatBlock,
     ) -> None:
         super().__init__(f"Parsing of '{instruction}' is not implemented yet.")
 
 
 def _classify_pauli_target(
-    target: stim.GateTarget, qubit_mapping: Mapping[int, Qubit]
+    target: deltakit_stim.GateTarget, qubit_mapping: Mapping[int, Qubit]
 ) -> _PauliGate | _InvertiblePauliGate:
     qubit = qubit_mapping.get(target.value, Qubit(target.value))
     if target.is_x_target:
@@ -90,7 +92,7 @@ def _classify_pauli_target(
 
 def _parse_single_qubit_gate_instruction(
     gate_class: type[_OneQubitCliffordGate | _ResetGate],
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     instruction_tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> list[GateLayer]:
@@ -107,7 +109,7 @@ def _parse_single_qubit_gate_instruction(
 
 def _parse_two_qubit_gate_instruction(
     gate_class: type[_TwoQubitGate],
-    instruction_targets: Sequence[stim.GateTarget],
+    instruction_targets: Sequence[deltakit_stim.GateTarget],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
 ) -> GateLayer:
@@ -124,7 +126,7 @@ def _parse_two_qubit_gate_instruction(
 
 def _parse_single_qubit_measurement(
     gate_class: type[_OneQubitMeasurementGate],
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     instruction_arguments: Iterable[float],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -142,7 +144,7 @@ def _parse_single_qubit_measurement(
 
 
 def _parse_mpp_instruction(
-    instruction_targets: Sequence[stim.GateTarget],
+    instruction_targets: Sequence[deltakit_stim.GateTarget],
     instruction_arguments: Iterable[float],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -152,10 +154,11 @@ def _parse_mpp_instruction(
     different gate targets as input but the algorithm is outlined as such:
 
     For each target in the gate targets:
-        * Check if the target is a stim combiner (*) and if it is go to the
+        * Check if the target is a deltakit_stim combiner (*) and if it is go to the
           next target.
-        * If it's not a combiner convert the stim target into a deltakit_circuit qubit
-          identifier. Since MPP gates have Pauli string targets this will
+        * If it's not a combiner convert the deltakit_stim target into a
+          deltakit_circuit qubit identifier.
+          Since MPP gates have Pauli string targets this will
           return a single Pauli gate.
         * Add the deltakit_circuit Pauli gate to a list of Pauli gates.
         * If the target after the current target is a combiner that means the
@@ -195,7 +198,7 @@ def _parse_single_qubit_noise_instruction(
     noise_class: type[
         PauliXError | PauliYError | PauliZError | Depolarise1 | Leakage | Relax
     ],
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     probability: float,
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -208,7 +211,7 @@ def _parse_single_qubit_noise_instruction(
 
 
 def _parse_depolarise_2_noise_instruction(
-    instruction_targets: Sequence[stim.GateTarget],
+    instruction_targets: Sequence[deltakit_stim.GateTarget],
     probability: float,
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -221,7 +224,7 @@ def _parse_depolarise_2_noise_instruction(
 
 
 def _parse_pauli_channel_1_instruction(
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     probabilities: Iterable[float],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -234,7 +237,7 @@ def _parse_pauli_channel_1_instruction(
 
 
 def _parse_pauli_channel_2_instruction(
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     probabilities: Iterable[float],
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -248,7 +251,7 @@ def _parse_pauli_channel_2_instruction(
 
 def _parse_correlated_error_instruction(
     noise_class: type[CorrelatedError | ElseCorrelatedError],
-    instruction_targets: Iterable[stim.GateTarget],
+    instruction_targets: Iterable[deltakit_stim.GateTarget],
     probability: float,
     tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -260,9 +263,9 @@ def _parse_correlated_error_instruction(
     return NoiseLayer(noise_class(pauli_product, probability, tag=tag))
 
 
-def parse_stim_gate_instruction(
+def parse_deltakit_stim_gate_instruction(
     deltakit_circuit_gate_class: type[_Gate],
-    instruction_targets: Sequence[stim.GateTarget],
+    instruction_targets: Sequence[deltakit_stim.GateTarget],
     instruction_arguments: Sequence[float],
     instruction_tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -273,8 +276,8 @@ def parse_stim_gate_instruction(
     ----------
     deltakit_circuit_gate_class : Type[GateT]
         The type of gate which defined this gate instruction.
-    instruction_targets : Sequence[stim.GateTarget]
-        The stim instruction targets to act the gate on.
+    instruction_targets : Sequence[deltakit_stim.GateTarget]
+        The deltakit_stim instruction targets to act the gate on.
     instruction_arguments : Sequence[float]
         The additional arguments to give to the gate. These are commonly just
         the probabilities for non-deterministic gates.
@@ -282,7 +285,7 @@ def parse_stim_gate_instruction(
         Tag associated with the instruction. None if no tag was present.
     qubit_mapping : Mapping[int, Qubit]
         A mapping for qubits where coordinates have been specified
-        in stim. The mapping maps each qubit's index to the respective
+        in deltakit_stim. The mapping maps each qubit's index to the respective
         object of type Qubit.
 
     Returns
@@ -330,9 +333,9 @@ def parse_stim_gate_instruction(
     raise ValueError(msg)
 
 
-def parse_stim_noise_instruction(
+def parse_deltakit_stim_noise_instruction(
     deltakit_circuit_noise_class: type[_NoiseChannel],
-    instruction_targets: Sequence[stim.GateTarget],
+    instruction_targets: Sequence[deltakit_stim.GateTarget],
     instruction_arguments: Sequence[float],
     instruction_tag: str | None,
     qubit_mapping: Mapping[int, Qubit],
@@ -343,8 +346,8 @@ def parse_stim_noise_instruction(
     ----------
     deltakit_circuit_noise_class : Type[_NoiseChannel]
         The type of noise channel which defines this instruction.
-    instruction_targets : Sequence[stim.GateTarget]
-        The stim instruction targets to act the noise channel on.
+    instruction_targets : Sequence[deltakit_stim.GateTarget]
+        The deltakit_stim instruction targets to act the noise channel on.
     instruction_arguments : Sequence[float]
         The probabilities which define the noise channel.
     instruction_tag : (str | None)
@@ -353,7 +356,7 @@ def parse_stim_noise_instruction(
     Returns
     -------
     NoiseLayer
-        The noise layer containing the noise channel in the stim instruction.
+        The noise layer containing the noise channel in the deltakit_stim instruction.
 
     Raises
     ------
@@ -401,12 +404,12 @@ def parse_stim_noise_instruction(
     raise ValueError(msg)
 
 
-def parse_detector(instruction: stim.CircuitInstruction) -> Detector:
+def parse_detector(instruction: deltakit_stim.CircuitInstruction) -> Detector:
     """Parse the given circuit instruction into a deltakit_circuit detector.
 
     Parameters
     ----------
-    instruction : stim.CircuitInstruction
+    instruction : deltakit_stim.CircuitInstruction
         The input circuit instruction
 
     Returns
@@ -425,12 +428,12 @@ def parse_detector(instruction: stim.CircuitInstruction) -> Detector:
     )
 
 
-def parse_observable(instruction: stim.CircuitInstruction) -> Observable:
+def parse_observable(instruction: deltakit_stim.CircuitInstruction) -> Observable:
     """Parse the given circuit instruction into a deltakit_circuit observable.
 
     Parameters
     ----------
-    instruction : stim.CircuitInstruction
+    instruction : deltakit_stim.CircuitInstruction
         The input circuit instruction
 
     Returns
@@ -449,12 +452,14 @@ def parse_observable(instruction: stim.CircuitInstruction) -> Observable:
     )
 
 
-def parse_shift_coords(instruction: stim.CircuitInstruction) -> ShiftCoordinates:
+def parse_shift_coords(
+    instruction: deltakit_stim.CircuitInstruction,
+) -> ShiftCoordinates:
     """Parse the given circuit instruction into a deltakit_circuit shift coordinates.
 
     Parameters
     ----------
-    instruction : stim.CircuitInstruction
+    instruction : deltakit_stim.CircuitInstruction
         The input circuit instruction
 
     Returns
@@ -467,17 +472,17 @@ def parse_shift_coords(instruction: stim.CircuitInstruction) -> ShiftCoordinates
 
 
 def parse_circuit_instruction(
-    instruction: stim.CircuitInstruction, qubit_mapping: Mapping[int, Qubit]
+    instruction: deltakit_stim.CircuitInstruction, qubit_mapping: Mapping[int, Qubit]
 ) -> _Layer | Iterable[_Layer]:
-    """Parse a single stim circuit instruction into a gate or noise layer.
+    """Parse a single deltakit_stim circuit instruction into a gate or noise layer.
 
     Parameters
     ----------
-    instruction : stim.CircuitInstruction
+    instruction : deltakit_stim.CircuitInstruction
         The circuit instruction to parse.
     qubit_mapping : Mapping[int, Qubit]
         A mapping for qubits where coordinates have been specified
-        in stim. The mapping maps each qubit's index to the respective
+        in deltakit_stim. The mapping maps each qubit's index to the respective
         object of type Qubit.
 
     Returns
@@ -495,7 +500,7 @@ def parse_circuit_instruction(
     instruction_arguments = instruction.gate_args_copy()
     instruction_tag = instruction.tag if hasattr(instruction, "tag") else None
     if (gate_class := GATE_MAPPING.get(instruction_name, None)) is not None:
-        return parse_stim_gate_instruction(
+        return parse_deltakit_stim_gate_instruction(
             gate_class,
             instruction_targets,
             instruction_arguments,
@@ -503,7 +508,7 @@ def parse_circuit_instruction(
             qubit_mapping,
         )
     if (noise_class := NOISE_CHANNEL_MAPPING.get(instruction_name, None)) is not None:
-        return parse_stim_noise_instruction(
+        return parse_deltakit_stim_noise_instruction(
             noise_class,
             instruction_targets,
             instruction_arguments,
@@ -516,7 +521,7 @@ def parse_circuit_instruction(
         return parse_observable(instruction)
     if instruction_name == "SHIFT_COORDS":
         return parse_shift_coords(instruction)
-    raise InstructionNotImplemented(instruction)
+    raise InstructionNotImplementedError(instruction)
 
 
 T = TypeVar("T", bound=Hashable)  # pylint: disable=invalid-name

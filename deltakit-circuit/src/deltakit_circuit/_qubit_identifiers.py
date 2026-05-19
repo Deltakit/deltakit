@@ -9,7 +9,7 @@ from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from itertools import chain
 from typing import ClassVar, Generic, TypeVar
 
-import stim
+import deltakit_stim
 
 T = TypeVar("T", bound=Hashable)
 U = TypeVar("U", bound=Hashable)
@@ -28,9 +28,9 @@ class Qubit(Generic[T]):
     ----------
     unique_identifier: T
         The unique way of identifying this qubit.
-    stim_identifier: int | None
-        Optional id for qubits in the context of a stim circuit, that being
-        which int id they have in the stim circuit representation. Can be
+    deltakit_stim_identifier: int | None
+        Optional id for qubits in the context of a deltakit_stim circuit, that being
+        which int id they have in the deltakit_stim circuit representation. Can be
         separate from the deltakit_circuit unique identifier.
 
     Examples
@@ -43,17 +43,19 @@ class Qubit(Generic[T]):
     Qubit(Coordinate(0, 1, 2, 3))
     """
 
-    def __init__(self, unique_identifier: T, stim_identifier: int | None = None):
+    def __init__(
+        self, unique_identifier: T, deltakit_stim_identifier: int | None = None
+    ):
         if isinstance(unique_identifier, abc.Generator):
             msg = "Generators are not supported as qubit identifiers."
             raise TypeError(msg)
         self._unique_identifier = unique_identifier
 
-        self._stim_identifier: int | None
-        if stim_identifier is None and isinstance(unique_identifier, int):
-            self._stim_identifier = unique_identifier
+        self._deltakit_stim_identifier: int | None
+        if deltakit_stim_identifier is None and isinstance(unique_identifier, int):
+            self._deltakit_stim_identifier = unique_identifier
         else:
-            self._stim_identifier = stim_identifier
+            self._deltakit_stim_identifier = deltakit_stim_identifier
 
     @classmethod
     def pairs_from_consecutive(cls, ids: Sequence[T]) -> Iterator[tuple[Qubit, Qubit]]:
@@ -93,30 +95,34 @@ class Qubit(Generic[T]):
         return self._unique_identifier
 
     @property
-    def stim_identifier(self) -> int:
+    def deltakit_stim_identifier(self) -> int:
         """Get the integer that identifies this qubit in the context
-        of a stim circuit.
+        of a deltakit_stim circuit.
         """
-        if self._stim_identifier is None:
-            msg = f"{self} has no stim identifier."
+        if self._deltakit_stim_identifier is None:
+            msg = f"{self} has no deltakit_stim identifier."
             raise ValueError(msg)
-        return self._stim_identifier
+        return self._deltakit_stim_identifier
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target gate target for this qubit."""
-        return (stim.GateTarget(qubit_mapping[self]),)
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target gate target for this qubit."""
+        return (deltakit_stim.GateTarget(qubit_mapping[self]),)
 
-    def permute_stim_circuit(
-        self, stim_circuit: stim.Circuit, qubit_mapping: Mapping[Qubit[T], int]
+    def permute_deltakit_stim_circuit(
+        self,
+        deltakit_stim_circuit: deltakit_stim.Circuit,
+        qubit_mapping: Mapping[Qubit[T], int],
     ):
-        """Generate a stim circuit for a qubit. This is only a non empty
+        """Generate a deltakit_stim circuit for a qubit. This is only a non empty
         circuit when T is a Coordinate."""
         if isinstance((coordinate := self.unique_identifier), Coordinate):
-            # Get stim to construct the string since it will format (0,) into
+            # Get deltakit_stim to construct the string since it will format (0,) into
             # (0, 0) so coordinates with single values are not output.
-            stim_circuit.append("QUBIT_COORDS", qubit_mapping[self], tuple(coordinate))
+            deltakit_stim_circuit.append(
+                "QUBIT_COORDS", qubit_mapping[self], tuple(coordinate)
+            )
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -132,7 +138,7 @@ class Qubit(Generic[T]):
 
 
 class SweepBit:
-    """Abstraction of a sweep bit as used by stim. A sweep bit represents a
+    """Abstraction of a sweep bit as used by deltakit_stim. A sweep bit represents a
     classical bit and is used as the control of a two-qubit gate.
 
     The index represents the index in a numpy array to read the classical bit
@@ -140,7 +146,7 @@ class SweepBit:
     only at sampling time. This makes using sweep bits different to using the
     results of measurements via `rec[-k]` because the sweep information is
     known separately from the circuit. The sweep bit array data must be stored
-    in a separate file and passed in to stim when sampling."""
+    in a separate file and passed in to deltakit_stim when sampling."""
 
     def __init__(self, bit_index: int):
         if bit_index < 0:
@@ -153,9 +159,11 @@ class SweepBit:
         """Get the bit index for this sweep bit."""
         return self._bit_index
 
-    def stim_targets(self, *_) -> tuple[stim.GateTarget]:
-        """Get this sweep bit as a stim gate target."""
-        return (stim.GateTarget(stim.target_sweep_bit(self._bit_index)),)
+    def deltakit_stim_targets(self, *_) -> tuple[deltakit_stim.GateTarget]:
+        """Get this sweep bit as a deltakit_stim gate target."""
+        return (
+            deltakit_stim.GateTarget(deltakit_stim.target_sweep_bit(self._bit_index)),
+        )
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, SweepBit) and self._bit_index == other._bit_index
@@ -206,7 +214,7 @@ class Coordinate(tuple[float, ...]):
 class MeasurementRecord:
     """Reference to a measurement that has been made
 
-    An example would be rec[-5] in stim.
+    An example would be rec[-5] in deltakit_stim.
     """
 
     def __init__(self, lookback_index: int):
@@ -220,9 +228,9 @@ class MeasurementRecord:
         """Get the lookback index"""
         return self._lookback_index
 
-    def stim_targets(self, *_) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
-        return (stim.GateTarget(stim.target_rec(self.lookback_index)),)
+    def deltakit_stim_targets(self, *_) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
+        return deltakit_stim.GateTarget(deltakit_stim.target_rec(self.lookback_index))
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -242,7 +250,7 @@ class PauliGate(Generic[T]):
     Product class. This is required for the Measurement Pauli Product gate and
     also the Correlated Error noise models."""
 
-    stim_identifier: ClassVar[str]
+    deltakit_stim_identifier: ClassVar[str]
 
     def __init__(self, qubit: Qubit[T] | T):
         self._qubit = Qubit(qubit) if not isinstance(qubit, Qubit) else qubit
@@ -270,15 +278,15 @@ class PauliGate(Generic[T]):
             return other == self
         return (
             isinstance(other, PauliGate)
-            and self.stim_identifier == other.stim_identifier
+            and self.deltakit_stim_identifier == other.deltakit_stim_identifier
             and self.qubit == other.qubit
         )
 
     def __hash__(self) -> int:
-        return hash((self.stim_identifier, self.qubit))
+        return hash((self.deltakit_stim_identifier, self.qubit))
 
     def __repr__(self) -> str:
-        return f"Pauli{self.stim_identifier}({self.qubit})"
+        return f"Pauli{self.deltakit_stim_identifier}({self.qubit})"
 
 
 class PauliX(PauliGate[T]):
@@ -291,13 +299,15 @@ class PauliX(PauliGate[T]):
         The qubit to act the X gate on.
     """
 
-    stim_identifier: ClassVar[str] = "X"
+    deltakit_stim_identifier: ClassVar[str] = "X"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
-        return (stim.GateTarget(stim.target_x(qubit_mapping[self.qubit])),)
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
+        return deltakit_stim.GateTarget(
+            deltakit_stim.target_x(qubit_mapping[self.qubit])
+        )
 
 
 class PauliY(PauliGate[T]):
@@ -310,13 +320,15 @@ class PauliY(PauliGate[T]):
         The qubit to act the Y gate on.
     """
 
-    stim_identifier: ClassVar[str] = "Y"
+    deltakit_stim_identifier: ClassVar[str] = "Y"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
-        return (stim.GateTarget(stim.target_y(qubit_mapping[self.qubit])),)
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
+        return deltakit_stim.GateTarget(
+            deltakit_stim.target_y(qubit_mapping[self.qubit])
+        )
 
 
 class PauliZ(PauliGate[T]):
@@ -329,13 +341,15 @@ class PauliZ(PauliGate[T]):
         The qubit to act the Z gate on.
     """
 
-    stim_identifier: ClassVar[str] = "Z"
+    deltakit_stim_identifier: ClassVar[str] = "Z"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
-        return (stim.GateTarget(stim.target_z(qubit_mapping[self.qubit])),)
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
+        return deltakit_stim.GateTarget(
+            deltakit_stim.target_z(qubit_mapping[self.qubit])
+        )
 
 
 class InvertiblePauliGate(PauliGate[T]):
@@ -351,13 +365,13 @@ class InvertiblePauliGate(PauliGate[T]):
         if isinstance(other, InvertiblePauliGate):
             return (
                 self.qubit == other.qubit
-                and self.stim_identifier == other.stim_identifier
+                and self.deltakit_stim_identifier == other.deltakit_stim_identifier
                 and self._is_inverted == other._is_inverted
             )
         return (
             isinstance(other, PauliGate)
             and self.qubit == other.qubit
-            and self.stim_identifier == other.stim_identifier
+            and self.deltakit_stim_identifier == other.deltakit_stim_identifier
             and not self._is_inverted
         )
 
@@ -381,15 +395,17 @@ class InvertiblePauliX(InvertiblePauliGate[T]):
         False.
     """
 
-    stim_identifier: ClassVar[str] = "X"
+    deltakit_stim_identifier: ClassVar[str] = "X"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
         return (
-            stim.GateTarget(
-                stim.target_x(qubit_mapping[self.qubit], invert=self._is_inverted)
+            deltakit_stim.GateTarget(
+                deltakit_stim.target_x(
+                    qubit_mapping[self.qubit], invert=self._is_inverted
+                )
             ),
         )
 
@@ -410,15 +426,17 @@ class InvertiblePauliY(InvertiblePauliGate[T]):
         False.
     """
 
-    stim_identifier: ClassVar[str] = "Y"
+    deltakit_stim_identifier: ClassVar[str] = "Y"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
         return (
-            stim.GateTarget(
-                stim.target_y(qubit_mapping[self.qubit], invert=self._is_inverted)
+            deltakit_stim.GateTarget(
+                deltakit_stim.target_y(
+                    qubit_mapping[self.qubit], invert=self._is_inverted
+                )
             ),
         )
 
@@ -439,15 +457,17 @@ class InvertiblePauliZ(InvertiblePauliGate[T]):
         False.
     """
 
-    stim_identifier: ClassVar[str] = "Z"
+    deltakit_stim_identifier: ClassVar[str] = "Z"
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget]:
-        """Get the stim target for this gate."""
+    ) -> tuple[deltakit_stim.GateTarget]:
+        """Get the deltakit_stim target for this gate."""
         return (
-            stim.GateTarget(
-                stim.target_z(qubit_mapping[self.qubit], invert=self._is_inverted)
+            deltakit_stim.GateTarget(
+                deltakit_stim.target_z(
+                    qubit_mapping[self.qubit], invert=self._is_inverted
+                )
             ),
         )
 
@@ -524,17 +544,19 @@ class MeasurementPauliProduct(Generic[T]):
         for pauli_gate in self._pauli_gates:
             pauli_gate.transform_qubits(id_mapping)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        """Return all stim targets which specify this Pauli product."""
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        """Return all deltakit_stim targets which specify this Pauli product."""
         # Create a list which is the same length as the final output and just
-        # contains the stim combiners.
-        with_combiners = [stim.target_combiner()] * (2 * len(self._pauli_gates) - 1)
+        # contains the deltakit_stim combiners.
+        with_combiners = [deltakit_stim.target_combiner()] * (
+            2 * len(self._pauli_gates) - 1
+        )
         # Replace the even items of the combiner list with the appropriate
         # Pauli gate target.
         with_combiners[0::2] = chain.from_iterable(
-            gate.stim_targets(qubit_mapping) for gate in self._pauli_gates
+            gate.deltakit_stim_targets(qubit_mapping) for gate in self._pauli_gates
         )
         return tuple(with_combiners)
 
@@ -581,13 +603,13 @@ class PauliProduct(MeasurementPauliProduct[T]):
     def pauli_gates(self) -> tuple[_PauliGate, ...]:
         return self._pauli_gates
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        """Return all stim targets which specify this Pauli product."""
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        """Return all deltakit_stim targets which specify this Pauli product."""
         return tuple(
             chain.from_iterable(
-                gate.stim_targets(qubit_mapping) for gate in self.pauli_gates
+                gate.deltakit_stim_targets(qubit_mapping) for gate in self.pauli_gates
             )
         )
 

@@ -8,13 +8,15 @@ from collections.abc import Callable, Iterable, Mapping
 from itertools import chain
 from typing import Generic, no_type_check
 
-import stim
+import deltakit_stim
 
+from deltakit_circuit._deltakit_stim_identifiers import AppendArguments
+from deltakit_circuit._deltakit_stim_version_compatibility import (
+    is_deltakit_stim_tag_feature_available,
+)
 from deltakit_circuit._noise_factory import GateReplacementPolicy
 from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
-from deltakit_circuit._stim_identifiers import AppendArguments
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 from deltakit_circuit.gates import MPP, _Gate, _MeasurementGate
 from deltakit_circuit.gates._abstract_gates import (
     Gate,
@@ -67,7 +69,7 @@ class GateLayer(Generic[T]):
         return tuple(self._measurement_gates)
 
     def add_gates(self, gates: _Gate | Iterable[_Gate]):
-        """Add a gate to the circuit layer. Must be a recognised stim gate.
+        """Add a gate to the circuit layer. Must be a recognised deltakit_stim gate.
 
         Parameters
         ----------
@@ -197,45 +199,47 @@ class GateLayer(Generic[T]):
         """Collect all of the same gate types together."""
         gate_args = []
         unordered_gates: defaultdict[
-            tuple[type[_NonMeasurementGate], str | None], list[stim.GateTarget]
+            tuple[type[_NonMeasurementGate], str | None], list[deltakit_stim.GateTarget]
         ] = defaultdict(list)
         for non_measurement_gate in self._non_measurement_gates:
             key = (non_measurement_gate.__class__, non_measurement_gate.tag)
             unordered_gates[key].extend(
-                non_measurement_gate.stim_targets(qubit_mapping)
+                non_measurement_gate.deltakit_stim_targets(qubit_mapping)
             )
         for (unordered_gate, tag), targets in unordered_gates.items():
             gate_args.append(
-                AppendArguments(unordered_gate.stim_string, tuple(targets), (0,), tag)
+                AppendArguments(
+                    unordered_gate.deltakit_stim_string, tuple(targets), (0,), tag
+                )
             )
         for measurement_gate in self._measurement_gates:
             gate_args.append(
                 AppendArguments(
-                    measurement_gate.stim_string,
-                    measurement_gate.stim_targets(qubit_mapping),
+                    measurement_gate.deltakit_stim_string,
+                    measurement_gate.deltakit_stim_targets(qubit_mapping),
                     (measurement_gate.probability,),
                     measurement_gate.tag,
                 )
             )
         return gate_args
 
-    def permute_stim_circuit(
+    def permute_deltakit_stim_circuit(
         self,
-        stim_circuit: stim.Circuit,
+        deltakit_stim_circuit: deltakit_stim.Circuit,
         qubit_mapping: Mapping[Qubit[T], int] | None = None,
     ):
-        """Updates stim_circuit with the stim circuit which contains the gates
-        specified in this GateLayer.
+        """Updates deltakit_stim_circuit with the deltakit_stim circuit which contains
+        the gates specified in this GateLayer.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The stim circuit to be updated with the stim representation of
-            this gate layer
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to be updated with the deltakit_stim
+            representation of this gate layer.
 
         qubit_mapping : Mapping[Qubit[T], int] | None, optional
             A mapping between each qubit in this layer and an integer which is
-            necessary for outputting a stim circuit. By default None which
+            necessary for outputting a deltakit_stim circuit. By default None which
             means a default mapping is used.
         """
         qubit_mapping = (
@@ -249,10 +253,10 @@ class GateLayer(Generic[T]):
             args = () if error_probability == (0,) else error_probability
             kwargs = (
                 {"tag": tag}
-                if tag is not None and is_stim_tag_feature_available()
+                if tag is not None and is_deltakit_stim_tag_feature_available()
                 else {}
             )
-            stim_circuit.append(gate_string, targets, args, **kwargs)
+            deltakit_stim_circuit.append(gate_string, targets, args, **kwargs)
 
     def approx_equals(
         self,

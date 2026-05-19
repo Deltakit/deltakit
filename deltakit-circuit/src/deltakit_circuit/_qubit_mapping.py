@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """Module which defines mappings between qubits that deltakit_circuit uses and indices
-which stim uses."""
+which deltakit_stim uses."""
 
 from collections.abc import Iterable
 

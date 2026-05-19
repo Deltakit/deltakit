@@ -5,14 +5,16 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-import stim
+import deltakit_stim
 
+from deltakit_circuit._deltakit_stim_version_compatibility import (
+    is_deltakit_stim_tag_feature_available,
+)
 from deltakit_circuit._qubit_identifiers import Coordinate
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class ShiftCoordinates:
-    """Annotates a shift in the coordinates within a stim circuit. This
+    """Annotates a shift in the coordinates within a deltakit_stim circuit. This
     modifies coordinates associated to detectors and the user is required to
     put each shift coordinate in manually.
 
@@ -36,25 +38,30 @@ class ShiftCoordinates:
     def tag(self) -> str | None:
         return self._tag
 
-    def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):
-        """Updates stim_circuit with the single stim circuit which contains
-        this single coordinate shift
+    def permute_deltakit_stim_circuit(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, _qubit_mapping=None
+    ):
+        """Updates deltakit_stim_circuit with the single deltakit_stim circuit.
+
+        The deltakit_stim circuit contains the single coordinate shift.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The stim circuit to be updated with the stim representation of
-            this single coordinate shift
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to be updated with the deltakit_stim
+            representation of this single coordinate shift
 
         _qubit_mapping : None
             Unused argument to keep interface with other layer classes clean.
         """
         kwargs = (
             {"tag": self.tag}
-            if self.tag is not None and is_stim_tag_feature_available()
+            if self.tag is not None and is_deltakit_stim_tag_feature_available()
             else {}
         )
-        stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift, **kwargs)
+        deltakit_stim_circuit.append(
+            "SHIFT_COORDS", [], self._coordinate_shift, **kwargs
+        )
 
     def __eq__(self, other: object) -> bool:
         return (

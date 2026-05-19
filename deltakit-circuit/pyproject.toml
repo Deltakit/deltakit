@@ -32,9 +32,6 @@ classifiers = [
 ]
 
 dependencies = [
-  "stim>=1.12; python_version < '3.12'",
-  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim>=1.15; python_version >= '3.13'",
   "typing-extensions~=4.0",
   "packaging>=25.0",
 ]
@@ -66,7 +63,7 @@ files = "src/**/*.py"
 disable_error_code = "dict-item,misc,arg-type,return-value,union-attr,index,attr-defined,call-overload"
 
 [[tool.mypy.overrides]]
-module = ["stim"]
+module = ["deltakit-stim"]
 follow_untyped_imports = true
 
 [tool.pytest.ini_options]

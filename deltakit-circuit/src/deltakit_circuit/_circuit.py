@@ -10,7 +10,7 @@ from enum import IntEnum, auto
 from itertools import chain
 from typing import Generic, Literal, Protocol, get_args, no_type_check
 
-import stim
+import deltakit_stim
 
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._annotations._observable import Observable
@@ -22,7 +22,7 @@ from deltakit_circuit._noise_factory import (
     NoiseProfile,
 )
 from deltakit_circuit._noise_layer import NoiseLayer
-from deltakit_circuit._parse_stim import parse_circuit_instruction
+from deltakit_circuit._parse_deltakit_stim import parse_circuit_instruction
 from deltakit_circuit._qubit_identifiers import Coordinate, Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping
 from deltakit_circuit.gates._abstract_gates import OneQubitMeasurementGate
@@ -100,13 +100,13 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         Raises
         ------
         ValueError
-            If number_of_iterations is 0 or a negative number. Stim does not
+            If number_of_iterations is 0 or a negative number. Deltakit_Stim does not
             allow this, stating that produces ambiguity as to whether
             observables and qubits that are mentioned in the block "exist".
         """
         if number_of_iterations < 1:
             msg = (
-                "Stim does not allow repeat blocks to be repeated less than "
+                "Deltakit_Stim does not allow repeat blocks to be repeated less than "
                 f"1 time. Requested repeats was {number_of_iterations}."
             )
             raise ValueError(msg)
@@ -200,7 +200,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         flattened, i.e. all of the layers of that circuit are appended into
         this circuit. If the nested circuit has more than one iteration then no
         flattening occurs and this is analogous to inserting a repeat block
-        into stim.
+        into deltakit_stim.
 
         Please note that this append operation works by reference, the layers
         input into the circuit are not copied.
@@ -470,76 +470,80 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         sorted_layers.extend(sorted(unsorted_detectors, key=sort_key, reverse=reverse))
         self._layers = sorted_layers
 
-    def as_stim_circuit(
+    def as_deltakit_stim_circuit(
         self, qubit_mapping: Mapping[Qubit[T], int] | None = None
-    ) -> stim.Circuit:
-        """Get the equivalent Stim circuit from this deltakit_circuit circuit.
+    ) -> deltakit_stim.Circuit:
+        """Get the equivalent Deltakit_Stim circuit from this deltakit_circuit circuit.
 
         Parameters
         ----------
         qubit_mapping: Mapping[Qubit[T], int] | None, optional
             A way to associate an integer with every qubit type. This is
-            necessary because Stim represents qubits as single integers. This
+            necessary because Deltakit_Stim represents qubits as single integers. This
             mapping should be injective. If not specified, deltakit_circuit will try to
             create a mapping from the qubits specified.
 
         Returns
         -------
-        stim.Circuit
-            The equivalent Stim circuit.
+        deltakit_stim.Circuit
+            The equivalent Deltakit_Stim circuit.
 
         Examples
         --------
         >>> import deltakit_circuit as sp
         >>> circuit = sp.Circuit(sp.GateLayer([sp.gates.X(0), sp.gates.Y(1)]))
-        >>> circuit.as_stim_circuit()
-        stim.Circuit('''
+        >>> circuit.as_deltakit_stim_circuit()
+        deltakit_stim.Circuit('''
             X 0
             Y 1
         ''')
-        >>> circuit.as_stim_circuit(qubit_mapping={Qubit(0): 1, Qubit(1): 0})
-        stim.Circuit('''
+        >>> circuit.as_deltakit_stim_circuit(qubit_mapping={Qubit(0): 1, Qubit(1): 0})
+        deltakit_stim.Circuit('''
             X 1
             Y 0
         ''')
         """
-        stim_circuit = stim.Circuit()
-        self.permute_stim_circuit(stim_circuit, qubit_mapping)
-        return stim_circuit
+        deltakit_stim_circuit = deltakit_stim.Circuit()
+        self.permute_deltakit_stim_circuit(deltakit_stim_circuit, qubit_mapping)
+        return deltakit_stim_circuit
 
-    def permute_stim_circuit(
+    def permute_deltakit_stim_circuit(
         self,
-        stim_circuit: stim.Circuit,
+        deltakit_stim_circuit: deltakit_stim.Circuit,
         qubit_mapping: Mapping[Qubit[T], int] | None = None,
     ):
-        """Convert this circuit to a Stim circuit and append it to the end of
-        the given circuit. The helper method `as_stim_circuit` should be used
-        to create a new Stim circuit.
+        """Convert this circuit to a Deltakit_Stim circuit and append it to the end of
+        the given circuit. The helper method `as_deltakit_stim_circuit` should be used
+        to create a new Deltakit_Stim circuit.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The Stim circuit to append this circuit to.
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The Deltakit_Stim circuit to append this circuit to.
         qubit_mapping: Mapping[Qubit[T], int] | None, optional
             A way to associate an integer for every qubit type. This is
-            necessary because Stim represents qubits as single integers. This
+            necessary because Deltakit_Stim represents qubits as single integers. This
             mapping should be injective. If not specified, deltakit_circuit will try to
             create a mapping from the qubits specified.
         """
         if qubit_mapping is None:
             qubit_mapping = default_qubit_mapping(self.qubits)
-        inner_stim_circuit = stim.Circuit()
+        inner_deltakit_stim_circuit = deltakit_stim.Circuit()
         if self.iterations == 1:
             for qubit in self.qubits:
-                qubit.permute_stim_circuit(inner_stim_circuit, qubit_mapping)
+                qubit.permute_deltakit_stim_circuit(
+                    inner_deltakit_stim_circuit, qubit_mapping
+                )
         gate_layers = self.gate_layers()
         last_gate_layer = gate_layers[-1] if gate_layers else None
         for layer in self.layers:
-            layer.permute_stim_circuit(inner_stim_circuit, qubit_mapping)
+            layer.permute_deltakit_stim_circuit(
+                inner_deltakit_stim_circuit, qubit_mapping
+            )
             # Append a tick after every gate layer but not after the last one
             if isinstance(layer, GateLayer) and layer is not last_gate_layer:
-                inner_stim_circuit.append("TICK")
-        stim_circuit += self.iterations * inner_stim_circuit
+                inner_deltakit_stim_circuit.append("TICK")
+        deltakit_stim_circuit += self.iterations * inner_deltakit_stim_circuit
 
     def as_detector_error_model(  # noqa: PLR0913
         self,
@@ -549,12 +553,12 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         approximate_disjoint_errors: bool | float = False,
         ignore_decomposition_failures: bool = False,
         block_decomposition_from_introducing_remnant_edges: bool = False,
-    ) -> stim.DetectorErrorModel:
+    ) -> deltakit_stim.DetectorErrorModel:
         # pylint: disable=line-too-long,too-many-arguments
-        """Returns a stim.DetectorErrorModel describing the error process
+        """Returns a deltakit_stim.DetectorErrorModel describing the error process
         in the circuit. Arguments are described here:
-        https://github.com/quantumlib/Stim/blob/main/doc/
-        python_api_reference_vDev.md#stim.Circuit.detector_error_model
+        https://github.com/quantumlib/Deltakit_Stim/blob/main/doc/
+        python_api_reference_vDev.md#deltakit_stim.Circuit.detector_error_model
         """
         if (
             isinstance(approximate_disjoint_errors, float)
@@ -563,7 +567,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             msg = "approximate_disjoint_errors is not a valid probability"
             raise ValueError(msg)
 
-        return self.as_stim_circuit().detector_error_model(
+        return self.as_deltakit_stim_circuit().detector_error_model(
             decompose_errors=decompose_errors,
             flatten_loops=flatten_loops,
             allow_gauge_detectors=allow_gauge_detectors,
@@ -573,21 +577,21 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         )
 
     @classmethod
-    def from_stim_circuit(
+    def from_deltakit_stim_circuit(
         cls,
-        stim_circuit: stim.Circuit,
+        deltakit_stim_circuit: deltakit_stim.Circuit,
         qubit_mapping: Mapping[int, Qubit[Coordinate]] | None = None,
     ) -> Circuit:
-        """Parse a Stim circuit into a deltakit_circuit circuit.
+        """Parse a Deltakit_Stim circuit into a deltakit_circuit circuit.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The Stim circuit to convert into deltakit_circuit.
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The Deltakit_Stim circuit to convert into deltakit_circuit.
         qubit_mapping: Mapping[int, Qubit[Coordinate]] | None, optional
             An optional qubit mapping can be used to map qubit indices to
             coordinates. In almost all cases the qubit mapping can be obtained
-            from the Stim circuit so you should leave this as None unless
+            from the Deltakit_Stim circuit so you should leave this as None unless
             necessary.
 
         Returns
@@ -602,14 +606,14 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
 
         Examples
         --------
-        >>> import stim
+        >>> import deltakit_stim
         >>> import deltakit_circuit as sp
-        >>> stim_circuit = stim.Circuit('''
+        >>> deltakit_stim_circuit = deltakit_stim.Circuit('''
         ... X 0 1 2
         ... Y 1 2
         ... CX 0 1
         ... ''')
-        >>> sp.Circuit.from_stim_circuit(stim_circuit)
+        >>> sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
         Circuit([
             GateLayer([
                 X(Qubit(0))
@@ -625,29 +629,30 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             ])
         ], iterations=1)
         """
+        final_qubit_coords = deltakit_stim_circuit.get_final_qubit_coordinates()
         qubit_mapping = (
             {
                 index: Qubit(Coordinate(*coords), index)
-                for index, coords in stim_circuit.get_final_qubit_coordinates().items()
+                for index, coords in final_qubit_coords.items()
             }
             if qubit_mapping is None
             else qubit_mapping
         )
 
         layers: list[Layer] = []
-        for instruction in stim_circuit:
-            if isinstance(instruction, stim.CircuitRepeatBlock):
-                repeated_circuit = cls.from_stim_circuit(
+        for instruction in deltakit_stim_circuit:
+            if isinstance(instruction, deltakit_stim.CircuitRepeatBlock):
+                repeated_circuit = cls.from_deltakit_stim_circuit(
                     instruction.body_copy(), qubit_mapping
                 )
                 repeated_circuit.iterations = instruction.repeat_count
-                # If the stim circuit only consists of a repeat block just
+                # If the deltakit_stim circuit only consists of a repeat block just
                 # return the parsed circuit
-                if len(stim_circuit) == 1:
+                if len(deltakit_stim_circuit) == 1:
                     return repeated_circuit
                 layers.append(repeated_circuit)
             elif isinstance(
-                instruction, stim.CircuitInstruction
+                instruction, deltakit_stim.CircuitInstruction
             ) and instruction.name not in ("TICK", "QUBIT_COORDS"):
                 if isinstance(
                     (

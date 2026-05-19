@@ -1,5 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
-"""``deltakit.circuit.gates`` contains class-based representations of Stim gates."""
+"""``deltakit.circuit.gates`` contains class-based representations
+of Deltakit-Stim gates."""
 
 from deltakit_circuit.gates._abstract_gates import (
     Gate,
@@ -72,14 +73,14 @@ from deltakit_circuit.gates._two_qubit_gates import (
 _Gate = _OneQubitCliffordGate | _TwoQubitGate | _ResetGate | _MeasurementGate
 
 ONE_QUBIT_GATE_MAPPING: dict[str, type[_OneQubitCliffordGate]] = {
-    **{gate.stim_string: gate for gate in ONE_QUBIT_GATES},
+    **{gate.deltakit_stim_string: gate for gate in ONE_QUBIT_GATES},
     "H_XZ": H,
     "SQRT_Z": S,
     "SQRT_Z_DAG": S_DAG,
 }
 
 TWO_QUBIT_GATE_MAPPING: dict[str, type[_TwoQubitGate]] = {
-    **{gate.stim_string: gate for gate in TWO_QUBIT_GATES},
+    **{gate.deltakit_stim_string: gate for gate in TWO_QUBIT_GATES},
     "ZCX": CX,
     "CNOT": CX,
     "ZCY": CY,
@@ -87,18 +88,18 @@ TWO_QUBIT_GATE_MAPPING: dict[str, type[_TwoQubitGate]] = {
 }
 
 ONE_QUBIT_MEASUREMENT_GATE_MAPPING = {
-    **{gate.stim_string: gate for gate in MEASUREMENT_GATES - {MPP}},
+    **{gate.deltakit_stim_string: gate for gate in MEASUREMENT_GATES - {MPP}},
     "M": MZ,
     "MR": MRZ,
 }
 
 MEASUREMENT_GATE_MAPPING: dict[str, type[_MeasurementGate]] = {
     **ONE_QUBIT_MEASUREMENT_GATE_MAPPING,
-    MPP.stim_string: MPP,
+    MPP.deltakit_stim_string: MPP,
 }
 
 RESET_GATE_MAPPING: dict[str, type[_ResetGate]] = {
-    **{gate.stim_string: gate for gate in RESET_GATES},
+    **{gate.deltakit_stim_string: gate for gate in RESET_GATES},
     "R": RZ,
 }
 

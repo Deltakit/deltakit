@@ -9,7 +9,7 @@ from collections.abc import Generator, Mapping, Sequence
 from enum import Enum
 from typing import ClassVar, Generic, TypeVar, cast
 
-import stim
+import deltakit_stim
 from typing_extensions import Self
 
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U
@@ -28,11 +28,11 @@ class Gate(ABC, Generic[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
     """
 
-    stim_string: ClassVar[str]
+    deltakit_stim_string: ClassVar[str]
 
     def __init__(self, *, tag: str | None = None) -> None:
         super().__init__()
@@ -60,10 +60,10 @@ class Gate(ABC, Generic[T]):
         """
 
     @abstractmethod
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        """Convert the qubits this gate acts on to equivalent stim targets."""
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        """Convert the qubits this gate acts on to equivalent deltakit_stim targets."""
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
@@ -84,8 +84,8 @@ class OneQubitGate(Gate[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
 
     Parameters
     ----------
@@ -110,14 +110,14 @@ class OneQubitGate(Gate[T]):
         if (new_id := id_mapping.get(self._qubit.unique_identifier)) is not None:
             self._qubit = Qubit(new_id)
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
-        return (stim.GateTarget(qubit_mapping[self.qubit]),)
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
+        return (deltakit_stim.GateTarget(qubit_mapping[self.qubit]),)
 
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
-        return f"{self.stim_string}{tag_repr}({self.qubit})"
+        return f"{self.deltakit_stim_string}{tag_repr}({self.qubit})"
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and self.qubit == other.qubit
@@ -136,8 +136,8 @@ class OneQubitCliffordGate(OneQubitGate[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates with this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates with this gate.
     """
 
 
@@ -150,8 +150,8 @@ class OneQubitResetGate(OneQubitGate[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates with this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates with this gate.
     """
 
 
@@ -165,8 +165,8 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates to this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates to this gate.
     basis: PauliBasis
         The basis for the measurement.
     """
@@ -199,12 +199,12 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         """Get whether the measurement of this gate is inverted."""
         return self._is_inverted
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, ...]:
+    ) -> tuple[deltakit_stim.GateTarget, ...]:
         if self.is_inverted:
-            return (stim.target_inv(qubit_mapping[self.qubit]),)
-        return super().stim_targets(qubit_mapping)
+            return (deltakit_stim.target_inv(qubit_mapping[self.qubit]),)
+        return super().deltakit_stim_targets(qubit_mapping)
 
     def approx_equals(
         self, other: object, *, rel_tol: float = 1e-9, abs_tol: float = 0
@@ -263,7 +263,7 @@ class OneQubitMeasurementGate(OneQubitGate[T]):
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
             f"{'!' if self.is_inverted else ''}"
-            f"{self.stim_string}{tag_repr}({self.qubit}, "
+            f"{self.deltakit_stim_string}{tag_repr}({self.qubit}, "
             f"probability={self.probability})"
         )
 
@@ -288,11 +288,11 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates with this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates with this gate.
     """
 
-    stim_string: ClassVar[str]
+    deltakit_stim_string: ClassVar[str]
 
     def __init__(self, operand1: UT | T, operand2: VT | T, *, tag: str | None = None):
         super().__init__(tag=tag)
@@ -328,13 +328,13 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
         ):
             self._operand2 = Qubit(new_id2)  # type: ignore[assignment]
 
-    def stim_targets(
+    def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
-    ) -> tuple[stim.GateTarget, stim.GateTarget]:
-        """Get the stim gate targets which define this operation."""
+    ) -> tuple[deltakit_stim.GateTarget, deltakit_stim.GateTarget]:
+        """Get the deltakit_stim gate targets which define this operation."""
         return (
-            self._operand1.stim_targets(qubit_mapping)[0],
-            self._operand2.stim_targets(qubit_mapping)[0],
+            self._operand1.deltakit_stim_targets(qubit_mapping)[0],
+            self._operand2.deltakit_stim_targets(qubit_mapping)[0],
         )
 
     @classmethod
@@ -366,7 +366,9 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
 
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
-        return f"{self.stim_string}{tag_repr}({self._operand1}, {self._operand2})"
+        op1 = self._operand1
+        op2 = self._operand2
+        return f"{self.deltakit_stim_string}{tag_repr}({op1},{op2})"
 
 
 class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):
@@ -385,8 +387,8 @@ class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates with this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates with this gate.
     """
 
     @property
@@ -426,8 +428,8 @@ class ControlledGate(TwoOperandGate[UT, VT]):
 
     Attributes
     ----------
-    stim_string: str
-        The string that stim associates with this gate.
+    deltakit_stim_string: str
+        The string that deltakit_stim associates with this gate.
     """
 
     def __init__(self, control: UT | T, target: VT | T, *, tag: str | None = None):
@@ -466,6 +468,6 @@ class ControlledGate(TwoOperandGate[UT, VT]):
     def __repr__(self) -> str:
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}(control={self.control}, "
+            f"{self.deltakit_stim_string}{tag_repr}(control={self.control}, "
             f"target={self.target})"
         )

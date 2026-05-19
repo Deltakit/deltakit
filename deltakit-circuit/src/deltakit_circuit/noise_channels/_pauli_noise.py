@@ -32,7 +32,7 @@ class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):
     |   ``p : X``
     """
 
-    stim_string: ClassVar[str] = "X_ERROR"
+    deltakit_stim_string: ClassVar[str] = "X_ERROR"
 
 
 class PauliYError(OneQubitOneProbabilityNoiseChannel[T]):
@@ -52,7 +52,7 @@ class PauliYError(OneQubitOneProbabilityNoiseChannel[T]):
     |   ``p : Y``
     """
 
-    stim_string: ClassVar[str] = "Y_ERROR"
+    deltakit_stim_string: ClassVar[str] = "Y_ERROR"
 
 
 class PauliZError(OneQubitOneProbabilityNoiseChannel[T]):
@@ -72,7 +72,7 @@ class PauliZError(OneQubitOneProbabilityNoiseChannel[T]):
     |   ``p : Z``
     """
 
-    stim_string: ClassVar[str] = "Z_ERROR"
+    deltakit_stim_string: ClassVar[str] = "Z_ERROR"
 
 
 class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
@@ -99,7 +99,7 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
     |   ``pz: Z``
     """
 
-    stim_string: ClassVar[str] = "PAULI_CHANNEL_1"
+    deltakit_stim_string: ClassVar[str] = "PAULI_CHANNEL_1"
 
     def __init__(
         self,
@@ -143,7 +143,7 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
     def __repr__(self) -> str:
         tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}({self.qubit}, p_x={self.p_x}, "
+            f"{self.deltakit_stim_string}{tag_repr}({self.qubit}, p_x={self.p_x}, "
             f"p_y={self.p_y}, p_z={self.p_z})"
         )
 
@@ -214,7 +214,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
     # pylint: disable=too-many-arguments,too-many-instance-attributes,
     # pylint: disable=too-many-locals
 
-    stim_string: ClassVar[str] = "PAULI_CHANNEL_2"
+    deltakit_stim_string: ClassVar[str] = "PAULI_CHANNEL_2"
 
     def __init__(  # noqa: PLR0913
         self,
@@ -287,7 +287,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
     def __repr__(self) -> str:
         tag_repr = f"[{self.tag}]" if self.tag is not None else ""
         return (
-            f"{self.stim_string}{tag_repr}"
+            f"{self.deltakit_stim_string}{tag_repr}"
             f"(qubit1={self._qubit1}, qubit2={self._qubit2}, "
             f"p_ix={self.p_ix}, p_iy={self.p_iy}, p_iz={self.p_iz}, "
             f"p_xi={self.p_xi}, p_xx={self.p_xx}, p_xy={self.p_xy}, "

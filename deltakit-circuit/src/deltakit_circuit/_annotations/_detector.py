@@ -6,10 +6,12 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from itertools import chain
 
-import stim
+import deltakit_stim
 
+from deltakit_circuit._deltakit_stim_version_compatibility import (
+    is_deltakit_stim_tag_feature_available,
+)
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class Detector:
@@ -26,7 +28,7 @@ class Detector:
         An optional instruction tag.
     """
 
-    stim_string = "DETECTOR"
+    deltakit_stim_string = "DETECTOR"
 
     def __init__(
         self,
@@ -76,30 +78,38 @@ class Detector:
                 current_coordinate, current_coordinate
             )
 
-    def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):
-        """Updates stim_circuit with the stim circuit which specifies this
-        single detector.
+    def permute_deltakit_stim_circuit(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, _qubit_mapping=None
+    ):
+        """Updates deltakit_stim_circuit with the deltakit_stim circuit.
+
+        The deltakit_stim circuit specifies the single detector.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The stim circuit to be updated with the stim representation of
-            this detector
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to be updated with the deltakit_stim
+            representation of this detector.
 
         _qubit_mapping : None, optional
             Unused argument to make interface to this method equal to the
             same methods in layer classes.
         """
-        stim_targets = chain.from_iterable(
-            record.stim_targets() for record in self.measurements
+        deltakit_stim_targets = chain.from_iterable(
+            record.deltakit_stim_targets() for record in self.measurements
         )
-        stim_arguments = self.coordinate if self.coordinate is not None else ()
+        deltakit_stim_arguments = self.coordinate if self.coordinate is not None else ()
         kwargs = (
             {"tag": self.tag}
-            if self.tag is not None and is_stim_tag_feature_available()
+            if self.tag is not None and is_deltakit_stim_tag_feature_available()
             else {}
         )
-        stim_circuit.append(self.stim_string, stim_targets, stim_arguments, **kwargs)
+        deltakit_stim_circuit.append(
+            self.deltakit_stim_string,
+            deltakit_stim_targets,
+            deltakit_stim_arguments,
+            **kwargs,
+        )
 
     def __eq__(self, other: object) -> bool:
         return (

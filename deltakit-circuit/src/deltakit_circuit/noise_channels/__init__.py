@@ -42,18 +42,18 @@ _OneQubitNoiseChannel = (
 )
 
 NOISE_CHANNEL_MAPPING: dict[str, type[_NoiseChannel]] = {
-    CorrelatedError.stim_string: CorrelatedError,
+    CorrelatedError.deltakit_stim_string: CorrelatedError,
     "E": CorrelatedError,
-    ElseCorrelatedError.stim_string: ElseCorrelatedError,
-    Depolarise1.stim_string: Depolarise1,
-    Depolarise2.stim_string: Depolarise2,
-    PauliChannel1.stim_string: PauliChannel1,
-    PauliChannel2.stim_string: PauliChannel2,
-    PauliXError.stim_string: PauliXError,
-    PauliYError.stim_string: PauliYError,
-    PauliZError.stim_string: PauliZError,
-    Leakage.stim_string: Leakage,
-    Relax.stim_string: Relax,
+    ElseCorrelatedError.deltakit_stim_string: ElseCorrelatedError,
+    Depolarise1.deltakit_stim_string: Depolarise1,
+    Depolarise2.deltakit_stim_string: Depolarise2,
+    PauliChannel1.deltakit_stim_string: PauliChannel1,
+    PauliChannel2.deltakit_stim_string: PauliChannel2,
+    PauliXError.deltakit_stim_string: PauliXError,
+    PauliYError.deltakit_stim_string: PauliYError,
+    PauliZError.deltakit_stim_string: PauliZError,
+    Leakage.deltakit_stim_string: Leakage,
+    Relax.deltakit_stim_string: Relax,
 }
 
 

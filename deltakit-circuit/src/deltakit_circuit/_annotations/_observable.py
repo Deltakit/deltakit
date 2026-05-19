@@ -6,14 +6,16 @@ from __future__ import annotations
 from collections.abc import Iterable
 from itertools import chain
 
-import stim
+import deltakit_stim
 
 from deltakit_circuit._annotations._detector import MeasurementRecord
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
+from deltakit_circuit._deltakit_stim_version_compatibility import (
+    is_deltakit_stim_tag_feature_available,
+)
 
 
 class Observable:
-    """A logical observable as defined by stim.
+    """A logical observable as defined by deltakit_stim.
 
     Parameters
     ----------
@@ -25,7 +27,7 @@ class Observable:
         An optional instruction tag.
     """
 
-    stim_string = "OBSERVABLE_INCLUDE"
+    deltakit_stim_string = "OBSERVABLE_INCLUDE"
 
     def __init__(
         self,
@@ -53,30 +55,36 @@ class Observable:
     def measurements(self) -> frozenset[MeasurementRecord]:
         return self._measurements
 
-    def permute_stim_circuit(self, stim_circuit: stim.Circuit, _qubit_mapping=None):
-        """Updates stim_circuit with the stim circuit which includes this
-        logical observable.
+    def permute_deltakit_stim_circuit(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, _qubit_mapping=None
+    ):
+        """Updates deltakit_stim_circuit with the deltakit_stim circuit.
+
+        The deltakit_stim circuit includes the logical observable.
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The stim circuit to be updated with the stim representation of
-            this observable
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to be updated with the deltakit_stim
+            representation of this observable.
 
         _qubit_mapping : None, optional
             Unused argument to make interface to this method equal to the
             same methods in layer classes.
         """
-        stim_targets = chain.from_iterable(
-            record.stim_targets() for record in self.measurements
+        deltakit_stim_targets = chain.from_iterable(
+            record.deltakit_stim_targets() for record in self.measurements
         )
         kwargs = (
             {"tag": self.tag}
-            if self.tag is not None and is_stim_tag_feature_available()
+            if self.tag is not None and is_deltakit_stim_tag_feature_available()
             else {}
         )
-        stim_circuit.append(
-            self.stim_string, stim_targets, self._observable_index, **kwargs
+        deltakit_stim_circuit.append(
+            self.deltakit_stim_string,
+            deltakit_stim_targets,
+            self._observable_index,
+            **kwargs,
         )
 
     def __eq__(self, other: object) -> bool:

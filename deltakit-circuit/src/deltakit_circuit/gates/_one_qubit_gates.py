@@ -37,7 +37,7 @@ class I(OneQubitCliffordGate[T]):  # noqa: E742
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "I"
+    deltakit_stim_string: ClassVar[str] = "I"
 
 
 class X(OneQubitCliffordGate[T]):
@@ -66,7 +66,7 @@ class X(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "X"
+    deltakit_stim_string: ClassVar[str] = "X"
 
 
 class Y(OneQubitCliffordGate[T]):
@@ -95,7 +95,7 @@ class Y(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string = "Y"
+    deltakit_stim_string = "Y"
 
 
 class Z(OneQubitCliffordGate[T]):
@@ -124,7 +124,7 @@ class Z(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "Z"
+    deltakit_stim_string: ClassVar[str] = "Z"
 
 
 class H(OneQubitCliffordGate[T]):
@@ -154,7 +154,7 @@ class H(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "H"
+    deltakit_stim_string: ClassVar[str] = "H"
 
 
 class H_XY(OneQubitCliffordGate[T]):
@@ -185,7 +185,7 @@ class H_XY(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "H_XY"
+    deltakit_stim_string: ClassVar[str] = "H_XY"
 
 
 class H_YZ(OneQubitCliffordGate[T]):
@@ -216,7 +216,7 @@ class H_YZ(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "H_YZ"
+    deltakit_stim_string: ClassVar[str] = "H_YZ"
 
 
 class C_XYZ(OneQubitCliffordGate[T]):
@@ -246,7 +246,7 @@ class C_XYZ(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "C_XYZ"
+    deltakit_stim_string: ClassVar[str] = "C_XYZ"
 
 
 class C_ZYX(OneQubitCliffordGate[T]):
@@ -276,7 +276,7 @@ class C_ZYX(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "C_ZYX"
+    deltakit_stim_string: ClassVar[str] = "C_ZYX"
 
 
 class S(OneQubitCliffordGate[T]):
@@ -305,7 +305,7 @@ class S(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "S"
+    deltakit_stim_string: ClassVar[str] = "S"
 
 
 class S_DAG(OneQubitCliffordGate[T]):
@@ -335,7 +335,7 @@ class S_DAG(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "S_DAG"
+    deltakit_stim_string: ClassVar[str] = "S_DAG"
 
 
 class SQRT_X(OneQubitCliffordGate[T]):
@@ -366,7 +366,7 @@ class SQRT_X(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_X"
+    deltakit_stim_string: ClassVar[str] = "SQRT_X"
 
 
 class SQRT_X_DAG(OneQubitCliffordGate[T]):
@@ -397,7 +397,7 @@ class SQRT_X_DAG(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_X_DAG"
+    deltakit_stim_string: ClassVar[str] = "SQRT_X_DAG"
 
 
 class SQRT_Y(OneQubitCliffordGate[T]):
@@ -428,7 +428,7 @@ class SQRT_Y(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_Y"
+    deltakit_stim_string: ClassVar[str] = "SQRT_Y"
 
 
 class SQRT_Y_DAG(OneQubitCliffordGate[T]):
@@ -460,7 +460,7 @@ class SQRT_Y_DAG(OneQubitCliffordGate[T]):
         \\end{pmatrix}
     """
 
-    stim_string: ClassVar[str] = "SQRT_Y_DAG"
+    deltakit_stim_string: ClassVar[str] = "SQRT_Y_DAG"
 
 
 _OneQubitCliffordGate = (

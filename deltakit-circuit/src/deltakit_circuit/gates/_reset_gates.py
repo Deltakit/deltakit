@@ -30,7 +30,7 @@ class RZ(OneQubitResetGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Z
-    stim_string: ClassVar[str] = f"R{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"R{basis.value}"
 
 
 class RX(OneQubitResetGate[T]):
@@ -56,7 +56,7 @@ class RX(OneQubitResetGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.X
-    stim_string: ClassVar[str] = f"R{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"R{basis.value}"
 
 
 class RY(OneQubitResetGate[T]):
@@ -86,7 +86,7 @@ class RY(OneQubitResetGate[T]):
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Y
-    stim_string: ClassVar[str] = f"R{basis.value}"
+    deltakit_stim_string: ClassVar[str] = f"R{basis.value}"
 
 
 _ResetGate = RZ | RX | RY
