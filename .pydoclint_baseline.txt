@@ -155,10 +155,16 @@ deltakit-circuit/src/deltakit_circuit/_qubit_identifiers.py
     DOC103: Method `SweepBit.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [bit_index: int].
     DOC501: Method `SweepBit.__init__` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `SweepBit.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `SweepBit.deltakit_stim_targets`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `SweepBit.deltakit_stim_targets`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC103: Method `SweepBit.deltakit_stim_targets`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*_: ].
     DOC101: Method `MeasurementRecord.__init__`: Docstring contains fewer arguments than in function signature.
     DOC103: Method `MeasurementRecord.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [lookback_index: int].
     DOC501: Method `MeasurementRecord.__init__` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `MeasurementRecord.__init__` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['ValueError'].
+    DOC101: Method `MeasurementRecord.deltakit_stim_targets`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `MeasurementRecord.deltakit_stim_targets`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC103: Method `MeasurementRecord.deltakit_stim_targets`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [*_: ].
     DOC003: Function/method `transform_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `transform_qubits`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
