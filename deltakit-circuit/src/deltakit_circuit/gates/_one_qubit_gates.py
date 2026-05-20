@@ -14,23 +14,20 @@ from deltakit_circuit.gates._abstract_gates import OneQubitCliffordGate
 class I(OneQubitCliffordGate[T]):  # noqa: E742
     """Identity gate. Does nothing to the target qubit.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabiliser Generators:
-    |   ``X -> +X``
-    |   ``Z -> +Z``
-    | Bloch Rotation:
-    |   Axis:
-    |   Angle: 0 degrees.
+    Notes:
+        Stabiliser Generators:
+        ``X -> +X``
+        ``Z -> +Z``
+        Bloch Rotation:
+        Axis:
+        Angle: 0 degrees.
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\begin{pmatrix}
         1 & 0 \\\\
         0 & 1
@@ -43,23 +40,20 @@ class I(OneQubitCliffordGate[T]):  # noqa: E742
 class X(OneQubitCliffordGate[T]):
     """Pauli X gate. The bit flip gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +X``
-    |   ``Z -> -Z``
-    | Bloch Rotation:
-    |   Axis: +X,
-    |   Angle: 180 degrees.
+    Notes:
+        Stabilizer Generators:
+        ``X -> +X``
+        ``Z -> -Z``
+        Bloch Rotation:
+        Axis: +X,
+        Angle: 180 degrees.
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\begin{pmatrix}
         0 & 1 \\\\
         1 & 0
@@ -72,23 +66,20 @@ class X(OneQubitCliffordGate[T]):
 class Y(OneQubitCliffordGate[T]):
     """Pauli Y gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> -X``
-    |   ``Z -> -Z``
-    | Bloch Rotation:
-    |   Axis: +Y
-    |   Angle: 180 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> -X``
+        ``Z -> -Z``
+        Bloch Rotation:
+        Axis: +Y
+        Angle: 180 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\begin{pmatrix}
         0 & -i \\\\
         i & 0
@@ -101,23 +92,20 @@ class Y(OneQubitCliffordGate[T]):
 class Z(OneQubitCliffordGate[T]):
     """Pauli Z gate. The phase flip gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> -X``
-    |   ``Z -> +Z``
-    | Bloch Rotation:
-    |   Axis: +Z
-    |   Angle: 180 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> -X``
+        ``Z -> +Z``
+        Bloch Rotation:
+        Axis: +Z
+        Angle: 180 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\begin{pmatrix}
         1 & 0 \\\\
         0 & -1
@@ -130,23 +118,20 @@ class Z(OneQubitCliffordGate[T]):
 class H(OneQubitCliffordGate[T]):
     """The Hadamard gate. Swaps the X and Z axes.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Z``
-    |   ``Z -> +X``
-    | Bloch Rotation:
-    |   Axis: +X+Z
-    |   Angle: 180 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Z``
+        ``Z -> +X``
+        Bloch Rotation:
+        Axis: +X+Z
+        Angle: 180 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{\\sqrt{2}}
         \\begin{pmatrix}
         1 & 1 \\\\
@@ -161,23 +146,20 @@ class H_XY(OneQubitCliffordGate[T]):
     """A variant of the Hadamard gate that swaps the X and Y axes (instead of
     X and Z).
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Y``
-    |   ``Z -> -Z``
-    | Bloch Rotation:
-    |   Axis: +X+Y
-    |   Angle: 180 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Y``
+        ``Z -> -Z``
+        Bloch Rotation:
+        Axis: +X+Y
+        Angle: 180 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{\\sqrt{2}}
         \\begin{pmatrix}
         0 & 1-i \\\\
@@ -192,23 +174,20 @@ class H_YZ(OneQubitCliffordGate[T]):
     """A variant of the Hadamard gate that swaps the Y and Z axes (instead of
     X and Z).
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> -X``
-    |   ``Z -> +Y``
-    | Bloch Rotation:
-    |   Axis: +Y+Z
-    |   Angle: 180 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> -X``
+        ``Z -> +Y``
+        Bloch Rotation:
+        Axis: +Y+Z
+        Angle: 180 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{\\sqrt{2}}
         \\begin{pmatrix}
         1 & -i \\\\
@@ -222,23 +201,20 @@ class H_YZ(OneQubitCliffordGate[T]):
 class C_XYZ(OneQubitCliffordGate[T]):
     """Right handed period 3 axis cycling gate, sending X -> Y -> Z -> X.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Y``
-    |   ``Z -> +X``
-    | Bloch Rotation:
-    |   Axis: +X+Y+Z
-    |   Angle: 120 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Y``
+        ``Z -> +X``
+        Bloch Rotation:
+        Axis: +X+Y+Z
+        Angle: 120 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1-i & -1-i \\\\
@@ -252,23 +228,20 @@ class C_XYZ(OneQubitCliffordGate[T]):
 class C_ZYX(OneQubitCliffordGate[T]):
     """Left handed period 3 axis cycling gate, sending Z -> Y -> X -> Z.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Z``
-    |   ``Z -> +Y``
-    | Bloch Rotation:
-    |   Axis: +X+Y+Z
-    |   Angle: -120 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Z``
+        ``Z -> +Y``
+        Bloch Rotation:
+        Axis: +X+Y+Z
+        Angle: -120 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1+i & 1+i \\\\
@@ -280,25 +253,24 @@ class C_ZYX(OneQubitCliffordGate[T]):
 
 
 class S(OneQubitCliffordGate[T]):
-    """Principal square root of Z gate. Phases the amplitude of ``|1>`` by i.
+    """Principal square root of Z gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Phases the amplitude of ``|1>`` by i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Y``
-    |   ``Z -> +Z``
-    | Bloch Rotation:
-    |   Axis: +Z
-    |   Angle: 90 degrees
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Y``
+        ``Z -> +Z``
+        Bloch Rotation:
+        Axis: +Z
+        Angle: 90 degrees
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 \\\\
         0 & i
@@ -309,26 +281,24 @@ class S(OneQubitCliffordGate[T]):
 
 
 class S_DAG(OneQubitCliffordGate[T]):
-    """Adjoint of the principal square root of Z gate. Phases the amplitude
-    of ``|1>`` by -i.
+    """Adjoint of the principal square root of Z gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Phases the amplitude of ``|1>`` by -i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> -Y``
-    |   ``Z -> +Z``
-    | Bloch Rotation:
-    |   Axis: +Z
-    |   Angle: -90 degrees
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X -> -Y``
+        ``Z -> +Z``
+        Bloch Rotation:
+        Axis: +Z
+        Angle: -90 degrees
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 \\\\
         0 & -i
@@ -339,26 +309,25 @@ class S_DAG(OneQubitCliffordGate[T]):
 
 
 class SQRT_X(OneQubitCliffordGate[T]):
-    """Principal square root of X gate. Phases the amplitude of ``|->`` by i.
+    """Principal square root of X gate.
+
+    Phases the amplitude of ``|->`` by i.
     Equivalent to `H` then `S` then `H`.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +X``
-    |   ``Z -> -Y``
-    | Bloch Rotation:
-    |   Axis: +X
-    |   Angle: 90 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> +X``
+        ``Z -> -Y``
+        Bloch Rotation:
+        Axis: +X
+        Angle: 90 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1+i & 1-i \\\\
@@ -370,26 +339,25 @@ class SQRT_X(OneQubitCliffordGate[T]):
 
 
 class SQRT_X_DAG(OneQubitCliffordGate[T]):
-    """Adjoint of the principal square root of X gate. Phases the amplitude
-    of ``|->`` by -i. Equivalent to `H` then `S_DAG` then `H`.
+    """Adjoint of the principal square root of X gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Phases the amplitude of ``|->`` by -i.
+    Equivalent to `H` then `S_DAG` then `H`.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +X``
-    |   ``Z -> +Y``
-    | Bloch Rotation:
-    |   Axis: +X
-    |   Angle: -90 degrees
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X -> +X``
+        ``Z -> +Y``
+        Bloch Rotation:
+        Axis: +X
+        Angle: -90 degrees
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1-i & 1+i \\\\
@@ -404,23 +372,20 @@ class SQRT_Y(OneQubitCliffordGate[T]):
     """Principal square root of Y gate. Phases the amplitude of ``|-i>`` by i.
     Equivalent to `S` then `H` then `S` then `H` then `S_DAG`.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> -Z``
-    |   ``Z -> +X``
-    | Bloch Rotation:
-    |   Axis: +Y
-    |   Angle: 90 degrees
+    Notes:
+        Stabilizer Generators:
+        ``X -> -Z``
+        ``Z -> +X``
+        Bloch Rotation:
+        Axis: +Y
+        Angle: 90 degrees
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1+i & -1-i \\\\
@@ -432,27 +397,25 @@ class SQRT_Y(OneQubitCliffordGate[T]):
 
 
 class SQRT_Y_DAG(OneQubitCliffordGate[T]):
-    """Adjoint of the principal square root of Y gate. Phases the amplitude
-    of ``|-i>`` by -i. Equivalent to `S` then `H` then `S_DAG` then `H` then
-    `S_DAG`.
+    """Adjoint of the principal square root of Y gate.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
+    Phases the amplitude of ``|-i>`` by -i.
+    Equivalent to `S` then `H` then `S_DAG` then `H` then `S_DAG`.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X -> +Z``
-    |   ``Z -> -X``
-    | Bloch Rotation:
-    |   Axis: +Y
-    |   Angle: -90 degrees
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X -> +Z``
+        ``Z -> -X``
+        Bloch Rotation:
+        Axis: +Y
+        Angle: -90 degrees
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1-i & 1-i \\\\

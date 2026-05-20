@@ -137,7 +137,7 @@ class NoiseLayer(Generic[T]):
         ]
         correlated_noise = [
             AppendArguments(
-                noise_channel.deltakit_stim_str,
+                noise_channel.deltakit_stim_string,
                 noise_channel.deltakit_stim_targets(qubit_mapping),
                 noise_channel.probabilities,
                 noise_channel.tag,

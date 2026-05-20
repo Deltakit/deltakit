@@ -34,15 +34,11 @@ class Leakage(OneQubitOneProbabilityNoiseChannel[T]):
     which - in likeness of a reset gate - has the ability return a leaked
     qubit to the computational subspace.
 
-    Parameters
-    ----------
-    qubit : Qubit[T] | T
-        The qubit to apply leakage to.
-    probability : float
-        A single float specifying the leakage probability.
-    Notes
-    -----
-    | Pauli Mixture:
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Notes:
+        Implements the Pauli Mixture:
 
         1-p: no change to the qubit's energy level, apply I
         p/4: record that the qubit has left the computational subspace, apply I
@@ -65,13 +61,8 @@ class Relax(OneQubitOneProbabilityNoiseChannel[T]):
     and no longer marked as leaked. Once relaxed a qubit will, therefore,
     no longer depolarise qubits that it interacts with.
 
-    Parameters
-    ----------
-    qubit : Qubit[T] | T
-        The qubit to apply relaxation to.
-    probability : float
-        A single float specifying the relaxation probability.
-
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
     """
 
     deltakit_stim_string: ClassVar[str] = "RELAX"

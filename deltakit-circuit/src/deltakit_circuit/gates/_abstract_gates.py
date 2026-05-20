@@ -26,10 +26,8 @@ class PauliBasis(Enum):
 class Gate(ABC, Generic[T]):
     """Abstract gate class from which all other gate classes must inherit.
 
-    Attributes
-    ----------
-    deltakit_stim_string: str
-        The string that deltakit_stim associates to this gate.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
     """
 
     deltakit_stim_string: ClassVar[str]
@@ -63,7 +61,15 @@ class Gate(ABC, Generic[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, ...]:
-        """Convert the qubits this gate acts on to equivalent deltakit_stim targets."""
+        """Convert the qubits this gate acts on to equivalent deltakit_stim targets.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for the gate.
+
+        """
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
@@ -277,19 +283,18 @@ TwoOperandGateT = TypeVar("TwoOperandGateT", bound="TwoOperandGate")
 class TwoOperandGate(Gate, Generic[UT, VT]):
     """Abstraction of a Clifford gate which take two generic operands.
 
-    Parameters
-    ----------
-    operand1: UT | T
-        The first operand of this operation. If the argument is not a Qubit,
-        SweepBit or MeasurementRecord then the input is made into a Qubit.
-    operand2: VT | T
-        The second operand of this operation. If the argument is not a Qubit,
-        SweepBit or MeasurementRecord then the input is made into a Qubit.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Attributes
-    ----------
-    deltakit_stim_string: str
-        The string that deltakit_stim associates with this gate.
+    Args:
+        operand1: The first operand of this operation. If the argument is not a Qubit,
+            SweepBit or MeasurementRecord then the input is made into a Qubit.
+        operand2: The second operand of this operation. If the argument is not a Qubit,
+            SweepBit or MeasurementRecord then the input is made into a Qubit.
+
+    Raises:
+        ValueError: When operands on the two qubits are identical.
+
     """
 
     deltakit_stim_string: ClassVar[str]
@@ -331,7 +336,14 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, deltakit_stim.GateTarget]:
-        """Get the deltakit_stim gate targets which define this operation."""
+        """Get the deltakit_stim gate targets which define this operation.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return (
             self._operand1.deltakit_stim_targets(qubit_mapping)[0],
             self._operand2.deltakit_stim_targets(qubit_mapping)[0],
@@ -368,7 +380,7 @@ class TwoOperandGate(Gate, Generic[UT, VT]):
         tag_repr = f"[{self._tag}]" if self._tag is not None else ""
         op1 = self._operand1
         op2 = self._operand2
-        return f"{self.deltakit_stim_string}{tag_repr}({op1},{op2})"
+        return f"{self.deltakit_stim_string}{tag_repr}({op1}, {op2})"
 
 
 class SymmetricTwoQubitGate(TwoOperandGate[Qubit[T], Qubit[T]]):

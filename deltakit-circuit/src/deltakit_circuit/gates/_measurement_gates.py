@@ -29,32 +29,25 @@ class MZ(OneQubitMeasurementGate[T]):
     into :math:`\ket{0}` or :math:`\ket{1}` and reports its value (false =
     :math:`\ket{0}`, true = :math:`\ket{1}`).
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   Z -> m xor chance(p)
-    |   Z -> +Z
+        Stabilizer Generators:
+        Z -> m xor chance(p)
+        Z -> +Z
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``M 0``
-    |   M 0
-    | (The decomposition is trivial because this gate is in the target gate
-    | set.)
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``M 0``
+        M 0
+        (The decomposition is trivial because this gate is in the target gate
+        set.)
     """
 
     # pylint: disable=invalid-name
@@ -68,31 +61,24 @@ class MRZ(OneQubitMeasurementGate[T]):
     qubit into :math:`\ket{0}` or :math:`\ket{1}`, reports its value (false =
     :math:`\ket{0}`, true = :math:`\ket{1}`), then resets to :math:`\ket{0}`.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   Z -> m xor chance(p)
-    |   1 -> +Z
+        Stabilizer Generators:
+        Z -> m xor chance(p)
+        1 -> +Z
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``MR 0``
-    |   M 0
-    |   R 0
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``MR 0``
+        M 0
+        R 0
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Z
@@ -104,33 +90,26 @@ class MRX(OneQubitMeasurementGate[T]):
     qubit into :math:`\ket{+}` or :math:`\ket{-}`, reports its value (false =
     :math:`\ket{+}`, true = :math:`\ket{-}`), then resets to :math:`\ket{+}`.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   X -> m xor chance(p)
-    |   1 -> +X
+        Stabilizer Generators:
+        X -> m xor chance(p)
+        1 -> +X
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``MRX 0``
-    |   H 0
-    |   M 0
-    |   R 0
-    |   H 0
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``MRX 0``
+        H 0
+        M 0
+        R 0
+        H 0
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.X
@@ -142,37 +121,30 @@ class MRY(OneQubitMeasurementGate[T]):
     qubit into :math:`\ket{i}` or :math:`\ket{-i}`, reports its value (false =
     :math:`\ket{i}`, true = :math:`\ket{-i}`), then resets to :math:`\ket{i}`.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   Y -> m xor chance(p)
-    |   1 -> +Y
+        Stabilizer Generators:
+        Y -> m xor chance(p)
+        1 -> +Y
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``MRY 0``
-    |   S 0
-    |   S 0
-    |   S 0
-    |   H 0
-    |   R 0
-    |   M 0
-    |   H 0
-    |   S 0
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``MRY 0``
+        S 0
+        S 0
+        S 0
+        H 0
+        R 0
+        M 0
+        H 0
+        S 0
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Y
@@ -184,32 +156,25 @@ class MX(OneQubitMeasurementGate[T]):
      :math:`\ket{+}` or :math:`\ket{-}` and reports its value (false =
      :math:`\ket{+}`, true = :math:`\ket{-}`).
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   X -> +m xor chance(p)
-    |   X -> +X
+        Stabilizer Generators:
+        X -> +m xor chance(p)
+        X -> +X
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``MX 0``
-    |   H 0
-    |   M 0
-    |   H 0
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``MX 0``
+        H 0
+        M 0
+        H 0
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.X
@@ -221,36 +186,29 @@ class MY(OneQubitMeasurementGate[T]):
     :math:`\ket{i}` or :math:`\ket{-i}` and reports its value (false =
     :math:`\ket{i}`, true = :math:`\ket{-i}`).
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
 
-    | Stabilizer Generators:
-    |   Y -> m xor chance(p)
-    |   Y -> +Y
+        Stabilizer Generators:
+        Y -> m xor chance(p)
+        Y -> +Y
 
-    | Decomposition (into H, S, CX, M, R):
-    | The following circuit is equivalent (up to global phase) to ``MY 0``
-    |   S 0
-    |   S 0
-    |   S 0
-    |   H 0
-    |   M 0
-    |   H 0
-    |   S 0
+        Decomposition (into H, S, CX, M, R):
+        The following circuit is equivalent (up to global phase) to ``MY 0``
+        S 0
+        S 0
+        S 0
+        H 0
+        M 0
+        H 0
+        S 0
     """
 
     basis: ClassVar[PauliBasis] = PauliBasis.Y
@@ -259,28 +217,16 @@ class MY(OneQubitMeasurementGate[T]):
 
 # pylint: disable=invalid-name
 class HERALD_LEAKAGE_EVENT(OneQubitMeasurementGate[T]):
-    """
-    The single qubit leakage heralding gate (optionally noisy).
+    """The single qubit leakage heralding gate (optionally noisy).
 
     Determines whether or not a qubit is leaked and populates the measurement
     record with this data.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit that this gate acts on.
-    probability: float, optional
-        A single float specifying the probability of flipping each reported
-        leaked measurement result, by default 0.0.
-    invert: bool, optional
-        Whether to invert the result of this measurement.
-
-    Targets:
-    --------
-      Qubits to herald leakage for.
+    Attributes:
+        basis: The basis to reset the qubit into.
+        deltakit_stim_string: An identifier for the error type.
 
     Examples:
-    ---------
       # Herald leakage on qubit 0. If 0 is leaked put a 1 in the measurement
       # record, otherwise a 0
       HERALD_LEAKAGE_EVENT 0
@@ -302,37 +248,38 @@ class HERALD_LEAKAGE_EVENT(OneQubitMeasurementGate[T]):
 class MPP(Gate[T]):
     """Measure Pauli products.
 
-    Parameters
-    ----------
-    pauli_product : Union[PauliGateT, InvertiblePauliGateT, \
-                          Iterable[PauliGateT | InvertiblePauliGateT], \
-                          MeasurementPauliProduct[T]]
-        The product of pauli gates to measure. All options will internally be
-        converted to a ``MeasurementPauliProduct`` instance.
-    probability : float, optional
-        A single float specifying the probability of flipping each reported
-        measurement result, by default 0.0.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Examples
-    --------
-    >>> import deltakit_circuit as sp
-    >>> sp.gates.MPP([sp.PauliX(1), sp.PauliY(2)])
-    MPP([PauliX(Qubit(1)), PauliY(Qubit(2))], probability=0.0)
-    >>> sp.gates.MPP(~sp.InvertiblePauliZ(5))
-    MPP([!PauliZ(Qubit(5))], probability=0.0)
-    >>> sp.gates.MPP([sp.PauliX(1), sp.PauliX(2)], 0.01)
-    MPP([PauliX(Qubit(1)), PauliX(Qubit(2))], probability=0.01)
+    Args:
+        pauli_product: The product of pauli gates to measure.
+                       All options will internally be
+                       converted to a ``MeasurementPauliProduct`` instance.
+        probability: A single float specifying the probability of flipping
+                     each reported measurement result, by default 0.0.
+        tag: A tag to hold additional metadata.
 
-    Notes
-    -----
-    If this gate is parameterized by a probability argument, the recorded
-    result will be flipped with that probability. If not, the recorded result
-    is noiseless. Note that the noise only affects the recorded result, not
-    the target qubit's state.
+    Raises:
+        ValueError: if the probability parameter is not in [0,1].
 
-    | Stabilizer Generators:
-    |   P -> m xor chance(p)
-    |   P -> P
+    Examples:
+        >>> import deltakit_circuit as sp
+        >>> sp.gates.MPP([sp.PauliX(1), sp.PauliY(2)])
+        MPP([PauliX(Qubit(1)), PauliY(Qubit(2))], probability=0.0)
+        >>> sp.gates.MPP(~sp.InvertiblePauliZ(5))
+        MPP([!PauliZ(Qubit(5))], probability=0.0)
+        >>> sp.gates.MPP([sp.PauliX(1), sp.PauliX(2)], 0.01)
+        MPP([PauliX(Qubit(1)), PauliX(Qubit(2))], probability=0.01)
+
+    Notes:
+        If this gate is parameterized by a probability argument, the recorded
+        result will be flipped with that probability. If not, the recorded result
+        is noiseless. Note that the noise only affects the recorded result, not
+        the target qubit's state.
+
+        Stabilizer Generators:
+        P -> m xor chance(p)
+        P -> P
     """
 
     deltakit_stim_string: ClassVar[str] = "MPP"
@@ -376,7 +323,14 @@ class MPP(Gate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, ...]:
-        """Get all qubits for this gate in a tuple."""
+        """Get all qubits for this gate in a tuple.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return self.pauli_product.deltakit_stim_targets(qubit_mapping)
 
     @property

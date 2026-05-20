@@ -18,18 +18,16 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import (
 class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):
     """Applies a Pauli X with a given probability.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to apply bit flip noise to.
-    probability: float
-        A single float specifying the probability of applying an X operation.
+    For a given qubit, apply an X operation conditioned to input
+    probability.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-p: I``
-    |   ``p : X``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Notes:
+        Implement the Pauli Mixture:
+        ``1-p: I``
+        ``p : X``
     """
 
     deltakit_stim_string: ClassVar[str] = "X_ERROR"
@@ -38,18 +36,16 @@ class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):
 class PauliYError(OneQubitOneProbabilityNoiseChannel[T]):
     """Applies a Pauli Y with a given probability.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to apply Y flip noise to.
-    probability: float
-        A single float specifying the probability of applying a Y operation.
+    For a given qubit, apply a Y operation conditioned to input
+    probability.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-p: I``
-    |   ``p : Y``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Notes:
+        Implement the Pauli Mixture:
+        ``1-p: I``
+        ``p : Y``
     """
 
     deltakit_stim_string: ClassVar[str] = "Y_ERROR"
@@ -58,18 +54,16 @@ class PauliYError(OneQubitOneProbabilityNoiseChannel[T]):
 class PauliZError(OneQubitOneProbabilityNoiseChannel[T]):
     """Applies a Pauli Z with a given probability.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to apply phase flip noise to.
-    probability: float
-        A single float specifying the probability of applying a Z operation.
+    For a given qubit, apply a Z operation conditioned to input
+    probability.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-p: I``
-    |   ``p : Z``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Notes:
+        Implement the Pauli Mixture:
+        ``1-p: I``
+        ``p : Z``
     """
 
     deltakit_stim_string: ClassVar[str] = "Z_ERROR"
@@ -79,24 +73,26 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
     """A single qubit Pauli error channel with explicitly specified
     probabilities for each case.
 
-    Parameters
-    ----------
-    qubit : Qubit[T] | T
-        The qubit to apply the custom noise channel to.
-    p_x : float, optional
-        Probability of applying an X operation, by default 0.0
-    p_y : float, optional
-        Probability of applying a Y operation, by default 0.0
-    p_z : float, optional
-        Probability of applying a Z operation, by default 0.0
+    For a given qubit, apply conditional X operation with probability p_x,
+    conditional Y operation with probability p_y and conditional Z operation
+    with probability p_z.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-px-py-pz: I``
-    |   ``px: X``
-    |   ``py: Y``
-    |   ``pz: Z``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Args:
+        qubit: The qubit to apply the channel on to.
+        p_x: Probability of applying an X operation, by default 0.0.
+        p_y: Probability of applying a Y operation, by default 0.0.
+        p_z: Probability of applying a Z operation, by default 0.0.
+        tag: A tag to hold additional metadata.
+
+    Notes:
+        Implements the Pauli Mixture:
+        ``1-px-py-pz: I``
+        ``px: X``
+        ``py: Y``
+        ``pz: Z``
     """
 
     deltakit_stim_string: ClassVar[str] = "PAULI_CHANNEL_1"
@@ -149,66 +145,53 @@ class PauliChannel1(OneQubitNoiseChannel[T], MultiProbabilityNoiseChannel[T]):
 
 
 class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
-    """A two-qubit Pauli error channel with explicitly specified probabilities
-    for each case.
+    """A two-qubit Pauli error channel with explicitly specified
+    probabilities for each case.
 
-    Parameters
-    ----------
-    qubit1: Qubit[T] | T
-        The first qubit in the noise channel.
-    qubit2: Qubit[T] | T
-        The second qubit in the noise channel.
-    p_ix : float, optional
-        Probability of applying an IX operation, by default 0.0
-    p_iy : float, optional
-        Probability of applying an IY operation, by default 0.0
-    p_iz : float, optional
-        Probability of applying an IZ operation, by default 0.0
-    p_xi : float, optional
-        Probability of applying an XI operation, by default 0.0
-    p_xx : float, optional
-        Probability of applying an XX operation, by default 0.0
-    p_xy : float, optional
-        Probability of applying an XY operation, by default 0.0
-    p_xz : float, optional
-        Probability of applying an XZ operation, by default 0.0
-    p_yi : float, optional
-        Probability of applying a YI operation, by default 0.0
-    p_yx : float, optional
-        Probability of applying a YX operation, by default 0.0
-    p_yy : float, optional
-        Probability of applying a YY operation, by default 0.0
-    p_yz : float, optional
-        Probability of applying a YZ operation, by default 0.0
-    p_zi : float, optional
-        Probability of applying a ZI operation, by default 0.0
-    p_zx : float, optional
-        Probability of applying a ZX operation, by default 0.0
-    p_zy : float, optional
-        Probability of applying a ZY operation, by default 0.0
-    p_zz : float, optional
-        Probability of applying a ZZ operation, by default 0.0
+    For a given qubit, apply conditional X operation with probability p_x,
+    conditional Y operation with probability p_y and conditional Z operation
+    with probability p_z.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-pix-piy-piz-pxi-pxx-pxy-pxz-pyi-pyx-pyy-pyz-pzi-pzx-pzy-pzz: II``
-    |   ``p_ix: IX``
-    |   ``p_iy: IY``
-    |   ``p_iz: IZ``
-    |   ``p_xi: XI``
-    |   ``p_xx: XX``
-    |   ``p_xy: XY``
-    |   ``p_xz: XZ``
-    |   ``p_yi: YI``
-    |   ``p_yx: YX``
-    |   ``p_yy: YY``
-    |   ``p_yz: YZ``
-    |   ``p_zi: ZI``
-    |   ``p_zx: ZX``
-    |   ``p_zy: ZY``
-    |   ``p_zz: ZZ``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
+    Args:
+        qubit1: The first qubit in the noise channel.
+        qubit2: The second qubit in the noise channel.
+        p_ix: Probability of applying an IX operation, by default 0.0
+        p_iy: Probability of applying an IY operation, by default 0.0
+        p_iz: Probability of applying an IZ operation, by default 0.0
+        p_xi: Probability of applying an XI operation, by default 0.0
+        p_xx: Probability of applying an XX operation, by default 0.0
+        p_xy: Probability of applying an XY operation, by default 0.0
+        p_xz: Probability of applying an XZ operation, by default 0.0
+        p_yi: Probability of applying a YI operation, by default 0.0
+        p_yx: Probability of applying a YX operation, by default 0.0
+        p_yy: Probability of applying a YY operation, by default 0.0
+        p_yz: Probability of applying a YZ operation, by default 0.0
+        p_zi: Probability of applying a ZI operation, by default 0.0
+        p_zx: Probability of applying a ZX operation, by default 0.0
+        p_zy: Probability of applying a ZY operation, by default 0.0
+        p_zz: Probability of applying a ZZ operation, by default 0.0
+
+    Notes:
+        Implements the Pauli Mixture:
+        ``1-pix-piy-piz-pxi-pxx-pxy-pxz-pyi-pyx-pyy-pyz-pzi-pzx-pzy-pzz: II``
+        ``p_ix: IX``
+        ``p_iy: IY``
+        ``p_iz: IZ``
+        ``p_xi: XI``
+        ``p_xx: XX``
+        ``p_xy: XY``
+        ``p_xz: XZ``
+        ``p_yi: YI``
+        ``p_yx: YX``
+        ``p_yy: YY``
+        ``p_yz: YZ``
+        ``p_zi: ZI``
+        ``p_zx: ZX``
+        ``p_zy: ZY``
+        ``p_zz: ZZ``
     """
 
     # pylint: disable=too-many-arguments,too-many-instance-attributes,

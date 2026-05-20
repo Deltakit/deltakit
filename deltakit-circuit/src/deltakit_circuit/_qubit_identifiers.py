@@ -98,6 +98,9 @@ class Qubit(Generic[T]):
     def deltakit_stim_identifier(self) -> int:
         """Get the integer that identifies this qubit in the context
         of a deltakit_stim circuit.
+
+        Raises:
+            ValueError: When no identifier is defined.
         """
         if self._deltakit_stim_identifier is None:
             msg = f"{self} has no deltakit_stim identifier."
@@ -107,7 +110,14 @@ class Qubit(Generic[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target gate target for this qubit."""
+        """Get the deltakit_stim target gate target for this qubit.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return (deltakit_stim.GateTarget(qubit_mapping[self]),)
 
     def permute_deltakit_stim_circuit(
@@ -116,7 +126,13 @@ class Qubit(Generic[T]):
         qubit_mapping: Mapping[Qubit[T], int],
     ):
         """Generate a deltakit_stim circuit for a qubit. This is only a non empty
-        circuit when T is a Coordinate."""
+        circuit when T is a Coordinate.
+
+        Args:
+            deltakit_stim_circuit: The input circuit.
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        """
         if isinstance((coordinate := self.unique_identifier), Coordinate):
             # Get deltakit_stim to construct the string since it will format (0,) into
             # (0, 0) so coordinates with single values are not output.
@@ -160,7 +176,12 @@ class SweepBit:
         return self._bit_index
 
     def deltakit_stim_targets(self, *_) -> tuple[deltakit_stim.GateTarget]:
-        """Get this sweep bit as a deltakit_stim gate target."""
+        """Get this sweep bit as a deltakit_stim gate target.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+
+        """
         return (
             deltakit_stim.GateTarget(deltakit_stim.target_sweep_bit(self._bit_index)),
         )
@@ -229,8 +250,14 @@ class MeasurementRecord:
         return self._lookback_index
 
     def deltakit_stim_targets(self, *_) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
-        return deltakit_stim.GateTarget(deltakit_stim.target_rec(self.lookback_index))
+        """Get the deltakit_stim target for this gate.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
+        return (
+            deltakit_stim.GateTarget(deltakit_stim.target_rec(self.lookback_index)),
+        )
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -247,8 +274,18 @@ class MeasurementRecord:
 
 class PauliGate(Generic[T]):
     """Abstract representation of a Pauli gate which can be used in a Pauli
-    Product class. This is required for the Measurement Pauli Product gate and
-    also the Correlated Error noise models."""
+    Product class.
+
+    This is required for the Measurement Pauli Product gate and
+    also the Correlated Error noise models.
+
+    Attributes:
+        deltakit_stim_identifier: An identifier for the error type.
+
+    Args:
+        qubit: The qubit to apply this gate onto.
+
+    """
 
     deltakit_stim_identifier: ClassVar[str]
 
@@ -293,10 +330,11 @@ class PauliX(PauliGate[T]):
     """Representation of an X gate on a single qubit which is used in Pauli
     products.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the X gate on.
+    Attributes:
+        deltakit_stim_identifier: an identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the X gate on.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "X"
@@ -304,9 +342,17 @@ class PauliX(PauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
-        return deltakit_stim.GateTarget(
-            deltakit_stim.target_x(qubit_mapping[self.qubit])
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+
+        """
+        return (
+            deltakit_stim.GateTarget(deltakit_stim.target_x(qubit_mapping[self.qubit])),
         )
 
 
@@ -314,10 +360,11 @@ class PauliY(PauliGate[T]):
     """Representation of a Y gate on a single qubit which is used in Pauli
     products.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the Y gate on.
+    Attributes:
+        deltakit_stim_identifier: an identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the Y gate on.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "Y"
@@ -325,9 +372,16 @@ class PauliY(PauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
-        return deltakit_stim.GateTarget(
-            deltakit_stim.target_y(qubit_mapping[self.qubit])
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
+        return (
+            deltakit_stim.GateTarget(deltakit_stim.target_y(qubit_mapping[self.qubit])),
         )
 
 
@@ -335,10 +389,11 @@ class PauliZ(PauliGate[T]):
     """Representation of a Z gate on a single qubit which is used in Pauli
     products.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the Z gate on.
+    Attributes:
+        deltakit_stim_identifier: an identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the Z gate on.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "Z"
@@ -346,15 +401,27 @@ class PauliZ(PauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
-        return deltakit_stim.GateTarget(
-            deltakit_stim.target_z(qubit_mapping[self.qubit])
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
+        return (
+            deltakit_stim.GateTarget(deltakit_stim.target_z(qubit_mapping[self.qubit])),
         )
 
 
 class InvertiblePauliGate(PauliGate[T]):
     """Abstract representation of an invertible Pauli gate which is used in
     invertible Pauli products, such as the MPP gate.
+
+    Args:
+        qubit: The qubit to act the Z gate on.
+        invert: Whether to invert the result of this gate measurement.
+                Defaults to False.
     """
 
     def __init__(self, qubit: Qubit[T] | T, invert: bool = False):
@@ -384,15 +451,17 @@ class InvertiblePauliGate(PauliGate[T]):
 
 class InvertiblePauliX(InvertiblePauliGate[T]):
     """Representation of an X gate measurement on a single qubit the result of
-    which can be inverted. Needed for measuring Pauli products.
+    which can be inverted.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the X gate on.
-    invert: bool, optional
-        Whether to invert the result of this gate measurement, by default
-        False.
+    Needed for measuring Pauli products.
+
+    Attributes:
+        deltakit_stim_identifier: An identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the X gate on.
+        invert: Whether to invert the result of this gate measurement.
+                Defaults to False.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "X"
@@ -400,7 +469,14 @@ class InvertiblePauliX(InvertiblePauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return (
             deltakit_stim.GateTarget(
                 deltakit_stim.target_x(
@@ -415,15 +491,17 @@ class InvertiblePauliX(InvertiblePauliGate[T]):
 
 class InvertiblePauliY(InvertiblePauliGate[T]):
     """Representation of a Y gate measurement on a single qubit the result of
-    which can be inverted. Needed for measuring Pauli products.
+    which can be inverted.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the Y gate on.
-    invert: bool, optional
-        Whether to invert the result of this gate measurement, by default
-        False.
+    Needed for measuring Pauli products.
+
+    Attributes:
+        deltakit_stim_identifier: An identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the Y gate on.
+        invert: Whether to invert the result of this gate measurement.
+                Defaults to False.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "Y"
@@ -431,7 +509,14 @@ class InvertiblePauliY(InvertiblePauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return (
             deltakit_stim.GateTarget(
                 deltakit_stim.target_y(
@@ -448,13 +533,13 @@ class InvertiblePauliZ(InvertiblePauliGate[T]):
     """Representation of a Z gate measurement on a single qubit the result of
     which can be inverted. Needed for measuring Pauli products.
 
-    Parameters
-    ----------
-    qubit: Qubit[T] | T
-        The qubit to act the Z gate on.
-    invert: bool, optional
-        Whether to invert the result of this gate measurement, by default
-        False.
+    Attributes:
+        deltakit_stim_identifier: An identifier for the error type.
+
+    Args:
+        qubit: The qubit to act the Z gate on.
+        invert: Whether to invert the result of this gate measurement.
+                Defaults to False.
     """
 
     deltakit_stim_identifier: ClassVar[str] = "Z"
@@ -462,7 +547,14 @@ class InvertiblePauliZ(InvertiblePauliGate[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget]:
-        """Get the deltakit_stim target for this gate."""
+        """Get the deltakit_stim target for this gate.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         return (
             deltakit_stim.GateTarget(
                 deltakit_stim.target_z(
@@ -547,7 +639,14 @@ class MeasurementPauliProduct(Generic[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, ...]:
-        """Return all deltakit_stim targets which specify this Pauli product."""
+        """Return all deltakit_stim targets which specify this Pauli product.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
         # Create a list which is the same length as the final output and just
         # contains the deltakit_stim combiners.
         with_combiners = [deltakit_stim.target_combiner()] * (
@@ -556,7 +655,7 @@ class MeasurementPauliProduct(Generic[T]):
         # Replace the even items of the combiner list with the appropriate
         # Pauli gate target.
         with_combiners[0::2] = chain.from_iterable(
-            gate.deltakit_stim_targets(qubit_mapping) for gate in self._pauli_gates
+            gate.deltakit_stim_targets(qubit_mapping) for gate in self.pauli_gates
         )
         return tuple(with_combiners)
 
@@ -606,12 +705,18 @@ class PauliProduct(MeasurementPauliProduct[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, ...]:
-        """Return all deltakit_stim targets which specify this Pauli product."""
-        return tuple(
-            chain.from_iterable(
-                gate.deltakit_stim_targets(qubit_mapping) for gate in self.pauli_gates
-            )
+        """Return all deltakit_stim targets which specify this Pauli product.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing qubit targets for this gate.
+        """
+        target_chain = chain.from_iterable(
+            gate.deltakit_stim_targets(qubit_mapping) for gate in self.pauli_gates
         )
+        return tuple(target_chain)
 
     def __iter__(self) -> Iterator[_PauliGate]:
         return iter(self._pauli_gates)

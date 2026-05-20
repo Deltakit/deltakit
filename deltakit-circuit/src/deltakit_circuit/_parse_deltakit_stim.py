@@ -60,7 +60,11 @@ from deltakit_circuit.noise_channels import (
 
 class InstructionNotImplementedError(NotImplementedError):
     """Derived error class for deltakit_stim instructions which cannot be parsed by
-    deltakit_circuit yet."""
+    deltakit_circuit yet.
+
+    Args:
+        instruction: An instruction to be parsed and compile into deltakit_circuit.
+    """
 
     def __init__(
         self,
@@ -169,6 +173,15 @@ def _parse_mpp_instruction(
           length of the Pauli gates list is 1 then this is just a single gate
           and not a product. Otherwise make a Pauli product from the list of
           Pauli gates and add it to the gate layer.
+
+    Args:
+        instruction_targets: A sequence of qubit targets for the instruction.
+        instruction_arguments: An iterable of error probabilities.
+        tag: A tag for instruction metadata.
+        qubit_mapping: A mapping from qubits to a unique identifier.
+
+    Returns:
+        GateLayer: A gate layer containing the MPP instruction.
     """
     probability = next(iter(instruction_arguments), 0.0)
 
@@ -272,31 +285,24 @@ def parse_deltakit_stim_gate_instruction(
 ) -> GateLayer | Iterable[GateLayer]:
     """Parse a single instruction which is a gate into a gate layer.
 
-    Parameters
-    ----------
-    deltakit_circuit_gate_class : Type[GateT]
-        The type of gate which defined this gate instruction.
-    instruction_targets : Sequence[deltakit_stim.GateTarget]
-        The deltakit_stim instruction targets to act the gate on.
-    instruction_arguments : Sequence[float]
-        The additional arguments to give to the gate. These are commonly just
-        the probabilities for non-deterministic gates.
-    instruction_tag : (str | None)
-        Tag associated with the instruction. None if no tag was present.
-    qubit_mapping : Mapping[int, Qubit]
-        A mapping for qubits where coordinates have been specified
-        in deltakit_stim. The mapping maps each qubit's index to the respective
-        object of type Qubit.
+    Args:
+        deltakit_circuit_gate_class: The type of gate which defined this
+            gate instruction.
+        instruction_targets: The deltakit_stim instruction targets to act the gate on.
+        instruction_arguments: The additional arguments to give to the gate.
+            These are commonly just the probabilities for non-deterministic gates.
+        instruction_tag: Tag associated with the instruction.
+            None if no tag was present.
+        qubit_mapping: A mapping for qubits where coordinates have been specified
+            in deltakit_stim.
+            The mapping maps each qubit's index to the respective object of type Qubit.
 
-    Returns
-    -------
-    GateLayer | Iterable[GateLayer]
-        A gate layer containing the gate in the gate instruction.
+    Returns:
+        GateLayer | Iterable[GateLayer]: A gate layer containing the gate
+            in the gate instruction.
 
-    Raises
-    ------
-    ValueError
-        If the given gate is not a recognised deltakit_circuit gate class.
+    Raises:
+        ValueError: If the given gate is not a recognised deltakit_circuit gate class.
     """
     if issubclass(
         deltakit_circuit_gate_class, (OneQubitCliffordGate, OneQubitResetGate)
@@ -342,26 +348,23 @@ def parse_deltakit_stim_noise_instruction(
 ) -> NoiseLayer:
     """Parse a single instruction which is a noise into a NoiseLayer.
 
-    Parameters
-    ----------
-    deltakit_circuit_noise_class : Type[_NoiseChannel]
-        The type of noise channel which defines this instruction.
-    instruction_targets : Sequence[deltakit_stim.GateTarget]
-        The deltakit_stim instruction targets to act the noise channel on.
-    instruction_arguments : Sequence[float]
-        The probabilities which define the noise channel.
-    instruction_tag : (str | None)
-        Tag associated with the instruction. None if no tag was present.
+    Args:
+        deltakit_circuit_noise_class: The type of noise channel which
+            defines this instruction.
+        instruction_targets: The deltakit_stim instruction targets to act
+            the noise channel on.
+        instruction_arguments: The probabilities which define the noise channel.
+        instruction_tag: Tag associated with the instruction.
+            None if no tag was present.
+        qubit_mapping: A mapping from qubits to a unique identifier.
 
-    Returns
-    -------
-    NoiseLayer
-        The noise layer containing the noise channel in the deltakit_stim instruction.
+    Returns:
+        NoiseLayer: The noise layer containing the noise channel in the
+            deltakit_stim instruction.
 
-    Raises
-    ------
-    ValueError
-        If the type of noise is not a recognised deltakit_circuit noise channel.
+    Raises:
+        ValueError: If the type of noise is not a recognised
+            deltakit_circuit noise channel.
     """
     if issubclass(
         deltakit_circuit_noise_class,

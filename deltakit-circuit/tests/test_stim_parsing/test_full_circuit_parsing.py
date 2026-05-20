@@ -4,7 +4,7 @@ import pytest
 
 import deltakit_circuit as sp
 from deltakit_circuit._parse_deltakit_stim import (
-    InstructionNotImplemented,
+    InstructionNotImplementedError,
     parse_circuit_instruction,
 )
 
@@ -19,7 +19,7 @@ from deltakit_circuit._parse_deltakit_stim import (
 def test_error_is_raised_when_parsing_unhandled_circuit_instruction(
     unhandled_instruction,
 ):
-    with pytest.raises(InstructionNotImplemented):
+    with pytest.raises(InstructionNotImplementedError):
         parse_circuit_instruction(unhandled_instruction, {})
 
 

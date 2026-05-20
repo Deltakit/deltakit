@@ -606,6 +606,9 @@ def test_after_reset_flip_probability_adds_correct_errors():
     )
 
 
+# Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
+# (e.g. after_clifford_depolarisation, before_measure_flip_probability).
+# These tests check that deltakit_circuit can apply the noise transformations.
 @pytest.mark.parametrize(
     (
         "clean_deltakit_stim_circuit",
@@ -764,9 +767,6 @@ def test_deltakit_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in
     noisy_deltakit_stim_circuit,
     deltakit_circuit_noise_profile,
 ):
-    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
-    (e.g. after_clifford_depolarisation, before_measure_flip_probability).
-    These tests check that deltakit_circuit can apply the noise transformations"""
     expected_deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
         noisy_deltakit_stim_circuit
     )
@@ -825,10 +825,6 @@ def test_deltakit_stim_circuits_can_be_manipulated_with_multiple_types_of_noise_
     noisy_deltakit_stim_circuit,
     deltakit_circuit_noise_profile,
 ):
-    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
-    (e.g. after_clifford_depolarisation, before_measure_flip_probability).
-    These tests check that deltakit_circuit can apply multiple of these noise
-    transformations simultaneously"""
     expected_deltakit_circuit_circuit = sp.Circuit.from_deltakit_stim_circuit(
         noisy_deltakit_stim_circuit
     )
@@ -840,10 +836,6 @@ def test_deltakit_stim_circuits_can_be_manipulated_with_multiple_types_of_noise_
 
 
 def test_deltakit_stim_circuits_can_be_manipulated_with_all_types_of_noise_exposed_in_deltakit_stim_simultaneously():
-    """Deltakit_Stim exposes a number of types of noise in deltakit_stim.Circuit.generated
-    (e.g. after_clifford_depolarisation, before_measure_flip_probability).
-    These tests check that deltakit_circuit can apply all of these noise
-    transformations simultaneously"""
     clean_deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x", rounds=3, distance=3
     )

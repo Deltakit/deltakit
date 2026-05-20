@@ -18,20 +18,15 @@ class Depolarise1(OneQubitOneProbabilityNoiseChannel[T]):
     """The one-qubit depolarising channel. Applies a randomly chosen Pauli
     with a given probability.
 
-    Parameters
-    ----------
-    qubit : Qubit[T] | T
-        The qubit to apply one-qubit depolarising noise to.
-    probability : float
-        A single float specifying the depolarisation strength.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-p: I``
-    |   ``p/3: X``
-    |   ``p/3: Y``
-    |   ``p/3: Z``
+    Notes:
+        Implements the Pauli Mixture:
+        ``1-p: I``
+        ``p/3: X``
+        ``p/3: Y``
+        ``p/3: Z``
     """
 
     deltakit_stim_string: ClassVar[str] = "DEPOLARIZE1"
@@ -41,34 +36,32 @@ class Depolarise2(OneProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
     """The two-qubit depolarising channel.  Applies a randomly chosen
     two-qubit Pauli product with a given probability.
 
-    Parameters
-    ----------
-    qubit1: Qubit[T] | T
-        The first qubit in the noise channel.
-    qubit2: Qubit[T] | T
-        The second qubit in the noise channel.
-    probability : float
-        A single float specifying the depolarisation strength.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    Notes
-    -----
-    | Pauli Mixture:
-    |   ``1-p: II``
-    |   ``p/15: IX``
-    |   ``p/15: IY``
-    |   ``p/15: IZ``
-    |   ``p/15: XI``
-    |   ``p/15: XX``
-    |   ``p/15: XY``
-    |   ``p/15: XZ``
-    |   ``p/15: YI``
-    |   ``p/15: YX``
-    |   ``p/15: YY``
-    |   ``p/15: YZ``
-    |   ``p/15: ZI``
-    |   ``p/15: ZX``
-    |   ``p/15: ZY``
-    |   ``p/15: ZZ``
+    Args:
+        qubit1: The first qubit in the noise channel.
+        qubit2: The second qubit in the noise channel.
+        probability: A single float specifying the depolarisation strength.
+
+    Notes:
+        Implements the Pauli Mixture:
+        ``1-p: II``
+        ``p/15: IX``
+        ``p/15: IY``
+        ``p/15: IZ``
+        ``p/15: XI``
+        ``p/15: XX``
+        ``p/15: XY``
+        ``p/15: XZ``
+        ``p/15: YI``
+        ``p/15: YX``
+        ``p/15: YY``
+        ``p/15: YZ``
+        ``p/15: ZI``
+        ``p/15: ZX``
+        ``p/15: ZY``
+        ``p/15: ZZ``
     """
 
     deltakit_stim_string: ClassVar[str] = "DEPOLARIZE2"

@@ -11,16 +11,13 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import PauliProduc
 
 class CorrelatedError(PauliProductNoise[T]):
     """Probabilistically applies a Pauli product error with a given
-    probability. Sets the "correlated error occurred flag" to true if the
+    probability.
+
+    Sets the "correlated error occurred flag" to true if the
     error occurred. Otherwise sets the flag to false.
 
-    Parameters
-    ----------
-    pauli_product : PauliGateT | Iterable[PauliGateT] | PauliProduct[T]
-        The Pauli gates specifying the Paulis to apply when the error occurs.
-    probability : float
-        A single float specifying the probability of applying the Paulis
-        making up the error.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
     """
 
     deltakit_stim_string: ClassVar[str] = "CORRELATED_ERROR"
@@ -28,17 +25,14 @@ class CorrelatedError(PauliProductNoise[T]):
 
 class ElseCorrelatedError(PauliProductNoise[T]):
     """Probabilistically applies a Pauli product error with a given
-    probability, unless the "correlated error occurred flag" is set. If the
-    error occurs, sets the "correlated error occurred flag" to true. Otherwise
-    leaves the flag alone.
+    probability.
 
-    Parameters
-    ----------
-    pauli_product : PauliGateT | Iterable[PauliGateT] | PauliProduct[T]
-        The Pauli gates specifying the Paulis to apply when the error occurs.
-    probability : float
-        A single float specifying the probability of applying the Paulis
-        making up the error.
+    The error is applied unless the "correlated error occurred flag" is set.
+    If the error occurs, sets the "correlated error occurred flag" to true.
+    Otherwise, leaves the flag alone.
+
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
     """
 
     deltakit_stim_string: ClassVar[str] = "ELSE_CORRELATED_ERROR"

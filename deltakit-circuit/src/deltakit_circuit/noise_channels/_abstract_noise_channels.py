@@ -26,10 +26,13 @@ class NoiseChannel(ABC, Generic[T]):
     """Abstract base noise channel which all other noise channel classes must
     implement.
 
-    Attributes
-    ----------
-    deltakit_stim_string: str
-        The string that deltakit_stim associates to this gate.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Args:
+        *_args: Any input argument.
+        tag: A tag to hold additional metadata.
+        **_kwargs: Any input keyword argument.
     """
 
     deltakit_stim_string: ClassVar[str]
@@ -64,7 +67,14 @@ class NoiseChannel(ABC, Generic[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, ...]:
-        """Return all the deltakit_stim targets which specifies this noise channel."""
+        """Return all the deltakit_stim targets which specifies this noise channel.
+
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing gate targets.
+        """
 
     @abstractmethod
     def transform_qubits(self, id_mapping: Mapping[T, U]):
@@ -310,7 +320,13 @@ class TwoQubitNoiseChannel(NoiseChannel[T]):
     def deltakit_stim_targets(
         self, qubit_mapping: Mapping[Qubit[T], int]
     ) -> tuple[deltakit_stim.GateTarget, deltakit_stim.GateTarget]:
-        """Get all deltakit_stim gate targets for this noise channel in a tuple."""
+        """Get all deltakit_stim gate targets for this noise channel in a tuple.
+        Args:
+            qubit_mapping: A mapping from qubits to a unique identifier.
+
+        Returns:
+            A tuple containing gate targets for the noise channel.
+        """
         return (
             self._qubit1.deltakit_stim_targets(qubit_mapping)[0],
             self._qubit2.deltakit_stim_targets(qubit_mapping)[0],

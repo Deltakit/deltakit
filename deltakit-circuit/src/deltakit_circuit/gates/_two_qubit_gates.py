@@ -17,23 +17,27 @@ from deltakit_circuit.gates._abstract_gates import ControlledGate, SymmetricTwoQ
 
 
 class CX(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
-    """The Z-controlled X gate. First qubit is the control, second qubit is
-    the target. The first qubit can be replaced by a measurement record.
+    """The Z-controlled X gate.
+
+    First qubit is the control, second qubit is the target.
+    The first qubit can be replaced by a measurement record.
     Applies an X gate to the target if the control is in the ``|1>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|1,->`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XX``
-    |   ``Z_ -> +Z_``
-    |   ``_X -> +_X``
-    |   ``_Z -> +ZZ``
+    Notes:
+        Negates the amplitude of the ``|1,->`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XX``
+        ``Z_ -> +Z_``
+        ``_X -> +_X``
+        ``_Z -> +ZZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & 0 & 1 \\\\
@@ -46,23 +50,27 @@ class CX(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
 
 
 class CY(ControlledGate[Qubit[T] | SweepBit | MeasurementRecord, Qubit[T]]):
-    """The Z-controlled Y gate. First qubit is the control, second qubit is
-    the target. The first qubit can be replaced by a measurement record.
+    """The Z-controlled Y gate.
+
+    First qubit is the control, second qubit is the target.
+    The first qubit can be replaced by a measurement record.
     Applies a Y gate to the target if the control is in the ``|1>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|1,-i>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XY``
-    |   ``Z_ -> +Z_``
-    |   ``_X -> +ZX``
-    |   ``_Z -> +ZZ``
+    Notes:
+        Negates the amplitude of the ``|1,-i>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XY``
+        ``Z_ -> +Z_``
+        ``_X -> +ZX``
+        ``_Z -> +ZZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & 0 & -i \\\\
@@ -82,19 +90,21 @@ class CZ(
     the target. Either qubit can be replaced by a measurement record. Applies
     a Z gate to the target if the control is in the ``|1>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|1,1>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XZ``
-    |   ``Z_ -> +Z_``
-    |   ``_X -> +ZX``
-    |   ``_Z -> +_Z``
+    Notes:
+        Negates the amplitude of the ``|1,1>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XZ``
+        ``Z_ -> +Z_``
+        ``_X -> +ZX``
+        ``_Z -> +_Z``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 1 & 0 & 0 \\\\
@@ -118,17 +128,19 @@ class CZ(
 class SWAP(SymmetricTwoQubitGate[T]):
     """Swaps two qubits.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +_X``
-    |   ``Z_ -> +_Z``
-    |   ``_X -> +X_``
-    |   ``_Z -> +Z_``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +_X``
+        ``Z_ -> +_Z``
+        ``_X -> +X_``
+        ``_Z -> +Z_``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & 1 & 0 \\\\
@@ -144,17 +156,19 @@ class ISWAP(SymmetricTwoQubitGate[T]):
     """Swaps two qubits and phases the -1 eigenspace of the ZZ observable by i.
     Equivalent to `SWAP` then `CZ` then `S` on both targets.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +ZY``
-    |   ``Z_ -> +_Z``
-    |   ``_X -> +YZ``
-    |   ``_Z -> +Z_``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +ZY``
+        ``Z_ -> +_Z``
+        ``_X -> +YZ``
+        ``_Z -> +Z_``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & i & 0 \\\\
@@ -168,19 +182,23 @@ class ISWAP(SymmetricTwoQubitGate[T]):
 
 class ISWAP_DAG(SymmetricTwoQubitGate[T]):
     """Swaps two qubits and phases the -1 eigenspace of the ZZ observable by
-    -i. Equivalent to `SWAP` then `CZ` then `S_DAG` on both targets.
+    -i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> -ZY``
-    |   ``Z_ -> +_Z``
-    |   ``_X -> -YZ``
-    |   ``_Z -> +Z_``
+    Equivalent to `SWAP` then `CZ` then `S_DAG` on both targets.
 
-    | Unitary Matrix:
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    .. math::
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> -ZY``
+        ``Z_ -> +_Z``
+        ``_X -> -YZ``
+        ``_Z -> +Z_``
+
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & -i & 0 \\\\
@@ -195,17 +213,19 @@ class ISWAP_DAG(SymmetricTwoQubitGate[T]):
 class SQRT_XX(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the XX observable by i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +X_``
-    |   ``Z_ -> -YX``
-    |   ``_X -> +_X``
-    |   ``_Z -> -XY``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +X_``
+        ``Z_ -> -YX``
+        ``_X -> +_X``
+        ``_Z -> -XY``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1+i & 0 & 0 & 1-i \\\\
@@ -221,17 +241,19 @@ class SQRT_XX(SymmetricTwoQubitGate[T]):
 class SQRT_XX_DAG(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the XX observable by -i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +X_``
-    |   ``Z_ -> +YX``
-    |   ``_X -> +_X``
-    |   ``_Z -> +XY``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +X_``
+        ``Z_ -> +YX``
+        ``_X -> +_X``
+        ``_Z -> +XY``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1-i & 0 & 0 & 1+i \\\\
@@ -247,17 +269,19 @@ class SQRT_XX_DAG(SymmetricTwoQubitGate[T]):
 class SQRT_YY(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the YY observable by i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> -ZY``
-    |   ``Z_ -> +XY``
-    |   ``_X -> -YZ``
-    |   ``_Z -> +YX``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> -ZY``
+        ``Z_ -> +XY``
+        ``_X -> -YZ``
+        ``_Z -> +YX``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1+i & 0 & 0 & -1+i \\\\
@@ -273,17 +297,19 @@ class SQRT_YY(SymmetricTwoQubitGate[T]):
 class SQRT_YY_DAG(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the YY observable by -i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +ZY``
-    |   ``Z_ -> -XY``
-    |   ``_X -> +YZ``
-    |   ``_Z -> -YX``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +ZY``
+        ``Z_ -> -XY``
+        ``_X -> +YZ``
+        ``_Z -> -YX``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1-i & 0 & 0 & -1-i \\\\
@@ -299,17 +325,19 @@ class SQRT_YY_DAG(SymmetricTwoQubitGate[T]):
 class SQRT_ZZ(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the ZZ observable by i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> +YZ``
-    |   ``Z_ -> +Z_``
-    |   ``_X -> +ZY``
-    |   ``_Z -> +_Z``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> +YZ``
+        ``Z_ -> +Z_``
+        ``_X -> +ZY``
+        ``_Z -> +_Z``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & i & 0 & 0 \\\\
@@ -324,17 +352,19 @@ class SQRT_ZZ(SymmetricTwoQubitGate[T]):
 class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
     """Phases the -1 eigenspace of the ZZ observable by -i.
 
-    Notes
-    -----
-    | Stabilizer Generators:
-    |   ``X_ -> -YZ``
-    |   ``Z_ -> +Z_``
-    |   ``_X -> -ZY``
-    |   ``_Z -> +_Z``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> -YZ``
+        ``Z_ -> +Z_``
+        ``_X -> -ZY``
+        ``_Z -> +_Z``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & -i & 0 & 0 \\\\
@@ -347,23 +377,27 @@ class SQRT_ZZ_DAG(SymmetricTwoQubitGate[T]):
 
 
 class XCX(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
-    """The X-controlled X gate. First qubit is the control, second qubit is
-    the target. Applies an X gate to the target if the control is in the
+    """The X-controlled X gate.
+
+    First qubit is the control, second qubit is the target.
+    Applies an X gate to the target if the control is in the
     ``|->`` state.
 
-    Notes
-    -----
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
+
+    Notes:
     Negates the amplitude of the ``|-,->`` state.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +X_``
-    |   ``Z_ -> +ZX``
-    |   ``_X -> +_X``
-    |   ``_Z -> +XZ``
+        Stabilizer Generators:
+        ``X_ -> +X_``
+        ``Z_ -> +ZX``
+        ``_X -> +_X``
+        ``_Z -> +XZ``
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1 & 1 & 1 & -1 \\\\
@@ -386,23 +420,27 @@ class XCX(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
 
 
 class XCY(ControlledGate[Qubit[T], Qubit[T]]):
-    """The X-controlled Y gate. First qubit is the control, second qubit is
-    the target. Applies a Y gate to the target if the control is in the
+    """The X-controlled Y gate.
+
+    First qubit is the control, second qubit is the target.
+    Applies a Y gate to the target if the control is in the
     ``|->`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|-,-i>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +X_``
-    |   ``Z_ -> +ZY``
-    |   ``_X -> +XX``
-    |   ``_Z -> +XZ``
+    Notes:
+        Negates the amplitude of the ``|-,-i>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +X_``
+        ``Z_ -> +ZY``
+        ``_X -> +XX``
+        ``_Z -> +XZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac]{1}{2}
         \\begin{pmatrix}
         1 & 1 & -i & i \\\\
@@ -416,23 +454,27 @@ class XCY(ControlledGate[Qubit[T], Qubit[T]]):
 
 
 class XCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
-    """The X-controlled Z gate. First qubit is the control, second qubit is
-    the target. The second qubit can be replaced by a measurement record.
+    """The X-controlled Z gate.
+
+    First qubit is the control, second qubit is the target.
+    The second qubit can be replaced by a measurement record.
     Applies a Z gate to the target if the control is in the ``|->`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|-,1>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +X_``
-    |   ``Z_ -> +ZZ``
-    |   ``_X -> +XX``
-    |   ``_Z -> +_Z``
+    Notes:
+        Negates the amplitude of the ``|-,1>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +X_``
+        ``Z_ -> +ZZ``
+        ``_X -> +XX``
+        ``_Z -> +_Z``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 1 & 0 & 0 \\\\
@@ -445,23 +487,27 @@ class XCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
 
 
 class YCX(ControlledGate[Qubit[T], Qubit[T]]):
-    """The Y-controlled X gate. First qubit is the control, second qubit is
-    the target. Applies an X gate to the target if the control is in the
+    """The Y-controlled X gate.
+
+    First qubit is the control, second qubit is the target.
+    Applies an X gate to the target if the control is in the
     ``|-i>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|-i,->`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XX``
-    |   ``Z_ -> +ZX``
-    |   ``_X -> +_X``
-    |   ``_Z -> +YZ``
+    Notes:
+        Negates the amplitude of the ``|-i,->`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XX``
+        ``Z_ -> +ZX``
+        ``_X -> +_X``
+        ``_Z -> +YZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1 & -i & 1 & i \\\\
@@ -475,23 +521,27 @@ class YCX(ControlledGate[Qubit[T], Qubit[T]]):
 
 
 class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
-    """The Y-controlled Y gate. First qubit is the control, second qubit is
+    """The Y-controlled Y gate.
+
+    First qubit is the control, second qubit is
     the target. Applies a Y gate to the target if the control is in the
     ``|-i>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|-i,-i>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XY``
-    |   ``Z_ -> +ZY``
-    |   ``_X -> +YX``
-    |   ``_Z -> +YZ``
+    Notes:
+        Negates the amplitude of the ``|-i,-i>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XY``
+        ``Z_ -> +ZY``
+        ``_X -> +YX``
+        ``_Z -> +YZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\frac{1}{2}
         \\begin{pmatrix}
         1 & -i & -i & 1 \\\\
@@ -514,23 +564,27 @@ class YCY(ControlledGate[Qubit[T], Qubit[T]], SymmetricTwoQubitGate[Qubit[T]]):
 
 
 class YCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
-    """The Y-controlled Z gate. First qubit is the control, second qubit is
-    the target. The second qubit can be replaced by a measurement record.
+    """The Y-controlled Z gate.
+
+    First qubit is the control, second qubit is the target.
+    The second qubit can be replaced by a measurement record.
     Applies a Z gate to the target if the control is in the ``|-i>`` state.
 
-    Notes
-    -----
-    Negates the amplitude of the ``|-i,1>`` state.
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> +XZ``
-    |   ``Z_ -> +ZZ``
-    |   ``_X -> +YX``
-    |   ``_Z -> +_Z``
+    Notes:
+        Negates the amplitude of the ``|-i,1>`` state.
 
-    | Unitary Matrix:
+        Stabilizer Generators:
+        ``X_ -> +XZ``
+        ``Z_ -> +ZZ``
+        ``_X -> +YX``
+        ``_Z -> +_Z``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 1 & 0 & 0 \\\\
@@ -543,23 +597,25 @@ class YCZ(ControlledGate[Qubit[T], Qubit[T] | SweepBit | MeasurementRecord]):
 
 
 class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
-    """A combination CX-and-SWAP gate. This gate is kak-equivalent
-    to the ISWAP gate, but preserves X/Z noise bias. Equivalent to
-    `CNOT` from target to control, immediately followed by another
-    `CNOT` from control to target.
+    """A combination CX-and-SWAP gate.
 
-    Notes
-    -----
+    This gate is kak-equivalent to the ISWAP gate, but preserves
+    X/Z noise bias. Equivalent to `CNOT` from target to control,
+    immediately followed by another `CNOT` from control to target.
 
-    | Stabilizer Generators:
-    |   ``X_ -> XX``
-    |   ``Z_ -> _Z``
-    |   ``_X -> X_``
-    |   ``_Z -> ZZ``
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Unitary Matrix:
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> XX``
+        ``Z_ -> _Z``
+        ``_X -> X_``
+        ``_Z -> ZZ``
 
-    .. math::
+        Unitary Matrix:
+
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & 1 & 0 \\\\
@@ -572,23 +628,26 @@ class CXSWAP(ControlledGate[Qubit[T], Qubit[T]]):
 
 
 class CZSWAP(SymmetricTwoQubitGate, ControlledGate[Qubit[T], Qubit[T]]):
-    """A combination CZ-and-SWAP gate. This gate is kak-equivalent
-    to the `ISWAP` gate. Equivalent to `H` on the target qubit, followed
-    by `CNOT` from target to control, `CNOT` from control to target,
+    """A combination CZ-and-SWAP gate.
+
+    This gate is kak-equivalent to the `ISWAP` gate.
+    Equivalent to `H` on the target qubit, followed by `CNOT`
+    from target to control, `CNOT` from control to target,
     and finally `H` on the control qubit.
 
-    Notes
-    -----
+    Attributes:
+        deltakit_stim_string: An identifier for the error type.
 
-    | Stabilizer Generators:
-    |   ``X_ -> ZX``
-    |   ``Z_ -> _Z``
-    |   ``_X -> XZ``
-    |   ``_Z -> Z_``
+    Notes:
+        Stabilizer Generators:
+        ``X_ -> ZX``
+        ``Z_ -> _Z``
+        ``_X -> XZ``
+        ``_Z -> Z_``
 
-    | Unitary Matrix:
+        Unitary Matrix:
 
-    .. math::
+        .. math::
         \\begin{pmatrix}
         1 & 0 & 0 & 0 \\\\
         0 & 0 & 1 & 0 \\\\
