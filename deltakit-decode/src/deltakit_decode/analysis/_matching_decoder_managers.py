@@ -25,7 +25,7 @@ from deltakit_decode.analysis._decoder_manager import (
     DecoderManager,
     NoiseModelDecoderManager,
 )
-from deltakit_decode.noise_sources import SampleDeltakit_StimNoise
+from deltakit_decode.noise_sources import SampleDeltakitStimNoise
 from deltakit_decode.noise_sources._generic_noise_sources import NoiseModel
 
 DeltakitStimOutput: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
@@ -42,7 +42,7 @@ class DeltakitStimDecoderManager(
     ]
 ):
     """Decoder manager to support Deltakit_Stim circuits being used for noise generation, and
-    Deltakit_Stim observables to define decoder success.
+    deltakit_stim observables to define decoder success.
 
     Parameters
     ----------
@@ -51,8 +51,8 @@ class DeltakitStimDecoderManager(
     decoder : GraphDecoder
         Decoder to use to decode generated shots.
     noise_model : NoiseModel[deltakit_stim.Circuit, DeltakitStimOutput] | None, optional
-        Deltakit_Stim circuit based noise model to use, when `None` an instance of
-        `SampleDeltakit_StimNoise` which will just directly take samples from the
+        deltakit_stim circuit based noise model to use, when `None` an instance of
+        `SampleDeltakitStimNoise` which will just directly take samples from the
         `deltakit_stim_noise_circuit` is used.
     reporters : Optional[List[BaseReporter]], optional
         Optional list of reporters to give extra information about a decoder,
@@ -76,7 +76,7 @@ class DeltakitStimDecoderManager(
         batch_size: int = int(1e4),
     ):
         if noise_model is None:
-            noise_model = SampleDeltakit_StimNoise()
+            noise_model = SampleDeltakitStimNoise()
         super().__init__(
             noise_model,
             len(decoder.logicals),

@@ -11,8 +11,8 @@ from deltakit_decode.analysis._empirical_decoding_error_distribution import (
 )
 from deltakit_decode.analysis._matching_decoder_managers import (
     B8DecoderManager,
+    DeltakitStimDecoderManager,
     GraphDecoderManager,
-    StimDecoderManager,
 )
 from deltakit_decode.analysis._run_all_analysis_engine import RunAllAnalysisEngine
 
