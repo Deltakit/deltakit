@@ -3,6 +3,12 @@
 Sub-package for defining sources of noise to be used in QEC experiments.
 """
 
+from deltakit_decode.noise_sources._deltakit_stim_noise_sources import (
+    DeltakitStimNoise,
+    OptionedDeltakitStim,
+    SampleDeltakitStimNoise,
+    ToyNoise,
+)
 from deltakit_decode.noise_sources._generic_noise_sources import (
     CombinedIndependent,
     CombinedSequences,
@@ -18,12 +24,6 @@ from deltakit_decode.noise_sources._matching_noise_sources import (
     NoMatchingNoise,
     UniformErasureNoise,
     UniformMatchingNoise,
-)
-from deltakit_decode.noise_sources._stim_noise_sources import (
-    OptionedStim,
-    SampleStimNoise,
-    StimNoise,
-    ToyNoise,
 )
 
 # List only public members in `__all__`.

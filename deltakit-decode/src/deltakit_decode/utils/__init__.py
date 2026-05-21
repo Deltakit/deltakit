@@ -15,9 +15,9 @@ from deltakit_decode.utils._derivation_tools_pij import (
     pijs_edge_diff,
 )
 from deltakit_decode.utils._graph_circuit_helpers import (
-    parse_stim_circuit,
+    deltakit_stim_circuit_to_graph_dem,
+    parse_deltakit_stim_circuit,
     split_measurement_bitstring,
-    stim_circuit_to_graph_dem,
 )
 from deltakit_decode.utils._log_utils import make_logger
 from deltakit_decode.utils._pij_visualiser import plot_correlation_matrix

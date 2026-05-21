@@ -2,27 +2,29 @@
 from itertools import tee
 
 import deltakit_circuit as sp
+import deltakit_stim
 import networkx as nx
 import pytest
-import stim
 from deltakit_core.decoding_graphs import FixedWidthBitstring
 
 from deltakit_decode.utils._graph_circuit_helpers import (
-    parse_stim_circuit,
+    deltakit_stim_circuit_to_graph_dem,
+    parse_deltakit_stim_circuit,
     split_measurement_bitstring,
-    stim_circuit_to_graph_dem,
 )
 
 
-def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
-    stim_rep_code = stim.Circuit.generated(
+def test_deltakit_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
+    deltakit_stim_rep_code = deltakit_stim.Circuit.generated(
         "repetition_code:memory",
         distance=5,
         rounds=5,
         after_clifford_depolarization=0.1,
     )
 
-    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") == -1
+    assert (
+        str(deltakit_stim_circuit_to_graph_dem(deltakit_stim_rep_code)).find("^") == -1
+    )
 
 
 @pytest.mark.parametrize(
@@ -32,20 +34,22 @@ def test_stim_circuit_to_graph_dem_does_not_decompose_the_rep_code():
         "surface_code:unrotated_memory_z",
     ],
 )
-def test_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(code_task):
-    stim_rep_code = stim.Circuit.generated(
+def test_deltakit_stim_circuit_to_graph_dem_does_decompose_non_rep_codes(code_task):
+    deltakit_stim_rep_code = deltakit_stim.Circuit.generated(
         code_task, distance=5, rounds=5, after_clifford_depolarization=0.1
     )
 
-    assert str(stim_circuit_to_graph_dem(stim_rep_code)).find("^") != -1
+    assert (
+        str(deltakit_stim_circuit_to_graph_dem(deltakit_stim_rep_code)).find("^") != -1
+    )
 
 
 class TestSplitMeasurementBitstring:
     @pytest.mark.parametrize(
-        ("stim_circuit", "measurement_bitstring", "expected_split_bitstring"),
+        ("deltakit_stim_circuit", "measurement_bitstring", "expected_split_bitstring"),
         [
             (
-                stim.Circuit.generated(
+                deltakit_stim.Circuit.generated(
                     "surface_code:rotated_memory_x",
                     distance=3,
                     rounds=1,
@@ -58,7 +62,7 @@ class TestSplitMeasurementBitstring:
                 ],
             ),
             (
-                stim.Circuit.generated(
+                deltakit_stim.Circuit.generated(
                     "surface_code:rotated_memory_x",
                     distance=3,
                     rounds=3,
@@ -75,10 +79,10 @@ class TestSplitMeasurementBitstring:
         ],
     )
     def test_measurement_bitstring_can_be_split_by_each_layer_of_measurement_gates(
-        self, stim_circuit, measurement_bitstring, expected_split_bitstring
+        self, deltakit_stim_circuit, measurement_bitstring, expected_split_bitstring
     ):
         split_bitstring = split_measurement_bitstring(
-            measurement_bitstring, stim_circuit
+            measurement_bitstring, deltakit_stim_circuit
         )
         for split_bitstring_i, expected_split_bitstring_i in zip(
             split_bitstring, expected_split_bitstring
@@ -86,10 +90,14 @@ class TestSplitMeasurementBitstring:
             assert split_bitstring_i == expected_split_bitstring_i
 
     @pytest.mark.parametrize(
-        ("stim_circuit", "measurement_bitstring", "expected_number_of_bitstrings"),
+        (
+            "deltakit_stim_circuit",
+            "measurement_bitstring",
+            "expected_number_of_bitstrings",
+        ),
         [
             (
-                stim.Circuit.generated(
+                deltakit_stim.Circuit.generated(
                     "surface_code:rotated_memory_x",
                     distance=3,
                     rounds=1,
@@ -99,7 +107,7 @@ class TestSplitMeasurementBitstring:
                 2,
             ),
             (
-                stim.Circuit.generated(
+                deltakit_stim.Circuit.generated(
                     "surface_code:rotated_memory_x",
                     distance=3,
                     rounds=3,
@@ -111,16 +119,19 @@ class TestSplitMeasurementBitstring:
         ],
     )
     def test_length_of_split_bitstring_matches_number_of_layers_with_measurement_gates(
-        self, stim_circuit, measurement_bitstring, expected_number_of_bitstrings
+        self,
+        deltakit_stim_circuit,
+        measurement_bitstring,
+        expected_number_of_bitstrings,
     ):
         split_bitstring = split_measurement_bitstring(
-            measurement_bitstring, stim_circuit
+            measurement_bitstring, deltakit_stim_circuit
         )
         assert len(split_bitstring) == expected_number_of_bitstrings
 
 
-def stim_circuit_rep_5x4():
-    return stim.Circuit.generated(
+def deltakit_stim_circuit_rep_5x4():
+    return deltakit_stim.Circuit.generated(
         "repetition_code:memory",
         rounds=4,
         distance=5,
@@ -129,8 +140,8 @@ def stim_circuit_rep_5x4():
     )
 
 
-def stim_circuit_rplanar_3x3x3():
-    return stim.Circuit.generated(
+def deltakit_stim_circuit_rplanar_3x3x3():
+    return deltakit_stim.Circuit.generated(
         "surface_code:rotated_memory_x",
         rounds=3,
         distance=3,
@@ -139,8 +150,8 @@ def stim_circuit_rplanar_3x3x3():
     )
 
 
-def stim_circuit_planar_5x5x2():
-    return stim.Circuit.generated(
+def deltakit_stim_circuit_planar_5x5x2():
+    return deltakit_stim.Circuit.generated(
         "surface_code:unrotated_memory_z",
         rounds=2,
         distance=5,
@@ -149,39 +160,47 @@ def stim_circuit_planar_5x5x2():
     )
 
 
-class TestParseStimCircuit:
+class TestParseDeltakitStimCircuit:
     @pytest.fixture(
         params=[
-            stim_circuit_rep_5x4(),
-            stim_circuit_rplanar_3x3x3(),
-            stim_circuit_planar_5x5x2(),
+            deltakit_stim_circuit_rep_5x4(),
+            deltakit_stim_circuit_rplanar_3x3x3(),
+            deltakit_stim_circuit_planar_5x5x2(),
         ],
         scope="class",
     )
-    def stim_circuit(self, request):
+    def deltakit_stim_circuit(self, request):
         return request.param
 
     @pytest.fixture(scope="class")
-    def original_graph_trimmed_graph_logicals(self, stim_circuit):
-        trimmed_graph, logicals, _ = parse_stim_circuit(stim_circuit, trim_circuit=True)
-        original_graph, _, _ = parse_stim_circuit(stim_circuit, trim_circuit=False)
+    def original_graph_trimmed_graph_logicals(self, deltakit_stim_circuit):
+        trimmed_graph, logicals, _ = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit, trim_circuit=True
+        )
+        original_graph, _, _ = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit, trim_circuit=False
+        )
         return original_graph, trimmed_graph, logicals
 
-    def test_trimmed_stim_circuit_has_same_number_of_detectors_as_its_corresponding_trimmed_graph(
-        self, stim_circuit
+    def test_trimmed_deltakit_stim_circuit_has_same_number_of_detectors_as_its_corresponding_trimmed_graph(
+        self, deltakit_stim_circuit
     ):
-        trimmed_graph, _, trimmed_stim_circuit = parse_stim_circuit(stim_circuit)
-        assert trimmed_stim_circuit.num_detectors == len(trimmed_graph.nodes) - len(
-            trimmed_graph.boundaries
+        trimmed_graph, _, trimmed_deltakit_stim_circuit = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit
         )
+        assert trimmed_deltakit_stim_circuit.num_detectors == len(
+            trimmed_graph.nodes
+        ) - len(trimmed_graph.boundaries)
 
-    def test_trimmed_stim_circuit_has_same_number_of_observables_as_its_corresponding_trimmed_graph(
-        self, stim_circuit
+    def test_trimmed_deltakit_stim_circuit_has_same_number_of_observables_as_its_corresponding_trimmed_graph(
+        self, deltakit_stim_circuit
     ):
-        _, trimmed_logicals, trimmed_stim_circuit = parse_stim_circuit(stim_circuit)
-        assert trimmed_stim_circuit.num_observables == len(trimmed_logicals)
+        _, trimmed_logicals, trimmed_deltakit_stim_circuit = (
+            parse_deltakit_stim_circuit(deltakit_stim_circuit)
+        )
+        assert trimmed_deltakit_stim_circuit.num_observables == len(trimmed_logicals)
 
-    def test_logicals_are_reachable_in_trimmed_stim_graph(
+    def test_logicals_are_reachable_in_trimmed_deltakit_stim_graph(
         self, original_graph_trimmed_graph_logicals
     ):
         _, trimmed_graph, logicals = original_graph_trimmed_graph_logicals
@@ -225,21 +244,25 @@ class TestParseStimCircuit:
         original_graph, trimmed_graph, _ = original_graph_trimmed_graph_logicals
         assert len(trimmed_graph.edges) <= len(original_graph.edges)
 
-    def test_detector_order_is_unchanged_without_lexical_detectors(self, stim_circuit):
-        _, _, stim_circuit_out = parse_stim_circuit(
-            stim_circuit, trim_circuit=False, lexical_detectors=False
+    def test_detector_order_is_unchanged_without_lexical_detectors(
+        self, deltakit_stim_circuit
+    ):
+        _, _, deltakit_stim_circuit_out = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit, trim_circuit=False, lexical_detectors=False
         )
-        circuit_in = sp.Circuit.from_stim_circuit(stim_circuit)
-        circuit_out = sp.Circuit.from_stim_circuit(stim_circuit_out)
+        circuit_in = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
+        circuit_out = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit_out)
         assert len(circuit_in.detectors()) == len(circuit_out.detectors())
         assert circuit_in.detectors() == circuit_out.detectors()
 
-    def test_detectors_are_more_ordered_when_lexical_flag_set(self, stim_circuit):
-        _, _, stim_circuit_out = parse_stim_circuit(
-            stim_circuit, trim_circuit=False, lexical_detectors=True
+    def test_detectors_are_more_ordered_when_lexical_flag_set(
+        self, deltakit_stim_circuit
+    ):
+        _, _, deltakit_stim_circuit_out = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit, trim_circuit=False, lexical_detectors=True
         )
-        circuit_in = sp.Circuit.from_stim_circuit(stim_circuit)
-        circuit_out = sp.Circuit.from_stim_circuit(stim_circuit_out)
+        circuit_in = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
+        circuit_out = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit_out)
         assert len(circuit_in.detectors()) == len(circuit_out.detectors())
 
         firsts_out, seconds_out = tee(circuit_out.detectors())

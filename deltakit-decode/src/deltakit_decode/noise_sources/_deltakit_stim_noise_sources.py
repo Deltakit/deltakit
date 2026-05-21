@@ -6,9 +6,9 @@ from itertools import chain
 from typing import Any, TypeAlias
 
 import deltakit_circuit as sp
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 from deltakit_core.decoding_graphs import OrderedSyndrome
 
 from deltakit_decode.noise_sources._generic_noise_sources import (
@@ -16,7 +16,7 @@ from deltakit_decode.noise_sources._generic_noise_sources import (
     MonteCarloNoise,
 )
 
-StimErrorT: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
+DeltakitStimErrorT: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
 
 
 def give_empty(_):
@@ -24,11 +24,11 @@ def give_empty(_):
     return []
 
 
-class StimNoise(
-    MonteCarloNoise[stim.Circuit, StimErrorT],
+class DeltakitStimNoise(
+    MonteCarloNoise[deltakit_stim.Circuit, DeltakitStimErrorT],
 ):
     """A noise model that takes a set of noise profiles
-    that can be applied to a lestim circuit. These noise profiles
+    that can be applied to a deltakit_stim circuit. These noise profiles
     should be defined as callables that will be processed by deltakit_circuit.
 
     Parameters
@@ -72,20 +72,22 @@ class StimNoise(
         )
         self._batch_size = batch_size
 
-    def permute_stim_circuit(self, stim_circuit: stim.Circuit) -> stim.Circuit:
-        """Apply noise to a lestim circuit
+    def permute_deltakit_stim_circuit(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit
+    ) -> deltakit_stim.Circuit:
+        """Apply noise to a ledeltakit_stim circuit
 
         Parameters
         ----------
-        stim_circuit : stim.Circuit
-            The lestim circuit to manipulate with StimNoise's noise profiles
+        deltakit_stim_circuit : deltakit_stim.Circuit
+            The deltakit_stim circuit to manipulate with DeltakitStimNoise's noise profiles
 
         Returns
         -------
-        stim.Circuit
-            A new lestim circuit with noise applied via the noise profiles
+        deltakit_stim.Circuit
+            A new ledeltakit_stim circuit with noise applied via the noise profiles
         """
-        circuit = sp.Circuit.from_stim_circuit(stim_circuit)
+        circuit = sp.Circuit.from_deltakit_stim_circuit(deltakit_stim_circuit)
         circuit.remove_noise()
         circuit.apply_gate_noise(
             self._before_gate_noise_profile, sp.Circuit.LayerAdjacency.BEFORE
@@ -94,28 +96,30 @@ class StimNoise(
             self._after_gate_noise_profile, sp.Circuit.LayerAdjacency.AFTER
         )
         circuit.replace_gates(self._gate_replacement_policy)
-        return circuit.as_stim_circuit()
+        return circuit.as_deltakit_stim_circuit()
 
     def error_generator(
-        self, code_data: stim.Circuit, seed: int | None = None
-    ) -> Iterator[StimErrorT]:
-        stim_circuit = self.permute_stim_circuit(code_data)
-        sampler = stim_circuit.compile_detector_sampler(seed=seed)
-        num_observables = stim_circuit.num_observables
+        self, code_data: deltakit_stim.Circuit, seed: int | None = None
+    ) -> Iterator[DeltakitStimErrorT]:
+        deltakit_stim_circuit = self.permute_deltakit_stim_circuit(code_data)
+        sampler = deltakit_stim_circuit.compile_detector_sampler(seed=seed)
+        num_observables = deltakit_stim_circuit.num_observables
         while True:
-            stim_batch: npt.NDArray[np.uint8] = sampler.sample(
+            deltakit_stim_batch: npt.NDArray[np.uint8] = sampler.sample(
                 self._batch_size, append_observables=True
             )
-            yield from stim_batch_to_decode_batch(stim_batch, num_observables)
+            yield from deltakit_stim_batch_to_decode_batch(
+                deltakit_stim_batch, num_observables
+            )
 
     def build_batch_error_generator(
-        self, code_data: stim.Circuit, seed: int | None = None
+        self, code_data: deltakit_stim.Circuit, seed: int | None = None
     ) -> BatchErrorGenerator:
         """Given some representation of a code, return a generator of batches of errors
         for that code.
         """
-        stim_circuit = self.permute_stim_circuit(code_data)
-        sampler = stim_circuit.compile_detector_sampler(seed=seed)
+        deltakit_stim_circuit = self.permute_deltakit_stim_circuit(code_data)
+        sampler = deltakit_stim_circuit.compile_detector_sampler(seed=seed)
         return BatchErrorGenerator(
             lambda num_shots: sampler.sample(num_shots, separate_observables=True)
         )
@@ -124,16 +128,16 @@ class StimNoise(
         raise NotImplementedError()
 
     def __repr__(self) -> str:
-        return "StimNoise"
+        return "DeltakitStimNoise"
 
 
-class OptionedStim(StimNoise):
-    """A class with the ability to manipulate lestim circuits
+class OptionedDeltakitStim(DeltakitStimNoise):
+    """A class with the ability to manipulate ledeltakit_stim circuits
     with after clifford gate depolarisation, before measure
     flip probability and after reset flip probability. For
     more information on these noise profiles see:
-    https://github.com/quantumlib/Stim/blob/main/doc/
-    python_api_reference_vDev.md#stim.Circuit.generated
+    https://github.com/quantumlib/Deltakit_Stim/blob/main/doc/
+    python_api_reference_vDev.md#deltakit_stim.Circuit.generated
 
     Parameters
     ----------
@@ -186,7 +190,7 @@ class OptionedStim(StimNoise):
         )
 
     def __repr__(self) -> str:
-        return "OptionedStim"
+        return "OptionedDeltakitStim"
 
     def field_values(self) -> dict[str, Any]:
         base_dict = super().field_values()
@@ -198,7 +202,7 @@ class OptionedStim(StimNoise):
         return base_dict
 
 
-class ToyNoise(StimNoise):
+class ToyNoise(DeltakitStimNoise):
     """A noise model which adds:
 
     * Depolarise 1 channel after every one qubit gate, reset gate and
@@ -269,10 +273,10 @@ class ToyNoise(StimNoise):
         return base_dict
 
 
-class SampleStimNoise(StimNoise):
-    """A noise model that uses a stim file, without modification, to generate noise.
+class SampleDeltakitStimNoise(DeltakitStimNoise):
+    """A noise model that uses a deltakit_stim file, without modification, to generate noise.
 
-    By default, uses batch model to generate noise to make use of stim parallelism.
+    By default, uses batch model to generate noise to make use of deltakit_stim parallelism.
     This batching is hidden from the user, and this model provides the same interface
     as other sources.
     """
@@ -280,18 +284,20 @@ class SampleStimNoise(StimNoise):
     def __init__(self, batch_size=1024):
         super().__init__(batch_size=batch_size)
 
-    def permute_stim_circuit(self, stim_circuit: stim.Circuit) -> stim.Circuit:
-        return stim_circuit
+    def permute_deltakit_stim_circuit(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit
+    ) -> deltakit_stim.Circuit:
+        return deltakit_stim_circuit
 
     def __repr__(self) -> str:
-        return "SampleStimNoise"
+        return "SampleDeltakitStimNoise"
 
 
-def stim_batch_to_decode_batch(
+def deltakit_stim_batch_to_decode_batch(
     detector_batch: npt.NDArray[np.uint8],
     num_observables: int = 0,
 ) -> Iterator[tuple[OrderedSyndrome, tuple[bool, ...]]]:
-    """Convert a Stim detector batch, optionally including observables, to a batch
+    """Convert a deltakit_stim detector batch, optionally including observables, to a batch
     appropriate for use with deltakit-decode, with deltakit-decode syndrome objects and the observables split
     out as a tuple of booleans.
 

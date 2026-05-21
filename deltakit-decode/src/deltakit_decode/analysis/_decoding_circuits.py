@@ -1,14 +1,14 @@
 # (c) Copyright Riverlane 2020-2025.
 
+import deltakit_stim
 import numpy as np
-import stim
 from tqdm import tqdm
 
 from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 
 def run_decoding_on_circuit(
-    circuit: stim.Circuit,
+    circuit: deltakit_stim.Circuit,
     max_shots: int,
     decoder: DecoderProtocol,
     max_batch_size: int = 10_000,
@@ -27,8 +27,8 @@ def run_decoding_on_circuit(
 
     Parameters
     ----------
-    circuit : stim.Circuit
-        Stim circuit to use for sampling shots.
+    circuit : deltakit_stim.Circuit
+        Deltakit_Stim circuit to use for sampling shots.
     max_shots : int
         Maximum number of shots to sample.
     decoder : GraphDecoder

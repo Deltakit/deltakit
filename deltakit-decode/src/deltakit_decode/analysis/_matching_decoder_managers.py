@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any, TypeAlias
 from warnings import warn
 
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
@@ -25,35 +25,35 @@ from deltakit_decode.analysis._decoder_manager import (
     DecoderManager,
     NoiseModelDecoderManager,
 )
-from deltakit_decode.noise_sources import SampleStimNoise
+from deltakit_decode.noise_sources import SampleDeltakit_StimNoise
 from deltakit_decode.noise_sources._generic_noise_sources import NoiseModel
 
-StimOutput: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
-StimBatchOutput: TypeAlias = tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]
+DeltakitStimOutput: TypeAlias = tuple[OrderedSyndrome, tuple[bool, ...]]
+DeltakitStimBatchOutput: TypeAlias = tuple[npt.NDArray[np.uint8], npt.NDArray[np.uint8]]
 
 
-class StimDecoderManager(
+class DeltakitStimDecoderManager(
     NoiseModelDecoderManager[
-        StimOutput,
-        stim.Circuit,
+        DeltakitStimOutput,
+        deltakit_stim.Circuit,
         tuple[bool, ...],
-        StimBatchOutput,
+        DeltakitStimBatchOutput,
         npt.NDArray[np.uint8],
     ]
 ):
-    """Decoder manager to support Stim circuits being used for noise generation, and
-    Stim observables to define decoder success.
+    """Decoder manager to support Deltakit_Stim circuits being used for noise generation, and
+    Deltakit_Stim observables to define decoder success.
 
     Parameters
     ----------
-    stim_noise_circuit : stim.Circuit
-        Stim circuit to use to inform how noise samples are generated.
+    deltakit_stim_noise_circuit : deltakit_stim.Circuit
+        Deltakit_Stim circuit to use to inform how noise samples are generated.
     decoder : GraphDecoder
         Decoder to use to decode generated shots.
-    noise_model : NoiseModel[stim.Circuit, StimOutput] | None, optional
-        Stim circuit based noise model to use, when `None` an instance of
-        `SampleStimNoise` which will just directly take samples from the
-        `stim_noise_circuit` is used.
+    noise_model : NoiseModel[deltakit_stim.Circuit, DeltakitStimOutput] | None, optional
+        Deltakit_Stim circuit based noise model to use, when `None` an instance of
+        `SampleDeltakit_StimNoise` which will just directly take samples from the
+        `deltakit_stim_noise_circuit` is used.
     reporters : Optional[List[BaseReporter]], optional
         Optional list of reporters to give extra information about a decoder,
         by default None.
@@ -66,16 +66,17 @@ class StimDecoderManager(
 
     def __init__(
         self,
-        stim_noise_circuit: stim.Circuit,
+        deltakit_stim_noise_circuit: deltakit_stim.Circuit,
         decoder: GraphDecoder,
-        noise_model: NoiseModel[stim.Circuit, StimOutput] | None = None,
+        noise_model: NoiseModel[deltakit_stim.Circuit, DeltakitStimOutput]
+        | None = None,
         reporters: list[BaseReporter] | None = None,
         metadata: dict[str, str] | None = None,
         seed: int | None = None,
         batch_size: int = int(1e4),
     ):
         if noise_model is None:
-            noise_model = SampleStimNoise()
+            noise_model = SampleDeltakit_StimNoise()
         super().__init__(
             noise_model,
             len(decoder.logicals),
@@ -84,7 +85,7 @@ class StimDecoderManager(
             seed=seed,
             batch_size=batch_size,
         )
-        self._stim_noise_circuit = stim_noise_circuit
+        self._deltakit_stim_noise_circuit = deltakit_stim_noise_circuit
         self._decoder = decoder
 
     @property
@@ -95,12 +96,12 @@ class StimDecoderManager(
         return self._empirical_decoding_error_distribution.fails_per_logical.tolist()
 
     def _analyse_correction(
-        self, error: StimOutput, correction: tuple[bool, ...]
+        self, error: DeltakitStimOutput, correction: tuple[bool, ...]
     ) -> bool:
         _, target_logical_flip = error
         return target_logical_flip != correction
 
-    def _decode_from_error(self, error: StimOutput) -> tuple[bool, ...]:
+    def _decode_from_error(self, error: DeltakitStimOutput) -> tuple[bool, ...]:
         syndrome, target_logical_flip = error
         correction = self._decoder.decode_to_logical_flip(syndrome)
         self._empirical_decoding_error_distribution.record_error(
@@ -109,7 +110,7 @@ class StimDecoderManager(
         return correction
 
     def _decode_batch_from_error(
-        self, errors: StimBatchOutput
+        self, errors: DeltakitStimBatchOutput
     ) -> npt.NDArray[np.uint8]:
         syndrome_batch, actual_observables = errors
         predicted_observables = self._decoder.decode_batch_to_logical_flip(
@@ -132,8 +133,8 @@ class StimDecoderManager(
             analysis_results.update(errors_per_logical)
         return analysis_results
 
-    def _get_code_data(self) -> stim.Circuit:
-        return self._stim_noise_circuit
+    def _get_code_data(self) -> deltakit_stim.Circuit:
+        return self._deltakit_stim_noise_circuit
 
     def __str__(self) -> str:
         return f"{self._decoder}_{self._noise_model}"

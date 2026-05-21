@@ -4,7 +4,7 @@ import math
 from collections.abc import Callable
 from itertools import combinations
 
-import stim
+import deltakit_stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -173,7 +173,7 @@ def calculate_pij_values(
     graph : Optional[Union[NXDecodingGraph, DecodingHyperGraph]], optional
         Optionally pass a (hyper)graph that will then be used to
         inform which edges of the graph to remove.
-        Comparison made against stim's decoder graph, as in
+        Comparison made against deltakit_stim's decoder graph, as in
         the Google paper.
     min_prob : float
         Minimum probability with which to limit the calculated
@@ -255,9 +255,9 @@ def create_dem_from_pij(
     pij_data: PijData,
     graph: NXDecodingGraph | DecodingHyperGraph,
     logicals: list[set[DecodingHyperEdge]],
-) -> stim.DetectorErrorModel:
+) -> deltakit_stim.DetectorErrorModel:
     """Create a detector error model from a Pij probabilities data set
-    and accompanying stim Circuit.
+    and accompanying deltakit_stim Circuit.
 
     Parameters
     ----------
@@ -271,8 +271,8 @@ def create_dem_from_pij(
 
     Returns
     -------
-    stim.DetectorErrorModel
-        stim.DetectorErrorModel for given pij_data and circuit.
+    deltakit_stim.DetectorErrorModel
+        deltakit_stim.DetectorErrorModel for given pij_data and circuit.
     """
     boundaries = graph.boundaries
     d_graph: HyperMultiGraph
@@ -329,7 +329,7 @@ def create_dem_from_pij(
         if l_set_len == 0:
             output.append(f"logical_observable L{i}\n")
 
-    return stim.DetectorErrorModel("".join(output))
+    return deltakit_stim.DetectorErrorModel("".join(output))
 
 
 def pijs_edge_diff(
@@ -389,18 +389,18 @@ def pij_edges_max_diff(
 
 
 def pij_and_dem_edge_diff(
-    dem: stim.DetectorErrorModel,
+    dem: deltakit_stim.DetectorErrorModel,
     pij: PijData,
     is_hypergraph: bool = False,
 ) -> tuple[set, set]:
-    """Given a stim.DetectorErrorModel and Pij dict,
+    """Given a deltakit_stim.DetectorErrorModel and Pij dict,
     compare the two to see if they contain the same edges
     w.r.t nodes in the edges. Return a tuple of sets
     containing the difference for the dem and Pij respectively.
 
     Parameters
     ----------
-    dem : stim.DetectorErrorModel
+    dem : deltakit_stim.DetectorErrorModel
         DEM to compare with Pij.
 
     pij : PijData
@@ -432,17 +432,17 @@ def pij_and_dem_edge_diff(
 
 
 def dem_and_pij_edges_max_diff(
-    dem: stim.DetectorErrorModel,
+    dem: deltakit_stim.DetectorErrorModel,
     pij: PijData,
     is_hypergraph: bool = False,
 ) -> float:
-    """Given a stim.DetectorErrorModel and Pij matrix,
+    """Given a deltakit_stim.DetectorErrorModel and Pij matrix,
     compare the two to find the maximum difference in
     probability between similar edges.
 
     Parameters
     ----------
-    dem : stim.DetectorErrorModel
+    dem : deltakit_stim.DetectorErrorModel
         DEM to compare with Pij.
 
     pij : PijData

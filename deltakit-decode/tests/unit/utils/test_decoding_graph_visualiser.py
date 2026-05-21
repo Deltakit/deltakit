@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
+import deltakit_stim
 import pytest
-import stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     NXCode,
@@ -8,12 +8,12 @@ from deltakit_core.decoding_graphs import (
     OrderedSyndrome,
 )
 
-from deltakit_decode.utils import VisDecodingGraph3D, parse_stim_circuit
+from deltakit_decode.utils import VisDecodingGraph3D, parse_deltakit_stim_circuit
 
 
 @pytest.fixture(scope="module")
 def code():
-    circuit = stim.Circuit.generated(
+    circuit = deltakit_stim.Circuit.generated(
         code_task="surface_code:rotated_memory_z",
         distance=5,
         rounds=5,
@@ -21,7 +21,7 @@ def code():
         after_clifford_depolarization=0.001,
         before_measure_flip_probability=0.001,
     )
-    graph, logicals, _ = parse_stim_circuit(circuit, trim_circuit=True)
+    graph, logicals, _ = parse_deltakit_stim_circuit(circuit, trim_circuit=True)
     return NXCode(graph, logicals)
 
 

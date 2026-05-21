@@ -4,8 +4,8 @@ import math
 from pathlib import Path
 from unittest import mock
 
+import deltakit_stim
 import pytest
-import stim
 from deltakit_core.data_formats import b8_to_syndromes
 from deltakit_core.decoding_graphs import (
     dem_to_decoding_graph_and_logicals,
@@ -18,7 +18,7 @@ from deltakit_decode.utils import (
     create_dem_from_pij,
     dem_and_pij_edges_max_diff,
     generate_expectation_data,
-    parse_stim_circuit,
+    parse_deltakit_stim_circuit,
     pij_and_dem_edge_diff,
     pij_edges_max_diff,
     pijs_edge_diff,
@@ -31,9 +31,9 @@ REFERENCE_DATA_DIR = (
 
 class TestDerivationToolsPij:
     @pytest.fixture(scope="class")
-    def stim_circuit(self, reference_data_dir: Path):
-        return stim.Circuit.from_file(
-            reference_data_dir / "stim" / "circuit_noisy.stim"
+    def deltakit_stim_circuit(self, reference_data_dir: Path):
+        return deltakit_stim.Circuit.from_file(
+            reference_data_dir / "deltakit_stim" / "circuit_noisy.stim"
         )
 
     @pytest.fixture(scope="class")
@@ -45,7 +45,7 @@ class TestDerivationToolsPij:
         [
             (
                 # below data generated from tests/reference_data/b801/detection_events.b8 using generate_expectation_data
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 list(
                     b8_to_syndromes(
                         REFERENCE_DATA_DIR / "b801" / "detection_events.b8", 24
@@ -141,13 +141,13 @@ class TestDerivationToolsPij:
                     (23,): 0.11115210469966132,
                 },
             ),
-            (stim.Circuit(), [], {}),
+            (deltakit_stim.Circuit(), [], {}),
         ],
     )
     def test_calculate_pij_values_calculates_correct_values(
         self, circuit, samples, expected_pij_data
     ):
-        graph, _, _ = parse_stim_circuit(circuit)
+        graph, _, _ = parse_deltakit_stim_circuit(circuit)
         exp_data = generate_expectation_data(samples, only_even=True)
         pij_data = dict(sorted(calculate_pij_values(exp_data, graph).items()))
         expected_pij_data = {frozenset(x): p for x, p in expected_pij_data.items()}
@@ -158,7 +158,7 @@ class TestDerivationToolsPij:
         ("dem", "exp_data"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.01014648986783272221) D0",
@@ -253,7 +253,7 @@ class TestDerivationToolsPij:
         ("circuit", "b8_path", "exp_pij"),
         [
             (
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 lf("detection_events"),
                 {
                     (0, 2): 0.008487142595907365,
@@ -623,9 +623,9 @@ class TestDerivationToolsPij:
             assert math.isclose(p, exp_pij[e], rel_tol=0.0001)
 
     def test_calculate_pij_values_only_considers_edges_up_to_max_degree_even_if_graph_higher_degree(
-        self, stim_circuit: stim.Circuit, detection_events
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, detection_events
     ):
-        dem = stim_circuit.detector_error_model()
+        dem = deltakit_stim_circuit.detector_error_model()
         hyper_graph, _ = dem_to_hypergraph_and_logicals(dem)
         samples = list(b8_to_syndromes(detection_events, len(hyper_graph.nodes)))
         exp_data = generate_expectation_data(samples, max_degree=3)
@@ -640,7 +640,7 @@ class TestDerivationToolsPij:
         ("dem", "exp_data"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.6) D0",
@@ -704,9 +704,9 @@ class TestDerivationToolsPij:
             calculate_pij_values(exp_data, hyper_graph, max_degree=4)
 
     def test_calculate_pij_values_ignores_degree_4_edges_when_calculating_degree_3_hypergraph(
-        self, stim_circuit: stim.Circuit, detection_events
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, detection_events
     ):
-        dem = stim_circuit.detector_error_model()
+        dem = deltakit_stim_circuit.detector_error_model()
         hyper_graph, _ = dem_to_hypergraph_and_logicals(dem)
         samples = list(b8_to_syndromes(detection_events, len(hyper_graph.nodes)))
         exp_data = generate_expectation_data(samples, max_degree=3)
@@ -717,10 +717,10 @@ class TestDerivationToolsPij:
                 w4_count += 1
         assert len(pij_values) == len(hyper_graph.edges) - w4_count
 
-    def test_calculate_pij_values_when_max_degree_4_then_pij_matches_stim_graph(
-        self, stim_circuit: stim.Circuit, detection_events
+    def test_calculate_pij_values_when_max_degree_4_then_pij_matches_deltakit_stim_graph(
+        self, deltakit_stim_circuit: deltakit_stim.Circuit, detection_events
     ):
-        dem = stim_circuit.detector_error_model()
+        dem = deltakit_stim_circuit.detector_error_model()
         hyper_graph, _ = dem_to_hypergraph_and_logicals(dem)
         samples = list(b8_to_syndromes(detection_events, len(hyper_graph.nodes)))
         exp_data = generate_expectation_data(samples, max_degree=4)
@@ -873,8 +873,8 @@ class TestDerivationToolsPij:
                     (15,): 0.08694066417869489,
                     (12,): 0.045744965556093246,
                 },
-                lf("stim_circuit"),
-                stim.DetectorErrorModel.from_file(
+                lf("deltakit_stim_circuit"),
+                deltakit_stim.DetectorErrorModel.from_file(
                     REFERENCE_DATA_DIR / "dem" / "circuit_noisy.dem"
                 ),
                 True,
@@ -979,10 +979,12 @@ class TestDerivationToolsPij:
                     (22,): 0.0839839243646015,
                     (23,): 0.1182620295605309,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_logical_off_boundary.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_logical_off_boundary.stim"
                 ),
-                stim.DetectorErrorModel.from_file(
+                deltakit_stim.DetectorErrorModel.from_file(
                     REFERENCE_DATA_DIR / "dem" / "circuit_logical_off_boundary.dem"
                 ),
                 True,
@@ -994,12 +996,12 @@ class TestDerivationToolsPij:
                     (4,): 0.0057317127591073125,
                     (7,): 0.005125248374863215,
                 },
-                stim.Circuit.from_file(
+                deltakit_stim.Circuit.from_file(
                     REFERENCE_DATA_DIR
-                    / "stim"
+                    / "deltakit_stim"
                     / "unobservable_logical_rotated_mem_z_d3_r3.stim"
                 ),
-                stim.DetectorErrorModel.from_file(
+                deltakit_stim.DetectorErrorModel.from_file(
                     REFERENCE_DATA_DIR
                     / "dem"
                     / "unobservable_logical_rotated_mem_z_d3_r3.dem"
@@ -1096,21 +1098,25 @@ class TestDerivationToolsPij:
                     (15,): 0.08694066417869489,
                     (12,): 0.045744965556093246,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_noisy_2_observables.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_noisy_2_observables.stim"
                 ),
-                stim.DetectorErrorModel.from_file(
+                deltakit_stim.DetectorErrorModel.from_file(
                     REFERENCE_DATA_DIR / "dem" / "circuit_noisy_2_observables.dem"
                 ),
                 True,
             ),
         ],
     )
-    def test_create_dem_from_pij_creates_correct_dem_from_stim(
+    def test_create_dem_from_pij_creates_correct_dem_from_deltakit_stim(
         self, pij_data, circuit, expected_dem, trim_circuit
     ):
         pij_data = {frozenset(x): p for x, p in pij_data.items()}
-        graph, logicals, _ = parse_stim_circuit(circuit, trim_circuit=trim_circuit)
+        graph, logicals, _ = parse_deltakit_stim_circuit(
+            circuit, trim_circuit=trim_circuit
+        )
         dem = create_dem_from_pij(pij_data, graph, logicals)
         assert set(dem) == set(expected_dem)
 
@@ -1118,7 +1124,7 @@ class TestDerivationToolsPij:
         ("dem", "pij_data"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0 D1 D2",
@@ -1131,7 +1137,7 @@ class TestDerivationToolsPij:
                 {(0, 1, 2): 0.5},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0 D1 D2 D3",
@@ -1145,7 +1151,7 @@ class TestDerivationToolsPij:
                 {(0, 1, 2, 3): 0.5},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0 D1 D2",
@@ -1160,7 +1166,7 @@ class TestDerivationToolsPij:
                 {(0, 1, 2): 0.5, (0, 1, 2, 3): 0.5},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -1188,7 +1194,7 @@ class TestDerivationToolsPij:
         ("dem", "expectation_data", "expected_pij_data", "min_prob"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1204,7 +1210,7 @@ class TestDerivationToolsPij:
                 0.0,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1224,7 +1230,7 @@ class TestDerivationToolsPij:
                 -99.0,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1265,12 +1271,12 @@ class TestDerivationToolsPij:
         ("circuit", "b8_path", "max_degree"),
         [
             (
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 lf("detection_events"),
                 2,
             ),
             (
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 lf("detection_events"),
                 3,
             ),
@@ -1454,15 +1460,17 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {},
             ),
             (
-                stim.DetectorErrorModel("\n".join(["error(0.1) D0", "error(0.2) D1"])),
+                deltakit_stim.DetectorErrorModel(
+                    "\n".join(["error(0.1) D0", "error(0.2) D1"])
+                ),
                 {(0,): 0.1, (1,): 0.1},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0", "error(0.2) D1", "error(0.2) D0 D1"])
                 ),
                 {(0,): 0.1, (1,): 0.1, (0, 1): 0.2},
@@ -1480,11 +1488,11 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {(0,): 0.3},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D1",
@@ -1496,7 +1504,7 @@ class TestDerivationToolsPij:
                 },
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1510,7 +1518,7 @@ class TestDerivationToolsPij:
                 },
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1535,12 +1543,12 @@ class TestDerivationToolsPij:
         ("dem", "pij", "set_diff"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {(0,): 0.3},
                 (set(), {frozenset((0,))}),
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D1",
@@ -1553,7 +1561,7 @@ class TestDerivationToolsPij:
                 ({frozenset((1,))}, {frozenset((0,))}),
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1568,7 +1576,7 @@ class TestDerivationToolsPij:
                 ({frozenset((1,))}, {frozenset((2,))}),
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1593,7 +1601,7 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1603,7 +1611,7 @@ class TestDerivationToolsPij:
                 {(0, 1): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1 D2",
@@ -1613,13 +1621,13 @@ class TestDerivationToolsPij:
                 {(0, 1, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0", "error(0.2) D1", "error(0.2) D0 D1 D2"])
                 ),
                 {(0,): 0.1, (1,): 0.1, (0, 1, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1644,11 +1652,11 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {(0, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1658,7 +1666,7 @@ class TestDerivationToolsPij:
                 {},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1668,7 +1676,7 @@ class TestDerivationToolsPij:
                 {(0, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1 D2",
@@ -1678,13 +1686,13 @@ class TestDerivationToolsPij:
                 {(0, 1, 3): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0", "error(0.2) D1", "error(0.2) D0 D1 D2"])
                 ),
                 {(0,): 0.1, (3,): 0.1, (0, 1, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1709,12 +1717,12 @@ class TestDerivationToolsPij:
         ("dem", "pij", "set_diff"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {(0, 1, 2): 0.3},
                 (set(), {frozenset((0, 1, 2))}),
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1 D2",
@@ -1727,7 +1735,7 @@ class TestDerivationToolsPij:
                 ({frozenset((0, 1, 2))}, {frozenset((0, 1, 3))}),
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1 D2",
@@ -1776,12 +1784,12 @@ class TestDerivationToolsPij:
         ("dem", "pij", "max_diff"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {},
                 0.0,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1792,7 +1800,7 @@ class TestDerivationToolsPij:
                 0.1,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D2",
@@ -1803,14 +1811,14 @@ class TestDerivationToolsPij:
                 0.1,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0", "error(0.2) D1", "error(0.2) D0 D1"])
                 ),
                 {(0,): 0.1, (1,): 0.1, (0, 1): 0.4},
                 0.2,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1835,12 +1843,12 @@ class TestDerivationToolsPij:
         ("dem", "pij", "max_diff"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {},
                 0.0,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1 D2",
@@ -1851,7 +1859,7 @@ class TestDerivationToolsPij:
                 0.1,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D2",
@@ -1862,14 +1870,14 @@ class TestDerivationToolsPij:
                 0.1,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D0", "error(0.2) D1", "error(0.2) D0 D1 D2"])
                 ),
                 {(0,): 0.1, (1,): 0.1, (0, 1, 2): 0.4},
                 0.2,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1894,11 +1902,11 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel(),
+                deltakit_stim.DetectorErrorModel(),
                 {(0, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1908,7 +1916,7 @@ class TestDerivationToolsPij:
                 {},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -1918,7 +1926,7 @@ class TestDerivationToolsPij:
                 {(0, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D5",
@@ -1928,13 +1936,13 @@ class TestDerivationToolsPij:
                 {(0, 1): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(["error(0.1) D3", "error(0.2) D1", "error(0.2) D3 D1"])
                 ),
                 {(0,): 0.1, (1,): 0.1, (1, 2): 0.2},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1962,11 +1970,11 @@ class TestDerivationToolsPij:
         ("dem", "pij"),
         [
             (
-                stim.DetectorErrorModel("error(0.1) D0 D1"),
+                deltakit_stim.DetectorErrorModel("error(0.1) D0 D1"),
                 {(0, 1): 0.1},
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0",
@@ -1996,7 +2004,7 @@ class TestDerivationToolsPij:
         ("dem", "pij", "expected_max_diff"),
         [
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.1) D0 D1",
@@ -2007,7 +2015,7 @@ class TestDerivationToolsPij:
                 0.1,
             ),
             (
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.15) D0",
@@ -2036,7 +2044,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2051,7 +2059,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.2, (1,): 0.2, (0, 1): 0.25},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -2066,7 +2074,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.2, (1,): 0.2, (0, 1): 0.05},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -2095,7 +2103,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1, 2): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2118,7 +2126,7 @@ class TestDerivationToolsPij:
                     (1, 2): 0.1,
                     (0, 1, 2): 0.02,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -2148,7 +2156,7 @@ class TestDerivationToolsPij:
                     (1, 2): 0.1,
                     (0, 1, 2): 0.02,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -2179,7 +2187,7 @@ class TestDerivationToolsPij:
                     (1, 2): 0.1,
                     (0, 1, 2): 0.02,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.5) D0",
@@ -2219,7 +2227,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2233,7 +2241,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2263,7 +2271,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2277,7 +2285,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2305,7 +2313,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1, 2): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2320,7 +2328,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1, 2): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2351,7 +2359,7 @@ class TestDerivationToolsPij:
         [
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1, 2): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",
@@ -2365,7 +2373,7 @@ class TestDerivationToolsPij:
             ),
             (
                 {(0,): 0.0, (1,): 0.0, (0, 1, 2): 0.0},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.05) D0",

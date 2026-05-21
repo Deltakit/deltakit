@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import deltakit_circuit as sp
+import deltakit_stim
 import pytest
-import stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,
@@ -22,11 +22,11 @@ from deltakit_decode.noise_sources import (
     ExhaustiveMatchingNoise,
     ExhaustiveWeightedMatchingNoise,
     FixedWeightMatchingNoise,
-    SampleStimNoise,
+    SampleDeltakitStimNoise,
     UniformMatchingNoise,
 )
 from deltakit_decode.noise_sources._generic_noise_sources import _NoiseModel
-from deltakit_decode.utils import parse_stim_circuit
+from deltakit_decode.utils import parse_deltakit_stim_circuit
 
 
 @pytest.fixture(scope="module")
@@ -52,15 +52,17 @@ def manual_decoding_graph():
 
 
 @pytest.fixture(scope="module")
-def stim_decoding_graph():
-    stim_circuit = stim.Circuit.generated(
+def deltakit_stim_decoding_graph():
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         "surface_code:unrotated_memory_z",
         rounds=2,
         distance=3,
         before_round_data_depolarization=0.01,
         before_measure_flip_probability=0.01,
     )
-    graph, _, _ = parse_stim_circuit(stim_circuit, lexical_detectors=False)
+    graph, _, _ = parse_deltakit_stim_circuit(
+        deltakit_stim_circuit, lexical_detectors=False
+    )
     return graph
 
 
@@ -77,8 +79,8 @@ def manual_decoding_hypergraph():
 
 
 @pytest.fixture(scope="module")
-def stim_decoding_hypergraph():
-    stim_circuit = stim.Circuit.generated(
+def deltakit_stim_decoding_hypergraph():
+    deltakit_stim_circuit = deltakit_stim.Circuit.generated(
         code_task="surface_code:rotated_memory_z",
         distance=5,
         rounds=2,
@@ -86,10 +88,10 @@ def stim_decoding_hypergraph():
         after_clifford_depolarization=0.02,
         before_measure_flip_probability=0.02,
     )
-    stim_decoding_hypergraph, _ = dem_to_hypergraph_and_logicals(
-        stim_circuit.detector_error_model(decompose_errors=False)
+    deltakit_stim_decoding_hypergraph, _ = dem_to_hypergraph_and_logicals(
+        deltakit_stim_circuit.detector_error_model(decompose_errors=False)
     )
-    return stim_decoding_hypergraph
+    return deltakit_stim_decoding_hypergraph
 
 
 class TestExhaustiveMatchingNoise:
@@ -97,12 +99,18 @@ class TestExhaustiveMatchingNoise:
         ("graph", "expected_errors"),
         [
             (lf("manual_decoding_graph"), {frozenset({0, 1}), frozenset({0, 2})}),
-            (lf("stim_decoding_graph"), {frozenset({0, 18}), frozenset({1, 18})}),
+            (
+                lf("deltakit_stim_decoding_graph"),
+                {frozenset({0, 18}), frozenset({1, 18})},
+            ),
             (
                 lf("manual_decoding_hypergraph"),
                 {frozenset({2, 3, 6}), frozenset({0, 1, 2})},
             ),
-            (lf("stim_decoding_hypergraph"), {frozenset({0, 2}), frozenset({0, 3})}),
+            (
+                lf("deltakit_stim_decoding_hypergraph"),
+                {frozenset({0, 2}), frozenset({0, 3})},
+            ),
         ],
     )
     def test_sampled_errors_match_expected_errors(self, graph, expected_errors):
@@ -116,7 +124,7 @@ class TestExhaustiveWeightedMatchingNoise:
     @pytest.fixture
     def noise_model_and_decoding_graph(self):
         spatial_d, rounds = (3, 1)
-        stim_circuit = stim.Circuit.generated(
+        deltakit_stim_circuit = deltakit_stim.Circuit.generated(
             code_task="surface_code:rotated_memory_z",
             distance=spatial_d,
             rounds=rounds,
@@ -125,12 +133,14 @@ class TestExhaustiveWeightedMatchingNoise:
             before_measure_flip_probability=0.02,
         )
 
-        dem = stim_circuit.detector_error_model(decompose_errors=True)
+        dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
         decoding_graph, logicals = dem_to_decoding_graph_and_logicals(dem)
         relevant_nodes = decoding_graph.get_relevant_nodes(logicals)
         irrelevant_nodes = set(decoding_graph.nodes) - relevant_nodes
-        stim_circuit = sp.trim_detectors(stim_circuit, irrelevant_nodes)
-        dem = stim_circuit.detector_error_model(decompose_errors=True)
+        deltakit_stim_circuit = sp.trim_detectors(
+            deltakit_stim_circuit, irrelevant_nodes
+        )
+        dem = deltakit_stim_circuit.detector_error_model(decompose_errors=True)
         decoding_graph, logicals = dem_to_decoding_graph_and_logicals(dem)
 
         times = {
@@ -192,13 +202,16 @@ class TestFixedWeightMatchingNoise:
         ("graph", "expected_errors"),
         [
             (lf("manual_decoding_graph"), {frozenset({4, 5}), frozenset({2, 3})}),
-            (lf("stim_decoding_graph"), {frozenset({2, 4}), frozenset({6, 7})}),
+            (
+                lf("deltakit_stim_decoding_graph"),
+                {frozenset({2, 4}), frozenset({6, 7})},
+            ),
             (
                 lf("manual_decoding_hypergraph"),
                 {frozenset({4, 5, 6}), frozenset({1, 4, 5})},
             ),
             (
-                lf("stim_decoding_hypergraph"),
+                lf("deltakit_stim_decoding_hypergraph"),
                 {frozenset({17, 22}), frozenset({16, 25, 21})},
             ),
         ],
@@ -210,12 +223,12 @@ class TestFixedWeightMatchingNoise:
         assert error == expected_errors
 
 
-class TestSampleStimNoise:
+class TestSampleDeltakitStimNoise:
     @pytest.mark.parametrize(
-        ("stim_circuit", "expected_sample"),
+        ("deltakit_stim_circuit", "expected_sample"),
         [
             (
-                stim.Circuit("""
+                deltakit_stim.Circuit("""
                 X_ERROR(1) 0 1 2
                 M 0 1 2
                 DETECTOR rec[-1]
@@ -226,7 +239,7 @@ class TestSampleStimNoise:
                 (OrderedSyndrome([0, 1, 2]), (True,)),
             ),
             (
-                stim.Circuit("""
+                deltakit_stim.Circuit("""
                 X_ERROR(1) 3 4
                 M 3 4
                 DETECTOR rec[-1]
@@ -235,7 +248,7 @@ class TestSampleStimNoise:
                 (OrderedSyndrome([0, 1]), ()),
             ),
             (
-                stim.Circuit("""
+                deltakit_stim.Circuit("""
                 X_ERROR(1) 1
                 MZ 0 1
                 OBSERVABLE_INCLUDE(1) rec[-1]
@@ -245,14 +258,16 @@ class TestSampleStimNoise:
             ),
         ],
     )
-    def test_deterministic_stim_circuit_samples(self, stim_circuit, expected_sample):
-        noise_model = SampleStimNoise()
-        gen = noise_model.error_generator(stim_circuit)
+    def test_deterministic_deltakit_stim_circuit_samples(
+        self, deltakit_stim_circuit, expected_sample
+    ):
+        noise_model = SampleDeltakitStimNoise()
+        gen = noise_model.error_generator(deltakit_stim_circuit)
         assert next(gen) == expected_sample
 
     def test_addition_raises_not_implemented(self):
         with pytest.raises(NotImplementedError):
-            SampleStimNoise() + UniformMatchingNoise(0.01)
+            SampleDeltakitStimNoise() + UniformMatchingNoise(0.01)
 
 
 class TestUniformMatchingNoise:
@@ -266,7 +281,7 @@ class TestUniformMatchingNoise:
             ),
             (
                 UniformMatchingNoise(0.1),
-                lf("stim_decoding_graph"),
+                lf("deltakit_stim_decoding_graph"),
                 {frozenset({10, 11}), frozenset({9, 18}), frozenset({10, 7})},
             ),
             (
@@ -276,7 +291,7 @@ class TestUniformMatchingNoise:
             ),
             (
                 UniformMatchingNoise(0.01),
-                lf("stim_decoding_hypergraph"),
+                lf("deltakit_stim_decoding_hypergraph"),
                 {
                     frozenset({25, 30, 31}),
                     frozenset({26, 7}),
@@ -297,9 +312,9 @@ class TestEdgeProbabilityMatchingNoise:
     @pytest.mark.parametrize(
         ("decoding_graph", "expected_errors"),
         [
-            (lf("stim_decoding_graph"), OrderedDecodingEdges()),
+            (lf("deltakit_stim_decoding_graph"), OrderedDecodingEdges()),
             (
-                lf("stim_decoding_hypergraph"),
+                lf("deltakit_stim_decoding_hypergraph"),
                 OrderedDecodingEdges(
                     [
                         DecodingHyperEdge({6}),

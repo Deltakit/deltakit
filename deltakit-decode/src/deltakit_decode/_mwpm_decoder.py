@@ -4,10 +4,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from functools import cached_property
 
+import deltakit_stim
 import networkx as nx
 import numpy as np
 import pymatching
-import stim
 from deltakit_circuit import Circuit
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
@@ -16,7 +16,7 @@ from deltakit_core.decoding_graphs import (
 )
 
 from deltakit_decode._abstract_matching_decoders import GraphDecoder
-from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
+from deltakit_decode.utils._graph_circuit_helpers import parse_deltakit_stim_circuit
 
 
 class PyMatchingDecoder(GraphDecoder):
@@ -87,10 +87,10 @@ class PyMatchingDecoder(GraphDecoder):
         return self._logical_flip_matcher.decode_batch(syndrome_batch)
 
     @classmethod
-    def construct_decoder_and_stim_circuit(
+    def construct_decoder_and_deltakit_stim_circuit(
         cls, circuit: Circuit
-    ) -> tuple[PyMatchingDecoder, stim.Circuit]:
-        """Helper factory to create a MWPM decoder and the Stim circuit used
+    ) -> tuple[PyMatchingDecoder, deltakit_stim.Circuit]:
+        """Helper factory to create a MWPM decoder and the Deltakit_Stim circuit used
         during its construction.
 
         Parameters
@@ -100,11 +100,13 @@ class PyMatchingDecoder(GraphDecoder):
 
         Returns
         -------
-        Tuple[PyMatchingDecoder, stim.Circuit]
+        Tuple[PyMatchingDecoder, deltakit_stim.Circuit]
         """
-        stim_circuit = circuit.as_stim_circuit()
-        graph, logicals, stim_circuit = parse_stim_circuit(stim_circuit)
-        return cls(graph, logicals), stim_circuit
+        deltakit_stim_circuit = circuit.as_deltakit_stim_circuit()
+        graph, logicals, deltakit_stim_circuit = parse_deltakit_stim_circuit(
+            deltakit_stim_circuit
+        )
+        return cls(graph, logicals), deltakit_stim_circuit
 
     def __getstate__(self):
         inner_state = self.__dict__.copy()

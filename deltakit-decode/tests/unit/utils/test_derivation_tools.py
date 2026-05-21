@@ -3,10 +3,10 @@
 import warnings
 from pathlib import Path
 
+import deltakit_stim
 import numpy as np
 import numpy.testing as npt
 import pytest
-import stim
 from deltakit_core.decoding_graphs import dem_to_decoding_graph_and_logicals
 from pytest_lazy_fixtures import lf
 
@@ -14,7 +14,7 @@ from deltakit_decode.utils._derivation_tools import (
     create_correlation_matrix,
     generate_expectation_data,
 )
-from deltakit_decode.utils._graph_circuit_helpers import parse_stim_circuit
+from deltakit_decode.utils._graph_circuit_helpers import parse_deltakit_stim_circuit
 
 REFERENCE_DATA_DIR = (
     Path(__file__).parent.parent.parent.parent.parent / "tests" / "reference_data"
@@ -23,9 +23,9 @@ REFERENCE_DATA_DIR = (
 
 class TestDerivationTools:
     @pytest.fixture(scope="class")
-    def stim_circuit(self, reference_data_dir: Path):
-        return stim.Circuit.from_file(
-            reference_data_dir / "stim" / "circuit_noisy.stim"
+    def deltakit_stim_circuit(self, reference_data_dir: Path):
+        return deltakit_stim.Circuit.from_file(
+            reference_data_dir / "deltakit_stim" / "circuit_noisy.stim"
         )
 
     @pytest.fixture(scope="class")
@@ -419,7 +419,7 @@ class TestDerivationTools:
                     (15,): 0.08694066417869489,
                     (12,): 0.045744965556093246,
                 },
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 np.array(
                     [
                         [
@@ -1140,7 +1140,7 @@ class TestDerivationTools:
                     (15,): 0.08694066417869489,
                     (12,): 0.045744965556093246,
                 },
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 np.array(
                     [
                         [
@@ -1783,8 +1783,10 @@ class TestDerivationTools:
                     (1,): 0.0,
                     (3,): 0.0,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_logical_off_boundary.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_logical_off_boundary.stim"
                 ),
                 np.array(
                     [
@@ -2428,8 +2430,10 @@ class TestDerivationTools:
                     (1,): 0.0,
                     (3,): 0.0,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_logical_off_boundary.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_logical_off_boundary.stim"
                 ),
                 np.array(
                     [
@@ -3063,7 +3067,7 @@ class TestDerivationTools:
             ),
             (
                 {},
-                stim.Circuit(),
+                deltakit_stim.Circuit(),
                 np.array([]),
                 False,
             ),
@@ -3079,9 +3083,9 @@ class TestDerivationTools:
                     (3,): 0.0,
                     (0,): 0.008771428571428624,
                 },
-                stim.Circuit.from_file(
+                deltakit_stim.Circuit.from_file(
                     REFERENCE_DATA_DIR
-                    / "stim"
+                    / "deltakit_stim"
                     / "unobservable_logical_rotated_mem_z_d3_r3.stim"
                 ),
                 np.array([]),
@@ -3089,11 +3093,11 @@ class TestDerivationTools:
             ),
         ],
     )
-    def test_create_correlation_matrix_creates_valid_matrix_from_stim(
+    def test_create_correlation_matrix_creates_valid_matrix_from_deltakit_stim(
         self, pij_data, circuit, expected_matrix, plot_boundary_edges
     ):
         pij_data = {frozenset(x): p for x, p in pij_data.items()}
-        graph, _, _ = parse_stim_circuit(circuit)
+        graph, _, _ = parse_deltakit_stim_circuit(circuit)
         matrix, _ = create_correlation_matrix(pij_data, graph, plot_boundary_edges)
         npt.assert_array_equal(matrix, expected_matrix)
 
@@ -3192,7 +3196,7 @@ class TestDerivationTools:
                     (15,): 0.08694066417869489,
                     (12,): 0.045744965556093246,
                 },
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 {
                     (4.0, 7.0): [0, 4, 8, 12, 16, 20],
                     (4.0, 9.0): [1, 5, 9, 13, 17, 21],
@@ -3291,7 +3295,7 @@ class TestDerivationTools:
                     (15, 15): 0.08694066417869489,
                     (12, 12): 0.045744965556093246,
                 },
-                lf("stim_circuit"),
+                lf("deltakit_stim_circuit"),
                 {
                     (4.0, 7.0): [0, 4, 8, 12, 16, 20],
                     (4.0, 9.0): [1, 5, 9, 13, 17, 21],
@@ -3312,8 +3316,10 @@ class TestDerivationTools:
                     (1,): 0.0,
                     (3,): 0.0,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_logical_off_boundary.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_logical_off_boundary.stim"
                 ),
                 {
                     (1.0, 0.0): [0, 6, 12, 18],
@@ -3337,8 +3343,10 @@ class TestDerivationTools:
                     (1,): 0.0,
                     (3,): 0.0,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_logical_off_boundary.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR
+                    / "deltakit_stim"
+                    / "circuit_logical_off_boundary.stim"
                 ),
                 {
                     (1.0, 0.0): [0, 6, 12, 18],
@@ -3352,7 +3360,7 @@ class TestDerivationTools:
             ),
             (
                 {},
-                stim.Circuit(),
+                deltakit_stim.Circuit(),
                 {},
                 False,
             ),
@@ -3368,9 +3376,9 @@ class TestDerivationTools:
                     (3,): 0.0,
                     (0,): 0.008771428571428624,
                 },
-                stim.Circuit.from_file(
+                deltakit_stim.Circuit.from_file(
                     REFERENCE_DATA_DIR
-                    / "stim"
+                    / "deltakit_stim"
                     / "unobservable_logical_rotated_mem_z_d3_r3.stim"
                 ),
                 {},
@@ -3378,11 +3386,11 @@ class TestDerivationTools:
             ),
         ],
     )
-    def test_create_correlation_matrix_creates_valid_major_minor_mapping_from_stim(
+    def test_create_correlation_matrix_creates_valid_major_minor_mapping_from_deltakit_stim(
         self, pij_data, circuit, expected_major_minor_mapping, plot_boundary_edges
     ):
         pij_data = {frozenset(x): p for x, p in pij_data.items()}
-        graph, _, _ = parse_stim_circuit(circuit)
+        graph, _, _ = parse_deltakit_stim_circuit(circuit)
         _, major_minor_mapping = create_correlation_matrix(
             pij_data, graph, plot_boundary_edges
         )
@@ -3393,14 +3401,14 @@ class TestDerivationTools:
         [
             (
                 {},
-                stim.DetectorErrorModel(""),
+                deltakit_stim.DetectorErrorModel(""),
                 np.array([]),
             ),
             (
                 {
                     (0, 0): 0.25,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3412,7 +3420,7 @@ class TestDerivationTools:
             ),
             (
                 {(0, 0): 0.25, (1, 1): 0.25, (0, 1): 0.5},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3427,7 +3435,7 @@ class TestDerivationTools:
             ),
             (
                 {(0, 0): 0.25, (1, 1): 0.25, (0, 1): 0.5},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3449,7 +3457,7 @@ class TestDerivationTools:
                     (0, 2): 0.3,
                     (1, 2): 0.1,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3475,7 +3483,7 @@ class TestDerivationTools:
                     (0, 2): 0.3,
                     (1, 2): 0.1,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3505,7 +3513,7 @@ class TestDerivationTools:
                     (1, 3): 0.5,
                     (2, 3): 0.35,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3547,7 +3555,7 @@ class TestDerivationTools:
                     (1, 3): 0.5,
                     (2, 3): 0.35,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3589,12 +3597,12 @@ class TestDerivationTools:
     @pytest.mark.parametrize(
         ("pij_data", "dem", "expected_major_minor_mapping"),
         [
-            ({}, stim.DetectorErrorModel(""), {}),
+            ({}, deltakit_stim.DetectorErrorModel(""), {}),
             (
                 {
                     (0, 0): 0.25,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3606,7 +3614,7 @@ class TestDerivationTools:
             ),
             (
                 {(0,): 0.25, (1,): 0.25, (0, 1): 0.5},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3621,7 +3629,7 @@ class TestDerivationTools:
             ),
             (
                 {(0,): 0.25, (1,): 0.25, (0, 1): 0.5},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3643,7 +3651,7 @@ class TestDerivationTools:
                     (0, 2): 0.3,
                     (1, 2): 0.1,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3672,7 +3680,7 @@ class TestDerivationTools:
                     (0, 2): 0.3,
                     (1, 2): 0.1,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3704,7 +3712,7 @@ class TestDerivationTools:
                     (1, 3): 0.5,
                     (2, 3): 0.35,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3739,7 +3747,7 @@ class TestDerivationTools:
                     (1, 3): 0.5,
                     (2, 3): 0.35,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3778,7 +3786,7 @@ class TestDerivationTools:
                 {
                     (0,): 0.25,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3789,7 +3797,7 @@ class TestDerivationTools:
             ),
             (
                 {(0,): 0.25, (1,): 0.25, (0, 1): 0.5},
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3810,7 +3818,7 @@ class TestDerivationTools:
                     (0, 2): 0.3,
                     (1, 2): 0.1,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3839,7 +3847,7 @@ class TestDerivationTools:
                     (1, 3): 0.5,
                     (2, 3): 0.35,
                 },
-                stim.DetectorErrorModel(
+                deltakit_stim.DetectorErrorModel(
                     "\n".join(
                         [
                             "error(0.25) D0",
@@ -3871,7 +3879,7 @@ class TestDerivationTools:
         assert np.all(np.diag(matrix) != 0)
 
     @pytest.mark.parametrize(
-        ("pij_data", "stim_circuit"),
+        ("pij_data", "deltakit_stim_circuit"),
         [
             (
                 {
@@ -3885,17 +3893,17 @@ class TestDerivationTools:
                     (1,): -3.251744899835995e-17,
                     (3,): -3.251744899835995e-17,
                 },
-                stim.Circuit.from_file(
-                    REFERENCE_DATA_DIR / "stim" / "circuit_multi_logicals.stim"
+                deltakit_stim.Circuit.from_file(
+                    REFERENCE_DATA_DIR / "deltakit_stim" / "circuit_multi_logicals.stim"
                 ),
             ),
         ],
     )
     def test_create_correlation_matrix_raises_value_error_if_time_steps_unequal(
-        self, pij_data, stim_circuit
+        self, pij_data, deltakit_stim_circuit
     ):
         pij_data = {frozenset(x): p for x, p in pij_data.items()}
-        graph, _, _ = parse_stim_circuit(stim_circuit)
+        graph, _, _ = parse_deltakit_stim_circuit(deltakit_stim_circuit)
         with pytest.raises(
             expected_exception=ValueError, match=r"Inconsistent qubit time mapping"
         ):
