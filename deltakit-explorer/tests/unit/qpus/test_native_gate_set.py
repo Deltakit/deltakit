@@ -36,7 +36,7 @@ class TestNativeGateSetAndTimes:
             one_qubit_gates={X: 0.1, Y: 0.2, Z: 0.3, I: 0.4}
         ).one_qubit_gates == {X: 0.1, Y: 0.2, Z: 0.3, I: 0.4}
 
-    def test_1q_gateset_when_gate_not_stim_gate(self):
+    def test_1q_gateset_when_gate_not_deltakit_stim_gate(self):
         input_gates = {X: 1.0, Y: 1.0, "FGFG": 1.0, I: 1.0}
         with pytest.raises(
             ValueError, match=r".* one-qubit gate list is not a valid gate.*"
@@ -55,7 +55,7 @@ class TestNativeGateSetAndTimes:
             two_qubit_gates={CX: 0.1, CY: 0.2, CZ: 0.3}
         ).two_qubit_gates == {CX: 0.1, CY: 0.2, CZ: 0.3}
 
-    def test_2q_gateset_when_gate_not_stim_gate(self):
+    def test_2q_gateset_when_gate_not_deltakit_stim_gate(self):
         input_gates = {CX: 0.1, CY: 0.2, "FGFG": 0.3}
         with pytest.raises(
             ValueError, match=r".* two-qubit gate list is not a valid gate.*"
@@ -74,7 +74,7 @@ class TestNativeGateSetAndTimes:
             reset_gates={RX: 0.1, RY: 0.2, RZ: 0.3}
         ).reset_gates == {RX: 0.1, RY: 0.2, RZ: 0.3}
 
-    def test_reset_gateset_when_gate_not_stim_gate(self):
+    def test_reset_gateset_when_gate_not_deltakit_stim_gate(self):
         input_gates = {RX: 0.1, "FGFG": 0.2}
         with pytest.raises(
             ValueError, match=r".* reset gate list is not a valid gate.*"
@@ -88,7 +88,7 @@ class TestNativeGateSetAndTimes:
         ):
             NativeGateSetAndTimes(reset_gates={RX: -1.0})
 
-    def test_measurement_gateset_when_gate_not_stim_gate(self):
+    def test_measurement_gateset_when_gate_not_deltakit_stim_gate(self):
         input_gates = {MY: 0.1, "FGFG": 0.2}
         with pytest.raises(
             ValueError, match=r".* measurement gate list is not a valid gate.*"
@@ -114,7 +114,7 @@ class TestNativeGateSetAndTimes:
 
     def test_add_invalid_gate(self):
         class MY_GATE(Gate):
-            stim_string = "MY_GATE"
+            deltakit_stim_string = "MY_GATE"
 
         native_gate_set = NativeGateSetAndTimes()
         with pytest.raises(ValueError, match=r"Unknown gate..."):

@@ -14,7 +14,7 @@ from deltakit_circuit._qubit_identifiers import PauliGate
 
 from deltakit_explorer.codes._css._css_stage import CSSStage
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
-    pauli_gates_to_stim_pauli_string,
+    pauli_gates_to_deltakit_stim_pauli_string,
 )
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
@@ -395,17 +395,17 @@ class StabiliserCode(ABC):
             msg = "Logicals cannot be weight 0"
             raise ValueError(msg)
 
-        # Convert stabilisers and logicals to stim.PauliString for commutation checks
+        # Convert stabilisers and logicals to deltakit_stim.PauliString for commutation checks
         stabilisers_as_pauli_strings = [
-            pauli_gates_to_stim_pauli_string(stab.paulis, data_qubit_to_index)
+            pauli_gates_to_deltakit_stim_pauli_string(stab.paulis, data_qubit_to_index)
             for stab in itertools.chain.from_iterable(stabilisers)
         ]
         new_logs_as_pauli_string = [
-            pauli_gates_to_stim_pauli_string(logical, data_qubit_to_index)
+            pauli_gates_to_deltakit_stim_pauli_string(logical, data_qubit_to_index)
             for logical in new_logicals
         ]
         opposite_logs_as_pauli_string = [
-            pauli_gates_to_stim_pauli_string(logical, data_qubit_to_index)
+            pauli_gates_to_deltakit_stim_pauli_string(logical, data_qubit_to_index)
             for logical in opposite_type_logicals
         ]
 

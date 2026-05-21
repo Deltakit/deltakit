@@ -4,9 +4,9 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 
 from deltakit_explorer.enums._api_enums import APIEndpoints
 from deltakit_explorer.types import (
@@ -95,17 +95,20 @@ class APIClient(ABC):  # pragma: nocover
             request_id (str): Identifier of the request.
 
         Returns:
-            str: Generated circuit in stim format."""
+            str: Generated circuit in deltakit_stim format."""
         raise NotImplementedError()
 
     @abstractmethod
     def simulate_circuit(
-        self, stim_circuit: str | stim.Circuit, shots: int, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        shots: int,
+        request_id: str,
     ) -> tuple[Measurements, LeakageFlags | None]:
         """Simulate a circuit and return measurements and leakage flags.
 
         Args:
-            stim_circuit (str | stim.Circuit): Circuit to simulate.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit): Circuit to simulate.
             shots (int): Number of shots for the simulation.
             request_id (str): Identifier of the request.
 
@@ -115,17 +118,20 @@ class APIClient(ABC):  # pragma: nocover
 
     @abstractmethod
     def add_noise(
-        self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        noise_model: NoiseModel,
+        request_id: str,
     ) -> str:
         """Add noise to a circuit based on the provided noise model.
 
         Args:
-            stim_circuit (str | stim.Circuit): Circuit to which noise will be added.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit): Circuit to which noise will be added.
             noise_model (NoiseModel): Noise model to apply.
             request_id (str): Identifier of the request.
 
         Returns:
-            str: Noisy circuit in stim format. May contain leakage (not stim-compatible), if SI1000NoiseModel is used."""
+            str: Noisy circuit in deltakit_stim format. May contain leakage (not deltakit_stim-compatible), if SI1000NoiseModel is used."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -134,7 +140,7 @@ class APIClient(ABC):  # pragma: nocover
         detectors: DetectionEvents,
         observables: ObservableFlips,
         decoder: Decoder,
-        noisy_stim_circuit: str | stim.Circuit,
+        noisy_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         leakage_flags: LeakageFlags | None,
         request_id: str,
     ) -> DecodingResult:
@@ -144,7 +150,7 @@ class APIClient(ABC):  # pragma: nocover
             detectors (DetectionEvents): DetectionEvents to use for decoding.
             observables (ObservableFlips): ObservableFlips to use for decoding.
             decoder (Decoder): Decoder to use.
-            noisy_stim_circuit (str | stim.Circuit): Noisy circuit to decode.
+            noisy_deltakit_stim_circuit (str | deltakit_stim.Circuit): Noisy circuit to decode.
             leakage_flags (LeakageFlags | None): Optional leakage flags.
             request_id (str): Identifier of the request.
 
@@ -160,7 +166,7 @@ class APIClient(ABC):  # pragma: nocover
     def defect_rates(
         self,
         detectors: DetectionEvents,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         request_id: str,
     ) -> dict[tuple[float, ...], list[float]]:
         """Get defect rates for detectors.
@@ -168,7 +174,7 @@ class APIClient(ABC):  # pragma: nocover
         Args:
             detectors (DetectionEvents):
                 DetectionEvents values from simulations to compute defect rates.
-            stim_circuit (str | stim.Circuit): Circuit to analyse.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit): Circuit to analyse.
             request_id (str): Identifier of the request."""
         raise NotImplementedError()
 
@@ -176,7 +182,7 @@ class APIClient(ABC):  # pragma: nocover
     def get_correlation_matrix_for_trimmed_data(
         self,
         detectors: DetectionEvents,
-        noise_floor_circuit: str | stim.Circuit,
+        noise_floor_circuit: str | deltakit_stim.Circuit,
         use_default_noise_model_edges: bool,
         request_id: str,
     ) -> tuple[npt.NDArray[np.float64], QubitCoordinateToDetectorMapping]:
@@ -184,7 +190,7 @@ class APIClient(ABC):  # pragma: nocover
 
         Args:
             detectors (DetectionEvents): Detector data to analyse.
-            noise_floor_circuit (str | stim.Circuit): Circuit with the minimal noise.
+            noise_floor_circuit (str | deltakit_stim.Circuit): Circuit with the minimal noise.
             use_default_noise_model_edges (bool): Whether to use default noise model edges.
             request_id (str): Identifier of the request.
 
@@ -197,18 +203,18 @@ class APIClient(ABC):  # pragma: nocover
     @abstractmethod
     def trim_circuit_and_detectors(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         detectors: DetectionEvents,
         request_id: str,
     ) -> tuple[str, DetectionEvents]:
         """Trim a circuit and detectors to remove qubits and detectors irrelevant to decoding problem.
 
         Args:
-            stim_circuit (str | stim.Circuit): Circuit to trim.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit): Circuit to trim.
             detectors (DetectionEvents): DetectionEvents to trim.
             request_id (str): Identifier of the request.
 
         Returns:
-            tuple[str, DetectionEvents]: Tuple containing the trimmed circuit in stim format and the trimmed detectors
+            tuple[str, DetectionEvents]: Tuple containing the trimmed circuit in deltakit_stim format and the trimmed detectors
         """
         raise NotImplementedError()

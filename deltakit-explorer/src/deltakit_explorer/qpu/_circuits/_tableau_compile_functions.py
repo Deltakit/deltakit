@@ -68,7 +68,7 @@ def _compile_to_native_gates_plus_unitaries(
     ----------
     gate_info : Tuple[int, Qubit, str]
         Current gate's info, from the special gate dictionary, detailing the layer index,
-        qubit and stim_string of the gate.
+        qubit and deltakit_stim_string of the gate.
     preceding_ub : List[OneQubitCliffordGate]
         Unitary block preceding the gate.
     succeeding_ub : List[OneQubitCliffordGate]
@@ -82,7 +82,7 @@ def _compile_to_native_gates_plus_unitaries(
     ]
         Dictionary detailing how to compile from one reset/measurement gate to another.
     special_gate_mapping : Dict[str, Gate]
-        Dictionary to lookup the stim_string to gate type.
+        Dictionary to lookup the deltakit_stim_string to gate type.
     comp_dict : TableauDict
         Compilation dictionary, with tableaus as keys and lists of unitary
         gates as values.
@@ -93,7 +93,7 @@ def _compile_to_native_gates_plus_unitaries(
     -------
     Tuple[List[OneQubitCliffordGate], List[OneQubitCliffordGate], str]
         A tuple containing the preceding and succeeding unitary blocks after
-        compilation to native gates, and the stim_string of the gate compiled to.
+        compilation to native gates, and the deltakit_stim_string of the gate compiled to.
     """
     # try compiling to a native gate. If we run out, the compilation is not
     # possible, so throw an error.
@@ -143,7 +143,7 @@ def _compile_to_native_gates_plus_unitaries(
             available_single_qubit_gates
         ):
             break
-    return updated_preceding_ub, updated_succeeding_ub, target_gate.stim_string
+    return updated_preceding_ub, updated_succeeding_ub, target_gate.deltakit_stim_string
 
 
 def _compile_reset_to_native_gates_plus_unitaries(
@@ -215,7 +215,9 @@ def _compile_or_exchange_unitary_block(
     """
     # get tableau of unitary block
     ub_tab = _get_tableau_as_key(
-        _get_tableau_from_sequence_of_1q_gates([g.stim_string for g in unitary_block]),
+        _get_tableau_from_sequence_of_1q_gates(
+            [g.deltakit_stim_string for g in unitary_block]
+        ),
         up_to_paulis=up_to_paulis,
     )
 
@@ -440,7 +442,7 @@ def _compile_two_qubit_gate_to_target(
     except KeyError as ke:
         msg = (
             "Cannot compile between groups -"
-            f" {current_gate.stim_string} to {target_gate.stim_string} not supported"
+            f" {current_gate.deltakit_stim_string} to {target_gate.deltakit_stim_string} not supported"
         )
         raise ValueError(msg) from ke
 
@@ -606,14 +608,14 @@ def _compile_two_qubit_gates_to_native_gates(
                     (
                         qubit1_entry[0][0],
                         qubit1_entry[0][1],
-                        target_gate.stim_string,
+                        target_gate.deltakit_stim_string,
                     )
                 ] = qubit1_entry[1]
                 new_two_qubit_dict[
                     (
                         qubit2_entry[0][0],
                         qubit2_entry[0][1],
-                        target_gate.stim_string,
+                        target_gate.deltakit_stim_string,
                     )
                 ] = qubit2_entry[1]
                 break
@@ -720,7 +722,7 @@ def _compile_comp_data(
     for unitary_block_index, unitary_block in comp_data.unitary_blocks.items():
         ub_tab = _get_tableau_as_key(
             _get_tableau_from_sequence_of_1q_gates(
-                [g.stim_string for g in unitary_block]
+                [g.deltakit_stim_string for g in unitary_block]
             ),
             up_to_paulis=up_to_paulis,
         )
@@ -798,7 +800,7 @@ def _compile_comp_data(
             # with one-qubit gates, using the CZ compilation of the 2q gate.
 
             # Note that CXSWAP is the only non-symmetric gate from the iSWAP
-            # class, at least in stim currently.
+            # class, at least in deltakit_stim currently.
             if two_qubit_gate_to_compile == CXSWAP:
                 gate_to_intm_dict = GATE_TO_CZSWAP_DICT
                 intm_to_target_dict = CZSWAP_TO_GATE_DICT

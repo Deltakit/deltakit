@@ -7,7 +7,7 @@ circuit for a quantum memory experiment with a Calderbank-Shor-Steane
 
 from __future__ import annotations
 
-import stim
+import deltakit_stim
 from deltakit_circuit import Circuit
 from deltakit_circuit.gates import PauliBasis
 
@@ -199,7 +199,7 @@ def _cloud_css_code_experiment_circuit(
         )
     )
 
-    return Circuit.from_stim_circuit(stim.Circuit(circuit))
+    return Circuit.from_deltakit_stim_circuit(deltakit_stim.Circuit(circuit))
 
 
 def css_code_stability_circuit(

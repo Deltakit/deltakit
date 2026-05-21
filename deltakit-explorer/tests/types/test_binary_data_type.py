@@ -1,9 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+import deltakit_stim
 import numpy as np
 import pytest
-import stim
 
 from deltakit_explorer.enums import DataFormat
 from deltakit_explorer.types import (
@@ -175,7 +175,7 @@ def test_join_raises_on_nonaligned_rows(cls, items):
         cls.combine(result)
 
 
-def test_measurements_split_detectors_observables_stim_circuit():
+def test_measurements_split_detectors_observables_deltakit_stim_circuit():
     mmts = Measurements([[0, 1], [0, 1]])
     circ = """
         M 0 1
@@ -183,12 +183,12 @@ def test_measurements_split_detectors_observables_stim_circuit():
         DETECTOR(1, 3) rec[-1]
         OBSERVABLE_INCLUDE(0) rec[-1]
         """
-    dets, obs = mmts.to_detectors_and_observables(stim.Circuit(circ))
+    dets, obs = mmts.to_detectors_and_observables(deltakit_stim.Circuit(circ))
     assert dets.as_numpy().shape == (2, 2)
     assert obs.as_numpy().shape == (2, 1)
 
 
-def test_measurements_split_detectors_observables_stim():
+def test_measurements_split_detectors_observables_deltakit_stim():
     mmts = Measurements([[0, 1], [0, 1]])
     circ = """
         M 0 1
@@ -201,7 +201,7 @@ def test_measurements_split_detectors_observables_stim():
     assert obs.as_numpy().shape == (2, 1)
 
 
-def test_measurements_split_detectors_observables_stim_with_leakage():
+def test_measurements_split_detectors_observables_deltakit_stim_with_leakage():
     mmts = Measurements([[0, 1, 0, 0], [0, 0, 0, 1]])
     circ = """
         M 0 1
@@ -220,7 +220,7 @@ def test_measurements_split_detectors_observables_stim_with_leakage():
     assert obs.as_numpy().shape == (2, 1)
 
 
-def test_measurements_split_detectors_observables_stim_with_sweeps():
+def test_measurements_split_detectors_observables_deltakit_stim_with_sweeps():
     mmts = Measurements([[0, 1, 0, 0], [0, 0, 0, 1]])
     circ = """
         CX sweep[0] 0

@@ -5,28 +5,28 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import deltakit_stim
 import numpy as np
-import stim
 
 import deltakit_explorer
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._types import LeakageFlags, Measurements
 
 
-def simulate_with_stim(
-    stim_circuit: str | stim.Circuit,
+def simulate_with_deltakit_stim(
+    deltakit_stim_circuit: str | deltakit_stim.Circuit,
     shots: int,
     result_file: str | Path | None = None,
     client: deltakit_explorer.Client | None = None,
 ) -> tuple[Measurements, LeakageFlags | None]:
     """This method simulates the circuit using
-    a Clifford STIM simulator. Clifford simulation is fast,
+    a Clifford DELTAKIT_STIM simulator. Clifford simulation is fast,
     and supports large numbers of qubits, but is limited in
     the set of gates one may use, and noise mechanisms.
 
     Args:
-        stim_circuit (str | stim.Circuit):
-            Circuit in STIM language.
+        deltakit_stim_circuit (str | deltakit_stim.Circuit):
+            Circuit in DELTAKIT_STIM language.
         shots (int):
             Number of shots.
         result_file (Optional[str | Path]):
@@ -36,7 +36,7 @@ def simulate_with_stim(
             directly to the disk. Not supported for cloud calls.
         client (Optional[Client]):
             If provided, performs the simulation using the `client`.
-            Required if `stim_circuit` includes leakage.
+            Required if `deltakit_stim_circuit` includes leakage.
             Currently implemented only when `result_file` is ``None``.
 
     Returns:
@@ -47,16 +47,16 @@ def simulate_with_stim(
     Examples:
         Running a circuit 1000 times and saving to a `b8` file::
 
-            meas = simulation.simulate_with_stim(
-                stim_circuit=noisy_circuit,
+            meas = simulation.simulate_with_deltakit_stim(
+                deltakit_stim_circuit=noisy_circuit,
                 shots=1000,
                 result_file="results.b8",
             )
 
         Running a circuit 1000 times and saving to RAM::
 
-            meas = simulation.simulate_with_stim(
-                stim_circuit=noisy_circuit,
+            meas = simulation.simulate_with_deltakit_stim(
+                deltakit_stim_circuit=noisy_circuit,
                 shots=1000,
             )
 
@@ -68,18 +68,22 @@ def simulate_with_stim(
 
     if client is not None:
         circuit = (
-            str(stim_circuit.as_stim_circuit())
-            if not isinstance(stim_circuit, str)
-            else stim_circuit
+            str(deltakit_stim_circuit.as_deltakit_stim_circuit())
+            if not isinstance(deltakit_stim_circuit, str)
+            else deltakit_stim_circuit
         )
         if result_file is not None:
             msg = "Use of `client` is currently incompatible with `result_file`."
             raise NotImplementedError(msg)
-        measurements, leakage_flags = client.simulate_stim_circuit(circuit, shots=shots)
+        measurements, leakage_flags = client.simulate_deltakit_stim_circuit(
+            circuit, shots=shots
+        )
         return measurements, leakage_flags
 
     circuit = (
-        stim.Circuit(stim_circuit) if isinstance(stim_circuit, str) else stim_circuit
+        deltakit_stim.Circuit(deltakit_stim_circuit)
+        if isinstance(deltakit_stim_circuit, str)
+        else deltakit_stim_circuit
     )
     sampler = circuit.compile_sampler()
     # E.g. if we under 100MB, save to RAM

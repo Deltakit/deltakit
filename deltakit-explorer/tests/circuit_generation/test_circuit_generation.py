@@ -1,5 +1,5 @@
+import deltakit_stim
 import pytest
-import stim
 from deltakit_circuit.gates import PauliBasis
 
 from deltakit_explorer.codes._bivariate_bicycle_code import (
@@ -22,7 +22,7 @@ from deltakit_explorer.codes._repetition_code import RepetitionCode
 @pytest.fixture
 def mock_client(mocker):
     client = mocker.Mock()
-    # Return a minimal valid stim circuit string
+    # Return a minimal valid deltakit_stim circuit string
     client.generate_circuit.return_value = "H 0\nTICK\nM 0"
     return client
 
@@ -44,7 +44,7 @@ def test_css_code_experiment_circuit_cloud(mock_client, code, basis):
         logical_basis=basis,
         client=mock_client,
     )
-    assert result.as_stim_circuit() == stim.Circuit("H 0\nTICK\nM 0")
+    assert result.as_deltakit_stim_circuit() == deltakit_stim.Circuit("H 0\nTICK\nM 0")
     mock_client.generate_circuit.assert_called_once()
 
 

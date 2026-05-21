@@ -125,7 +125,7 @@ class TestAPICalls:
             DetectionEvents([[0]]),
             ObservableFlips([[0]]),
             Decoder(DecoderType.AC),
-            "stim circuit",
+            "deltakit_stim circuit",
             None,
             "id",
         )

@@ -8,7 +8,7 @@ import itertools
 from collections.abc import Iterable, Mapping, Sequence
 from functools import cached_property
 
-import stim
+import deltakit_stim
 from deltakit_circuit import Circuit, Coordinate, GateLayer, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit.gates import (
@@ -455,9 +455,11 @@ class CSSStage:
         tableau_qubits: tuple[Qubit] = data_qubits + self._gate_qubits
 
         # Create tableau that implements _first_round_gates
-        tableau = stim.Tableau(len(tableau_qubits))
+        tableau = deltakit_stim.Tableau(len(tableau_qubits))
         for gate in self._first_round_gates:
-            gate_tableau = stim.Tableau.from_named_gate(gate.stim_string)
+            gate_tableau = deltakit_stim.Tableau.from_named_gate(
+                gate.deltakit_stim_string
+            )
             qubits = list(gate.qubits)
             tableau.append(
                 gate=gate_tableau,

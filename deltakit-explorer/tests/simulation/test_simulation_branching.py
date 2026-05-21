@@ -71,9 +71,9 @@ def test_leakage_simulation_calls_server_v1(mocker):
     mocker_execute = mocker.patch.object(
         client._api,
         "execute_query",
-        return_value={"simulateWithStim": [{"uid": "duck://3232"}]},
+        return_value={"simulateWithDeltakitStim": [{"uid": "duck://3232"}]},
     )
-    mmts, _ = client.simulate_stim_circuit(circuit, 100)
+    mmts, _ = client.simulate_deltakit_stim_circuit(circuit, 100)
     assert mmts.as_numpy().shape == (1, 2)
     mocker_execute.assert_called_once()
 
@@ -105,9 +105,11 @@ def test_simulator_decorator_splits_on_server(mocker):
     mock = mocker.Mock(return_value=(mmts_batch, leak_batch))
     # so we re-apply the decorator to reproduce original behaviour
     decorated_mock = validate_and_split_simulation(mock)
-    mocker.patch.object(Client, "simulate_stim_circuit", decorated_mock)
+    mocker.patch.object(Client, "simulate_deltakit_stim_circuit", decorated_mock)
     # this will trigger mock method 1.7M/100K=17 times
-    mmts, leak = simulation.simulate_with_stim(circuit, 1_700_000, client=client)
+    mmts, leak = simulation.simulate_with_deltakit_stim(
+        circuit, 1_700_000, client=client
+    )
     # splits into 17 batches
     assert mock.call_count == 17
     # and successfully joins them

@@ -10,7 +10,7 @@ import functools
 import itertools
 from typing import Any
 
-import stim
+import deltakit_stim
 import tqdm
 
 from deltakit_explorer._utils._logging import Logging
@@ -50,7 +50,7 @@ def validate_and_split_decoding(func):
         detectors: DetectionEvents,
         observables: ObservableFlips,
         decoder: Decoder,
-        noisy_stim_circuit: str | stim.Circuit,
+        noisy_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         leakage_flags: LeakageFlags | None = None,
     ):
         if decoder.decoder_type == DecoderType.LCD and leakage_flags is not None:
@@ -70,19 +70,19 @@ def validate_and_split_decoding(func):
         if decoder.decoder_type == DecoderType.LCD:  # LCD weakly avoids batching
             batch_size = shots
         while (
-            get_dec_size(noisy_stim_circuit, batch_size, DataFormat.F01)
+            get_dec_size(noisy_deltakit_stim_circuit, batch_size, DataFormat.F01)
             > HTTP_PACKET_LIMIT
         ) and batch_size > 100:
             batch_size //= 2
         while (
-            get_dec_request_size(noisy_stim_circuit, batch_size, DataFormat.B8)
+            get_dec_request_size(noisy_deltakit_stim_circuit, batch_size, DataFormat.B8)
             > HTTP_PACKET_LIMIT
         ) and batch_size > 100:
             batch_size //= 2
         batch_size = max(1, batch_size)
         if (
             decoder.decoder_type in {DecoderType.AC, DecoderType.BP_OSD}
-            and len(str(noisy_stim_circuit)) > 25_000  # e.g. toric 5x5x5
+            and len(str(noisy_deltakit_stim_circuit)) > 25_000  # e.g. toric 5x5x5
             and numpy_detectors.shape[0] > 10_000  # shots
         ):
             Logging.warn(
@@ -112,7 +112,7 @@ def validate_and_split_decoding(func):
                 dets,
                 obs,
                 decoder,
-                noisy_stim_circuit,
+                noisy_deltakit_stim_circuit,
                 leakage,
             )
             results.append(decoding_result)
@@ -182,20 +182,21 @@ def validate_and_split_simulation(func):
     @functools.wraps(func)
     def wrapper(  # pragma: nocover
         obj,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         shots: int,
     ):
         assert shots > 0, "Number of shots should be positive."
         batch_size = min(100_000, shots)  # initial guess
         while (
-            get_sim_size(stim_circuit, batch_size, DataFormat.F01) > HTTP_PACKET_LIMIT
+            get_sim_size(deltakit_stim_circuit, batch_size, DataFormat.F01)
+            > HTTP_PACKET_LIMIT
             and batch_size > 100
         ):
             batch_size //= 2
         batch_size = max(1, batch_size)
 
         # do not split if simulated locally
-        if not has_leakage(str(stim_circuit)):
+        if not has_leakage(str(deltakit_stim_circuit)):
             batch_size = shots
 
         shots_list: list[int] | tqdm.tqdm[int] = _split_into_batches(shots, batch_size)
@@ -211,7 +212,7 @@ def validate_and_split_simulation(func):
             shots_list = tqdm.tqdm(shots_list, "simulation batches")
         for batch in shots_list:
             Logging.info(f"Simulating {batch} shots...", uid="decorator")
-            meas, leak = func(obj, stim_circuit, batch)
+            meas, leak = func(obj, deltakit_stim_circuit, batch)
             measurements.append(meas)
             leakages.append(leak)
         if not all(leak is None for leak in leakages) and not all(

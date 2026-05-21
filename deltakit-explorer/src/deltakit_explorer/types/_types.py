@@ -15,9 +15,9 @@ from math import ceil
 from pathlib import Path
 from typing import Any, ClassVar
 
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 
 from deltakit_explorer.data._converter import (
     read_01,
@@ -685,14 +685,14 @@ class Measurements(BinaryDataType):
 
     def to_detectors_and_observables(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         sweep_bits: BinaryDataType | None = None,
     ) -> tuple[DetectionEvents, ObservableFlips]:
         """Converts measurements object into detectors and observables tuple.
 
         Args:
-            stim_circuit (str | stim.Circuit):
-                STIM circuit content.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                DELTAKIT_STIM circuit content.
             sweep_bits: (Optional[BinaryDataType]):
                 If data was generated with initial sweep bits,
                 they are needed to obtain correct detectors.
@@ -701,18 +701,20 @@ class Measurements(BinaryDataType):
             Tuple[DetectionEvents, ObservableFlips]:
                 Detector and observable data.
         """
-        if isinstance(stim_circuit, stim.Circuit):
-            circuit = stim_circuit
+        if isinstance(deltakit_stim_circuit, deltakit_stim.Circuit):
+            circuit = deltakit_stim_circuit
         else:
             try:
-                circuit = stim.Circuit(stim_circuit)
+                circuit = deltakit_stim.Circuit(deltakit_stim_circuit)
             except ValueError:
-                stim_circuit = self._deinstrument_leakage_circuit(stim_circuit)
+                deltakit_stim_circuit = self._deinstrument_leakage_circuit(
+                    deltakit_stim_circuit
+                )
                 try:
-                    circuit = stim.Circuit(stim_circuit)
-                except ValueError as stim_ex:
-                    msg = "Provided circuit is not a valid stim circuit."
-                    raise ValueError(msg) from stim_ex
+                    circuit = deltakit_stim.Circuit(deltakit_stim_circuit)
+                except ValueError as deltakit_stim_ex:
+                    msg = "Provided circuit is not a valid deltakit_stim circuit."
+                    raise ValueError(msg) from deltakit_stim_ex
 
         converter = circuit.compile_m2d_converter()
         sweeps = None
@@ -785,7 +787,7 @@ class PhysicalNoiseModel(NoiseModel):
     """
 
     ENDPOINT: ClassVar[APIEndpoints] = APIEndpoints.ADD_NOISE
-    ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addNoiseToStimCircuit"
+    ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addNoiseToDeltakitStimCircuit"
 
     t_1: float
     t_2: float
@@ -872,7 +874,7 @@ class SI1000NoiseModel(NoiseModel):
     """
 
     ENDPOINT: ClassVar[APIEndpoints] = APIEndpoints.ADD_SI1000_NOISE
-    ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addSi1000NoiseToStimCircuit"
+    ENDPOINT_RESULT_FIELDNAME: ClassVar[str] = "addSi1000NoiseToDeltakitStimCircuit"
 
     p: float
     p_l: float

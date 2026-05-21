@@ -16,7 +16,7 @@ import requests.adapters
 from typing_extensions import override
 
 if TYPE_CHECKING:
-    import stim
+    import deltakit_stim
 from gql import Client, gql
 from gql.client import SyncClientSession
 from gql.transport.exceptions import TransportQueryError
@@ -280,13 +280,16 @@ class GQLClient(APIClient):
 
     @override
     def simulate_circuit(
-        self, stim_circuit: str | stim.Circuit, shots: int, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        shots: int,
+        request_id: str,
     ) -> tuple[Measurements, LeakageFlags | None]:
         output_format = DataFormat.F01
         result = self.execute(
             query_name=APIEndpoints.SIMULATE_CIRCUIT,
             variable_values={
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "location": "",
                 "leakageLocation": "",
                 "outputData": DataString.empty,
@@ -300,7 +303,7 @@ class GQLClient(APIClient):
         )
         uids = [
             DataString.from_data_string(uri["uid"])
-            for uri in result["simulateWithStim"]
+            for uri in result["simulateWithDeltakitStim"]
         ]
         if len(uids) == 1:  # no leakage returned
             return (Measurements(uids[0], data_format=output_format), None)
@@ -314,10 +317,13 @@ class GQLClient(APIClient):
 
     @override
     def add_noise(
-        self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        noise_model: NoiseModel,
+        request_id: str,
     ) -> str:
         variables = {
-            "circuit": str(DataString(str(stim_circuit))),
+            "circuit": str(DataString(str(deltakit_stim_circuit))),
             "result_file": DataString.empty,
             "requestId": request_id,
             "result_folder": "",
@@ -342,7 +348,7 @@ class GQLClient(APIClient):
         detectors: DetectionEvents,
         observables: ObservableFlips,
         decoder: Decoder,
-        noisy_stim_circuit: str | stim.Circuit,
+        noisy_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         leakage_flags: LeakageFlags | None,
         request_id: str,
     ) -> DecodingResult:
@@ -359,7 +365,7 @@ class GQLClient(APIClient):
             "detFile": detectors.as_data_string(use_format),
             "obsFile": observables.as_data_string(use_format),
             "useExperimentalGraph": decoder.use_experimental_graph,
-            "noisyStimFile": str(DataString(str(noisy_stim_circuit))),
+            "noisyDeltakit_StimFile": str(DataString(str(noisy_deltakit_stim_circuit))),
             "parameters": parameters,
             "requestId": request_id,
             "resultFileLocation": "",
@@ -385,7 +391,7 @@ class GQLClient(APIClient):
     def defect_rates(
         self,
         detectors: DetectionEvents,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         request_id: str,
     ) -> dict[tuple[float, ...], list[float]]:
         use_format = DataFormat.B8
@@ -394,7 +400,7 @@ class GQLClient(APIClient):
             variable_values={
                 "contentType": use_format.value,
                 "detFile": detectors.as_data_string(use_format),
-                "stimFile": str(DataString(str(stim_circuit))),
+                "deltakitStimFile": str(DataString(str(deltakit_stim_circuit))),
                 "coordinates": None,
                 "requestId": request_id,
             },
@@ -409,7 +415,7 @@ class GQLClient(APIClient):
     def get_correlation_matrix_for_trimmed_data(
         self,
         detectors: DetectionEvents,
-        noise_floor_circuit: str | stim.Circuit,
+        noise_floor_circuit: str | deltakit_stim.Circuit,
         use_default_noise_model_edges: bool,
         request_id: str,
     ) -> tuple[npt.NDArray[np.float64], QubitCoordinateToDetectorMapping]:
@@ -419,8 +425,8 @@ class GQLClient(APIClient):
             variable_values={
                 "contentType": use_format.value,
                 "detFile": detectors.as_data_string(use_format),
-                "stimFile": str(DataString(str(noise_floor_circuit))),
-                "useStimGraph": use_default_noise_model_edges,
+                "deltakitStimFile": str(DataString(str(noise_floor_circuit))),
+                "useDeltakitStimGraph": use_default_noise_model_edges,
                 "requestId": request_id,
             },
             request_id=request_id,
@@ -437,7 +443,7 @@ class GQLClient(APIClient):
     @override
     def trim_circuit_and_detectors(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         detectors: DetectionEvents,
         request_id: str,
     ) -> tuple[str, DetectionEvents]:
@@ -447,7 +453,7 @@ class GQLClient(APIClient):
             variable_values={
                 "contentType": detectors.data.data_format.value,
                 "data": detectors.as_data_string(use_format),
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "trimmedCircuit": DataString.empty,
                 "trimmedDetectorData": DataString.empty,
                 "location": "",

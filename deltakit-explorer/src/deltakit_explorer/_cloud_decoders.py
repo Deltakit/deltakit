@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import deltakit_circuit
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ class _CloudDecoder(DecoderProtocol):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         Some decoders may require additional parameters. Please refer
@@ -48,24 +48,24 @@ class _CloudDecoder(DecoderProtocol):
 
     def __init__(
         self,
-        circuit: deltakit_circuit.Circuit | stim.Circuit | str,
+        circuit: deltakit_circuit.Circuit | deltakit_stim.Circuit | str,
         parameters: dict[str, Any] | None = None,
         use_experimental_graph_method: bool = False,
         client: Client | None = None,
     ):
         # some leakage-aware decoders will need to hint this value,
-        # if they are using non-standard STIM extension
+        # if they are using non-standard DELTAKIT_STIM extension
         self.num_observables = 0
         self.decoder_parameters = {} if parameters is None else parameters
         self.use_experimental_graph = use_experimental_graph_method
-        self.stim_circuit: stim.Circuit | None = None
+        self.deltakit_stim_circuit: deltakit_stim.Circuit | None = None
         # to communicate to the server and to support leakage,
         # circuit must be a string
         if isinstance(circuit, deltakit_circuit.Circuit):
-            circuit = circuit.as_stim_circuit()
-        if isinstance(circuit, stim.Circuit):
-            self.stim_circuit = circuit
-            self.num_observables = self.stim_circuit.num_observables
+            circuit = circuit.as_deltakit_stim_circuit()
+        if isinstance(circuit, deltakit_stim.Circuit):
+            self.deltakit_stim_circuit = circuit
+            self.num_observables = self.deltakit_stim_circuit.num_observables
             circuit = str(circuit)
         self.text_circuit = circuit
         if client is None:
@@ -103,7 +103,7 @@ class _CloudDecoder(DecoderProtocol):
             detectors=detectors,
             observables=observables,
             decoder=decoder,
-            noisy_stim_circuit=self.text_circuit,
+            noisy_deltakit_stim_circuit=self.text_circuit,
             leakage_flags=leakage,
         )
         return decoding_result.predictions.as_numpy()
@@ -131,7 +131,7 @@ class MWPMDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         Not used in MWPM.
@@ -165,7 +165,7 @@ class CCDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         Not used in CC.
@@ -199,7 +199,7 @@ class BeliefMatchingDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         Not used in Belief Matching.
@@ -233,7 +233,7 @@ class BPOSDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         - `max_bp_rounds` is an integer, and specifies the maximum number
@@ -271,7 +271,7 @@ class ACDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         - `bp_rounds` is an integer, and specifies how many iterations
@@ -320,7 +320,7 @@ class LCDecoder(_CloudDecoder):
 
     Parameters
     ----------
-    circuit : deltakit_circuit.Circuit | stim.Circuit | str
+    circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
         Circuit to use to construct the decoder.
     parameters : Optional[dict[str, Any]]
         Some decoders may require additional parameters. Please refer
@@ -334,7 +334,7 @@ class LCDecoder(_CloudDecoder):
         If provided, sets the number of observables in the decoder.
         If not provided, the number of observables is inferred from
         the circuit (if possible). This parameter is useful when
-        the circuit uses non-standard STIM extensions to represent
+        the circuit uses non-standard DELTAKIT_STIM extensions to represent
         observables.
 
     Raises
@@ -357,7 +357,7 @@ class LCDecoder(_CloudDecoder):
 
     def __init__(
         self,
-        circuit: deltakit_circuit.Circuit | stim.Circuit | str,
+        circuit: deltakit_circuit.Circuit | deltakit_stim.Circuit | str,
         parameters: dict[str, Any] | None = None,
         use_experimental_graph_method: bool = False,
         client: Client | None = None,
@@ -367,7 +367,7 @@ class LCDecoder(_CloudDecoder):
 
         Parameters
         ----------
-        circuit : deltakit_circuit.Circuit | stim.Circuit | str
+        circuit : deltakit_circuit.Circuit | deltakit_stim.Circuit | str
             Circuit to use to construct the decoder.
         parameters : Optional[dict[str, Any]]
             Some decoders may require additional parameters. Please refer
@@ -381,7 +381,7 @@ class LCDecoder(_CloudDecoder):
             If provided, sets the number of observables in the decoder.
             If not provided, the number of observables is inferred from
             the circuit (if possible). This parameter is useful when
-            the circuit uses non-standard STIM extensions to represent
+            the circuit uses non-standard DELTAKIT_STIM extensions to represent
             observables.
 
         """

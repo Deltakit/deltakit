@@ -188,7 +188,7 @@ class TestTypedDataString:
             TypedDataFile(
                 DataFormat.F01,
                 pathlib.Path(__file__).parent
-                / "../resources/rep_code_noisy_stim_dets.01",
+                / "../resources/rep_code_noisy_deltakit_stim_dets.01",
             )
         )
 
@@ -269,7 +269,8 @@ class TestQECExperiment:
         exp = QECExperiment.from_circuit_and_measurements(
             pathlib.Path(__file__).parent
             / "../resources/rep_code_mutated_default_noise_data.stim",
-            pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
+            pathlib.Path(__file__).parent
+            / "../resources/rep_code_noisy_deltakit_stim_dets.01",
             DataFormat.F01,
         )
         assert exp.measurements.as_numpy().shape == (5000, 8)
@@ -278,9 +279,11 @@ class TestQECExperiment:
         exp = QECExperiment.from_circuit_and_measurements(
             pathlib.Path(__file__).parent
             / "../resources/rep_code_mutated_default_noise_data.stim",
-            pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
+            pathlib.Path(__file__).parent
+            / "../resources/rep_code_noisy_deltakit_stim_dets.01",
             DataFormat.F01,
-            pathlib.Path(__file__).parent / "../resources/rep_code_noisy_stim_dets.01",
+            pathlib.Path(__file__).parent
+            / "../resources/rep_code_noisy_deltakit_stim_dets.01",
             DataFormat.F01,
         )
         assert exp.measurements.as_numpy().shape == (5000, 8)
@@ -295,9 +298,9 @@ class TestQECExperiment:
                 pathlib.Path(
                     "tests/resources/rep_code_mutated_default_noise_data.stim"
                 ),
-                pathlib.Path("tests/resources/rep_code_noisy_stim_dets.01"),
+                pathlib.Path("tests/resources/rep_code_noisy_deltakit_stim_dets.01"),
                 DataFormat.F01,
-                pathlib.Path("tests/resources/rep_code_noisy_stim_dets.01"),
+                pathlib.Path("tests/resources/rep_code_noisy_deltakit_stim_dets.01"),
             )
 
 

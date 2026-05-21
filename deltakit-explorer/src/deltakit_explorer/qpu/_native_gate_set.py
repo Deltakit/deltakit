@@ -133,7 +133,7 @@ class NativeGateSetAndTimes:
         if time < 0.0:
             msg = (
                 "A gate time must be a non-negative float but that for "
-                f"{gate.stim_string} is {time}."
+                f"{gate.deltakit_stim_string} is {time}."
             )
             raise ValueError(msg)
 

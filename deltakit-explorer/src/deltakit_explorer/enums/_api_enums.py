@@ -10,8 +10,8 @@ class APIEndpoints(Enum):
     """Names of API endpoints"""
 
     GENERATE_CIRCUIT = "generate_circuit"
-    ADD_NOISE = "generate_noisy_stim_circuit"
-    ADD_SI1000_NOISE = "generate_si1000_noisy_stim_circuit"
+    ADD_NOISE = "generate_noisy_deltakit_stim_circuit"
+    ADD_SI1000_NOISE = "generate_si1000_noisy_deltakit_stim_circuit"
     DECODE = "decode"
     DECODE_LEAKAGE = "decode_leakage"
     DEFECT_RATES = "defect_rates"

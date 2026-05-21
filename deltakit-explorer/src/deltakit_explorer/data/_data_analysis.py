@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import re
 
-from stim import Circuit
+from deltakit_stim import Circuit
 
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._data_string import DataString
@@ -152,22 +152,22 @@ def get_simulation_response_size_estimate(
     return wrapper_size + duck_size
 
 
-def has_leakage(stim_circuit: str) -> bool:
+def has_leakage(deltakit_stim_circuit: str) -> bool:
     """Check is circuit has any leakage-related instructions.
     If it has, if should only be stored in strings and processed
     as client.
 
     Args:
-        stim_circuit (str): string representation of STIM circuit.
+        deltakit_stim_circuit (str): string representation of DELTAKIT_STIM circuit.
 
     Returns:
         bool: True if any leakage-related instruction are there.
     """
     leakage_evidence = {"LEAKAGE", "HERALD_LEAKAGE_EVENT", "RELAX"}
-    stim_text = str(stim_circuit)
-    stim_lines = stim_text.splitlines()
+    deltakit_stim_text = str(deltakit_stim_circuit)
+    deltakit_stim_lines = deltakit_stim_text.splitlines()
     return any(
         line.strip().startswith(prefix)
-        for line in stim_lines
+        for line in deltakit_stim_lines
         for prefix in leakage_evidence
     )

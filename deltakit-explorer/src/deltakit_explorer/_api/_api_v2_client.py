@@ -13,7 +13,7 @@ import requests.adapters
 from typing_extensions import override
 
 if TYPE_CHECKING:
-    import stim
+    import deltakit_stim
 from deltakit_explorer._api._api_client import APIClient, APIEndpoints
 from deltakit_explorer._api._auth import (
     get_token,
@@ -251,12 +251,15 @@ class APIv2Client(APIClient):
 
     @override
     def simulate_circuit(
-        self, stim_circuit: str | stim.Circuit, shots: int, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        shots: int,
+        request_id: str,
     ) -> tuple[Measurements, LeakageFlags | None]:
         result = self.execute(
             query_name=APIEndpoints.SIMULATE_CIRCUIT,
             variable_values={
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "shots": shots,
             },
             request_id=request_id,
@@ -275,7 +278,10 @@ class APIv2Client(APIClient):
 
     @override
     def add_noise(
-        self, stim_circuit: str | stim.Circuit, noise_model: NoiseModel, request_id: str
+        self,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
+        noise_model: NoiseModel,
+        request_id: str,
     ) -> str:
         if noise_model.ENDPOINT is None:
             msg = f"Noise addition for {type(noise_model)} is not implemented."
@@ -283,7 +289,7 @@ class APIv2Client(APIClient):
         result = self.execute(
             query_name=noise_model.ENDPOINT,
             variable_values={
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "noise_model": noise_model.__dict__,
             },
             request_id=request_id,
@@ -296,7 +302,7 @@ class APIv2Client(APIClient):
         detectors: DetectionEvents,
         observables: ObservableFlips,
         decoder: Decoder,
-        noisy_stim_circuit: str | stim.Circuit,
+        noisy_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         leakage_flags: LeakageFlags | None,
         request_id: str,
     ) -> DecodingResult:
@@ -308,7 +314,7 @@ class APIv2Client(APIClient):
         job_result = self.execute(
             query_name=query_name,
             variable_values={
-                "circuit": str(DataString(str(noisy_stim_circuit))),
+                "circuit": str(DataString(str(noisy_deltakit_stim_circuit))),
                 "detectors": detectors.as_data_string(DataFormat.B8),
                 "observables": observables.as_data_string(DataFormat.B8),
                 "leakage_flags": leakage_flags.as_data_string(DataFormat.B8)
@@ -334,14 +340,14 @@ class APIv2Client(APIClient):
     def defect_rates(
         self,
         detectors: DetectionEvents,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         request_id: str,
     ) -> dict[tuple[float, ...], list[float]]:
         query_name = APIEndpoints.DEFECT_RATES
         result = self.execute(
             query_name=query_name,
             variable_values={
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "detectors": detectors.as_data_string(DataFormat.B8),
             },
             request_id=request_id,
@@ -353,7 +359,7 @@ class APIv2Client(APIClient):
     def get_correlation_matrix_for_trimmed_data(
         self,
         detectors: DetectionEvents,
-        noise_floor_circuit: str | stim.Circuit,
+        noise_floor_circuit: str | deltakit_stim.Circuit,
         use_default_noise_model_edges: bool,
         request_id: str,
     ) -> tuple[npt.NDArray[np.float64], QubitCoordinateToDetectorMapping]:
@@ -363,7 +369,7 @@ class APIv2Client(APIClient):
             variable_values={
                 "circuit": str(DataString(str(noise_floor_circuit))),
                 "detectors": detectors.as_data_string(DataFormat.B8),
-                "use_stim_graph": use_default_noise_model_edges,
+                "use_deltakit_stim_graph": use_default_noise_model_edges,
             },
             request_id=request_id,
         )
@@ -380,7 +386,7 @@ class APIv2Client(APIClient):
     @override
     def trim_circuit_and_detectors(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         detectors: DetectionEvents,
         request_id: str,
     ) -> tuple[str, DetectionEvents]:
@@ -388,7 +394,7 @@ class APIv2Client(APIClient):
         result = self.execute(
             query_name=query_name,
             variable_values={
-                "circuit": str(DataString(str(stim_circuit))),
+                "circuit": str(DataString(str(deltakit_stim_circuit))),
                 "detectors": detectors.as_data_string(DataFormat.B8),
             },
             request_id=request_id,

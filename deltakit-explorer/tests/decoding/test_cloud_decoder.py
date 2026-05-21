@@ -1,9 +1,9 @@
 import os
 
 import deltakit_circuit
+import deltakit_stim
 import numpy as np
 import pytest
-import stim
 
 from deltakit_explorer import Client, _api, types
 from deltakit_explorer._cloud_decoders import (
@@ -48,8 +48,10 @@ class TestCloudDecoder:
         "circuit",
         [
             "M 0 1",
-            stim.Circuit("M 0 1"),
-            deltakit_circuit.Circuit.from_stim_circuit(stim.Circuit("M 0 1")),
+            deltakit_stim.Circuit("M 0 1"),
+            deltakit_circuit.Circuit.from_deltakit_stim_circuit(
+                deltakit_stim.Circuit("M 0 1")
+            ),
         ],
     )
     @pytest.mark.parametrize(
@@ -74,8 +76,10 @@ class TestCloudDecoder:
         "circuit",
         [
             "M 0 1",
-            stim.Circuit("M 0 1"),
-            deltakit_circuit.Circuit.from_stim_circuit(stim.Circuit("M 0 1")),
+            deltakit_stim.Circuit("M 0 1"),
+            deltakit_circuit.Circuit.from_deltakit_stim_circuit(
+                deltakit_stim.Circuit("M 0 1")
+            ),
         ],
     )
     def test_cloud_decoder_raises_with_no_observables(self, circuit):
@@ -100,7 +104,7 @@ class TestCloudDecoder:
         ],
     )
     def test_decoder_batch_to_logical_flip(self, decoder_class, mocker):
-        circuit = stim.Circuit("M 0 1\nOBSERVABLE_INCLUDE(0) rec[-1]")
+        circuit = deltakit_stim.Circuit("M 0 1\nOBSERVABLE_INCLUDE(0) rec[-1]")
         client = Client("http://localhost")
         result = types.DecodingResult(
             # some 01-compatible string
@@ -121,7 +125,7 @@ class TestCloudDecoder:
         client.decode.assert_called_once()
 
     def test_lc_decoder_batch_to_logical_flip(self, mocker):
-        circuit = "SOME NON_STIM TEXT"
+        circuit = "SOME NON_DELTAKIT_STIM TEXT"
         client = Client("http://localhost")
         result = types.DecodingResult(
             # some 01-compatible string

@@ -2,12 +2,11 @@ import random
 import re
 from copy import deepcopy
 from functools import reduce
-from importlib.metadata import version
 from operator import add, mul
 
+import deltakit_stim
 import numpy as np
 import pytest
-import stim
 from deltakit_circuit import (
     Circuit,
     Detector,
@@ -66,7 +65,6 @@ from deltakit_circuit.gates import (
     Z,
 )
 from deltakit_circuit.noise_channels import Depolarise2
-from packaging.version import Version
 
 from deltakit_explorer.codes._css._css_code_experiment_circuit import (
     css_code_memory_circuit,
@@ -101,10 +99,6 @@ from deltakit_explorer.qpu._circuits._tableau_functions import (
     _is_identity_like,
 )
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
-
-CURRENT_STIM_VERSION = Version(version("stim"))
-STIM_VERSION_V1_13_0 = Version("1.13.0")
-
 
 # define set of compilation dictionaries for testing
 compilation_dict0 = {("+X", "+Z"): ()}
@@ -852,7 +846,7 @@ class TestGetCompilationDict:
         )
         # change format, add identity
         equiv_dict = {
-            k: next(tuple([g.stim_string for g in equiv]) for equiv in v)
+            k: next(tuple([g.deltakit_stim_string for g in equiv]) for equiv in v)
             for k, v in equiv_dict.items()
         }
         equiv_dict[("+X", "+Z")] = ()
@@ -1232,7 +1226,7 @@ class TestGetCompilationWithProjectors:
     ):
         with pytest.raises(
             NotImplementedError,
-            match=f"{non_projector.stim_string} is not a recognised projector",
+            match=f"{non_projector.deltakit_stim_string} is not a recognised projector",
         ):
             _get_compilation_with_projectors_before_unitaries({}, [], non_projector)
 
@@ -2453,7 +2447,9 @@ class TestIsIdentityLike:
         ],
     )
     def test__is_identity_like_returns_True_for_identity_stop(self, gates):
-        tableau = reduce(add, [stim.Tableau.from_named_gate(gate) for gate in gates])
+        tableau = reduce(
+            add, [deltakit_stim.Tableau.from_named_gate(gate) for gate in gates]
+        )
         assert _is_identity_like(tableau)
 
     @pytest.mark.parametrize(
@@ -2469,7 +2465,11 @@ class TestIsIdentityLike:
     )
     def test__is_identity_like_returns_False_for_non_identity_gates(self, gates):
         tableau = reduce(
-            add, [stim.Tableau.from_named_gate(gate.stim_string) for gate in gates]
+            add,
+            [
+                deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
+                for gate in gates
+            ],
         )
         assert not _is_identity_like(tableau)
 
@@ -2490,11 +2490,13 @@ class TestIsIdentityLike:
     def test__is_identity_like_returns_False_for_single_qubit_gates_followed_by_two_qubit_gate(
         self, control_gates, target_gates, two_q_gate
     ):
-        tableau = stim.Tableau.from_named_gate(two_q_gate.stim_string) * reduce(
+        tableau = deltakit_stim.Tableau.from_named_gate(
+            two_q_gate.deltakit_stim_string
+        ) * reduce(
             add,
             [
-                stim.Tableau.from_named_gate(c.stim_string)
-                + stim.Tableau.from_named_gate(t.stim_string)
+                deltakit_stim.Tableau.from_named_gate(c.deltakit_stim_string)
+                + deltakit_stim.Tableau.from_named_gate(t.deltakit_stim_string)
                 for c, t in zip(control_gates, target_gates)
             ],
         )
@@ -2529,17 +2531,17 @@ class TestIsIdentityLike:
         self, gate, conjugate
     ):
         tableau = (
-            stim.Tableau.from_named_gate(gate.stim_string)
+            deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             * (
                 reduce(
                     add,
                     [
-                        stim.Tableau.from_named_gate(gate.stim_string)
+                        deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
                         for gate in conjugate
                     ],
                 )
             )
-            * stim.Tableau.from_named_gate(gate.stim_string).inverse()
+            * deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string).inverse()
         )
         assert not _is_identity_like(tableau)
 
@@ -2565,17 +2567,17 @@ class TestIsIdentityLike:
         self, gate, conjugate
     ):
         tableau = (
-            stim.Tableau.from_named_gate(gate.stim_string)
+            deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             * (
                 reduce(
                     add,
                     [
-                        stim.Tableau.from_named_gate(gate.stim_string)
+                        deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
                         for gate in conjugate
                     ],
                 )
             )
-            * stim.Tableau.from_named_gate(gate.stim_string).inverse()
+            * deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string).inverse()
         )
         assert _is_identity_like(tableau)
 
@@ -2802,7 +2804,7 @@ class TestCompilationData:
             results = _extract_structure_from_circuit(circuit)
             assert results.unitary_blocks == unitary_blocks
             assert results.reset_gates == {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             circuit.replace_gates({reset_gate: lambda gate: RX(gate.qubit)})
@@ -2812,7 +2814,7 @@ class TestCompilationData:
         ):
             circuit.replace_gates({RX: lambda gate: reset_gate(gate.qubit)})
             reset_dict = {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             comp_data = CompilationData(unitary_blocks, reset_dict, {}, {}, {})
@@ -3034,7 +3036,8 @@ class TestCompilationData:
             results = _extract_structure_from_circuit(circuit)
             assert results.unitary_blocks == unitary_blocks
             assert results.measurement_gates == {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             circuit.replace_gates({meas_gate: lambda gate: MX(gate.qubit)})
 
@@ -3043,7 +3046,8 @@ class TestCompilationData:
         ):
             circuit.replace_gates({MX: lambda gate: meas_gate(gate.qubit)})
             meas_dict = {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             comp_data = CompilationData(unitary_blocks, {}, meas_dict, {}, {})
             assert (
@@ -3670,7 +3674,7 @@ class TestCompilationData:
             results = _extract_structure_from_circuit(circuit)
             assert results.unitary_blocks == unitary_blocks
             assert results.two_qubit_gates == {
-                (*key, two_qubit_gate.stim_string): value
+                (*key, two_qubit_gate.deltakit_stim_string): value
                 for key, value in two_q_dict.items()
             }
             circuit.replace_gates({two_qubit_gate: lambda gate: CX(*gate.qubits)})
@@ -3680,7 +3684,7 @@ class TestCompilationData:
         ):
             circuit.replace_gates({CX: lambda gate: two_qubit_gate(*gate.qubits)})
             two_q_dict = {
-                (*key, two_qubit_gate.stim_string): value
+                (*key, two_qubit_gate.deltakit_stim_string): value
                 for key, value in two_q_dict.items()
             }
             comp_data = CompilationData(unitary_blocks, {}, {}, two_q_dict, {})
@@ -3992,11 +3996,12 @@ class TestCompilationData:
             results = _extract_structure_from_circuit(circuit)
             assert results.unitary_blocks == unitary_blocks
             assert results.reset_gates == {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             assert results.measurement_gates == {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             circuit.replace_gates({reset_gate: lambda gate: RZ(gate.qubit)})
             circuit.replace_gates({meas_gate: lambda gate: MZ(gate.qubit)})
@@ -4013,11 +4018,12 @@ class TestCompilationData:
             circuit.replace_gates({RZ: lambda gate: reset_gate(gate.qubit)})
             circuit.replace_gates({MZ: lambda gate: meas_gate(gate.qubit)})
             reset_dict = {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             meas_dict = {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             assert (
                 _create_circuit_from_compilation_data(
@@ -4429,14 +4435,15 @@ class TestCompilationData:
             results = _extract_structure_from_circuit(circuit)
             assert results.unitary_blocks == unitary_blocks
             assert results.reset_gates == {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             assert results.measurement_gates == {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             assert results.two_qubit_gates == {
-                (*key, two_qubit_gate.stim_string): value
+                (*key, two_qubit_gate.deltakit_stim_string): value
                 for key, value in two_q_dict.items()
             }
             circuit.replace_gates({reset_gate: lambda gate: RZ(gate.qubit)})
@@ -4458,14 +4465,15 @@ class TestCompilationData:
             circuit.replace_gates({MZ: lambda gate: meas_gate(gate.qubit)})
             circuit.replace_gates({CX: lambda gate: two_qubit_gate(*gate.qubits)})
             reset_dict = {
-                (*key, reset_gate.stim_string): value
+                (*key, reset_gate.deltakit_stim_string): value
                 for key, value in reset_dict.items()
             }
             meas_dict = {
-                (*key, meas_gate.stim_string): value for key, value in meas_dict.items()
+                (*key, meas_gate.deltakit_stim_string): value
+                for key, value in meas_dict.items()
             }
             two_q_dict = {
-                (*key, two_qubit_gate.stim_string): value
+                (*key, two_qubit_gate.deltakit_stim_string): value
                 for key, value in two_q_dict.items()
             }
             assert (
@@ -5533,7 +5541,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         self, gate, up_to_paulis, random_qubit, random_gate_layer
     ):
         assert _compile_reset_to_native_gates_plus_unitaries(
-            (random_gate_layer, random_qubit, gate.stim_string),
+            (random_gate_layer, random_qubit, gate.deltakit_stim_string),
             [],
             [],
             NativeGateSet(reset_gates=set({gate})),
@@ -5548,14 +5556,14 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
     ):
         assert (
             _compile_reset_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(reset_gates=set({gate})),
                 compilation_dict23,
                 up_to_paulis,
             )[2]
-            == gate.stim_string
+            == gate.deltakit_stim_string
         )
 
     @pytest.mark.parametrize("gate", [RX, RY, RZ])
@@ -5576,7 +5584,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
             )
             assert (
                 _compile_reset_to_native_gates_plus_unitaries(
-                    (random_gate_layer, random_qubit, gate.stim_string),
+                    (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                     [],
                     [],
                     NativeGateSet(
@@ -5596,7 +5604,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
                 RZ: MZ,
             }
             compiled_ubs = _compile_reset_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(
@@ -5615,7 +5623,10 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
                     GateLayer(r_to_m_gate[gate](random_qubit)),
                 ]
             )
-            assert np.sum(circ.as_stim_circuit().compile_sampler().sample(100)) == 0
+            assert (
+                np.sum(circ.as_deltakit_stim_circuit().compile_sampler().sample(100))
+                == 0
+            )
 
     @pytest.mark.parametrize(
         (
@@ -5701,7 +5712,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         random_qubit,
         random_gate_layer,
     ):
-        gate_info = (random_gate_layer, random_qubit, current_gate.stim_string)
+        gate_info = (random_gate_layer, random_qubit, current_gate.deltakit_stim_string)
         preceding_ub = [g(random_qubit) for g in preceding_ub]
         succeeding_ub = [g(random_qubit) for g in succeeding_ub]
         expected_unitary_blocks = (
@@ -5807,7 +5818,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         random_qubit,
         random_gate_layer,
     ):
-        gate_info = (random_gate_layer, random_qubit, current_gate.stim_string)
+        gate_info = (random_gate_layer, random_qubit, current_gate.deltakit_stim_string)
         preceding_ub = [g(random_qubit) for g in preceding_ub]
         succeeding_ub = [g(random_qubit) for g in succeeding_ub]
         expected_unitary_blocks = (
@@ -5841,7 +5852,7 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
             match=r"Unable to compile to provided native reset and measurement gates, please try changing the native gate set.",
         ):
             _compile_reset_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(one_qubit_gates=set({}), reset_gates=target_gates),
@@ -5855,13 +5866,13 @@ class TestCompileResetsToNativeGatesPlusUnitaries:
         self, gate, up_to_paulis, random_qubit, random_gate_layer
     ):
         assert _compile_reset_to_native_gates_plus_unitaries(
-            (random_gate_layer, random_qubit, gate.stim_string),
+            (random_gate_layer, random_qubit, gate.deltakit_stim_string),
             [],
             [],
             NativeGateSet(one_qubit_gates=set({}), reset_gates=set({RX, RY, RZ})),
             compilation_dict23,
             up_to_paulis,
-        ) == ([], [], gate.stim_string)
+        ) == ([], [], gate.deltakit_stim_string)
 
 
 class TestCompileMeasurementsToNativeGatesPlusUnitaries:
@@ -5871,7 +5882,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         self, gate, up_to_paulis, random_qubit, random_gate_layer
     ):
         assert _compile_measurement_to_native_gates_plus_unitaries(
-            (random_gate_layer, random_qubit, gate.stim_string),
+            (random_gate_layer, random_qubit, gate.deltakit_stim_string),
             [],
             [],
             NativeGateSet(measurement_gates=set({gate})),
@@ -5886,14 +5897,14 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
     ):
         assert (
             _compile_measurement_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(measurement_gates=set({gate})),
                 compilation_dict23,
                 up_to_paulis,
             )[2]
-            == gate.stim_string
+            == gate.deltakit_stim_string
         )
 
     @pytest.mark.parametrize("gate", [MX, MY, MZ])
@@ -5914,7 +5925,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
             )
             assert (
                 _compile_measurement_to_native_gates_plus_unitaries(
-                    (random_gate_layer, random_qubit, gate.stim_string),
+                    (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                     [],
                     [],
                     NativeGateSet(
@@ -5934,7 +5945,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
                 MZ: RZ,
             }
             compiled_ubs = _compile_measurement_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(
@@ -5954,7 +5965,10 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
                     GateLayer(gate(random_qubit)),
                 ]
             )
-            assert np.sum(circ.as_stim_circuit().compile_sampler().sample(100)) == 0
+            assert (
+                np.sum(circ.as_deltakit_stim_circuit().compile_sampler().sample(100))
+                == 0
+            )
 
     @pytest.mark.parametrize("gate", [MRX, MRY, MRZ])
     @pytest.mark.parametrize("target_gate", [MRX, MRY, MRZ])
@@ -5974,7 +5988,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
             )
             assert (
                 _compile_measurement_to_native_gates_plus_unitaries(
-                    (random_gate_layer, random_qubit, gate.stim_string),
+                    (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                     [],
                     [],
                     NativeGateSet(
@@ -5994,7 +6008,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
                 MRZ: RZ,
             }
             compiled_ubs = _compile_measurement_to_native_gates_plus_unitaries(
-                (random_gate_layer, random_qubit, gate.stim_string),
+                (random_gate_layer, random_qubit, gate.deltakit_stim_string),
                 [],
                 [],
                 NativeGateSet(
@@ -6014,7 +6028,10 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
                     GateLayer(gate(random_qubit)),
                 ]
             )
-            assert np.sum(circ.as_stim_circuit().compile_sampler().sample(100)) == 0
+            assert (
+                np.sum(circ.as_deltakit_stim_circuit().compile_sampler().sample(100))
+                == 0
+            )
 
     @pytest.mark.parametrize("up_to_paulis", [True, False])
     @pytest.mark.parametrize("gate", [MX, MY, MZ, MRX, MRY, MRZ])
@@ -6022,7 +6039,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         self, gate, up_to_paulis, random_qubit, random_gate_layer
     ):
         assert _compile_measurement_to_native_gates_plus_unitaries(
-            (random_gate_layer, random_qubit, gate.stim_string),
+            (random_gate_layer, random_qubit, gate.deltakit_stim_string),
             [],
             [],
             NativeGateSet(
@@ -6031,7 +6048,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
             ),
             compilation_dict23,
             up_to_paulis,
-        ) == ([], [], gate.stim_string)
+        ) == ([], [], gate.deltakit_stim_string)
 
     @pytest.mark.parametrize(
         (
@@ -6152,7 +6169,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         random_qubit,
         random_gate_layer,
     ):
-        gate_info = (random_gate_layer, random_qubit, current_gate.stim_string)
+        gate_info = (random_gate_layer, random_qubit, current_gate.deltakit_stim_string)
         preceding_ub = [g(random_qubit) for g in preceding_ub]
         succeeding_ub = [g(random_qubit) for g in succeeding_ub]
         expected_unitary_blocks = (
@@ -6293,7 +6310,7 @@ class TestCompileMeasurementsToNativeGatesPlusUnitaries:
         random_qubit,
         random_gate_layer,
     ):
-        gate_info = (random_gate_layer, random_qubit, current_gate.stim_string)
+        gate_info = (random_gate_layer, random_qubit, current_gate.deltakit_stim_string)
         preceding_ub = [g(random_qubit) for g in preceding_ub]
         succeeding_ub = [g(random_qubit) for g in succeeding_ub]
         expected_unitary_blocks = (
@@ -8860,31 +8877,44 @@ class TestTwoQubitGateCompilationDicts:
         ub1, ub2, ub3, ub4 = GATE_TO_CZ_DICT[gate]
         ub1_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub1[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub1[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub2_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub2[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub2[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub3_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub3[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub3[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub4_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub4[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub4[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         cz_with_unitaries_tableau = (
             (ub2_tableau + ub4_tableau)
-            * stim.Tableau.from_named_gate("CZ")
+            * deltakit_stim.Tableau.from_named_gate("CZ")
             * (ub1_tableau + ub3_tableau)
         )
         assert (
-            stim.Tableau.from_named_gate(gate.stim_string) == cz_with_unitaries_tableau
+            deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
+            == cz_with_unitaries_tableau
         )
 
     @pytest.mark.parametrize("gate", list(CZ_TO_GATE_DICT.keys()))
@@ -8894,109 +8924,132 @@ class TestTwoQubitGateCompilationDicts:
         ub1, ub2, ub3, ub4 = CZ_TO_GATE_DICT[gate]
         ub1_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub1[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub1[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub2_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub2[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub2[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub3_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub3[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub3[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub4_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub4[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub4[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         cz_with_unitaries_tableau = (
             (ub2_tableau + ub4_tableau)
-            * stim.Tableau.from_named_gate(gate.stim_string)
+            * deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             * (ub1_tableau + ub3_tableau)
         )
-        assert stim.Tableau.from_named_gate("CZ") == cz_with_unitaries_tableau
+        assert deltakit_stim.Tableau.from_named_gate("CZ") == cz_with_unitaries_tableau
 
-    @pytest.mark.skipif(
-        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
-        reason=(
-            "CZSWAP gate has been introduced in Stim v1.13.0."
-            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {CURRENT_STIM_VERSION}."
-        ),
-    )
     @pytest.mark.parametrize("gate", list(GATE_TO_CZSWAP_DICT.keys()))
     def test_cpswap_to_czswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = GATE_TO_CZSWAP_DICT[gate]
         ub1_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub1[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub1[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub2_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub2[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub2[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub3_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub3[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub3[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub4_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub4[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub4[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         czswap_with_unitaries_tableau = (
             (ub2_tableau + ub4_tableau)
-            * stim.Tableau.from_named_gate("CZSWAP")
+            * deltakit_stim.Tableau.from_named_gate("CZSWAP")
             * (ub1_tableau + ub3_tableau)
         )
         assert (
-            stim.Tableau.from_named_gate(gate.stim_string)
+            deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             == czswap_with_unitaries_tableau
         )
 
-    @pytest.mark.skipif(
-        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
-        reason=(
-            "CZSWAP gate has been introduced in Stim v1.13.0."
-            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {CURRENT_STIM_VERSION}."
-        ),
-    )
     @pytest.mark.parametrize("gate", list(CZSWAP_TO_GATE_DICT.keys()))
     def test_czswap_to_cpswap_dict_compilations_give_equivalent_tableaus(self, gate):
         ub1, ub2, ub3, ub4 = CZSWAP_TO_GATE_DICT[gate]
         ub1_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub1[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub1[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub2_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub2[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub2[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub3_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub3[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub3[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         ub4_tableau = reduce(
             mul,
-            (stim.Tableau.from_named_gate(g.stim_string) for g in ub4[::-1]),
-            stim.Tableau.from_named_gate("I"),
+            (
+                deltakit_stim.Tableau.from_named_gate(g.deltakit_stim_string)
+                for g in ub4[::-1]
+            ),
+            deltakit_stim.Tableau.from_named_gate("I"),
         )
         czswap_with_unitaries_tableau = (
             (ub2_tableau + ub4_tableau)
-            * stim.Tableau.from_named_gate(gate.stim_string)
+            * deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             * (ub1_tableau + ub3_tableau)
         )
-        assert stim.Tableau.from_named_gate("CZSWAP") == czswap_with_unitaries_tableau
+        assert (
+            deltakit_stim.Tableau.from_named_gate("CZSWAP")
+            == czswap_with_unitaries_tableau
+        )
 
 
 class TestCompileTwoQubitGateToTarget:
@@ -9028,11 +9081,11 @@ class TestCompileTwoQubitGateToTarget:
                     gate,
                     CZ,
                     (
-                        (0, Qubit(0), gate.stim_string),
+                        (0, Qubit(0), gate.deltakit_stim_string),
                         {"preceding": 0, "succeeding": 1},
                     ),
                     (
-                        (0, Qubit(1), gate.stim_string),
+                        (0, Qubit(1), gate.deltakit_stim_string),
                         {"preceding": 0, "succeeding": 1},
                     ),
                     GATE_TO_CZ_DICT,
@@ -9055,11 +9108,11 @@ class TestCompileTwoQubitGateToTarget:
                     gate,
                     CZSWAP,
                     (
-                        (0, Qubit(0), gate.stim_string),
+                        (0, Qubit(0), gate.deltakit_stim_string),
                         {"preceding": 0, "succeeding": 1},
                     ),
                     (
-                        (0, Qubit(1), gate.stim_string),
+                        (0, Qubit(1), gate.deltakit_stim_string),
                         {"preceding": 0, "succeeding": 1},
                     ),
                     GATE_TO_CZSWAP_DICT,
@@ -9182,8 +9235,14 @@ class TestCompileTwoQubitGateToTarget:
             _compile_two_qubit_gate_to_target(
                 gate,
                 target_gate,
-                ((0, Qubit(0), gate.stim_string), {"preceding": 0, "succeeding": 1}),
-                ((0, Qubit(1), gate.stim_string), {"preceding": 0, "succeeding": 1}),
+                (
+                    (0, Qubit(0), gate.deltakit_stim_string),
+                    {"preceding": 0, "succeeding": 1},
+                ),
+                (
+                    (0, Qubit(1), gate.deltakit_stim_string),
+                    {"preceding": 0, "succeeding": 1},
+                ),
                 GATE_TO_CZ_DICT,
                 CZ_TO_GATE_DICT,
                 {0: [], 1: [], 2: [], 3: []},
@@ -9224,8 +9283,14 @@ class TestCompileTwoQubitGateToTarget:
             _compile_two_qubit_gate_to_target(
                 gate,
                 target_gate,
-                ((0, Qubit(0), gate.stim_string), {"preceding": 0, "succeeding": 1}),
-                ((0, Qubit(1), gate.stim_string), {"preceding": 0, "succeeding": 1}),
+                (
+                    (0, Qubit(0), gate.deltakit_stim_string),
+                    {"preceding": 0, "succeeding": 1},
+                ),
+                (
+                    (0, Qubit(1), gate.deltakit_stim_string),
+                    {"preceding": 0, "succeeding": 1},
+                ),
                 GATE_TO_CZSWAP_DICT,
                 CZSWAP_TO_GATE_DICT,
                 {0: [], 1: [], 2: [], 3: []},
@@ -9252,8 +9317,14 @@ class TestCompileTwoQubitGateToTarget:
             _compile_two_qubit_gate_to_target(
                 gate,
                 target_gate,
-                ((0, Qubit(0), gate.stim_string), {"preceding": 0, "succeeding": 1}),
-                ((0, Qubit(1), gate.stim_string), {"preceding": 2, "succeeding": 3}),
+                (
+                    (0, Qubit(0), gate.deltakit_stim_string),
+                    {"preceding": 0, "succeeding": 1},
+                ),
+                (
+                    (0, Qubit(1), gate.deltakit_stim_string),
+                    {"preceding": 2, "succeeding": 3},
+                ),
                 gate_to_interm_rep_dict,
                 CZ_TO_GATE_DICT,
                 {0: [], 1: [], 2: [], 3: []},
@@ -9321,8 +9392,14 @@ class TestCompileTwoQubitGatesToNativeGates:
             {},
             {},
             {
-                (0, Qubit(0), gate.stim_string): {"preceding": 0, "succeeding": 1},
-                (0, Qubit(1), gate.stim_string): {"preceding": 2, "succeeding": 3},
+                (0, Qubit(0), gate.deltakit_stim_string): {
+                    "preceding": 0,
+                    "succeeding": 1,
+                },
+                (0, Qubit(1), gate.deltakit_stim_string): {
+                    "preceding": 2,
+                    "succeeding": 3,
+                },
             },
             {},
         )
@@ -9391,14 +9468,26 @@ class TestCompileTwoQubitGatesToNativeGates:
             {},
             {},
             {
-                (0, Qubit(0), gate.stim_string): {"preceding": 0, "succeeding": 1},
-                (0, Qubit(1), gate.stim_string): {"preceding": 2, "succeeding": 3},
+                (0, Qubit(0), gate.deltakit_stim_string): {
+                    "preceding": 0,
+                    "succeeding": 1,
+                },
+                (0, Qubit(1), gate.deltakit_stim_string): {
+                    "preceding": 2,
+                    "succeeding": 3,
+                },
             },
             {},
         )
         expected_two_qubit_dict = {
-            (0, Qubit(0), target_gate.stim_string): {"preceding": 0, "succeeding": 1},
-            (0, Qubit(1), target_gate.stim_string): {"preceding": 2, "succeeding": 3},
+            (0, Qubit(0), target_gate.deltakit_stim_string): {
+                "preceding": 0,
+                "succeeding": 1,
+            },
+            (0, Qubit(1), target_gate.deltakit_stim_string): {
+                "preceding": 2,
+                "succeeding": 3,
+            },
         }
         native_gate_set = NativeGateSet(
             one_qubit_gates=set({S, S_DAG, H, SQRT_X, SQRT_X_DAG, X, Z, Y}),
@@ -9442,14 +9531,26 @@ class TestCompileTwoQubitGatesToNativeGates:
             {},
             {},
             {
-                (0, Qubit(0), gate.stim_string): {"preceding": 0, "succeeding": 1},
-                (0, Qubit(1), gate.stim_string): {"preceding": 2, "succeeding": 3},
+                (0, Qubit(0), gate.deltakit_stim_string): {
+                    "preceding": 0,
+                    "succeeding": 1,
+                },
+                (0, Qubit(1), gate.deltakit_stim_string): {
+                    "preceding": 2,
+                    "succeeding": 3,
+                },
             },
             {},
         )
         expected_two_qubit_dict = {
-            (0, Qubit(0), target_gate.stim_string): {"preceding": 0, "succeeding": 1},
-            (0, Qubit(1), target_gate.stim_string): {"preceding": 2, "succeeding": 3},
+            (0, Qubit(0), target_gate.deltakit_stim_string): {
+                "preceding": 0,
+                "succeeding": 1,
+            },
+            (0, Qubit(1), target_gate.deltakit_stim_string): {
+                "preceding": 2,
+                "succeeding": 3,
+            },
         }
         native_gate_set = NativeGateSet(
             one_qubit_gates=set({S, S_DAG, H, SQRT_X, SQRT_X_DAG, X, Z, Y}),
@@ -9832,8 +9933,14 @@ class TestCompileTwoQubitGatesToNativeGates:
             {},
             {},
             {
-                (0, Qubit(0), gate.stim_string): {"preceding": 0, "succeeding": 1},
-                (0, Qubit(1), gate.stim_string): {"preceding": 0, "succeeding": 1},
+                (0, Qubit(0), gate.deltakit_stim_string): {
+                    "preceding": 0,
+                    "succeeding": 1,
+                },
+                (0, Qubit(1), gate.deltakit_stim_string): {
+                    "preceding": 0,
+                    "succeeding": 1,
+                },
             },
             {},
         )
@@ -10125,7 +10232,9 @@ class TestGetTableauFromSequenceOf1qGates:
 
 class TestGetSingleQubitsTableauKeyFromTwoQubitTableau:
     def test_with_3_qubit_tableau(self):
-        tableau = stim.Tableau.from_circuit(stim.Circuit("H 0\nH 1\nH 2"))
+        tableau = deltakit_stim.Tableau.from_circuit(
+            deltakit_stim.Circuit("H 0\nH 1\nH 2")
+        )
         message = "The given tableau does not describe a two qubit gate"
         with pytest.raises(ValueError, match=message):
             _get_single_qubits_tableau_key_from_two_qubit_tableau(tableau, 0)

@@ -63,7 +63,7 @@ class TestClient:
             (
                 Client.add_noise,
                 ("X 0 1", PhysicalNoiseModel.get_floor_superconducting_noise()),
-                {"addNoiseToStimCircuit": {"uid": "duck://20"}},
+                {"addNoiseToDeltakitStimCircuit": {"uid": "duck://20"}},
                 " ",
             ),
             (
@@ -175,7 +175,7 @@ class TestClient:
         mock_get_query = mocker.patch.object(
             mock_client._api, "_get_query", return_value="test"
         )
-        mock_generate_noisy_stim_circuit = mocker.patch.object(
+        mock_generate_noisy_deltakit_stim_circuit = mocker.patch.object(
             mock_client,
             "add_noise",
             return_value="X 0 1\n~~~",
@@ -212,12 +212,12 @@ class TestClient:
         assert mock_get_query.call_count == 2
         assert mock_gql.call_count == 2
         assert mock_client_execute.call_count == 2
-        mock_generate_noisy_stim_circuit.assert_called_once()
+        mock_generate_noisy_deltakit_stim_circuit.assert_called_once()
         assert str(result) == str(expected_result)
 
     @pytest.mark.parametrize("mock_client", [1, 2], indirect=True)
     def test_decode_measurements_success(self, mocker, mock_client):
-        mock_generate_noisy_stim_circuit = mocker.patch.object(
+        mock_generate_noisy_deltakit_stim_circuit = mocker.patch.object(
             Client,
             "add_noise",
             return_value=DataString("01"),
@@ -235,12 +235,12 @@ class TestClient:
         mock_client.decode_measurements(
             Measurements([[0, 1]], DataFormat.F01),
             decoder=Decoder(DecoderType.BP_OSD),
-            ideal_stim_circuit="",
+            ideal_deltakit_stim_circuit="",
             noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
             leakage_flags=LeakageFlags([[]], DataFormat.F01),
         )
         # asserts
-        mock_generate_noisy_stim_circuit.assert_called_once()
+        mock_generate_noisy_deltakit_stim_circuit.assert_called_once()
         mock_convert_meas_to_dets_and_obs.assert_called_once()
         mock_decode.assert_called_once()
 
@@ -296,7 +296,7 @@ class TestClient:
         mock_client.decode_measurements(
             measurements=measurements,
             decoder=decoder,
-            ideal_stim_circuit="X 0 1",
+            ideal_deltakit_stim_circuit="X 0 1",
             noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
         )
         # asserts
@@ -304,7 +304,7 @@ class TestClient:
             detectors=detectors,
             decoder=decoder,
             observables=observables,
-            noisy_stim_circuit="X 0 1 ~~~",
+            noisy_deltakit_stim_circuit="X 0 1 ~~~",
             leakage_flags=None,
         )
 
@@ -314,7 +314,7 @@ class TestClient:
     ):
         mocker.patch.object(
             Client,
-            "simulate_stim_circuit",
+            "simulate_deltakit_stim_circuit",
             return_value=(Measurements([[0, 1]]), LeakageFlags([[0, 1]])),
         )
         mocker.patch.object(
@@ -333,7 +333,7 @@ class TestClient:
         mock_client.decode_measurements(
             measurements=Measurements([[0, 1]]),
             decoder=decoder,
-            ideal_stim_circuit="",
+            ideal_deltakit_stim_circuit="",
             noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
             leakage_flags=leakage,
         )
@@ -343,7 +343,7 @@ class TestClient:
             detectors=DetectionEvents([[0, 1]]),
             observables=ObservableFlips([[0]]),
             decoder=decoder,
-            noisy_stim_circuit="X 2 3",
+            noisy_deltakit_stim_circuit="X 2 3",
             leakage_flags=leakage,
         )
 
@@ -383,7 +383,7 @@ class TestClient:
             decoder=Decoder(decoder),
             detectors=DetectionEvents([[0] * detectors_width] * shots, DataFormat.F01),
             observables=ObservableFlips([[0]] * shots, DataFormat.F01),
-            noisy_stim_circuit=circuit,
+            noisy_deltakit_stim_circuit=circuit,
             leakage_flags=leakage_source,
         )
         mult = 1
@@ -408,7 +408,7 @@ class TestClient:
             mock_client.decode_measurements(
                 measurements=Measurements([[0, 1]]),
                 decoder=Decoder(DecoderType.BELIEF_MATCHING),
-                ideal_stim_circuit="",
+                ideal_deltakit_stim_circuit="",
                 noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
             )
 
@@ -514,7 +514,7 @@ class TestClient:
     ):
         client = Client.get_instance(api_version=1)
         det = DetectionEvents([[0, 0, 0, 1]], DataFormat.F01)
-        circuit = "SOME STIM CIRCUIT"
+        circuit = "SOME DELTAKIT_STIM CIRCUIT"
 
         mocker.patch.object(client._api, "_get_query", return_value="")
         mocker.patch.object(

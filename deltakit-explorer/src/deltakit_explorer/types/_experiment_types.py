@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import stim
+import deltakit_stim
 from deltakit_circuit.gates import PauliBasis
 
 from deltakit_explorer.enums._api_enums import (
@@ -46,7 +46,7 @@ class QECExperiment:
 
     @staticmethod
     def from_circuit_and_measurements(
-        stim_path: Path,
+        deltakit_stim_path: Path,
         measurements_path: Path,
         measurements_format: DataFormat,
         sweep_path: Path | None = None,
@@ -55,7 +55,7 @@ class QECExperiment:
         """Build an experiment object from 2 files.
 
         Args:
-            stim_path (Path): location of a circuit.
+            deltakit_stim_path (Path): location of a circuit.
             measurements_path (Path):
                 location of a measurements file.
             measurements_format (DataFormat):
@@ -78,7 +78,7 @@ class QECExperiment:
                 "or should both be None."
             )
             raise ValueError(msg)
-        circuit = stim.Circuit.from_file(stim_path)
+        circuit = deltakit_stim.Circuit.from_file(deltakit_stim_path)
         measurements = Measurements(
             measurements_path,
             measurements_format,
@@ -104,7 +104,7 @@ class QECExperiment:
             self.detectors is None or self.observables is None
         ) and self.measurements is not None:
             dets, obs = self.measurements.to_detectors_and_observables(
-                stim_circuit=self.noisy_circuit,
+                deltakit_stim_circuit=self.noisy_circuit,
                 sweep_bits=self.sweep_bits,
             )
             if self.detectors is None:

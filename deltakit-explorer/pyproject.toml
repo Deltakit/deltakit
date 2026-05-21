@@ -40,9 +40,7 @@ dependencies = [
   "numpy~=2.0",
   "scipy~=1.15",
   "matplotlib~=3.10",
-  "stim>=1.12; python_version < '3.12'",
-  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim>=1.15; python_version >= '3.13'",
+  "deltakit_stim",
   "requests~=2.32",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",
@@ -51,7 +49,6 @@ dependencies = [
   "adjustText~=1.3",
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
-  "ldpc~=2.2",
 ]
 [project.optional-dependencies]
 vis = ["seaborn"]

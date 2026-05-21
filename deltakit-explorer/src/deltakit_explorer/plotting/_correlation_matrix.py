@@ -41,7 +41,7 @@ def correlation_matrix(
 
             matrix, mapping = client.get_correlation_matrix(
                 detectors,
-                stim_circuit,
+                deltakit_stim_circuit,
                 use_default_noise_model_edges=True,
             )
             plt = correlation_matrix(matrix, mapping)

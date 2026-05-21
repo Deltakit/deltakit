@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """
 This module consists of functions enabling circuit compilation
-using the stim Tableau.
+using the deltakit_stim Tableau.
 """
 
 # pylint: disable=too-many-lines,too-many-nested-blocks,too-many-branches,too-many-statements
@@ -11,8 +11,8 @@ from dataclasses import dataclass
 from functools import reduce
 from operator import mul
 
+import deltakit_stim
 import numpy as np
-import stim
 from deltakit_circuit import Circuit, GateLayer, Layer, Qubit
 from deltakit_circuit.gates import (
     CX,
@@ -61,7 +61,7 @@ from deltakit_explorer.qpu._native_gate_set import (
     TwoOperandGate,
 )
 
-# key: tuple of the form (gate's layer index, gate's qubit, gate's stim_string representation)
+# key: tuple of the form (gate's layer index, gate's qubit, gate's deltakit_stim_string representation)
 # values: dictionary containing preceding and succeeding unitary block indices:
 #   {"preceding": 0, "succeeding": 1}
 SpecialGateDict = dict[tuple[int, Qubit, str], dict[str, int]]
@@ -75,7 +75,7 @@ TableauDict = dict[tuple[str, ...], tuple[str, ...]]
 EquivalentTableauDict = dict[tuple[str, str], list[list[OneQubitCliffordGate]]]
 
 # A single entry in the CompilationData.two_qubit_gates dictionary. The first
-# item in the tuple describes the gate layer index, qubit, and gate.stim_string
+# item in the tuple describes the gate layer index, qubit, and gate.deltakit_stim_string
 # for the given gate. The second entry is the unitary block dictionary, with keys
 # being "preceding" or "succeeding" and values being the unitary block index.
 TwoQubitGateDictEntry = tuple[tuple[int, Qubit, str], dict[str, int]]
@@ -246,26 +246,28 @@ CZ_TO_GATE_DICT: TwoQubitGateCompilationLookupDict = {
 
 def _get_tableau_from_sequence_of_gates(
     unitary_block: Sequence[OneQubitCliffordGate],
-) -> stim.Tableau:
+) -> deltakit_stim.Tableau:
     return reduce(
         mul,
         (
-            stim.Tableau.from_named_gate(gate.stim_string)
+            deltakit_stim.Tableau.from_named_gate(gate.deltakit_stim_string)
             for gate in unitary_block[::-1]
-            # ensuring circuit order, since lestim assumes matrix order for mul
+            # ensuring circuit order, since deltakit_stim assumes matrix order for mul
         ),
-        stim.Tableau.from_named_gate("I"),  # default in case unitary_block empty
+        deltakit_stim.Tableau.from_named_gate(
+            "I"
+        ),  # default in case unitary_block empty
     )
 
 
 def _get_tableau_as_key(
-    tableau: stim.Tableau, up_to_paulis: bool = False
+    tableau: deltakit_stim.Tableau, up_to_paulis: bool = False
 ) -> tuple[str, str]:
     """
-    Given a stim.Tableau, corresponding to a one-qubit
+    Given a deltakit_stim.Tableau, corresponding to a one-qubit
     Clifford unitary, return a tuple of the string output
     of the Tableau to create a hashable key. Uses the
-    stim.Tableau.x_output, stim.Tableau.z_output, in that order
+    deltakit_stim.Tableau.x_output, deltakit_stim.Tableau.z_output, in that order
     to produce the output.
     Returns the output with or without sign information, as per
     up_to_paulis.
@@ -273,7 +275,7 @@ def _get_tableau_as_key(
 
     Parameters
     ----------
-    tableau : stim.Tableau
+    tableau : deltakit_stim.Tableau
         The tableau to be turned into a hashable key.
     up_to_paulis : bool, optional
         Specify whether signs should be included in the key.
@@ -290,16 +292,18 @@ def _get_tableau_as_key(
     )
 
 
-def _get_tableau_from_sequence_of_1q_gates(gates: Sequence[str]) -> stim.Tableau:
+def _get_tableau_from_sequence_of_1q_gates(
+    gates: Sequence[str],
+) -> deltakit_stim.Tableau:
     if len(gates) == 0:
-        return stim.Tableau.from_named_gate("I")
+        return deltakit_stim.Tableau.from_named_gate("I")
     try:
         return reduce(
             mul,
             (
-                stim.Tableau.from_named_gate(gate)
+                deltakit_stim.Tableau.from_named_gate(gate)
                 for gate in gates[::-1]
-                # ensuring circuit order, since lestim assumes matrix order for mul
+                # ensuring circuit order, since ledeltakit_stim assumes matrix order for mul
             ),
         )
     except ValueError as ve:
@@ -349,8 +353,8 @@ def _get_compilation_dict(
         Compilation dictionary: TableauDict
             A dictionary with Tableaus as keys and operators as values.
             E.g, `{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}`
-            The tableau is created from stim.Tableau.x_output and
-            stim.Tableau.z_output, in that order.
+            The tableau is created from deltakit_stim.Tableau.x_output and
+            deltakit_stim.Tableau.z_output, in that order.
             The value is the empty tuple if the tableau key is equivalent to the identity.
         Equivalent tableau dictionary: EquivalentTableauDict
             A dictionary with Tableaus as keys and lists of lists of OneQubitCliffordGate
@@ -361,16 +365,16 @@ def _get_compilation_dict(
     if up_to_paulis:
         max_unique_tableau_count = 6
         identity_tableau = ("X", "Z")
-        one_q_gates_as_stim_string = {
-            str(g.stim_string)
+        one_q_gates_as_deltakit_stim_string = {
+            str(g.deltakit_stim_string)
             for g in native_gates.one_qubit_gates
-            if str(g.stim_string) not in ["X", "Y", "Z"]
+            if str(g.deltakit_stim_string) not in ["X", "Y", "Z"]
         }
     else:
         max_unique_tableau_count = 24
         identity_tableau = ("+X", "+Z")
-        one_q_gates_as_stim_string = {
-            str(g.stim_string) for g in native_gates.one_qubit_gates
+        one_q_gates_as_deltakit_stim_string = {
+            str(g.deltakit_stim_string) for g in native_gates.one_qubit_gates
         }
 
     # Include the identity tableau, as it is always there by default
@@ -393,7 +397,7 @@ def _get_compilation_dict(
         for current_gates in copy_of_dict_to_iterate_over.values():
             if len(current_gates) != current_weight - 1:
                 continue
-            for native_gate in one_q_gates_as_stim_string:
+            for native_gate in one_q_gates_as_deltakit_stim_string:
                 gate_product = (*current_gates, native_gate)
                 product_tableau = _get_tableau_from_sequence_of_1q_gates(gate_product)
                 tableau_key = _get_tableau_as_key(product_tableau, up_to_paulis)
@@ -424,15 +428,15 @@ def _get_compilation_dict(
     return min_weight_tableau_dict, equiv_tableau_dict
 
 
-def _get_tableau_z_image_as_string(tableau: stim.Tableau, up_to_paulis: bool):
+def _get_tableau_z_image_as_string(tableau: deltakit_stim.Tableau, up_to_paulis: bool):
     return str(tableau.z_output(0))[int(up_to_paulis) :]
 
 
-def _get_tableau_x_image_as_string(tableau: stim.Tableau, up_to_paulis: bool):
+def _get_tableau_x_image_as_string(tableau: deltakit_stim.Tableau, up_to_paulis: bool):
     return str(tableau.x_output(0))[int(up_to_paulis) :]
 
 
-def _get_tableau_y_image_as_string(tableau: stim.Tableau, up_to_paulis: bool):
+def _get_tableau_y_image_as_string(tableau: deltakit_stim.Tableau, up_to_paulis: bool):
     return str(tableau.y_output(0))[int(up_to_paulis) :]
 
 
@@ -484,13 +488,15 @@ def _get_compilation_with_projectors_before_unitaries(
     """
     # first, get the Tableau for the unitary_block
     if len(unitary_block) == 0:
-        unitary_block_tableau: stim.Tableau = stim.Tableau.from_named_gate("I")
+        unitary_block_tableau: deltakit_stim.Tableau = (
+            deltakit_stim.Tableau.from_named_gate("I")
+        )
         shortest_gates: tuple = ()
     else:
         unitary_block_tableau = _get_tableau_from_sequence_of_1q_gates(
-            [gate.stim_string for gate in unitary_block]
+            [gate.deltakit_stim_string for gate in unitary_block]
         )
-        shortest_gates = tuple(str(g.stim_string) for g in unitary_block)
+        shortest_gates = tuple(str(g.deltakit_stim_string) for g in unitary_block)
 
     # use appropriate function to get tableau image depending on basis
     if projector_before_unitaries in [MZ, RZ]:
@@ -509,9 +515,9 @@ def _get_compilation_with_projectors_before_unitaries(
                 (
                     *tableau,
                     str(
-                        stim.Tableau.from_conjugated_generators(
-                            xs=[stim.PauliString(tableau[0])],
-                            zs=[stim.PauliString(tableau[1])],
+                        deltakit_stim.Tableau.from_conjugated_generators(
+                            xs=[deltakit_stim.PauliString(tableau[0])],
+                            zs=[deltakit_stim.PauliString(tableau[1])],
                         ).y_output(0)
                     )[1 if up_to_paulis else 0 :],  # remove sign if not needed
                 )
@@ -519,7 +525,7 @@ def _get_compilation_with_projectors_before_unitaries(
             del compilation_dict_with_y[tableau]
         compilation_dict = compilation_dict_with_y
     else:
-        msg = f"{projector_before_unitaries.stim_string} is not a recognised projector"
+        msg = f"{projector_before_unitaries.deltakit_stim_string} is not a recognised projector"
         raise NotImplementedError(msg)
 
     # for the basis of the reset or measurement before a unitary block, we can just consider
@@ -604,7 +610,7 @@ def _get_compilation_with_measurement_after_unitaries(
     )
 
 
-def _is_identity_like(tableau: stim.Tableau) -> bool:
+def _is_identity_like(tableau: deltakit_stim.Tableau) -> bool:
     """
     Function to test whether a tableau is identity-like. This is achieved via
     comparing to the identity Tableau in the numpy form of the tableau.
@@ -615,7 +621,7 @@ def _is_identity_like(tableau: stim.Tableau) -> bool:
 
     Parameters
     ----------
-    tableau : stim.Tableau
+    tableau : deltakit_stim.Tableau
         Tableau to compare to identity.
 
     Returns
@@ -635,13 +641,17 @@ def _get_tableau_key_from_sequence_of_gates(
     gates: Sequence[OneQubitCliffordGate], up_to_paulis: bool = False
 ) -> tuple[str, str]:
     return _get_tableau_as_key(
-        _get_tableau_from_sequence_of_1q_gates([gate.stim_string for gate in gates]),
+        _get_tableau_from_sequence_of_1q_gates(
+            [gate.deltakit_stim_string for gate in gates]
+        ),
         up_to_paulis,
     )
 
 
 def _get_single_qubits_tableau_key_from_two_qubit_tableau(
-    two_qubit_tableau: stim.Tableau, qubit_index: int, up_to_paulis: bool = False
+    two_qubit_tableau: deltakit_stim.Tableau,
+    qubit_index: int,
+    up_to_paulis: bool = False,
 ) -> tuple[str, str]:
     """
     Given a tableau for a two-qubit gate, get the part of the tableau that corresponds
@@ -650,7 +660,7 @@ def _get_single_qubits_tableau_key_from_two_qubit_tableau(
 
     Parameters
     ----------
-    two_qubit_tableau : stim.Tableau
+    two_qubit_tableau : deltakit_stim.Tableau
         Tableau for the two qubit gate.
     qubit_index : int
         Index of the single qubit portion of the tableau to return.
@@ -766,7 +776,9 @@ def _get_compilation_with_two_qubit_gates(
         gate_exchange_dict = {}
 
     # get tableau and inverse tableau of two_qubit_gate
-    two_qubit_tableau = stim.Tableau.from_named_gate(two_qubit_gate.stim_string)  # G
+    two_qubit_tableau = deltakit_stim.Tableau.from_named_gate(
+        two_qubit_gate.deltakit_stim_string
+    )  # G
     two_qubit_tableau_inv = two_qubit_tableau.inverse()  # G_adj
 
     # iterate over these to reduce code duplication.
@@ -823,12 +835,13 @@ def _get_compilation_with_two_qubit_gates(
                     # by adding it to the identity, in the right order dependent on if
                     # unitary_block is the first or second qubit
                     unitary_block_tab = _get_tableau_from_sequence_of_1q_gates(
-                        [gate.stim_string for gate in partial_unitary_block]
+                        [gate.deltakit_stim_string for gate in partial_unitary_block]
                     )
                     two_qubit_unitary_block_tab = (
-                        stim.Tableau.from_named_gate("I") + unitary_block_tab
+                        deltakit_stim.Tableau.from_named_gate("I") + unitary_block_tab
                         if is_second_qubit
-                        else unitary_block_tab + stim.Tableau.from_named_gate("I")
+                        else unitary_block_tab
+                        + deltakit_stim.Tableau.from_named_gate("I")
                     )
 
                     # get tableau of G_adj A G, for G our two qubit gate
@@ -845,9 +858,11 @@ def _get_compilation_with_two_qubit_gates(
                     # check for the two optional conditions
                     if not allow_terms_to_mutate:
                         two_qubit_unitary_block_tab_reverse = (
-                            unitary_block_tab + stim.Tableau.from_named_gate("I")
+                            unitary_block_tab
+                            + deltakit_stim.Tableau.from_named_gate("I")
                             if is_second_qubit
-                            else stim.Tableau.from_named_gate("I") + unitary_block_tab
+                            else deltakit_stim.Tableau.from_named_gate("I")
+                            + unitary_block_tab
                         )
                         if (
                             # check that pulling u through G, u-G becomes only
@@ -880,10 +895,10 @@ def _get_compilation_with_two_qubit_gates(
 
                     # multiply this tableau with u2+u4 and then read off the u2 and u4 parts individually
                     u2_tab = _get_tableau_from_sequence_of_1q_gates(
-                        [gate.stim_string for gate in unitary_block_2]
+                        [gate.deltakit_stim_string for gate in unitary_block_2]
                     )
                     u4_tab = _get_tableau_from_sequence_of_1q_gates(
-                        [gate.stim_string for gate in unitary_block_4]
+                        [gate.deltakit_stim_string for gate in unitary_block_4]
                     )
                     # W2 W4
                     ub_and_2q_tab_with_u2u4 = (
@@ -1094,7 +1109,7 @@ def _extract_structure_from_circuit(
         from `circuit`.
     """
     # iterate over the layers
-    # {(gate_layer_index, qubit_index, gate_stim_string): {preceding: [], succeeding: []}}
+    # {(gate_layer_index, qubit_index, gate_deltakit_stim_string): {preceding: [], succeeding: []}}
     unitary_blocks: dict[int, list[OneQubitCliffordGate]] = {}
     reset_dict: SpecialGateDict = {}
     meas_dict: SpecialGateDict = {}
@@ -1137,7 +1152,9 @@ def _extract_structure_from_circuit(
                         (
                             most_recent_special_gate_per_qubit[qubit][1],
                             qubit,
-                            most_recent_special_gate_per_qubit[qubit][0].stim_string,
+                            most_recent_special_gate_per_qubit[qubit][
+                                0
+                            ].deltakit_stim_string,
                         )
                     ]["succeeding"] = unitary_block_index
                 else:
@@ -1171,7 +1188,7 @@ def _extract_structure_from_circuit(
                     dict_to_update = _get_relevant_dict_to_update(
                         gate, reset_dict, meas_dict, two_q_dict
                     )
-                    dict_to_update[(layer_i, qubit, gate.stim_string)] = {
+                    dict_to_update[(layer_i, qubit, gate.deltakit_stim_string)] = {
                         "preceding": unitary_block_index
                     }
 
@@ -1190,7 +1207,7 @@ def _extract_structure_from_circuit(
                                 qubit,
                                 most_recent_special_gate_per_qubit[qubit][
                                     0
-                                ].stim_string,
+                                ].deltakit_stim_string,
                             )
                         ]["succeeding"] = unitary_block_index
                     most_recent_special_gate_per_qubit[qubit] = (gate, layer_i)
@@ -1217,7 +1234,7 @@ def _extract_structure_from_circuit(
                 (
                     most_recent_special_gate_per_qubit[qubit][1],
                     qubit,
-                    most_recent_special_gate_per_qubit[qubit][0].stim_string,
+                    most_recent_special_gate_per_qubit[qubit][0].deltakit_stim_string,
                 )
             ]["succeeding"] = unitary_block_index
         else:

@@ -1,6 +1,6 @@
 import deltakit_circuit as circuit
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_explorer.codes._logicals import (
     paulistring_to_operator,
@@ -9,7 +9,7 @@ from deltakit_explorer.codes._logicals import (
 
 @pytest.mark.parametrize("string", ["+XY", "+YX", "-ZXY"])
 def test_paulistring_to_operator(string):
-    paulistring = stim.PauliString(string)
+    paulistring = deltakit_stim.PauliString(string)
     index_to_qubit = {i: circuit.Qubit(i) for i in range(len(string[1:]))}
     operator = paulistring_to_operator(paulistring, index_to_qubit)
     for i, (op, char) in enumerate(zip(operator, string[1:], strict=True)):
@@ -28,7 +28,7 @@ def test_paulistring_to_operator(string):
 #     ],
 # )
 # def test_get_str_logical_operators_from_tableau(stabilisers, operators):
-#     stabilisers = [stim.PauliString(i) for i in stabilisers]
-#     operators_ref = [tuple(stim.PauliString(i) for i in j) for j in operators]
+#     stabilisers = [deltakit_stim.PauliString(i) for i in stabilisers]
+#     operators_ref = [tuple(deltakit_stim.PauliString(i) for i in j) for j in operators]
 #     operators_res = get_str_logical_operators_from_tableau(stabilisers)
 #     operators_res == operators_ref

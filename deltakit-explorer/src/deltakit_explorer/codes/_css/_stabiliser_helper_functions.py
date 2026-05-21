@@ -9,7 +9,7 @@ from collections.abc import Iterable, Sequence
 from deltakit_circuit import GateLayer, PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._basic_maps import PAULI_TO_CP
 from deltakit_circuit._qubit_identifiers import PauliGate
-from stim import PauliString, Tableau
+from deltakit_stim import PauliString, Tableau
 
 from deltakit_explorer.codes._stabiliser import Stabiliser
 
@@ -50,7 +50,7 @@ def _transform_stabiliser(
     transform_tableau: Tableau,
 ) -> Stabiliser:
     """
-    Transforms the stabiliser provided with a unitary Clifford specified by a Stim
+    Transforms the stabiliser provided with a unitary Clifford specified by a Deltakit_Stim
     tableau.
 
     Parameters
@@ -60,7 +60,7 @@ def _transform_stabiliser(
     tableau_qubits : Tuple[Qubit]
         The qubits present in the tableau, indexed in the same way as they appear in
         it.
-    transform_tableau : stim.Tableau
+    transform_tableau : deltakit_stim.Tableau
         The tableau representing the unitary Clifford to apply to the stabiliser.
 
     Returns
@@ -114,31 +114,31 @@ def _get_data_qubits_from_stabilisers(
     )
 
 
-def pauli_gates_to_stim_pauli_string(
+def pauli_gates_to_deltakit_stim_pauli_string(
     pauli_gates: Iterable[PauliGate | None],
     data_qubit_to_index_lookup: dict[Qubit, int],
 ) -> PauliString:
     r"""
-    Given an iterable of `PauliGate`\ s, express it as a stim.PauliString. To do
+    Given an iterable of `PauliGate`\ s, express it as a deltakit_stim.PauliString. To do
     this, a `data_qubit_to_index_lookup` dictionary must also be provided, where
     each data qubit is mapped uniquely to an integer, for the purpose of turning
-    `pauli_gates` into a `stim.PauliString`.
+    `pauli_gates` into a `deltakit_stim.PauliString`.
 
     Parameters
     ----------
     pauli_gates : Iterable[Optional[PauliGate]]
-        Iterable of `PauliGate`, to be turned into a `stim.PauliString`. Allows
+        Iterable of `PauliGate`, to be turned into a `deltakit_stim.PauliString`. Allows
         some of these terms to be None (in which case they are just ignored) such
         that e.g. Stabiliser.paulis may be passed directly into this function.
     data_qubit_to_index_lookup : dict[Qubit, int]
         Dictionary containing a lookup of each data qubit to an integer. This is
         needed since qubit coordinates are usually `Coord2D`, so we must have an
-        integer representation for converting to a `stim.PauliString`.
+        integer representation for converting to a `deltakit_stim.PauliString`.
 
     Returns
     -------
-    stim.PauliString
-        `stim.PauliString` expression of `pauli_gates`.
+    deltakit_stim.PauliString
+        `deltakit_stim.PauliString` expression of `pauli_gates`.
     """
 
     if not all(
@@ -155,7 +155,7 @@ def pauli_gates_to_stim_pauli_string(
         )
         raise ValueError(msg)
     paulistr = "*".join(
-        pauli.stim_identifier + str(data_qubit_to_index_lookup[pauli.qubit])
+        pauli.deltakit_stim_identifier + str(data_qubit_to_index_lookup[pauli.qubit])
         for pauli in pauli_gates
         if pauli is not None
     )
@@ -163,7 +163,7 @@ def pauli_gates_to_stim_pauli_string(
     # Adds trailing identity so that the total number of elements in the pauli strings
     # always equals to the number of qubits. This is needed because this trail is present
     # in a Tableau's pauli strings, and two pauli strings which have different trails
-    # are not deemed equal by stim. For instance, PauliString("X") != PauliString("X_")
+    # are not deemed equal by deltakit_stim. For instance, PauliString("X") != PauliString("X_")
     # Note: The '+ 1' accounts for the +/- sign that gets added in front of the Pauli String
     # when it is initialised.
     return PauliString(

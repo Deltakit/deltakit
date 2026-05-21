@@ -832,7 +832,7 @@ class CSSCode(StabiliserCode):
     ) -> tuple[tuple[set[PauliX], ...], tuple[set[PauliZ], ...]]:
         """
         Compute the logical operators of the code. First tries doing so by completing
-        a stim Tableau, and if it doesn't yield X logicals purely made of X terms
+        a deltakit_stim Tableau, and if it doesn't yield X logicals purely made of X terms
         and Z logicals purely made of Z terms, falls back to doing so via the parity
         check matrix, for which that condition is guaranteed (but not necessarily
         independence).

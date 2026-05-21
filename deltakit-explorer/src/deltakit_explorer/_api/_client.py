@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import os
 
+import deltakit_stim
 import numpy as np
 import numpy.typing as npt
-import stim
 
 from deltakit_explorer import simulation
 from deltakit_explorer._api._api_client import APIClient
@@ -110,36 +110,36 @@ class Client:
 
     def add_noise(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         noise_model: PhysicalNoiseModel | SI1000NoiseModel | SI1000Noise,
     ) -> str:
-        """Given a stim circuit, changes all noise in the circuit to noise
+        """Given a deltakit_stim circuit, changes all noise in the circuit to noise
         defined by user-given parameters. If the circuit is noiseless,
         noise is added into the circuit.
 
         Args:
-            stim_circuit: (str | stim.Circuit):
+            deltakit_stim_circuit: (str | deltakit_stim.Circuit):
                 Noiseless circuit.
             noise_model (PhysicalNoiseModel | SI1000NoiseModel | SI1000Noise):
                 Noise model to apply to a circuit.
 
         Returns:
             str:
-                STIM circuit with error mechanisms derived from the
+                DELTAKIT_STIM circuit with error mechanisms derived from the
                 noise model. Note, that adding SI1000NoiseModel may
                 add leakage terms, which are not compatible with vanilla
-                STIM, and can only be simulated using Deltakit client.
+                DELTAKIT_STIM, and can only be simulated using Deltakit client.
 
         Examples:
             Populate the circuit with the noise, and then simulate::
 
                 leakage_noise_model = types.SI1000NoiseModel(p=0.001, p_l=0.001)
                 noisy_circuit = client.add_noise(
-                    stim_circuit=compiled_circuit,
+                    deltakit_stim_circuit=compiled_circuit,
                     noise_model=leakage_noise_model,
                 )
-                measurements, leakage = client.simulate_stim_circuit(
-                    stim_circuit=noisy_circuit,
+                measurements, leakage = client.simulate_deltakit_stim_circuit(
+                    deltakit_stim_circuit=noisy_circuit,
                     shots=num_shots,
                 )
 
@@ -148,7 +148,7 @@ class Client:
         try:
             if isinstance(noise_model, SI1000Noise):
                 noise_model = SI1000NoiseModel(p=noise_model.p, p_l=noise_model.pL)
-            return self._api.add_noise(stim_circuit, noise_model, query_id)
+            return self._api.add_noise(deltakit_stim_circuit, noise_model, query_id)
         except Exception as ex:
             Logging.error(ex, query_id)
             raise
@@ -160,10 +160,10 @@ class Client:
         detectors: DetectionEvents,
         observables: ObservableFlips,
         decoder: Decoder,
-        noisy_stim_circuit: str | stim.Circuit,
+        noisy_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         leakage_flags: LeakageFlags | None = None,
     ) -> DecodingResult:
-        """Accepts detectors, observables and a stim circuit with integrated noise
+        """Accepts detectors, observables and a deltakit_stim circuit with integrated noise
         and returns decoding results for a requested decoder.
 
         Args:
@@ -184,8 +184,8 @@ class Client:
                 - `AC` for Ambiguity Clustering (https://arxiv.org/abs/2406.14527).
                 - `LCD` for Local Clustering Decoder (https://arxiv.org/abs/2411.10343).
 
-            noisy_stim_circuit (str | stim.Circuit):
-                STIM circuit with defined noise terms. Used to derive detector
+            noisy_deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                DELTAKIT_STIM circuit with defined noise terms. Used to derive detector
                 error model.
 
             leakage_flags (Optional[LeakageFlags]):
@@ -198,18 +198,18 @@ class Client:
         Examples:
             Decoding simulated data::
 
-                measurements, leakage = client.simulate_stim_circuit(
-                    stim_circuit=noisy_circuit,
+                measurements, leakage = client.simulate_deltakit_stim_circuit(
+                    deltakit_stim_circuit=noisy_circuit,
                     shots=10000,
                 )
                 detectors, observables = measurements.to_detectors_and_observables(
-                    stim_circuit=noisy_circuit,
+                    deltakit_stim_circuit=noisy_circuit,
                 )
                 decoding_result = client.decode(
                     detectors=detectors,
                     observables=observables,
                     decoder=types.Decoder(types.DecoderType.AC),
-                    noisy_stim_circuit=noisy_circuit,
+                    noisy_deltakit_stim_circuit=noisy_circuit,
                 )
 
         """
@@ -219,7 +219,7 @@ class Client:
                 detectors,
                 observables,
                 decoder,
-                noisy_stim_circuit,
+                noisy_deltakit_stim_circuit,
                 leakage_flags,
                 query_id,
             )
@@ -232,12 +232,12 @@ class Client:
         self,
         measurements: Measurements,
         decoder: Decoder,
-        ideal_stim_circuit: str | stim.Circuit,
+        ideal_deltakit_stim_circuit: str | deltakit_stim.Circuit,
         noise_model: PhysicalNoiseModel,
         leakage_flags: LeakageFlags | None = None,
         sweep_bits: BinaryDataType | None = None,
     ) -> DecodingResult:
-        """Accept raw measurement file and a clean stim circuit and
+        """Accept raw measurement file and a clean deltakit_stim circuit and
         return decoding results with a requested decoder.
 
         Args:
@@ -256,7 +256,7 @@ class Client:
                 - `AC` for Ambiguity Clustering (https://arxiv.org/abs/2406.14527).
                 - `LCD` for Local Clustering Decoder (https://arxiv.org/abs/2411.10343).
 
-            ideal_stim_circuit: (str | stim.Circuit): clean stim circuit.
+            ideal_deltakit_stim_circuit: (str | deltakit_stim.Circuit): clean deltakit_stim circuit.
             noise_model (PhysicalNoiseModel):
                 Noise model used to generate a circuit, or a noise model close
                 to hardware, which has generated the measurements data.
@@ -277,7 +277,7 @@ class Client:
                 client.decode_measurements(
                     measurements=measurements,
                     decoder=decoder,
-                    ideal_stim_circuit=circuit,
+                    ideal_deltakit_stim_circuit=circuit,
                     noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
                     sweep_bits=sweep_bits,
                 )
@@ -296,41 +296,41 @@ class Client:
                 client.decode_measurements(
                     measurements=measurements,
                     decoder=decoder,
-                    ideal_stim_circuit=compiled_circuit,
+                    ideal_deltakit_stim_circuit=compiled_circuit,
                     noise_model=noise_model,
                 )
 
         """
-        noisy_stim_circuit = self.add_noise(
-            stim_circuit=ideal_stim_circuit,
+        noisy_deltakit_stim_circuit = self.add_noise(
+            deltakit_stim_circuit=ideal_deltakit_stim_circuit,
             noise_model=noise_model,
         )
-        noisy_stim_file_content = noisy_stim_circuit
+        noisy_deltakit_stim_file_content = noisy_deltakit_stim_circuit
         dets, obs = measurements.to_detectors_and_observables(
-            stim_circuit=noisy_stim_file_content,
+            deltakit_stim_circuit=noisy_deltakit_stim_file_content,
             sweep_bits=sweep_bits,
         )
         return self.decode(
             detectors=dets,
             observables=obs,
             decoder=decoder,
-            noisy_stim_circuit=noisy_stim_circuit,
+            noisy_deltakit_stim_circuit=noisy_deltakit_stim_circuit,
             leakage_flags=leakage_flags,
         )
 
     def defect_rates(
         self,
         detectors: DetectionEvents,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
     ) -> dict[tuple[float, ...], list[float]]:
         """Obtain defect rates for the detectors
-        defined in the stim circuit.
+        defined in the deltakit_stim circuit.
 
         Args:
             detectors (DetectionEvents):
                 Detectors data.
-            stim_circuit (str | stim.Circuit):
-                STIM circuit content.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                DELTAKIT_STIM circuit content.
 
         Returns:
             Dict[Tuple[float, ...], List[float]]:
@@ -341,7 +341,7 @@ class Client:
             Obtaining a defect rate list for a single coordinate::
 
                 coordinate = (2.0, 5.0)
-                defect_rates = client.defect_rates(detectors, stim_circuit)
+                defect_rates = client.defect_rates(detectors, deltakit_stim_circuit)
                 print(f"{coordinate}: {defect_rates[coordinate]}")
 
         """
@@ -349,7 +349,7 @@ class Client:
         try:
             return self._api.defect_rates(
                 detectors,
-                stim_circuit,
+                deltakit_stim_circuit,
                 query_id,
             )
         except Exception as ex:
@@ -359,7 +359,7 @@ class Client:
     def get_correlation_matrix_for_trimmed_data(
         self,
         detectors: DetectionEvents,
-        noise_floor_circuit: str | stim.Circuit,
+        noise_floor_circuit: str | deltakit_stim.Circuit,
         use_default_noise_model_edges: bool = False,
     ) -> tuple[npt.NDArray[np.float64], QubitCoordinateToDetectorMapping]:
         """Obtain a correlation matrix for a given set of detection events
@@ -371,7 +371,7 @@ class Client:
         Args:
             detectors (DetectionEvents):
                 Detectors data.
-            noise_floor_circuit (str | stim.Circuit):
+            noise_floor_circuit (str | deltakit_stim.Circuit):
                 Cricuit with defined minimal noise. For example, this noise may
                 be obtained with
                 PhysicalNoiseModel.get_floor_superconducting_noise().
@@ -400,7 +400,7 @@ class Client:
     def get_correlation_matrix(
         self,
         detectors: DetectionEvents,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         use_default_noise_model_edges: bool,
     ) -> tuple[npt.NDArray[np.float64], QubitCoordinateToDetectorMapping]:
         """Obtain a correlation matrix for a given set of detection events
@@ -411,8 +411,8 @@ class Client:
         Args:
             detectors (DetectionEvents):
                 Detectors data.
-            stim_circuit (str | stim.Circuit):
-                Clean STIM circuit.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                Clean DELTAKIT_STIM circuit.
             use_default_noise_model_edges (bool):
                 If set to True, uses noise edges defined in the circuit, otherwise
                 derives noise from detectors data.
@@ -428,7 +428,7 @@ class Client:
 
                 matrix, mapping = client.get_correlation_matrix(
                     detectors,
-                    stim_circuit,
+                    deltakit_stim_circuit,
                     use_default_noise_model_edges=True,
                 )
                 plt = visualisation.correlation_matrix(matrix, mapping)
@@ -437,7 +437,7 @@ class Client:
         query_id = Logging.info_and_generate_uid(locals())
         try:
             noisy_circuit = self.add_noise(
-                stim_circuit=stim_circuit,
+                deltakit_stim_circuit=deltakit_stim_circuit,
                 noise_model=PhysicalNoiseModel.get_floor_superconducting_noise(),
             )
             (trimmed_circuit, trimmed_dets) = self.trim_circuit_and_detectors(
@@ -452,7 +452,7 @@ class Client:
 
     def trim_circuit_and_detectors(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         detectors: DetectionEvents,
     ) -> tuple[str, DetectionEvents]:
         """Trims a circuit to remove redundant detectors (detectors that do not
@@ -469,8 +469,8 @@ class Client:
             from the given detector data.
 
         Args:
-            stim_circuit (str | stim.Circuit):
-                Noisy STIM circuit.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                Noisy DELTAKIT_STIM circuit.
             detectors (DetectionEvents):
                 Corresponding detectors.
 
@@ -485,7 +485,7 @@ class Client:
             keeping only the part of it, connected to observables::
 
                 trimmed_circuit, trimmed_dets = client.trim_circuit_and_detectors(
-                    stim_circuit=noisy_circuit,
+                    deltakit_stim_circuit=noisy_circuit,
                     detectors=detectors,
                 )
 
@@ -494,7 +494,7 @@ class Client:
         query_id = Logging.info_and_generate_uid(locals())
         try:
             return self._api.trim_circuit_and_detectors(
-                stim_circuit,
+                deltakit_stim_circuit,
                 detectors,
                 query_id,
             )
@@ -523,7 +523,7 @@ class Client:
             Defining experiment and extracting defect rate information::
 
                 experiment = QECExperiment.from_circuit_and_measurements(
-                    folder / "circuit_noisy.stim",
+                    folder / "circuit_noisy.deltakit_stim",
                     folder / "measurements.b8",
                     DataFormat.B8,
                 )
@@ -540,16 +540,16 @@ class Client:
         experiment.compute_detectors_and_observables()
         # trim the circuit to remove redundant detectors
         trimmed_circuit, trimmed_dets = self.trim_circuit_and_detectors(
-            stim_circuit=experiment.noisy_circuit,
+            deltakit_stim_circuit=experiment.noisy_circuit,
             # detectors are computed above
             detectors=experiment.detectors,
         )
         # get defect rates for trimmed circuit
         all_qubit_defect_rates = self.defect_rates(
             detectors=trimmed_dets,
-            stim_circuit=trimmed_circuit,
+            deltakit_stim_circuit=trimmed_circuit,
         )
-        circuit = stim.Circuit(trimmed_circuit)
+        circuit = deltakit_stim.Circuit(trimmed_circuit)
         all_detector_coordinates = {
             key: tuple(value)
             for key, value in circuit.get_detector_coordinates().items()
@@ -561,7 +561,7 @@ class Client:
         self,
         experiment_definition: QECExperimentDefinition,
     ) -> str:
-        """Generate a STIM circuit for a quantum error correction experiment.
+        """Generate a DELTAKIT_STIM circuit for a quantum error correction experiment.
         `experiment_definition` holds all information essential for building
         an experiment.
 
@@ -578,7 +578,7 @@ class Client:
                 - parameters: Optional parameters of circuit generation.
 
         Returns:
-            str: STIM circuit.
+            str: DELTAKIT_STIM circuit.
 
         Examples:
 
@@ -617,17 +617,17 @@ class Client:
             raise
 
     @validate_and_split_simulation
-    def simulate_stim_circuit(
+    def simulate_deltakit_stim_circuit(
         self,
-        stim_circuit: str | stim.Circuit,
+        deltakit_stim_circuit: str | deltakit_stim.Circuit,
         shots: int,
     ) -> tuple[Measurements, LeakageFlags | None]:
         """
-        Simulate STIM circuit with Deltakit client.
+        Simulate DELTAKIT_STIM circuit with Deltakit client.
 
         Args:
-            stim_circuit (str | stim.Circuit):
-                Any STIM circuit. May include leakage instructions.
+            deltakit_stim_circuit (str | deltakit_stim.Circuit):
+                Any DELTAKIT_STIM circuit. May include leakage instructions.
             shots (int):
                 Number of shots.
 
@@ -648,21 +648,23 @@ class Client:
                 # Add leakage noise
                 leakage_noise_model = types.SI1000NoiseModel(p=0.001, p_l=0.001)
                 noisy_circuit = client.add_noise(
-                    stim_circuit=compiled_circuit,
+                    deltakit_stim_circuit=compiled_circuit,
                     noise_model=leakage_noise_model,
                 )
-                measurements, leakage = client.simulate_stim_circuit(
-                    stim_circuit=noisy_circuit,
+                measurements, leakage = client.simulate_deltakit_stim_circuit(
+                    deltakit_stim_circuit=noisy_circuit,
                     shots=num_shots,
                 )
 
         """
         query_id = Logging.info_and_generate_uid(locals())
         try:
-            # always simulate pure stim with no leakage locally
-            if not has_leakage(str(stim_circuit)):
-                return simulation.simulate_with_stim(stim_circuit, shots)
-            return self._api.simulate_circuit(stim_circuit, shots, query_id)
+            # always simulate pure deltakit_stim with no leakage locally
+            if not has_leakage(str(deltakit_stim_circuit)):
+                return simulation.simulate_with_deltakit_stim(
+                    deltakit_stim_circuit, shots
+                )
+            return self._api.simulate_circuit(deltakit_stim_circuit, shots, query_id)
         except Exception as ex:
             Logging.error(ex, query_id)
             raise

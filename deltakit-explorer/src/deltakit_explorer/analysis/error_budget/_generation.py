@@ -6,7 +6,9 @@ import numpy as np
 import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
-from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
+from deltakit_decode.analysis._matching_decoder_managers import (
+    DeltakitStimDecoderManager,
+)
 from tqdm import tqdm
 
 from deltakit_explorer.analysis.error_budget._memory import (
@@ -22,7 +24,7 @@ def _generate_surface_code_memory_decoder_manager(
     noise_parameters: npt.NDArray[np.floating],
     memory_generator: MemoryGenerator,
     noise_parameter_names: Sequence[str],
-) -> StimDecoderManager:
+) -> DeltakitStimDecoderManager:
     """Generate a decoder manager with a rotated planar code memory experiment.
 
     Args:
@@ -45,8 +47,8 @@ def _generate_surface_code_memory_decoder_manager(
     """
     circuit = memory_generator(distance, num_rounds)
     noisy_circuit = noise_model(circuit, noise_parameters)
-    decoder, decoder_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(
-        noisy_circuit
+    decoder, decoder_circuit = (
+        PyMatchingDecoder.construct_decoder_and_deltakit_stim_circuit(noisy_circuit)
     )
     metadata = {
         "distance": distance,
@@ -57,7 +59,7 @@ def _generate_surface_code_memory_decoder_manager(
         },
     }
 
-    return StimDecoderManager(decoder_circuit, decoder, metadata=metadata)
+    return DeltakitStimDecoderManager(decoder_circuit, decoder, metadata=metadata)
 
 
 def _generate_surface_code_memory_decoder_manager_wrapper(
@@ -69,7 +71,7 @@ def _generate_surface_code_memory_decoder_manager_wrapper(
         MemoryGenerator,
         Sequence[str],
     ],
-) -> StimDecoderManager:
+) -> DeltakitStimDecoderManager:
     return _generate_surface_code_memory_decoder_manager(*data)
 
 
@@ -80,12 +82,12 @@ def generate_decoder_managers_for_lambda(
     max_workers: int = 1,
     memory_generator: MemoryGenerator = get_rotated_surface_code_memory_circuit,
     noise_parameter_names: Sequence[str] | None = None,
-) -> list[StimDecoderManager]:
+) -> list[DeltakitStimDecoderManager]:
     """Generate several decoder managers from the provided arguments for a rotated
     planar code memory experiment.
 
     This function should be used to generate in one call a description of all the
-    sampling tasks that should be done in order to estimate the value of Λ on the
+    sampling tasks that should be done in order to edeltakit_stimate the value of Λ on the
     provided noise parameters ``xi``.
 
     Note:
@@ -156,7 +158,7 @@ def generate_decoder_managers_for_lambda(
         )
     )
     # 3. Generate the decoder managers
-    decoder_managers: list[StimDecoderManager] = []
+    decoder_managers: list[DeltakitStimDecoderManager] = []
     if max_workers == 1:
         for parameters in tqdm(
             parameters_iterator,

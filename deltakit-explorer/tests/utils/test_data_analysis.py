@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import deltakit_stim
 import pytest
-import stim
 
 from deltakit_explorer.data._data_analysis import (
     get_binary_data_size,
@@ -57,10 +57,10 @@ def test_binary_data_size_raises():
 def test_get_decoding_request_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = (
+    deltakit_stim_file = (
         Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
     )
-    circuit = stim.Circuit.from_file(stim_file)
+    circuit = deltakit_stim.Circuit.from_file(deltakit_stim_file)
     circuit_text = str(circuit)
     assert get_decoding_request_size_estimate(circuit, shots, data_format) == expected
     assert (
@@ -110,10 +110,10 @@ def test_get_decoding_request_size_estimate_with_leakage(
 def test_get_decoding_response_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = (
+    deltakit_stim_file = (
         Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
     )
-    circuit = stim.Circuit.from_file(stim_file)
+    circuit = deltakit_stim.Circuit.from_file(deltakit_stim_file)
     circuit_text = str(circuit)
     assert get_decoding_response_size_estimate(circuit, shots, data_format) == expected
     assert (
@@ -136,10 +136,10 @@ def test_get_decoding_response_size_estimate(
 def test_get_simulation_response_size_estimate(
     shots: int, data_format: DataFormat, expected: int
 ):
-    stim_file = (
+    deltakit_stim_file = (
         Path(__file__).parent / "../resources/rep_code_mutated_default_noise_data.stim"
     )
-    circuit = stim.Circuit.from_file(stim_file)
+    circuit = deltakit_stim.Circuit.from_file(deltakit_stim_file)
     circuit_text = str(circuit)
     assert (
         get_simulation_response_size_estimate(circuit, shots, data_format) == expected

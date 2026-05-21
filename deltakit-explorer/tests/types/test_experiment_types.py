@@ -27,11 +27,15 @@ def test_get_repetition_z_quantum_memory():
 
 
 def test_from_circuit_and_measurements_negative(tmp_path):
-    stim_path = tmp_path / "circuit.stim"
-    stim_path.write_text("M 0\n")
+    deltakit_stim_path = tmp_path / "circuit.stim"
+    deltakit_stim_path.write_text("M 0\n")
     meas_path = tmp_path / "meas.b8"
     meas_path.write_text("01\n")
     with pytest.raises(ValueError):
         QECExperiment.from_circuit_and_measurements(
-            stim_path, meas_path, "B8", sweep_path=tmp_path / "sweep", sweep_format=None
+            deltakit_stim_path,
+            meas_path,
+            "B8",
+            sweep_path=tmp_path / "sweep",
+            sweep_format=None,
         )

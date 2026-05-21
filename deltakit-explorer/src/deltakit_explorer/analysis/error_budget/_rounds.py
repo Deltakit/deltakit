@@ -4,7 +4,9 @@ import numpy as np
 import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode._mwpm_decoder import PyMatchingDecoder
-from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
+from deltakit_decode.analysis._matching_decoder_managers import (
+    DeltakitStimDecoderManager,
+)
 
 from deltakit_explorer.analysis import (
     simulate_different_round_numbers_for_lep_per_round_estimation,
@@ -86,10 +88,10 @@ def compute_ideal_rounds_for_noise_model_and_distance(
     ) -> tuple[int, int]:
         circuit = memory_generator(distance, num_rounds)
         noisy_circuit = noise_model(circuit, noise_parameters)
-        decoder, decoder_circuit = PyMatchingDecoder.construct_decoder_and_stim_circuit(
-            noisy_circuit
+        decoder, decoder_circuit = (
+            PyMatchingDecoder.construct_decoder_and_deltakit_stim_circuit(noisy_circuit)
         )
-        decoder_manager = StimDecoderManager(decoder_circuit, decoder)
+        decoder_manager = DeltakitStimDecoderManager(decoder_circuit, decoder)
 
         nshots, nfails = decoder_manager.run_batch_shots(batch_size)
         _, stddev = calculate_lep_and_lep_stddev(nfails, nshots)
