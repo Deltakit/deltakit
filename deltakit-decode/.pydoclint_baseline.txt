@@ -26,7 +26,7 @@ src/deltakit_decode/_base_reporter.py
 src/deltakit_decode/_mwpm_decoder.py
     DOC601: Class `PyMatchingDecoder`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PyMatchingDecoder`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [name: ]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
-    DOC003: Function/method `construct_decoder_and_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `construct_decoder_and_deltakit_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_decode/analysis/_decoder_manager.py
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
@@ -91,8 +91,8 @@ src/deltakit_decode/analysis/_empirical_decoding_error_distribution.py
 --------------------
 src/deltakit_decode/analysis/_matching_decoder_managers.py
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Method `StimDecoderManager.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `StimDecoderManager.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [batch_size: int].
+    DOC101: Method `DeltakitStimDecoderManager.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DeltakitStimDecoderManager.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [batch_size: int].
     DOC003: Function/method `error_distribution_over_logicals`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC103: Method `B8DecoderManager.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [logical_flip_b8_input: Path | bytes, syndrome_b8_input: Path | bytes]. Arguments in the docstring but not in the function signature: [logical_flip_b8_file: Path | bytes, syndrome_b8_file: Path | bytes].
@@ -121,6 +121,23 @@ src/deltakit_decode/analysis/_run_all_analysis_engine.py
     DOC503: Method `RunAllAnalysisEngine._shot_loop` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['TimeoutError'].
     DOC003: Function/method `loop_until_failures`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `loop_until_observable_rse_below_threshold`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+--------------------
+src/deltakit_decode/noise_sources/_deltakit_stim_noise_sources.py
+    DOC201: Function `give_empty` does not have a return section in docstring
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC102: Method `DeltakitStimNoise.__init__`: Docstring contains more arguments than in function signature.
+    DOC103: Method `DeltakitStimNoise.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: [optional: ].
+    DOC003: Function/method `permute_deltakit_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `DeltakitStimNoise.build_batch_error_generator`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `DeltakitStimNoise.build_batch_error_generator`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [code_data: deltakit_stim.Circuit, seed: int | None].
+    DOC201: Method `DeltakitStimNoise.build_batch_error_generator` does not have a return section in docstring
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `SampleDeltakitStimNoise.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC106: Method `SampleDeltakitStimNoise.__init__`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
+    DOC107: Method `SampleDeltakitStimNoise.__init__`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
+    DOC103: Method `SampleDeltakitStimNoise.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [batch_size: ].
+    DOC003: Function/method `deltakit_stim_batch_to_decode_batch`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_decode/noise_sources/_generic_noise_sources.py
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
@@ -200,23 +217,6 @@ src/deltakit_decode/noise_sources/_matching_noise_sources.py
     DOC003: Function/method `error_weight_probabilities`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `binomial_pmf`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
-src/deltakit_decode/noise_sources/_stim_noise_sources.py
-    DOC201: Function `give_empty` does not have a return section in docstring
-    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC102: Method `StimNoise.__init__`: Docstring contains more arguments than in function signature.
-    DOC103: Method `StimNoise.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the docstring but not in the function signature: [optional: ].
-    DOC003: Function/method `permute_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Method `StimNoise.build_batch_error_generator`: Docstring contains fewer arguments than in function signature.
-    DOC103: Method `StimNoise.build_batch_error_generator`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [code_data: stim.Circuit, seed: int | None].
-    DOC201: Method `StimNoise.build_batch_error_generator` does not have a return section in docstring
-    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC101: Method `SampleStimNoise.__init__`: Docstring contains fewer arguments than in function signature.
-    DOC106: Method `SampleStimNoise.__init__`: The option `--arg-type-hints-in-signature` is `True` but there are no argument type hints in the signature
-    DOC107: Method `SampleStimNoise.__init__`: The option `--arg-type-hints-in-signature` is `True` but not all args in the signature have type hints
-    DOC103: Method `SampleStimNoise.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [batch_size: ].
-    DOC003: Function/method `stim_batch_to_decode_batch`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
---------------------
 src/deltakit_decode/utils/_decoding_graph_visualiser.py
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC101: Method `VisDecodingGraph3D._categorise_nodes`: Docstring contains fewer arguments than in function signature.
@@ -287,8 +287,8 @@ src/deltakit_decode/utils/_derivation_tools_pij.py
     DOC003: Function/method `dem_and_pij_edges_max_diff`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_decode/utils/_graph_circuit_helpers.py
-    DOC003: Function/method `stim_circuit_to_graph_dem`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
-    DOC003: Function/method `parse_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `deltakit_stim_circuit_to_graph_dem`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `parse_deltakit_stim_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `split_measurement_bitstring`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_decode/utils/_log_utils.py
