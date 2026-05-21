@@ -86,9 +86,9 @@ src/deltakit_explorer/_api/_client.py
     DOC111: Method `Client.generate_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
     DOC501: Method `Client.generate_circuit` has raise statements, but the docstring does not have a "Raises" section
     DOC503: Method `Client.generate_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
-    DOC111: Method `Client.simulate_stim_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Method `Client.simulate_stim_circuit` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Method `Client.simulate_stim_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
+    DOC111: Method `Client.simulate_deltakit_stim_circuit`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Method `Client.simulate_deltakit_stim_circuit` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Method `Client.simulate_deltakit_stim_circuit` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['Exception'].
     DOC111: Method `Client.kill`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
 --------------------
 src/deltakit_explorer/_api/_gql_client.py
@@ -398,7 +398,7 @@ src/deltakit_explorer/codes/_css/_stabiliser_helper_functions.py
     DOC101: Function `_get_data_qubits_from_stabilisers`: Docstring contains fewer arguments than in function signature.
     DOC103: Function `_get_data_qubits_from_stabilisers`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [stabilisers: Sequence[Sequence[Stabiliser]]].
     DOC201: Function `_get_data_qubits_from_stabilisers` does not have a return section in docstring
-    DOC003: Function/method `pauli_gates_to_stim_pauli_string`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC003: Function/method `pauli_gates_to_deltakit_stim_pauli_string`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
 src/deltakit_explorer/codes/_logicals.py
     DOC003: Function/method `paulistring_to_operator`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
@@ -406,6 +406,15 @@ src/deltakit_explorer/codes/_logicals.py
     DOC003: Function/method `get_logical_operators_from_tableau`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `get_logical_operators_from_css_parity_check_matrices`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC103: Function `get_logical_operators_from_css_parity_check_matrices`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [hx: NDArray, hz: NDArray]. Arguments in the docstring but not in the function signature: [h_x: NDArray, h_z: NDArray].
+    DOC101: Function `gf2_row_echelon`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `gf2_row_echelon`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [matrix: np.ndarray].
+    DOC201: Function `gf2_row_echelon` does not have a return section in docstring
+    DOC101: Function `gf2_rank`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `gf2_rank`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [matrix: np.ndarray].
+    DOC201: Function `gf2_rank` does not have a return section in docstring
+    DOC101: Function `gf2_nullspace`: Docstring contains fewer arguments than in function signature.
+    DOC103: Function `gf2_nullspace`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [matrix: np.ndarray].
+    DOC201: Function `gf2_nullspace` does not have a return section in docstring
 --------------------
 src/deltakit_explorer/codes/_planar_code/_planar_code.py
     DOC601: Class `ScheduleType`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
@@ -643,10 +652,10 @@ src/deltakit_explorer/qpu/_qpu.py
     DOC003: Function/method `compile_and_add_noise_to_circuit`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
     DOC003: Function/method `from_circuit_compile_and_add_noise`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
 --------------------
-src/deltakit_explorer/simulation/_stim_simulation.py
-    DOC111: Function `simulate_with_stim`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
-    DOC501: Function `simulate_with_stim` has raise statements, but the docstring does not have a "Raises" section
-    DOC503: Function `simulate_with_stim` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError', 'ValueError'].
+src/deltakit_explorer/simulation/_deltakit_stim_simulation.py
+    DOC111: Function `simulate_with_deltakit_stim`: The option `--arg-type-hints-in-docstring` is `False` but there are type hints in the docstring arg list
+    DOC501: Function `simulate_with_deltakit_stim` has raise statements, but the docstring does not have a "Raises" section
+    DOC503: Function `simulate_with_deltakit_stim` exceptions in the "Raises" section in the docstring do not match those in the function body. Raised exceptions in the docstring: []. Raised exceptions in the body: ['NotImplementedError', 'ValueError'].
 --------------------
 src/deltakit_explorer/types/_data_string.py
     DOC301: Class `DataString`: __init__() should not have a docstring; please combine it with the docstring of the class
