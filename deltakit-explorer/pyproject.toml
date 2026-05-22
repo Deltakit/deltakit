@@ -49,7 +49,6 @@ dependencies = [
   "adjustText~=1.3",
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
-  "ldpc~=2.2",
 ]
 [project.optional-dependencies]
 vis = ["seaborn"]

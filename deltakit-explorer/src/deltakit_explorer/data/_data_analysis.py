@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import re
 
-from stim import Circuit
+from deltakit_stim import Circuit
 
 from deltakit_explorer.enums._api_enums import DataFormat
 from deltakit_explorer.types._data_string import DataString

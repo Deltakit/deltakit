@@ -617,7 +617,7 @@ class TestDemToDecodingHyperGraph:
 
 
 class TestDemToNXGraph:
-    """Test conversion from stim detector error model to NXDecodingGraph via
+    """Test conversion from deltakit_stim detector error model to NXDecodingGraph via
     the `dem_to_decoding_graph_and_logicals` function.
     """
 

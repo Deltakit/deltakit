@@ -11,9 +11,8 @@ from collections.abc import Collection, Iterable
 import numpy as np
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
-from ldpc import mod2
+from deltakit_stim import PauliString, Tableau
 from numpy.typing import NDArray
-from stim import PauliString, Tableau
 
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
     pauli_gates_to_stim_pauli_string,
@@ -241,6 +240,73 @@ def get_logical_operators_from_css_parity_check_matrices(
     )
 
 
+def gf2_row_echelon(matrix: np.ndarray) -> tuple[np.ndarray, list[int]]:
+    """Compute row echelon form over GF(2)."""
+    mat = matrix.copy() % 2
+    n_rows, n_cols = mat.shape
+
+    pivot_rows = []
+    row = 0
+
+    for col in range(n_cols):
+        pivot = None
+        for r in range(row, n_rows):
+            if mat[r, col]:
+                pivot = r
+                break
+
+        if pivot is None:
+            continue
+
+        # Swap rows
+        mat[[row, pivot]] = mat[[pivot, row]]
+
+        # Eliminate below and above
+        for r in range(n_rows):
+            if r != row and mat[r, col]:
+                mat[r] ^= mat[row]
+
+        pivot_rows.append(row)
+        row += 1
+
+        if row == n_rows:
+            break
+
+    return mat, pivot_rows
+
+
+def gf2_rank(matrix: np.ndarray) -> int:
+    """Compute rank over GF(2)."""
+    _, pivots = gf2_row_echelon(matrix)
+    return len(pivots)
+
+
+def gf2_nullspace(matrix: np.ndarray) -> np.ndarray:
+    """Compute nullspace basis over GF(2)."""
+    rref, pivot_rows = gf2_row_echelon(matrix)
+
+    _, n_cols = matrix.shape
+    pivot_cols = []
+
+    for r in pivot_rows:
+        pivot_cols.append(np.argmax(rref[r]))
+
+    free_cols = [c for c in range(n_cols) if c not in pivot_cols]
+
+    basis = []
+
+    for free_col in free_cols:
+        vec = np.zeros(n_cols, dtype=np.uint8)
+        vec[free_col] = 1
+
+        for r, pivot_col in enumerate(pivot_cols):
+            vec[pivot_col] = rref[r, free_col]
+
+        basis.append(vec)
+
+    return np.array(basis, dtype=np.uint8)
+
+
 def css_code_compute_logicals(
     hx: NDArray[np.floating], hz: NDArray[np.floating]
 ) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
@@ -283,13 +349,19 @@ def css_code_compute_logicals(
         # compute the kernel basis of hx
         # Note that because inputs are dense arrays, it is fine for every array to be dense in this
         # function.
-        ker_hx = mod2.nullspace(_hx).todense()
+        # ker_hx = mod2.nullspace(_hx).todense()
+        ker_hx = gf2_nullspace(_hx)
         # Row reduce to find vectors in kx that are not in the image of hz.T.
         log_stack = np.vstack([_hz, ker_hx])
 
-        rank_hz = mod2.rank(_hz)
-        pivots = mod2.pivot_rows(log_stack)[rank_hz:]
+        # Compute pivots after row reduction
+        _, pivots = gf2_row_echelon(log_stack)
 
-        return np.asarray(log_stack[pivots])
+        rank_hz = gf2_rank(_hz)
+        # rank_hz = mod2.rank(_hz)
+        # pivots = mod2.pivot_rows(log_stack)[rank_hz:]
+        logical_pivots = pivots[rank_hz:]
+
+        return np.asarray(log_stack[logical_pivots])
 
     return compute_lz(hz, hx), compute_lz(hx, hz)

@@ -349,7 +349,7 @@ def _get_compilation_dict(
         Compilation dictionary: TableauDict
             A dictionary with Tableaus as keys and operators as values.
             E.g, `{("+X", "-Z"): ("X",), ("+X", "+Z"): ()}`
-            The tableau is created from stim.Tableau.x_output and
+            The tableau is created from deltakit_stim.Tableau.x_output and
             stim.Tableau.z_output, in that order.
             The value is the empty tuple if the tableau key is equivalent to the identity.
         Equivalent tableau dictionary: EquivalentTableauDict
