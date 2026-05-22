@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from importlib.metadata import version
 
-import pytest
 import deltakit_stim as stim
+import pytest
 from packaging.version import Version
 
 import deltakit_circuit as sp

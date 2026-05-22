@@ -2,8 +2,8 @@
 import itertools
 from itertools import chain, permutations, product
 
-import pytest
 import deltakit_stim as stim
+import pytest
 
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit

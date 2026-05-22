@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from itertools import permutations
 
-import pytest
 import deltakit_stim as stim
+import pytest
 
 from deltakit_circuit import (
     Circuit,

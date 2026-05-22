@@ -3,8 +3,8 @@ import re
 from copy import copy, deepcopy
 from importlib.metadata import version
 
-import pytest
 import deltakit_stim as stim
+import pytest
 from packaging.version import Version
 
 from deltakit_circuit import (

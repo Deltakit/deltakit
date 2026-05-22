@@ -15,9 +15,9 @@ from math import ceil
 from pathlib import Path
 from typing import Any, ClassVar
 
+import deltakit_stim as stim
 import numpy as np
 import numpy.typing as npt
-import deltakit_stim as stim
 
 from deltakit_explorer.data._converter import (
     read_01,
