@@ -9,7 +9,7 @@ import os
 
 import numpy as np
 import numpy.typing as npt
-import stim
+import deltakit_stim as stim
 
 from deltakit_explorer import simulation
 from deltakit_explorer._api._api_client import APIClient

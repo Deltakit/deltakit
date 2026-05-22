@@ -9,7 +9,7 @@ from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from itertools import chain
 from typing import ClassVar, Generic, TypeVar
 
-import stim
+import deltakit_stim as stim
 
 T = TypeVar("T", bound=Hashable)
 U = TypeVar("U", bound=Hashable)

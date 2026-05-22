@@ -3,7 +3,7 @@ import itertools
 from itertools import permutations
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit import gates
 from deltakit_circuit._qubit_identifiers import Qubit

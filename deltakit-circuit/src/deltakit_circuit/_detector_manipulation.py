@@ -6,7 +6,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from warnings import warn
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._circuit import Circuit, Layer

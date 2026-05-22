@@ -16,7 +16,7 @@ import requests.adapters
 from typing_extensions import override
 
 if TYPE_CHECKING:
-    import stim
+    import deltakit_stim as stim
 from gql import Client, gql
 from gql.client import SyncClientSession
 from gql.transport.exceptions import TransportQueryError

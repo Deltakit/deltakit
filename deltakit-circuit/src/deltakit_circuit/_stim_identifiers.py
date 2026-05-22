@@ -3,7 +3,7 @@
 
 from typing import NamedTuple
 
-import stim
+import deltakit_stim as stim
 
 
 class NoiseStimIdentifier(NamedTuple):

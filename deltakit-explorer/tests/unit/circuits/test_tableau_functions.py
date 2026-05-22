@@ -7,7 +7,7 @@ from operator import add, mul
 
 import numpy as np
 import pytest
-import stim
+import deltakit_stim as stim
 from deltakit_circuit import (
     Circuit,
     Detector,

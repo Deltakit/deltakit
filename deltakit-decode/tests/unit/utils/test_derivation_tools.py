@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import numpy.testing as npt
 import pytest
-import stim
+import deltakit_stim as stim
 from deltakit_core.decoding_graphs import dem_to_decoding_graph_and_logicals
 from pytest_lazy_fixtures import lf
 

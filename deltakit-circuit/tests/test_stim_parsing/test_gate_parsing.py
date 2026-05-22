@@ -2,7 +2,7 @@
 from importlib.metadata import version
 
 import pytest
-import stim
+import deltakit_stim as stim
 from packaging.version import Version
 
 import deltakit_circuit as sp

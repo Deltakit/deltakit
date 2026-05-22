@@ -2,7 +2,7 @@
 from copy import copy, deepcopy
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit import Coordinate, Detector, MeasurementRecord
 

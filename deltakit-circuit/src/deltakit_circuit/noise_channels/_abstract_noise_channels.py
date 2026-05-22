@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Mapping, Sequence
 from typing import ClassVar, Generic, TypeVar
 
-import stim
+import deltakit_stim as stim
 from typing_extensions import Self
 
 from deltakit_circuit._qubit_identifiers import PauliProduct, Qubit, T, U, _PauliGate
