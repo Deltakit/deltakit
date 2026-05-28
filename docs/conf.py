@@ -109,3 +109,9 @@ highlight_language = "python3"
 suppress_warnings = [
     "autosummary.import_cycle",
 ]
+
+linkcheck_ignore = [
+    r'https://github\.com/quantumlib/Stim/blob/main/doc/result_formats\.md#b8',
+    r'https://github\.com/quantumlib/Stim/blob/main/doc/gates\.md#noise-channels',
+    r'https://github\.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev\.md#stim\.Circuit\.detector_error_model',
+]
