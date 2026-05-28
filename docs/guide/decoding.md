@@ -239,7 +239,7 @@ All decoders have access to the following parameters:
 These two parameters work together and allow decoders to deal with composite
 error mechanisms defined in the Stim circuit. By default, both are False.
 More about these two parameters can be found in the
-[official Stim documentation](https://github.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev.md#stim.Circuit.detector_error_model).
+[the `stim.Circuit.detector_error_model` documentation](https://github.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev.md).
 
 Particular decoders may also expose parameters for tuning. These are the cases for the supported decoders.
 
