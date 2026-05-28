@@ -133,7 +133,7 @@ A broader selection of decoders is accessible via the cloud:
 
 * [Minimum-Weight Perfect Matching](https://arxiv.org/abs/2303.15933), using {class}`MWPMDecoder <deltakit.decode.MWPMDecoder>`;
 * [Collision Clustering](https://arxiv.org/abs/2309.05558), using {class}`CCDecoder <deltakit.decode.CCDecoder>`;
-* [Belief Matching](https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.031007), using {class}`BeliefMatchingDecoder <deltakit.decode.BeliefMatchingDecoder>`;
+* [Belief Matching](https://arxiv.org/abs/2203.04948), using {class}`BeliefMatchingDecoder <deltakit.decode.BeliefMatchingDecoder>`;
 * [Belief Propagation - Ordered Statistics Decoding (BP-OSD)](https://quantum-journal.org/papers/q-2021-11-22-585/), using {class}`BPOSDecoder <deltakit.decode.BPOSDecoder>`;
 * [Ambiguity Clustering](https://arxiv.org/abs/2406.14527), using {class}`ACDecoder <deltakit.decode.ACDecoder>`;
 * [Local Clustering Decoder](https://arxiv.org/abs/2411.10343), using {class}`LCDecoder <deltakit.decode.LCDecoder>`;

@@ -222,7 +222,7 @@ class BeliefMatchingDecoder(_CloudDecoder):
     decoder workflows.
 
     This cloud-based decoder implements Belief Matching
-    (https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.031007).
+    (https://arxiv.org/abs/2203.04948).
     """
 
     _decoder_type = enums.DecoderType.BELIEF_MATCHING
