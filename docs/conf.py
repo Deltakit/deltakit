@@ -109,3 +109,10 @@ highlight_language = "python3"
 suppress_warnings = [
     "autosummary.import_cycle",
 ]
+
+linkcheck_request_headers = {
+    "https://journals.aps.org/*": {
+        "User-Agent": "Mozilla/5.0 (compatible; LinkChecker; +https://deltakit.dev)"
+    },
+}
+linkcheck_timeout = 30
