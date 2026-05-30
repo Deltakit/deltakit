@@ -260,7 +260,7 @@ class BPOSDecoder(_CloudDecoder):
     decoder workflows.
 
     This cloud-based decoder implements Belief Propagation - Ordered Statistics Decoding
-    (https://quantum-journal.org/papers/q-2021-11-22-585/).
+    (https://arxiv.org/abs/1904.02703).
     """
 
     _decoder_type = enums.DecoderType.BP_OSD
