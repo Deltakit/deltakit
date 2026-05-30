@@ -111,3 +111,4 @@ suppress_warnings = [
 ]
 
 linkcheck_timeout = 30
+linkcheck_retries = 2
