@@ -180,7 +180,7 @@ class Client:
                 - `BELIEF_MATCHING` for Belief Matching
                   (https://arxiv.org/abs/2203.04948).
                 - `BP_OSD` for Belief Propagation - Ordered Statistics Decoding
-                  (BP-OSD) (https://quantum-journal.org/papers/q-2021-11-22-585/),
+                  (BP-OSD) (https://arxiv.org/abs/1904.02703),
                 - `AC` for Ambiguity Clustering (https://arxiv.org/abs/2406.14527).
                 - `LCD` for Local Clustering Decoder (https://arxiv.org/abs/2411.10343).
 
@@ -252,7 +252,7 @@ class Client:
                 - `BELIEF_MATCHING` for Belief Matching
                   (https://arxiv.org/abs/2203.04948).
                 - `BP_OSD` for Belief Propagation - Ordered Statistics Decoding
-                  (BP-OSD) (https://quantum-journal.org/papers/q-2021-11-22-585/),
+                  (BP-OSD) (https://arxiv.org/abs/1904.02703),
                 - `AC` for Ambiguity Clustering (https://arxiv.org/abs/2406.14527).
                 - `LCD` for Local Clustering Decoder (https://arxiv.org/abs/2411.10343).
 

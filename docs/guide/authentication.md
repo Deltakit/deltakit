@@ -93,10 +93,10 @@ jobs:
 If the token is not set, or not provided as an environment variable, usage of the cloud API will raise an exception:
 
 ```text
-RuntimeError: Token could not be found neither in ([...]/deltakit-explorer/.env) nor environment variable (DELTAKIT_TOKEN). Please obtain your token at https://deltakit.rivelane.com/dashboard/token and use `Client.set_token` function to register it.
+RuntimeError: Token could not be found neither in ([...]/deltakit-explorer/.env) nor environment variable (DELTAKIT_TOKEN). Please obtain your token at https://deltakit.riverlane.com/dashboard/token and use `Client.set_token` function to register it.
 ```
 
-If you see this message, please visit the [Deltakit token generation page](https://deltakit.rivelane.com/dashboard/token), generate a token, and set it with `Client.set_token(...)`.
+If you see this message, please visit the [Deltakit token generation page](https://deltakit.riverlane.com/dashboard/token), generate a token, and set it with `Client.set_token(...)`.
 
 ### Token is wrong
 

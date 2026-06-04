@@ -14,19 +14,35 @@ jobs:
     outputs:
       exists: ${{ steps.deltakit-token.outputs.exists }}
     steps:
-        - id: deltakit-token
-          env:
-              DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
-          if: ${{ env.DELTAKIT_TOKEN != '' }}
-          run: echo "exists=true" >> $GITHUB_OUTPUT
+      - id: deltakit-token
+        env:
+          DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
+        if: ${{ env.DELTAKIT_TOKEN != '' }}
+        run: echo "exists=true" >> $GITHUB_OUTPUT
 
-  build-docs:
-    needs: [check-deltakit-token]
-    if: needs.check-deltakit-token.outputs.exists == 'true'
+  check-documentation-links:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Package synchronisation
+        run: uv sync --python 3.13 --resolution highest --group docs
+
+      - name: Check documentation links
+        run: uv run --no-sync sphinx-build -W -D nb_execution_mode=off -b linkcheck docs docs/_build/linkcheck
+
+  build-docs:
+    needs: [check-deltakit-token]
+    runs-on: ubuntu-latest
+    env:
+      NB_EXECUTION_MODE: ${{ needs.check-deltakit-token.outputs.exists == 'true' && 'force' || 'off' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v6
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -35,6 +51,6 @@ jobs:
         run: uv sync --python 3.13 --resolution highest --group docs
 
       - name: Build documentation
-        run: uv run --no-sync sphinx-build -W -b html docs docs/_build/html
+        run: uv run --no-sync sphinx-build -W -D nb_execution_mode=${NB_EXECUTION_MODE} -b html docs docs/_build/html
         env:
           DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}

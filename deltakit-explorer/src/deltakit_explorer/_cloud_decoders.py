@@ -222,7 +222,7 @@ class BeliefMatchingDecoder(_CloudDecoder):
     decoder workflows.
 
     This cloud-based decoder implements Belief Matching
-    (https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.031007).
+    (https://arxiv.org/abs/2203.04948).
     """
 
     _decoder_type = enums.DecoderType.BELIEF_MATCHING
@@ -260,7 +260,7 @@ class BPOSDecoder(_CloudDecoder):
     decoder workflows.
 
     This cloud-based decoder implements Belief Propagation - Ordered Statistics Decoding
-    (https://quantum-journal.org/papers/q-2021-11-22-585/).
+    (https://arxiv.org/abs/1904.02703).
     """
 
     _decoder_type = enums.DecoderType.BP_OSD

@@ -166,7 +166,7 @@ class B8DecoderManager(DecoderManager):
     and target logical flips.
 
     The b8 data formats were proposed by Google Quantum AI and can be read
-    about here: https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    about in the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
 
     Parameters
     ----------
