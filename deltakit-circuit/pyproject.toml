@@ -64,7 +64,7 @@ files = "src/**/*.py"
 disable_error_code = "dict-item,misc,arg-type,return-value,union-attr,index,attr-defined,call-overload"
 
 [[tool.mypy.overrides]]
-module = ["stim"]
+module = ["deltakit_stim"]
 follow_untyped_imports = true
 
 [tool.pytest.ini_options]
