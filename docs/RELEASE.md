@@ -1,16 +1,10 @@
 # Deltakit Release Procedure
 
-The release procedure is currently in discussion in [gh-55](https://github.com/Deltakit/deltakit/issues/55);
-here is a working summary.
-
-There are three kinds of releases:
-- stable release - published on a regular schedule from `main`,
-- "nightly" release - published automatically whenever commits are added to `main`, and:
-- alpha release - published as-needed, primarily for testing of a feature branch.
+A new version of Deltakit is released on a regular basis. Only stable releases are currently supported.
 
 ## Stable Releases
 
-Stable releases are performed on a fixed (fortnightly) schedule and as-needed whenever critical bug fixes are made.
+Stable releases are performed whenever new features are implemented or bug fixes are made.
 The target audience of stable releases is typical users.
 Semantic versioning communicates whether releases include any backward compatible changes so that users can
 decide when/whether to upgrade.
@@ -70,49 +64,3 @@ To perform a release, the release manager needs to go through the following step
 4. Trigger the stable release workflow. On the tagged commit (i.e., click on "Run workflow", and pick an entry in the "Tags" tab when selecting a value for "Use workflow from"), trigger the "Build, test, and publish stable wheels" on GitHub Actions [here](https://github.com/Deltakit/deltakit/actions/workflows/release.yml). It builds, tests and publishes the artefacts to PyPI and GitHub, and it renders and uploads the documentation to GitHub pages.
 
 The latest stable version of `deltakit` can be installed with `pip install deltakit`.
-
-
-## "Nightly" Releases
-
-Contrary to the name, "nightly" releases are performed every time commits are added to `main`-
-typically when a PR merges.
-The target audience of "nightly" releases is power users who want access to features and bug fixes as
-soon as they become available in `main`.
-The base version number is determined as with stable releases, but a suffix of the form `.devYYYYMMDDhhmmss` is
-appended to denote the fact that it is a development release and to order the development releases chronologically.
-
-A nightly release currently consists only of assets published to PyPI.
-Currently, there are no release notes, no tag is generated, no assets are published on GitHub, and the
-documentation is not rendered.
-(However, when the repository becomes public and documentation is migrated to Read the Docs,
-documentation associated with the `main` branch will be available there.)
-
-These releases are performed automatically, and there is no way to trigger one besides adding commits to `main`.
-The workflow associated with nightly releases is "Build, test, and publish nightly wheels",
-[`nightly_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/nightly_release.yml)).
-
-The latest "nightly" version of `deltakit` can be installed by using `pip` with the `--pre` option, specifying
-the desired version number; e.g., `pip install deltakit --pre 0.4.0.dev20250904222833`.
-
-
-## Alpha Releases
-
-Alpha releases are typically generated on demand from a *feature* branch.
-The target audience of "alpha" releases is power users and alpha testers who need access to a particular
-feature or bug fix *before* it becomes available in `main`.
-The base version number is determined as with stable releases, but a suffix of the form `aYYYYMMDDhhmmss` is
-appended to denote the fact that it is an alpha release and to order the alpha releases chronologically.
-
-An alpha release currently consists of a tag and assets published to PyPI.
-Currently, there are no release notes, no assets are published on GitHub, and the documentation is not rendered.
-(However, when the repository becomes public and documentation is migrated to Read the Docs, documentation
-associated with the feature branch will be available there. Also, the PR associated with the feature branch
-serves to document the relevant changes.)
-
-To perform an alpha release, the release manager triggers the alpha release workflow on the desired commit
-("Build, test, and publish alpha wheels" on GitHub Actions,
- [`alpha_release.yml`](https://github.com/Deltakit/deltakit/blob/main/.github/workflows/alpha_release.yml)).
-This builds and publishes the artefacts to PyPI, and it associates a tag with the commit on GitHub.
-
-The latest alpha version of `deltakit` can be installed by using `pip` with the `--pre` option, specifying
-the desired version number; e.g., `pip install deltakit --pre 0.4.0a20250904222833`.
