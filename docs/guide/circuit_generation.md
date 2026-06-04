@@ -175,7 +175,7 @@ Some experiments explore `ISWAP` gates as the entangling gate.
 Native `ISWAP` circuit generation is accessible using Deltakit Cloud API.
 
 ```{code-cell} ipython3
-import stim
+import deltakit_stim
 from deltakit.explorer import Client, types, enums
 from deltakit.circuit import Circuit
 
@@ -241,7 +241,7 @@ The code below will generate a memory experiment using the bivariate bicycle cod
 You will compile it for the ion trap native gate set.
 In this experiment you remove Pauli gates (`X`, `Y`, `Z`, `I`).
 Pauli gate effect on the result of simulations can be tracked classically, so in the
-context of a Stim simulation (or a simple experiment on a real QPU) they may be removed,
+context of a Deltakit-Stim simulation (or a simple experiment on a real QPU) they may be removed,
 thus making execution faster (without loss of correctness).
 You prefer to keep Pauli gates, if you plan to run the experiment in other simulators or using real QPUs.
 
