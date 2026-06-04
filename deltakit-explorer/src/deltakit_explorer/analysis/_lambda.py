@@ -8,6 +8,8 @@ from enum import Enum
 import numpy as np
 import numpy.typing as npt
 import scipy.optimize
+from uncertainties import correlated_values, umath
+from uncertainties import unumpy as unp
 
 
 @dataclass(frozen=True)
@@ -75,6 +77,17 @@ class LambdaFitMethod(Enum):
     """Non-linear fit."""
 
 
+def _log_with_uncertainties(
+    values: npt.NDArray[np.float64],
+    stddevs: npt.NDArray[np.float64],
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    log_values = unp.log(unp.uarray(values, stddevs))
+    return (
+        np.asarray(unp.nominal_values(log_values), dtype=np.float64),
+        np.asarray(unp.std_devs(log_values), dtype=np.float64),
+    )
+
+
 def _lambda_shifted_fit(
     distances: npt.NDArray[np.int_],
     leppr: npt.NDArray[np.float64],
@@ -125,8 +138,7 @@ def _lambda_shifted_fit(
         LambdaData: A container for error suppression parameters.
     """
     # Prepare log data for linear fit.
-    log_leppr = np.log(leppr)
-    log_leppr_std = leppr_std / leppr
+    log_leppr, log_leppr_std = _log_with_uncertainties(leppr, leppr_std)
     # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
     # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
@@ -138,25 +150,14 @@ def _lambda_shifted_fit(
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-2 * slope))
-    estimated_lambda_std = float(estimated_lambda * 2 * slope_std)
-    estimated_lambda0 = float(np.exp(-offset - np.log(estimated_lambda) / 2))
-    # Uncertainty propagation.
-    estimated_lambda0_std = float(
-        estimated_lambda0
-        * np.sqrt(
-            offset_std**2
-            + estimated_lambda_std**2 / (4 * estimated_lambda**2)
-            - 2 * cov[0, 1]
-        )
-    )
+    uncertain_slope, uncertain_offset = correlated_values((slope, offset), cov)
+    estimated_lambda = umath.exp(-2 * uncertain_slope)
+    estimated_lambda0 = umath.exp(-uncertain_offset + uncertain_slope)
     return LambdaData(
-        lambda_=estimated_lambda,
-        lambda_std=estimated_lambda_std,
-        lambda0=estimated_lambda0,
-        lambda0_std=estimated_lambda0_std,
+        lambda_=float(estimated_lambda.nominal_value),
+        lambda_std=float(estimated_lambda.std_dev),
+        lambda0=float(estimated_lambda0.nominal_value),
+        lambda0_std=float(estimated_lambda0.std_dev),
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,
@@ -206,8 +207,7 @@ def _lambda_lin_fit(
         LambdaData: A container for error suppression parameters.
     """
     # Prepare log data for linear fit.
-    log_leppr = np.log(leppr)
-    log_leppr_std = leppr_std / leppr
+    log_leppr, log_leppr_std = _log_with_uncertainties(leppr, leppr_std)
     # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
     # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
@@ -219,17 +219,14 @@ def _lambda_lin_fit(
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-slope))
-    estimated_lambda_std = float(estimated_lambda * slope_std)
-    estimated_lambda0 = float(np.exp(-offset))
-    estimated_lambda0_std = float(estimated_lambda0 * offset_std)
+    uncertain_slope, uncertain_offset = correlated_values((slope, offset), cov)
+    estimated_lambda = umath.exp(-uncertain_slope)
+    estimated_lambda0 = umath.exp(-uncertain_offset)
     return LambdaData(
-        lambda_=estimated_lambda,
-        lambda_std=estimated_lambda_std,
-        lambda0=estimated_lambda0,
-        lambda0_std=estimated_lambda0_std,
+        lambda_=float(estimated_lambda.nominal_value),
+        lambda_std=float(estimated_lambda.std_dev),
+        lambda0=float(estimated_lambda0.nominal_value),
+        lambda0_std=float(estimated_lambda0.std_dev),
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,
@@ -273,12 +270,12 @@ def _lambda_curve_fit(
         bounds=(0, np.inf),  # Ensure convergence in pathological cases.
         maxfev=10000,
     )
-    lamb0_std, lamb_std = np.sqrt(np.diagonal(cov))
+    uncertain_lambda0, uncertain_lambda = correlated_values((lamb0, lamb), cov)
     return LambdaData(
-        lambda_=float(lamb),
-        lambda_std=float(lamb_std),
-        lambda0=float(lamb0),
-        lambda0_std=float(lamb0_std),
+        lambda_=float(uncertain_lambda.nominal_value),
+        lambda_std=float(uncertain_lambda.std_dev),
+        lambda0=float(uncertain_lambda0.nominal_value),
+        lambda0_std=float(uncertain_lambda0.std_dev),
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,

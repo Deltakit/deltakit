@@ -6,6 +6,8 @@ from math import floor
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import curve_fit
+from uncertainties import correlated_values, ufloat, umath
+from uncertainties import unumpy as unp
 
 
 @dataclass(frozen=True)
@@ -167,13 +169,13 @@ def compute_logical_error_per_round(
         lep_stddev = float(logical_error_probabilities_stddev[0])
         # Implement Eq. (4) from section A.2.2. at page 40 of
         # https://arxiv.org/pdf/2310.05900.
-        estimated_logical_error_per_round = (1 - (1 - 2 * lep) ** (1 / rounds)) / 2
-        estimated_logical_error_per_round_stddev = (
-            lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
-        )
+        uncertain_lep = ufloat(lep, lep_stddev)
+        estimated_logical_error_per_round = (
+            1 - (1 - 2 * uncertain_lep) ** (1 / rounds)
+        ) / 2
         return LogicalErrorProbabilityPerRoundData(
-            leppr=estimated_logical_error_per_round,
-            leppr_stddev=estimated_logical_error_per_round_stddev,
+            leppr=float(estimated_logical_error_per_round.nominal_value),
+            leppr_stddev=float(estimated_logical_error_per_round.std_dev),
             num_rounds=rounds,
             spam_error=0,
             spam_error_stddev=0,
@@ -189,7 +191,6 @@ def compute_logical_error_per_round(
             "estimated logical error probability is closer to 0.4."
         )
 
-    fidelities = 1 - 2 * logical_error_probabilities
     # We want to do a linear regression on the log values of fidelity, and obtain the
     # per-round error probability like that.
     # Applying the logarithm function will change non-uniformly the standard deviation
@@ -198,10 +199,16 @@ def compute_logical_error_per_round(
     # least square problem where the weights corresponds to the reciprocal of the
     # variance of each observation.
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
-    logfidelity = np.log(fidelities)
-    # We approximate the standard deviation with an error propagation analysis. This
-    # method has been tested against scipy and returns similar results.
-    logfidelities_stddev = 2 * logical_error_probabilities_stddev / fidelities
+    uncertain_logfidelity = unp.log(
+        1
+        - 2
+        * unp.uarray(
+            logical_error_probabilities,
+            logical_error_probabilities_stddev,
+        )
+    )
+    logfidelity = unp.nominal_values(uncertain_logfidelity)
+    logfidelities_stddev = unp.std_devs(uncertain_logfidelity)
 
     # Note that the covariance matrix is used later to estimate the logical error
     # probability per round standard deviation.
@@ -239,26 +246,15 @@ def compute_logical_error_per_round(
             "this warning."
         )
 
-    # Following https://arxiv.org/pdf/2505.09684v1 (Methods - Extracting logical error
-    # per cycle, page 8) we estimate the variance on the logical error probability per
-    # round (named Perrc below) using the formula
-    #      sigma(Perrc) = (1 - Perrc) * sigma(slope)
-    # The standard deviation on the linear fit parameters can be obtained through the
-    # covariance matrix diagonal entries.
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
-    estimated_logical_error_per_round_stddev = float(
-        (1 - 2 * estimated_logical_error_per_round) * slope_stddev / 2
-    )
-    estimated_spam_error = float((1 - np.exp(offset)) / 2)
-    estimated_spam_error_stddev = float(
-        (1 - 2 * estimated_spam_error) * offset_stddev / 2
-    )
+    uncertain_slope, uncertain_offset = correlated_values((slope, offset), cov)
+    uncertain_logical_error_per_round = (1 - umath.exp(uncertain_slope)) / 2
+    uncertain_spam_error = (1 - umath.exp(uncertain_offset)) / 2
     return LogicalErrorProbabilityPerRoundData(
         leppr=estimated_logical_error_per_round,
-        leppr_stddev=estimated_logical_error_per_round_stddev,
+        leppr_stddev=float(uncertain_logical_error_per_round.std_dev),
         num_rounds=num_rounds,
-        spam_error=estimated_spam_error,
-        spam_error_stddev=estimated_spam_error_stddev,
+        spam_error=float(uncertain_spam_error.nominal_value),
+        spam_error_stddev=float(uncertain_spam_error.std_dev),
     )
 
 

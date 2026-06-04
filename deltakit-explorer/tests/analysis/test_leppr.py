@@ -4,6 +4,7 @@ from math import sqrt
 
 import numpy as np
 import pytest
+from uncertainties import ufloat
 
 from deltakit_explorer.analysis import (
     calculate_lep_and_lep_stddev,
@@ -180,6 +181,20 @@ class TestLEPPerRoundComputation:
         assert pytest.approx(res.spam_error, abs=3 * res.spam_error_stddev) == 0
         assert isinstance(res.leppr, float)
         assert isinstance(res.leppr_stddev, float)
+
+    def test_single_point_fit_matches_uncertainties_propagation(self) -> None:
+        rounds = 30
+        lep = 0.012
+        lep_stddev = 0.0015
+
+        uncertain_lep = ufloat(lep, lep_stddev)
+        expected_leppr = (1 - (1 - 2 * uncertain_lep) ** (1 / rounds)) / 2
+
+        with pytest.warns(UserWarning):
+            res = compute_logical_error_per_round([rounds], [lep], [lep_stddev])
+
+        assert res.leppr == pytest.approx(expected_leppr.nominal_value)
+        assert res.leppr_stddev == pytest.approx(expected_leppr.std_dev)
 
 
 class TestCalculateLep:

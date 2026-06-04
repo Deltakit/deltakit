@@ -4,6 +4,7 @@ from typing import Literal
 
 import numpy as np
 import pytest
+from uncertainties import correlated_values, umath
 
 from deltakit_explorer.analysis import calculate_lambda_and_lambda_stddev
 
@@ -79,6 +80,32 @@ class TestCalculateLambda:
         lepprs_stds = [1e-10, 1e-10, 1e-10]
         with pytest.raises(ValueError, match="^Multiple entries were provided"):
             calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stds)
+
+    def test_shifted_method_matches_uncertainties_covariance_propagation(self) -> None:
+        distances = np.asarray([5, 7, 9])
+        leppr = np.asarray([1.992e-04, 4.314e-05, 7.556e-06])
+        leppr_std = np.asarray([1.2e-05, 9.3e-06, 3.9e-06])
+
+        (slope, offset), cov = np.polyfit(
+            distances,
+            np.log(leppr),
+            1,
+            w=leppr / leppr_std,
+            full=False,
+            cov="unscaled",
+        )
+        uncertain_slope, uncertain_offset = correlated_values((slope, offset), cov)
+        expected_lambda = umath.exp(-2 * uncertain_slope)
+        expected_lambda0 = umath.exp(-uncertain_offset + uncertain_slope)
+
+        res = calculate_lambda_and_lambda_stddev(
+            distances, leppr, leppr_std, method="shifted"
+        )
+
+        assert res.lambda_ == pytest.approx(expected_lambda.nominal_value)
+        assert res.lambda_std == pytest.approx(expected_lambda.std_dev)
+        assert res.lambda0 == pytest.approx(expected_lambda0.nominal_value)
+        assert res.lambda0_std == pytest.approx(expected_lambda0.std_dev)
 
     @pytest.mark.parametrize(
         ("lamb", "distances"),
