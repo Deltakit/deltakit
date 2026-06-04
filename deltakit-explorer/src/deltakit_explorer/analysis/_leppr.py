@@ -6,6 +6,9 @@ from math import floor
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import curve_fit
+from uncertainties import correlated_values, ufloat
+from uncertainties import unumpy as unp
+from uncertainties.umath import exp as uexp
 
 
 @dataclass(frozen=True)
@@ -167,13 +170,12 @@ def compute_logical_error_per_round(
         lep_stddev = float(logical_error_probabilities_stddev[0])
         # Implement Eq. (4) from section A.2.2. at page 40 of
         # https://arxiv.org/pdf/2310.05900.
-        estimated_logical_error_per_round = (1 - (1 - 2 * lep) ** (1 / rounds)) / 2
-        estimated_logical_error_per_round_stddev = (
-            lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
-        )
+        # Use the uncertainties package for automatic error propagation.
+        lep_u = ufloat(lep, lep_stddev)
+        leppr_u = (1 - (1 - 2 * lep_u) ** (1 / rounds)) / 2
         return LogicalErrorProbabilityPerRoundData(
-            leppr=estimated_logical_error_per_round,
-            leppr_stddev=estimated_logical_error_per_round_stddev,
+            leppr=leppr_u.nominal_value,
+            leppr_stddev=leppr_u.std_dev,
             num_rounds=rounds,
             spam_error=0,
             spam_error_stddev=0,
@@ -199,9 +201,10 @@ def compute_logical_error_per_round(
     # variance of each observation.
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
     logfidelity = np.log(fidelities)
-    # We approximate the standard deviation with an error propagation analysis. This
-    # method has been tested against scipy and returns similar results.
-    logfidelities_stddev = 2 * logical_error_probabilities_stddev / fidelities
+    # Use the uncertainties package to propagate the standard deviation through the
+    # logarithm transform automatically.
+    lep_u = unp.uarray(logical_error_probabilities, logical_error_probabilities_stddev)
+    logfidelities_stddev = unp.std_devs(unp.log(1 - 2 * lep_u))
 
     # Note that the covariance matrix is used later to estimate the logical error
     # probability per round standard deviation.
@@ -225,7 +228,6 @@ def compute_logical_error_per_round(
         # bounds=((-numpy.inf, -numpy.inf), (numpy.log(1), numpy.log(1))),
     )
 
-    estimated_logical_error_per_round = float((1 - np.exp(slope)) / 2)
     # Compute the standard R2 (Coefficient of determination) using the formula
     # ``R2 = 1 - SSE / SST`` where SSE is the Sum of Squares Error and SST is the Sum of
     # Square Total that are computed below.
@@ -239,26 +241,21 @@ def compute_logical_error_per_round(
             "this warning."
         )
 
-    # Following https://arxiv.org/pdf/2505.09684v1 (Methods - Extracting logical error
-    # per cycle, page 8) we estimate the variance on the logical error probability per
-    # round (named Perrc below) using the formula
-    #      sigma(Perrc) = (1 - Perrc) * sigma(slope)
-    # The standard deviation on the linear fit parameters can be obtained through the
-    # covariance matrix diagonal entries.
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
-    estimated_logical_error_per_round_stddev = float(
-        (1 - 2 * estimated_logical_error_per_round) * slope_stddev / 2
-    )
-    estimated_spam_error = float((1 - np.exp(offset)) / 2)
-    estimated_spam_error_stddev = float(
-        (1 - 2 * estimated_spam_error) * offset_stddev / 2
-    )
+    # Use the uncertainties package to propagate the standard deviation from the
+    # linear fit parameters (slope, offset) through to the LEPPR and SPAM error
+    # estimates. The correlated_values function creates ufloat objects that respect
+    # the covariance structure from the fit.
+    # Reference: https://arxiv.org/pdf/2505.09684v1 (Methods - Extracting logical error
+    # per cycle, page 8).
+    slope_u, offset_u = correlated_values([slope, offset], cov)
+    leppr_u = (1 - uexp(slope_u)) / 2
+    spam_u = (1 - uexp(offset_u)) / 2
     return LogicalErrorProbabilityPerRoundData(
-        leppr=estimated_logical_error_per_round,
-        leppr_stddev=estimated_logical_error_per_round_stddev,
+        leppr=leppr_u.nominal_value,
+        leppr_stddev=leppr_u.std_dev,
         num_rounds=num_rounds,
-        spam_error=estimated_spam_error,
-        spam_error_stddev=estimated_spam_error_stddev,
+        spam_error=spam_u.nominal_value,
+        spam_error_stddev=spam_u.std_dev,
     )
 
 

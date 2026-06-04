@@ -8,6 +8,10 @@ from enum import Enum
 import numpy as np
 import numpy.typing as npt
 import scipy.optimize
+from uncertainties import correlated_values
+from uncertainties import unumpy as unp
+from uncertainties.umath import exp as uexp
+from uncertainties.umath import log as ulog
 
 
 @dataclass(frozen=True)
@@ -102,19 +106,9 @@ def _lambda_shifted_fit(
          Λ  = exp(-2 · slope)
          Λ₀ = exp(-offset - ln(Λ)/2)
 
-    Standard deviations for both fitted parameters are also computed using
-    standard formulae found in:
-    https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
-
-        (ln(Λ)/2) = Δ(Λ) / (2 · Λ)
-
-        Δ(-offset - ln(Λ)/2)
-            = sqrt( Δ(offset)² + Δ(Λ)² / (4 · Λ²)
-                    - 2 · cov(offset, ln(Λ)/2) )
-
-        Δ(Λ₀)
-            = Λ₀ · sqrt( Δ(offset)² + Δ(Λ)² / (4 · Λ²)
-                         - 2 · cov(offset, ln(Λ)/2) )
+    Standard deviations for both fitted parameters are propagated automatically
+    using the ``uncertainties`` package, which tracks correlations from the fit
+    covariance matrix through the nonlinear transforms above.
 
     Args:
         distances: Code distances.
@@ -125,8 +119,12 @@ def _lambda_shifted_fit(
         LambdaData: A container for error suppression parameters.
     """
     # Prepare log data for linear fit.
-    log_leppr = np.log(leppr)
-    log_leppr_std = leppr_std / leppr
+    # Use the uncertainties package to propagate the standard deviation through the
+    # logarithm transform automatically.
+    leppr_u = unp.uarray(leppr, leppr_std)
+    log_leppr_u = unp.log(leppr_u)
+    log_leppr = unp.nominal_values(log_leppr_u)
+    log_leppr_std_arr = unp.std_devs(log_leppr_u)
     # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
     # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
@@ -134,29 +132,21 @@ def _lambda_shifted_fit(
         distances,
         log_leppr,
         1,
-        w=1 / log_leppr_std,
+        w=1 / log_leppr_std_arr,
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-2 * slope))
-    estimated_lambda_std = float(estimated_lambda * 2 * slope_std)
-    estimated_lambda0 = float(np.exp(-offset - np.log(estimated_lambda) / 2))
-    # Uncertainty propagation.
-    estimated_lambda0_std = float(
-        estimated_lambda0
-        * np.sqrt(
-            offset_std**2
-            + estimated_lambda_std**2 / (4 * estimated_lambda**2)
-            - 2 * cov[0, 1]
-        )
-    )
+    # Use correlated_values to create ufloat objects that respect the covariance
+    # structure from the fit, then propagate uncertainties automatically through
+    # the transforms to recover Λ and Λ₀.
+    slope_u, offset_u = correlated_values([slope, offset], cov)
+    estimated_lambda_u = uexp(-2 * slope_u)
+    estimated_lambda0_u = uexp(-offset_u - ulog(estimated_lambda_u) / 2)
     return LambdaData(
-        lambda_=estimated_lambda,
-        lambda_std=estimated_lambda_std,
-        lambda0=estimated_lambda0,
-        lambda0_std=estimated_lambda0_std,
+        lambda_=estimated_lambda_u.nominal_value,
+        lambda_std=estimated_lambda_u.std_dev,
+        lambda0=estimated_lambda0_u.nominal_value,
+        lambda0_std=estimated_lambda0_u.std_dev,
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,
@@ -190,12 +180,8 @@ def _lambda_lin_fit(
          Λ  = exp(-slope)
          Λ₀ = exp(-offset)
 
-    Standard deviations for both fitted parameters are also computed using
-    standard formulae found in:
-    https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
-
-        Δ(Λ)  = Λ · Δ(slope)
-        Δ(Λ₀) = Λ₀ · Δ(offset)
+    Standard deviations for both fitted parameters are propagated automatically
+    using the ``uncertainties`` package.
 
     Args:
         distances: Code distances.
@@ -206,8 +192,12 @@ def _lambda_lin_fit(
         LambdaData: A container for error suppression parameters.
     """
     # Prepare log data for linear fit.
-    log_leppr = np.log(leppr)
-    log_leppr_std = leppr_std / leppr
+    # Use the uncertainties package to propagate the standard deviation through the
+    # logarithm transform automatically.
+    leppr_u = unp.uarray(leppr, leppr_std)
+    log_leppr_u = unp.log(leppr_u)
+    log_leppr = unp.nominal_values(log_leppr_u)
+    log_leppr_std_arr = unp.std_devs(log_leppr_u)
     # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
     # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
@@ -215,21 +205,20 @@ def _lambda_lin_fit(
         (distances + 1) / 2,
         log_leppr,
         1,
-        w=1 / log_leppr_std,
+        w=1 / log_leppr_std_arr,
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-slope))
-    estimated_lambda_std = float(estimated_lambda * slope_std)
-    estimated_lambda0 = float(np.exp(-offset))
-    estimated_lambda0_std = float(estimated_lambda0 * offset_std)
+    # Use correlated_values to create ufloat objects that respect the covariance
+    # structure from the fit, then propagate uncertainties automatically.
+    slope_u, offset_u = correlated_values([slope, offset], cov)
+    estimated_lambda_u = uexp(-slope_u)
+    estimated_lambda0_u = uexp(-offset_u)
     return LambdaData(
-        lambda_=estimated_lambda,
-        lambda_std=estimated_lambda_std,
-        lambda0=estimated_lambda0,
-        lambda0_std=estimated_lambda0_std,
+        lambda_=estimated_lambda_u.nominal_value,
+        lambda_std=estimated_lambda_u.std_dev,
+        lambda0=estimated_lambda0_u.nominal_value,
+        lambda0_std=estimated_lambda0_u.std_dev,
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,
