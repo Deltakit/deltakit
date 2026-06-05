@@ -40,7 +40,7 @@ dependencies = [
   "numpy~=2.0",
   "scipy~=1.15",
   "matplotlib~=3.10",
-  "deltakit_stim",
+  "deltakit_stim>=0.1.2",
   "requests~=2.32",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",

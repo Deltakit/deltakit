@@ -32,7 +32,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit_stim",
+  "deltakit_stim>=0.1.2",
   "typing-extensions~=4.0",
   "packaging>=25.0",
 ]

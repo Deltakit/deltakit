@@ -35,7 +35,7 @@ dependencies = [
   "numpy>=1.26",
   "numpy~=2.1; python_version >= '3.13'",
   "networkx~=3.1",
-  "deltakit_stim",
+  "deltakit_stim>=0.1.2",
   "typing_extensions~=4.0",
   "packaging>=25.0",
 ]
