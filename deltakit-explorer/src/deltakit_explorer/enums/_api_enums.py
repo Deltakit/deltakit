@@ -46,8 +46,8 @@ class DecoderType(Enum):
     ----------
     .. [1] https://arxiv.org/abs/2303.15933
     .. [2] https://arxiv.org/abs/2309.05558
-    .. [3] https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.031007
-    .. [4] https://quantum-journal.org/papers/q-2021-11-22-585/
+    .. [3] https://arxiv.org/abs/2203.04948
+    .. [4] https://arxiv.org/abs/1904.02703
     .. [5] https://arxiv.org/abs/2406.14527
     .. [6] https://arxiv.org/abs/2411.10343
 
