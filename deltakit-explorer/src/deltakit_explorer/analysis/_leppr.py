@@ -199,14 +199,11 @@ def compute_logical_error_per_round(
     # least square problem where the weights corresponds to the reciprocal of the
     # variance of each observation.
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
-    uncertain_logfidelity = unp.log(
-        1
-        - 2
-        * unp.uarray(
-            logical_error_probabilities,
-            logical_error_probabilities_stddev,
-        )
+    lep = unp.uarray(
+        logical_error_probabilities,
+        logical_error_probabilities_stddev,
     )
+    uncertain_logfidelity = unp.log(1 - 2 * lep)
     logfidelity = unp.nominal_values(uncertain_logfidelity)
     logfidelities_stddev = unp.std_devs(uncertain_logfidelity)
 
@@ -232,7 +229,6 @@ def compute_logical_error_per_round(
         # bounds=((-numpy.inf, -numpy.inf), (numpy.log(1), numpy.log(1))),
     )
 
-    estimated_logical_error_per_round = float((1 - np.exp(slope)) / 2)
     # Compute the standard R2 (Coefficient of determination) using the formula
     # ``R2 = 1 - SSE / SST`` where SSE is the Sum of Squares Error and SST is the Sum of
     # Square Total that are computed below.
@@ -250,7 +246,7 @@ def compute_logical_error_per_round(
     uncertain_logical_error_per_round = (1 - umath.exp(uncertain_slope)) / 2
     uncertain_spam_error = (1 - umath.exp(uncertain_offset)) / 2
     return LogicalErrorProbabilityPerRoundData(
-        leppr=estimated_logical_error_per_round,
+        leppr=float(uncertain_logical_error_per_round.nominal_value),
         leppr_stddev=float(uncertain_logical_error_per_round.std_dev),
         num_rounds=num_rounds,
         spam_error=float(uncertain_spam_error.nominal_value),

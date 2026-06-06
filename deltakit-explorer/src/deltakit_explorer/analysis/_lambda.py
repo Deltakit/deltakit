@@ -82,6 +82,7 @@ def _log_with_uncertainties(
     stddevs: npt.NDArray[np.float64],
 ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     log_values = unp.log(unp.uarray(values, stddevs))
+    # np.asarray wrapping is needed because unp is not correctly typed.
     return (
         np.asarray(unp.nominal_values(log_values), dtype=np.float64),
         np.asarray(unp.std_devs(log_values), dtype=np.float64),

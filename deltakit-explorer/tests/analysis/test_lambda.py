@@ -7,6 +7,7 @@ import pytest
 from uncertainties import correlated_values, umath
 
 from deltakit_explorer.analysis import calculate_lambda_and_lambda_stddev
+from deltakit_explorer.analysis._lambda import LambdaFitMethod
 
 
 @pytest.fixture
@@ -99,7 +100,7 @@ class TestCalculateLambda:
         expected_lambda0 = umath.exp(-uncertain_offset + uncertain_slope)
 
         res = calculate_lambda_and_lambda_stddev(
-            distances, leppr, leppr_std, method="shifted"
+            distances, leppr, leppr_std, method=LambdaFitMethod.SHIFTED
         )
 
         assert res.lambda_ == pytest.approx(expected_lambda.nominal_value)
