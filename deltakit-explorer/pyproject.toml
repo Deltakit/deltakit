@@ -52,7 +52,7 @@ dependencies = [
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
   "ldpc~=2.2",
-  "uncertainties~=3.2",
+  "uncertainties>=3.2.2,<4",
 ]
 [project.optional-dependencies]
 vis = ["seaborn"]
