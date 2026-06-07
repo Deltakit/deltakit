@@ -55,44 +55,44 @@ class TestDetectionOnPatch:
         assert ax_out is ax
 
     def test_average_mode(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="average"
         )
         assert len(ax.collections) >= 0
 
     def test_median_mode(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="median"
         )
         assert isinstance(fig, plt.Figure)
 
     def test_variance_mode(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="variance"
         )
         assert isinstance(fig, plt.Figure)
 
     def test_no_colorbar(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, show_colorbar=False
         )
         assert isinstance(fig, plt.Figure)
 
     def test_custom_cmap(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, cmap="plasma"
         )
         assert isinstance(fig, plt.Figure)
 
     def test_fixed_vmin_vmax(self, code, detection_probabilities):
-        fig, ax = plot_detection_probability_on_patch(
+        fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, vmin=0.0, vmax=0.5
         )
         assert isinstance(fig, plt.Figure)
 
     def test_missing_ancilla_coords(self, code):
         partial_data = {(0.0, 2.0): [0.05, 0.08, 0.07, 0.09]}
-        fig, ax = plot_detection_probability_on_patch(code, partial_data)
+        fig, _ = plot_detection_probability_on_patch(code, partial_data)
         assert isinstance(fig, plt.Figure)
 
     def test_empty_raises(self, code):
@@ -107,7 +107,7 @@ class TestDetectionOnPatch:
             )
 
     def test_plot_matches_reference(self, code, detection_probabilities, tmp_path):
-        fig, ax = plot_detection_probability_on_patch(code, detection_probabilities)
+        fig, _ = plot_detection_probability_on_patch(code, detection_probabilities)
         path = tmp_path / "detection_on_patch.png"
         fig.savefig(path)
         assert path.exists()

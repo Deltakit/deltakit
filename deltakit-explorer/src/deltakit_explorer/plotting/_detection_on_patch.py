@@ -131,7 +131,10 @@ def plot_detection_probability_on_patch(
             main_fig, main_ax = plt.subplots()
             inset_ax = main_ax.inset_axes([0.1, 0.1, 0.4, 0.4])
             fig, ax = plot_detection_probability_on_patch(
-                code, rates, fig=main_fig, ax=inset_ax,
+                code,
+                rates,
+                fig=main_fig,
+                ax=inset_ax,
             )
     """
     if (fig is None) ^ (ax is None):
@@ -141,9 +144,7 @@ def plot_detection_probability_on_patch(
     aggregated = _aggregate_probabilities(detection_probabilities, mode)
 
     if not aggregated:
-        msg = (
-            "The detection_probabilities dict is empty. Nothing to plot."
-        )
+        msg = "The detection_probabilities dict is empty. Nothing to plot."
         raise ValueError(msg)
 
     ancilla_values = _match_ancilla_coords(aggregated, code)
