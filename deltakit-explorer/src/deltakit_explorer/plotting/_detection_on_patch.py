@@ -42,6 +42,9 @@ def _aggregate_probabilities(
                 if len(values) > 2:
                     values = values[1:-1]
                 result[coord[:2]] = float(np.var(values))
+            case _:
+                msg = f"Unknown mode: {mode!r}. Expected one of 'average', 'median', 'variance'."
+                raise ValueError(msg)
     return result
 
 
