@@ -61,22 +61,18 @@ def _match_ancilla_coords(
     Returns:
         Mapping from ancilla (x, y) coordinate pairs to their matched probability.
     """
-    prob_by_xy: dict[tuple[float, float], float] = {}
-    for prob_coord, prob_val in aggregated.items():
-        prob_by_xy[(round(prob_coord[0], 6), round(prob_coord[1], 6))] = prob_val
-
     ancilla_values: dict[tuple[float, float], float] = {}
     for stabilisers in code._stabilisers:
         for stabiliser in stabilisers:
             if stabiliser.ancilla_qubit is None:
                 continue
             anc = stabiliser.ancilla_qubit.unique_identifier
-            anc_key = (round(anc.x, 6), round(anc.y, 6))
-            for prob_key, prob_val in prob_by_xy.items():
-                if abs(prob_key[0] - anc_key[0]) < tolerance and abs(
-                    prob_key[1] - anc_key[1]
-                ) < tolerance:
-                    ancilla_values[anc_key] = prob_val
+            for prob_coord, prob_val in aggregated.items():
+                if (
+                    abs(prob_coord[0] - anc.x) < tolerance
+                    and abs(prob_coord[1] - anc.y) < tolerance
+                ):
+                    ancilla_values[(float(anc.x), float(anc.y))] = prob_val
                     break
 
     return ancilla_values
