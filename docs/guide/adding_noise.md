@@ -52,7 +52,7 @@ and a reasonably rich palette of error mechanisms,
 which may be used to approximate different types of noise.
 Deltakit benefits from both Stim's simulation and error implementation approaches.
 You may read about these building blocks in detail in the
-[Noise Channels section](https://github.com/quantumlib/Stim/blob/main/doc/gates.md#noise-channels)
+[Noise Channels section](https://github.com/quantumlib/Stim/blob/main/doc/gates.md)
 of the Stim documentation.
 
 With these tools in your hands, you may implement different **noise models**.

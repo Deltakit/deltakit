@@ -26,7 +26,7 @@ def b8_to_syndromes(
     and the number of detectors that should be in each syndrome, return a
     generator of syndromes.
 
-    Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    Informed by the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
     """
     bytes_per_shot = (detector_num + 7) // 8
     b8_byte_arr: bytearray = to_bytearray(b8_input)
@@ -46,7 +46,7 @@ def b8_to_measurements(b8_input: Path, measurement_num: int) -> Iterator[Bitstri
     and the number of measurements in each shot,
     return a generator of measurement bitstrings.
 
-    Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    Informed by the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
     """
     bytes_per_shot = (measurement_num + 7) // 8
     b8_byte_arr: bytearray = to_bytearray(b8_input)
@@ -68,7 +68,7 @@ def b8_to_logical_flip(
     and the number of detectors that should be in each syndrome, return a
     generator of logical flips.
 
-    Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    Informed by the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
     """
     bytes_per_shot = (num_logicals + 7) // 8
     b8_byte_arr: bytearray = to_bytearray(b8_input)
@@ -87,7 +87,7 @@ def syndromes_to_b8_file(
     syndrome_b8_out: Path, detector_num: int, syndromes: Iterator[OrderedSyndrome]
 ):
     """Given a syndrome generator, this will output them to file in the b8 format.
-    Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    Informed by the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
     """
     with syndrome_b8_out.open("wb") as b8_out_handle:
         b8_out_handle.writelines(
@@ -102,7 +102,7 @@ def logical_flips_to_b8_file(
     """Given a logical flip generator, this will output them to file in the b8 format.
     b8 is a byte-padded bitstring representation for logical flips. This is more
     efficient than the string-based 01 representation.
-    Informed by https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md#b8
+    Informed by the b8 format section of https://github.com/quantumlib/Stim/blob/main/doc/result_formats.md
     """
     with logical_flips_b8_out.open("wb") as data_b8:
         data_b8.writelines(
