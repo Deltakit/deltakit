@@ -12,6 +12,7 @@ import numpy as np
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
 from deltakit_stim import PauliString, Tableau
+from ldpc import mod2
 from numpy.typing import NDArray
 
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
@@ -349,19 +350,13 @@ def css_code_compute_logicals(
         # compute the kernel basis of hx
         # Note that because inputs are dense arrays, it is fine for every array to be dense in this
         # function.
-        # ker_hx = mod2.nullspace(_hx).todense()
-        ker_hx = gf2_nullspace(_hx)
+        ker_hx = mod2.nullspace(_hx).todense()
         # Row reduce to find vectors in kx that are not in the image of hz.T.
         log_stack = np.vstack([_hz, ker_hx])
 
-        # Compute pivots after row reduction
-        _, pivots = gf2_row_echelon(log_stack)
+        rank_hz = mod2.rank(_hz)
+        pivots = mod2.pivot_rows(log_stack)[rank_hz:]
 
-        rank_hz = gf2_rank(_hz)
-        # rank_hz = mod2.rank(_hz)
-        # pivots = mod2.pivot_rows(log_stack)[rank_hz:]
-        logical_pivots = pivots[rank_hz:]
-
-        return np.asarray(log_stack[logical_pivots])
+        return np.asarray(log_stack[pivots])
 
     return compute_lz(hz, hx), compute_lz(hx, hz)
