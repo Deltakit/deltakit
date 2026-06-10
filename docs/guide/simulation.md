@@ -22,24 +22,24 @@ Decoding a quantum error correction experiment requires measurement data.
 This can either be data simulated on a classical computer or data obtained from a QPU.
 If you have already run a quantum error correction experiment,
 you may have measurement results in one of the formats.
-Otherwise, you can use Deltakit and Stim to generate simulated measurement data, as described on this page.
+Otherwise, you can use Deltakit and Deltakit-Stim to generate simulated measurement data, as described on this page.
 
 You should prepare a quantum circuit that you want to simulate.
 You can generate one by following the instructions of this documentation.
-Or you may write circuits following the Stim circuit format.
+Or you may write circuits following the Deltakit-Stim circuit format.
 
-### 1.1. Stim Circuit Simulation
+### 1.1. Deltakit-Stim Circuit Simulation
 
 In this chapter we consider the case,
 when noise always preserves qubits in the computational space of $\vert 0\rangle$ and $\vert 1\rangle$.
-Such Stim circuits can be simulated using the ({meth}`simulation.simulate_with_stim <deltakit.explorer.simulation.simulate_with_stim>`) method:
+Such Deltakit-Stim circuits can be simulated using the ({meth}`simulation.simulate_with_stim <deltakit.explorer.simulation.simulate_with_stim>`) method:
 
 ```{code-cell} ipython3
 from deltakit.explorer import simulation
 import numpy as np
-import stim
+import deltakit_stim
 
-simple_circuit = stim.Circuit("""
+simple_circuit = deltakit_stim.Circuit("""
     RZ 0 1
     H 0
     CX 0 1
@@ -111,7 +111,7 @@ Good news is than superconducting devices at the stage of measurement and
 state classification may also report if the qubit is in a leaked state.
 This is called leakage heralding, and it produces an additional bit of information.
 
-Leakage simulation and heralding are not supported by the Stim language.
+Leakage simulation and heralding are not supported by the Deltakit-Stim language.
 Deltakit provides an extension to this language
 which allows you to define leakage and relaxation events, as well as leakage heralding.
 
@@ -124,7 +124,7 @@ HERALD_LEAKAGE_EVENT(error_probability) [list of targets]
 `HERALD_LEAKAGE_EVENT` commands typically go together with measurements.
 
 To be able to run these commands, you will need to provide a cloud client object to the simulation call.
-Note that you will have to use plain-text circuits, as Stim does not support these commands.
+Note that you will have to use plain-text circuits, as Deltakit-Stim does not support these commands.
 
 ```{code-cell} ipython3
 from deltakit.explorer import Client
@@ -157,7 +157,7 @@ You may add leakage noise automatically to your circuit. For this, you may use D
 from deltakit.explorer import types
 
 noise = types.SI1000NoiseModel(p=0.01, p_l=0.01)
-# note: this circuit is not compatible with Stim any more
+# note: this circuit is not compatible with Deltakit-Stim any more
 leaky_circuit = cloud.add_noise(circuit.as_stim_circuit(), noise_model=noise)
 measurements, leakage = simulation.simulate_with_stim(leaky_circuit, 100_000, client=cloud)
 ```
@@ -191,7 +191,7 @@ print(detectors.as_numpy().shape)
 
 ### 2.2. Sampling Detectors
 
-If you perform local simulation, you may rely on the built-in Stim sampler functionality
+If you perform local simulation, you may rely on the built-in Deltakit-Stim sampler functionality
 to generate syndromes and observables, avoiding the measurements construction stage. This is
 typically faster. You cannot avoid measurements when you simulate with leakage.
 
