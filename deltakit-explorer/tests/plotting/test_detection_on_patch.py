@@ -29,12 +29,12 @@ NUM_ROUNDS = 8
 
 
 @pytest.fixture
-def code():
+def code() -> RotatedPlanarCode:
     return RotatedPlanarCode(3, 3)
 
 
 @pytest.fixture
-def detection_probabilities():
+def detection_probabilities() -> dict[tuple[float, float], list[float]]:
     return {
         coord: list(RNG.uniform(0.02, 0.25, size=NUM_ROUNDS))
         for coord in ANCILLA_COORDS
