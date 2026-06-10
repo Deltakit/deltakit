@@ -1,6 +1,6 @@
 import deltakit_circuit as circuit
-import pytest
 import deltakit_stim as stim
+import pytest
 
 from deltakit_explorer.codes._logicals import (
     paulistring_to_operator,

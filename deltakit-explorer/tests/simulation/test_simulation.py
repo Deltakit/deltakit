@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 import deltakit_stim as stim
+import pytest
 
 from deltakit_explorer import simulation
 from deltakit_explorer._api._client import Client

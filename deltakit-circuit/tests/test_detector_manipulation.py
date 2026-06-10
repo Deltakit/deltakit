@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
-import pytest
 import deltakit_stim as stim
+import pytest
 
 import deltakit_circuit as sp
 from deltakit_circuit._detector_manipulation import (

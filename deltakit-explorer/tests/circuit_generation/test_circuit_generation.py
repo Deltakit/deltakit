@@ -1,5 +1,5 @@
-import pytest
 import deltakit_stim as stim
+import pytest
 from deltakit_circuit.gates import PauliBasis
 
 from deltakit_explorer.codes._bivariate_bicycle_code import (
