@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
-
-from deltakit_explorer.plotting._draw import _draw_code
+from matplotlib.patches import Circle, Rectangle
 
 if TYPE_CHECKING:
     from deltakit_explorer.codes._planar_code import PlanarCode
+    from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
 def _aggregate_probabilities(
@@ -81,6 +81,35 @@ def _match_ancilla_coords(
     return ancilla_values
 
 
+def _heatmap_patch_position(
+    stabiliser: Stabiliser,
+    code: PlanarCode,
+) -> tuple[str, float, float]:
+    """Map a stabiliser to a square-grid heatmap position."""
+    if stabiliser.ancilla_qubit is None:
+        msg = "Cannot draw a detector heatmap for stabilisers without ancilla qubits."
+        raise ValueError(msg)
+
+    anc = stabiliser.ancilla_qubit.unique_identifier
+    weight = len([pauli for pauli in stabiliser.paulis if pauli is not None])
+
+    if weight == 4:
+        return "square", float(anc.x / 2 - 1), float(anc.y / 2 - 1)
+
+    if weight == 2:
+        if anc.x == 0:
+            return "circle", 0.0, float(anc.y / 2 - 0.5)
+        if anc.x == 2 * code.width:
+            return "circle", float(code.width - 1), float(anc.y / 2 - 0.5)
+        if anc.y == 0:
+            return "circle", float(anc.x / 2 - 0.5), 0.0
+        if anc.y == 2 * code.height:
+            return "circle", float(anc.x / 2 - 0.5), float(code.height - 1)
+
+    msg = f"Unsupported stabiliser weight for heatmap rendering: {weight}."
+    raise ValueError(msg)
+
+
 def plot_detection_probability_on_patch(
     code: PlanarCode,
     detection_probabilities: dict[tuple[float, ...], list[float]],
@@ -93,9 +122,10 @@ def plot_detection_probability_on_patch(
     ax: Axes | None = None,
     show_colorbar: bool = True,
 ) -> tuple[Figure, Axes]:
-    """Plot detection probabilities as coloured circles on a surface-code patch.
+    """Plot detection probabilities as a heatmap on a surface-code patch.
 
-    Each stabiliser ancilla qubit is drawn as a circle whose colour reflects the
+    Interior stabilisers are drawn as square cells, while boundary stabilisers
+    are drawn as edge-attached circles. The colour of each cell reflects the
     detection probability at that location.
 
     Args:
@@ -153,7 +183,7 @@ def plot_detection_probability_on_patch(
     ancilla_values = _match_ancilla_coords(aggregated, code)
 
     if fig is None and ax is None:
-        fig, ax = _draw_code(code)
+        fig, ax = plt.subplots()
     else:
         ax.set_aspect(1)
 
@@ -168,20 +198,62 @@ def plot_detection_probability_on_patch(
     norm = plt.Normalize(vmin=_vmin, vmax=_vmax)
     cmap_obj = plt.get_cmap(cmap)
 
-    for (anc_x, anc_y), val in ancilla_values.items():
-        color = cmap_obj(norm(val))
-        circle = plt.Circle(
-            (anc_x, anc_y),
-            0.25,
-            color=color,
-            zorder=3,
-        )
-        ax.add_artist(circle)
+    grid_width = code.width - 1
+    grid_height = code.height - 1
+    boundary_patches: list[Circle] = []
+    interior_patches: list[Rectangle] = []
+
+    for stabilisers in code._stabilisers:
+        for stabiliser in stabilisers:
+            if stabiliser.ancilla_qubit is None:
+                continue
+            anc = stabiliser.ancilla_qubit.unique_identifier
+            val = ancilla_values.get((float(anc.x), float(anc.y)))
+            if val is None:
+                continue
+
+            patch_type, x, y = _heatmap_patch_position(stabiliser, code)
+            color = cmap_obj(norm(val))
+            if patch_type == "square":
+                interior_patches.append(
+                    Rectangle(
+                        (x, y),
+                        1,
+                        1,
+                        facecolor=color,
+                        edgecolor="none",
+                        zorder=2,
+                    )
+                )
+            else:
+                boundary_patches.append(
+                    Circle(
+                        (x, y),
+                        radius=0.42,
+                        facecolor=color,
+                        edgecolor="none",
+                        zorder=1,
+                    )
+                )
+
+    for patch in boundary_patches + interior_patches:
+        ax.add_patch(patch)
+
+    ax.set_aspect("equal")
+    ax.set_xlim(-0.55, grid_width + 0.55)
+    ax.set_ylim(-0.55, grid_height + 0.55)
+    ax.axis("off")
 
     if show_colorbar:
         sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap_obj)
         sm.set_array([])
-        cbar = fig.colorbar(sm, ax=ax, shrink=0.8)
-        cbar.set_label("Detection Probability")
+        cbar = fig.colorbar(
+            sm,
+            ax=ax,
+            orientation="horizontal",
+            fraction=0.08,
+            pad=0.08,
+        )
+        cbar.set_label(r"$p_d$")
 
     return fig, ax

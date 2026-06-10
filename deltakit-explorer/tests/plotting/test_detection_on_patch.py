@@ -5,6 +5,7 @@ import matplotlib.image as img
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from matplotlib.patches import Circle, Rectangle
 
 from deltakit_explorer.codes import RotatedPlanarCode
 from deltakit_explorer.plotting import plot_detection_probability_on_patch
@@ -58,7 +59,13 @@ class TestDetectionOnPatch:
         _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="average"
         )
-        assert len(ax.collections) >= 0
+        assert len(ax.patches) == 8
+
+    def test_heatmap_patch_shapes(self, code, detection_probabilities):
+        _, ax = plot_detection_probability_on_patch(code, detection_probabilities)
+        assert sum(isinstance(patch, Rectangle) for patch in ax.patches) == 4
+        assert sum(isinstance(patch, Circle) for patch in ax.patches) == 4
+        assert not ax.axison
 
     def test_median_mode(self, code, detection_probabilities):
         fig, _ = plot_detection_probability_on_patch(
@@ -77,6 +84,7 @@ class TestDetectionOnPatch:
             code, detection_probabilities, show_colorbar=False
         )
         assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) == 1
 
     def test_custom_cmap(self, code, detection_probabilities):
         fig, _ = plot_detection_probability_on_patch(
