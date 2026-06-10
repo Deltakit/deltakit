@@ -2,7 +2,7 @@
 
 import deltakit_circuit as sp
 import pytest
-import stim
+import deltakit_stim as stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,

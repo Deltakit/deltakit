@@ -3,7 +3,7 @@ import os
 import deltakit_circuit
 import numpy as np
 import pytest
-import stim
+import deltakit_stim as stim
 
 from deltakit_explorer import Client, _api, types
 from deltakit_explorer._cloud_decoders import (

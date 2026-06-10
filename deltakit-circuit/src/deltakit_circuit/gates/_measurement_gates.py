@@ -7,7 +7,7 @@ import math
 from collections.abc import Iterable, Mapping
 from typing import ClassVar, get_args
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import (
     MeasurementPauliProduct,

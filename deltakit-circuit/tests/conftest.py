@@ -1,6 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 import pytest
-import stim
+import deltakit_stim as stim
 
 
 @pytest.fixture

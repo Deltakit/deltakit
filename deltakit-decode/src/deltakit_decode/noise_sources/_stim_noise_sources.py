@@ -8,7 +8,7 @@ from typing import Any, TypeAlias
 import deltakit_circuit as sp
 import numpy as np
 import numpy.typing as npt
-import stim
+import deltakit_stim as stim
 from deltakit_core.decoding_graphs import OrderedSyndrome
 
 from deltakit_decode.noise_sources._generic_noise_sources import (

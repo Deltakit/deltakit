@@ -10,7 +10,7 @@ from warnings import warn
 
 import numpy as np
 import numpy.typing as npt
-import stim
+import deltakit_stim as stim
 from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,

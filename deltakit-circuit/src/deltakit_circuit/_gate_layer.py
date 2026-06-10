@@ -8,7 +8,7 @@ from collections.abc import Callable, Iterable, Mapping
 from itertools import chain
 from typing import Generic, no_type_check
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._noise_factory import GateReplacementPolicy
 from deltakit_circuit._qubit_identifiers import Qubit, T, U

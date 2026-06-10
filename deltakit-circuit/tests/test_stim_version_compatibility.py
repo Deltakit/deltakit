@@ -1,4 +1,4 @@
-import stim
+import deltakit_stim as stim
 from packaging.version import Version
 
 from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available

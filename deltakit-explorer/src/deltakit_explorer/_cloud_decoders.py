@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 import deltakit_circuit
 import numpy as np
 import numpy.typing as npt
-import stim
+import deltakit_stim as stim
 from deltakit_decode._abstract_matching_decoders import DecoderProtocol
 
 if TYPE_CHECKING:

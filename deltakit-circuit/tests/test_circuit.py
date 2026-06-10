@@ -3,7 +3,7 @@ import contextlib
 from itertools import combinations
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 import deltakit_circuit as sp
 

@@ -33,7 +33,7 @@ from deltakit_core.decoding_graphs._dem_parsing import (
 try:
     import lestim as stim
 except ImportError:
-    import stim
+    import deltakit_stim as stim
 
 
 def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:

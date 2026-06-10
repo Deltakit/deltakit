@@ -13,7 +13,7 @@ import requests.adapters
 from typing_extensions import override
 
 if TYPE_CHECKING:
-    import stim
+    import deltakit_stim as stim
 from deltakit_explorer._api._api_client import APIClient, APIEndpoints
 from deltakit_explorer._api._auth import (
     get_token,

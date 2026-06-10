@@ -8,7 +8,7 @@ from collections.abc import Iterable, Mapping
 from itertools import chain, permutations
 from typing import Generic
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import Qubit, T, U
 from deltakit_circuit._qubit_mapping import default_qubit_mapping

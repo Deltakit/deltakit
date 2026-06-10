@@ -4,7 +4,7 @@ from itertools import tee
 import deltakit_circuit as sp
 import networkx as nx
 import pytest
-import stim
+import deltakit_stim as stim
 from deltakit_core.decoding_graphs import FixedWidthBitstring
 
 from deltakit_decode.utils._graph_circuit_helpers import (

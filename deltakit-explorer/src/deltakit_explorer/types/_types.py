@@ -17,7 +17,7 @@ from typing import Any, ClassVar
 
 import numpy as np
 import numpy.typing as npt
-import stim
+import deltakit_stim as stim
 
 from deltakit_explorer.data._converter import (
     read_01,

@@ -7,7 +7,7 @@ from functools import cached_property
 import networkx as nx
 import numpy as np
 import pymatching
-import stim
+import deltakit_stim as stim
 from deltakit_circuit import Circuit
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,

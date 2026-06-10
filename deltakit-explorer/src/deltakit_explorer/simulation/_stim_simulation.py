@@ -6,7 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-import stim
+import deltakit_stim as stim
 
 import deltakit_explorer
 from deltakit_explorer.enums._api_enums import DataFormat

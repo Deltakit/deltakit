@@ -2,7 +2,7 @@
 from itertools import permutations
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit import (
     Circuit,

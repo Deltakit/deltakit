@@ -12,7 +12,7 @@ from functools import reduce
 from operator import mul
 
 import numpy as np
-import stim
+import deltakit_stim as stim
 from deltakit_circuit import Circuit, GateLayer, Layer, Qubit
 from deltakit_circuit.gates import (
     CX,

@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 from deltakit_explorer.data._data_analysis import (
     get_binary_data_size,

@@ -9,7 +9,7 @@ from collections.abc import Hashable, Iterable, Mapping, Sequence
 from itertools import tee, zip_longest
 from typing import TypeVar, cast
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._annotations._detector import Detector, MeasurementRecord
 from deltakit_circuit._annotations._observable import Observable

@@ -233,7 +233,7 @@ def measurement_noise_profile(
 
     Examples
     --------
-    >>> import stim
+    >>> import deltakit_stim as stim
     >>> import deltakit_circuit as sp
     >>> stim_circuit = stim.Circuit.generated(
     ...     "surface_code:rotated_memory_z", rounds=3, distance=3

@@ -3,7 +3,7 @@ import pickle
 from copy import deepcopy
 
 import pytest
-import stim
+import deltakit_stim as stim
 
 import deltakit_circuit as sp
 from deltakit_circuit import (
