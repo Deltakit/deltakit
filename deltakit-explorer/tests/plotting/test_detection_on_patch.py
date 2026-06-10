@@ -9,6 +9,10 @@ from matplotlib.patches import Circle, Rectangle
 
 from deltakit_explorer.codes import RotatedPlanarCode
 from deltakit_explorer.plotting import plot_detection_probability_on_patch
+from deltakit_explorer.plotting._detection_on_patch import (
+    _aggregate_probabilities,
+    _match_ancilla_coords,
+)
 
 mpl.use("Agg")
 
@@ -122,3 +126,76 @@ class TestDetectionOnPatch:
         loaded = img.imread(path)
         assert loaded.ndim == 3
         assert loaded.shape[-1] in (3, 4)
+
+
+class TestAggregateProbabilities:
+    def test_average(self):
+        data = {(0.0, 2.0): [0.1, 0.2, 0.3]}
+        result = _aggregate_probabilities(data, mode="average")
+        assert result[(0.0, 2.0)] == pytest.approx(0.2)
+
+    def test_median(self):
+        data = {(0.0, 2.0): [0.3, 0.1, 0.2]}
+        result = _aggregate_probabilities(data, mode="median")
+        assert result[(0.0, 2.0)] == pytest.approx(0.2)
+
+    def test_variance_removes_outliers(self):
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(data, mode="variance")
+        inner = [0.5, 0.5]
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.var(inner)))
+
+    def test_variance_short_no_removal(self):
+        data = {(0.0, 2.0): [0.1, 0.2]}
+        result = _aggregate_probabilities(data, mode="variance")
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.2])))
+
+    def test_multiple_coords(self):
+        data = {
+            (0.0, 2.0): [0.1, 0.2],
+            (2.0, 2.0): [0.3, 0.4],
+        }
+        result = _aggregate_probabilities(data, mode="average")
+        assert len(result) == 2
+        assert result[(0.0, 2.0)] == pytest.approx(0.15)
+        assert result[(2.0, 2.0)] == pytest.approx(0.35)
+
+    def test_unknown_mode_raises(self):
+        data = {(0.0, 2.0): [0.1, 0.2]}
+        with pytest.raises(ValueError, match="Unknown mode"):
+            _aggregate_probabilities(data, mode="mean")
+
+
+class TestMatchAncillaCoords:
+    def test_basic_match(self, code):
+        aggregated = {
+            (0.0, 2.0): 0.15,
+            (2.0, 2.0): 0.25,
+        }
+        result = _match_ancilla_coords(aggregated, code)
+        assert (0.0, 2.0) in result
+        assert (2.0, 2.0) in result
+        assert result[(0.0, 2.0)] == 0.15
+        assert result[(2.0, 2.0)] == 0.25
+
+    def test_no_match(self, code):
+        aggregated = {(99.0, 99.0): 0.5}
+        result = _match_ancilla_coords(aggregated, code)
+        assert result == {}
+
+    def test_partial_match(self, code):
+        aggregated = {
+            (0.0, 2.0): 0.15,
+            (99.0, 99.0): 0.5,
+        }
+        result = _match_ancilla_coords(aggregated, code)
+        assert (0.0, 2.0) in result
+        assert (99.0, 99.0) not in result
+
+    def test_tolerance(self, code):
+        aggregated = {
+            (0.0005, 2.0005): 0.15,
+        }
+        result = _match_ancilla_coords(aggregated, code)
+        assert (0.0, 2.0) in result
+        assert result[(0.0, 2.0)] == 0.15
