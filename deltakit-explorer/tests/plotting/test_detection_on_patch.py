@@ -261,7 +261,9 @@ class TestDetectionOnPatchPlaquette:
     def test_unknown_style_raises(self, code, detection_probabilities):
         with pytest.raises(ValueError, match="Unknown style"):
             plot_detection_probability_on_patch(
-                code, detection_probabilities, style="invalid"  # type: ignore[arg-type]
+                code,
+                detection_probabilities,
+                style="invalid",  # type: ignore[arg-type]
             )
 
     def test_plaquette_missing_ancilla_coords(self, code):
@@ -274,33 +276,26 @@ class TestDetectionOnPatchPlaquette:
 
 class TestStabiliserVertices:
     def test_weight_4_has_4_vertices(self, code):
-        """Interior weight-4 stabilisers produce diamond-shaped plaquettes."""
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
                     continue
-                weight = len(
-                    [p for p in stabiliser.paulis if p is not None]
-                )
+                weight = len([p for p in stabiliser.paulis if p is not None])
                 if weight == 4:
                     vertices = _stabiliser_vertices(stabiliser)
                     assert len(vertices) == 4
 
     def test_weight_2_has_3_vertices(self, code):
-        """Boundary weight-2 stabilisers produce triangular plaquettes."""
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
                     continue
-                weight = len(
-                    [p for p in stabiliser.paulis if p is not None]
-                )
+                weight = len([p for p in stabiliser.paulis if p is not None])
                 if weight == 2:
                     vertices = _stabiliser_vertices(stabiliser)
                     assert len(vertices) == 3
 
     def test_polygon_is_counter_clockwise(self, code):
-        """Vertices should form a convex polygon (signed area > 0)."""
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
@@ -318,7 +313,6 @@ class TestStabiliserVertices:
                 assert area > 0, f"Polygon area should be positive, got {area}"
 
     def test_vertices_close_to_data_qubits(self, code):
-        """Each vertex should coincide with a data qubit (or ancilla for boundary)."""
         data_coords = {
             (float(q.unique_identifier.x), float(q.unique_identifier.y))
             for q in code.data_qubits
@@ -341,13 +335,10 @@ class TestStabiliserVertices:
                     assert matches, f"Vertex {v} not found in data/ancilla qubits"
 
     def test_no_ancilla_raises(self, code):
-        """Stabiliser without ancilla qubit raises ValueError (weight-2 case)."""
         stabiliser_no_anc = None
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
-                weight = len(
-                    [p for p in stabiliser.paulis if p is not None]
-                )
+                weight = len([p for p in stabiliser.paulis if p is not None])
                 if weight == 2 and stabiliser.ancilla_qubit is None:
                     stabiliser_no_anc = stabiliser
                     break
