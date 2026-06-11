@@ -5,13 +5,14 @@ import matplotlib.image as img
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from matplotlib.patches import Circle, Rectangle
+from matplotlib.patches import Circle, Polygon, Rectangle
 
 from deltakit_explorer.codes import RotatedPlanarCode
 from deltakit_explorer.plotting import plot_detection_probability_on_patch
 from deltakit_explorer.plotting._detection_on_patch import (
     _aggregate_probabilities,
     _match_ancilla_coords,
+    _stabiliser_vertices,
 )
 
 mpl.use("Agg")
@@ -65,8 +66,15 @@ class TestDetectionOnPatch:
         )
         assert len(ax.patches) == 8
 
-    def test_heatmap_patch_shapes(self, code, detection_probabilities):
+    def test_plaquette_patch_shapes(self, code, detection_probabilities):
         _, ax = plot_detection_probability_on_patch(code, detection_probabilities)
+        assert sum(isinstance(patch, Polygon) for patch in ax.patches) == 8
+        assert not ax.axison
+
+    def test_heatmap_patch_shapes(self, code, detection_probabilities):
+        _, ax = plot_detection_probability_on_patch(
+            code, detection_probabilities, style="heatmap"
+        )
         assert sum(isinstance(patch, Rectangle) for patch in ax.patches) == 4
         assert sum(isinstance(patch, Circle) for patch in ax.patches) == 4
         assert not ax.axison
@@ -199,3 +207,151 @@ class TestMatchAncillaCoords:
         result = _match_ancilla_coords(aggregated, code)
         assert (0.0, 2.0) in result
         assert result[(0.0, 2.0)] == 0.15
+
+
+class TestDetectionOnPatchPlaquette:
+    def test_plaquette_default_style(self, code, detection_probabilities):
+        fig, ax = plot_detection_probability_on_patch(code, detection_probabilities)
+        assert isinstance(fig, plt.Figure)
+        assert all(isinstance(p, Polygon) for p in ax.patches)
+
+    def test_plaquette_explicit(self, code, detection_probabilities):
+        fig, ax = plot_detection_probability_on_patch(
+            code, detection_probabilities, style="plaquette"
+        )
+        assert isinstance(fig, plt.Figure)
+        assert all(isinstance(p, Polygon) for p in ax.patches)
+
+    def test_plaquette_data_qubits(self, code, detection_probabilities):
+        _, ax = plot_detection_probability_on_patch(
+            code, detection_probabilities, show_data_qubits=True
+        )
+        circles = [p for p in ax.patches if isinstance(p, Circle)]
+        assert len(circles) > 0
+        assert any(p.radius == 0.12 for p in circles)
+
+    def test_plaquette_no_data_qubits_default(self, code, detection_probabilities):
+        _, ax = plot_detection_probability_on_patch(
+            code, detection_probabilities, style="plaquette"
+        )
+        circles = [p for p in ax.patches if isinstance(p, Circle)]
+        assert len(circles) == 0
+
+    def test_plaquette_no_colorbar(self, code, detection_probabilities):
+        fig, _ = plot_detection_probability_on_patch(
+            code, detection_probabilities, show_colorbar=False, style="plaquette"
+        )
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) == 1
+
+    def test_plaquette_variance_mode(self, code, detection_probabilities):
+        fig, _ = plot_detection_probability_on_patch(
+            code, detection_probabilities, mode="variance", style="plaquette"
+        )
+        assert isinstance(fig, plt.Figure)
+
+    def test_plaquette_custom_fig_ax(self, code, detection_probabilities):
+        fig, ax = plt.subplots()
+        fig_out, ax_out = plot_detection_probability_on_patch(
+            code, detection_probabilities, fig=fig, ax=ax, style="plaquette"
+        )
+        assert fig_out is fig
+        assert ax_out is ax
+
+    def test_unknown_style_raises(self, code, detection_probabilities):
+        with pytest.raises(ValueError, match="Unknown style"):
+            plot_detection_probability_on_patch(
+                code, detection_probabilities, style="invalid"  # type: ignore[arg-type]
+            )
+
+    def test_plaquette_missing_ancilla_coords(self, code):
+        partial_data = {(0.0, 2.0): [0.05, 0.08, 0.07, 0.09]}
+        fig, _ = plot_detection_probability_on_patch(
+            code, partial_data, style="plaquette"
+        )
+        assert isinstance(fig, plt.Figure)
+
+
+class TestStabiliserVertices:
+    def test_weight_4_has_4_vertices(self, code):
+        """Interior weight-4 stabilisers produce diamond-shaped plaquettes."""
+        for stabilisers_group in code.stabilisers:
+            for stabiliser in stabilisers_group:
+                if stabiliser.ancilla_qubit is None:
+                    continue
+                weight = len(
+                    [p for p in stabiliser.paulis if p is not None]
+                )
+                if weight == 4:
+                    vertices = _stabiliser_vertices(stabiliser)
+                    assert len(vertices) == 4
+
+    def test_weight_2_has_3_vertices(self, code):
+        """Boundary weight-2 stabilisers produce triangular plaquettes."""
+        for stabilisers_group in code.stabilisers:
+            for stabiliser in stabilisers_group:
+                if stabiliser.ancilla_qubit is None:
+                    continue
+                weight = len(
+                    [p for p in stabiliser.paulis if p is not None]
+                )
+                if weight == 2:
+                    vertices = _stabiliser_vertices(stabiliser)
+                    assert len(vertices) == 3
+
+    def test_polygon_is_counter_clockwise(self, code):
+        """Vertices should form a convex polygon (signed area > 0)."""
+        for stabilisers_group in code.stabilisers:
+            for stabiliser in stabilisers_group:
+                if stabiliser.ancilla_qubit is None:
+                    continue
+                vertices = _stabiliser_vertices(stabiliser)
+                if len(vertices) < 3:
+                    continue
+                area = 0.0
+                n = len(vertices)
+                for i in range(n):
+                    x1, y1 = vertices[i]
+                    x2, y2 = vertices[(i + 1) % n]
+                    area += x1 * y2 - x2 * y1
+                area /= 2.0
+                assert area > 0, f"Polygon area should be positive, got {area}"
+
+    def test_vertices_close_to_data_qubits(self, code):
+        """Each vertex should coincide with a data qubit (or ancilla for boundary)."""
+        data_coords = {
+            (float(q.unique_identifier.x), float(q.unique_identifier.y))
+            for q in code.data_qubits
+        }
+        anc_coords = {
+            (float(q.unique_identifier.x), float(q.unique_identifier.y))
+            for q in code.ancilla_qubits
+        }
+        expected = data_coords | anc_coords
+        for stabilisers_group in code.stabilisers:
+            for stabiliser in stabilisers_group:
+                if stabiliser.ancilla_qubit is None:
+                    continue
+                vertices = _stabiliser_vertices(stabiliser)
+                for v in vertices:
+                    matches = any(
+                        abs(v[0] - e[0]) < 1e-6 and abs(v[1] - e[1]) < 1e-6
+                        for e in expected
+                    )
+                    assert matches, f"Vertex {v} not found in data/ancilla qubits"
+
+    def test_no_ancilla_raises(self, code):
+        """Stabiliser without ancilla qubit raises ValueError (weight-2 case)."""
+        stabiliser_no_anc = None
+        for stabilisers_group in code.stabilisers:
+            for stabiliser in stabilisers_group:
+                weight = len(
+                    [p for p in stabiliser.paulis if p is not None]
+                )
+                if weight == 2 and stabiliser.ancilla_qubit is None:
+                    stabiliser_no_anc = stabiliser
+                    break
+
+        if stabiliser_no_anc is not None:
+            with pytest.raises(ValueError, match="ancilla"):
+                _stabiliser_vertices(stabiliser_no_anc)
