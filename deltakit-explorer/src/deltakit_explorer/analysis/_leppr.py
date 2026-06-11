@@ -191,20 +191,14 @@ def compute_logical_error_per_round(
             "estimated logical error probability is closer to 0.4."
         )
 
-    fidelities = 1 - 2 * logical_error_probabilities
-    # We want to do a linear regression on the log values of fidelity, and obtain the
-    # per-round error probability like that.
-    # Applying the logarithm function will change non-uniformly the standard deviation
-    # of each variable, which makes the standard linear regression estimator biased. The
-    # best linear unbiased estimator in that case is obtained by solving a weighted
-    # least square problem where the weights corresponds to the reciprocal of the
-    # variance of each observation.
+    # We want to do a linear regression on the log values of fidelity...
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
-    logfidelity = np.log(fidelities)
     # Use the uncertainties package to propagate the standard deviation through the
     # logarithm transform automatically.
     lep_u = unp.uarray(logical_error_probabilities, logical_error_probabilities_stddev)
-    logfidelities_stddev = unp.std_devs(unp.log(1 - 2 * lep_u))
+    logfidelities_u = unp.log(1 - 2 * lep_u)
+    logfidelity = unp.nominal_values(logfidelities_u)
+    logfidelities_stddev = unp.std_devs(logfidelities_u)
 
     # Note that the covariance matrix is used later to estimate the logical error
     # probability per round standard deviation.
