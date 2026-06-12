@@ -128,7 +128,14 @@ def _stabiliser_vertices(stabiliser: Stabiliser) -> list[tuple[float, float]]:
 
 
 class HeatmapPosition(NamedTuple):
-    """Position and shape of a stabiliser in the heatmap grid."""
+    """Position and shape of a stabiliser in the heatmap grid.
+
+    Attributes:
+        patch_type: ``"square"`` for interior weight-4 or ``"circle"`` for
+            boundary weight-2.
+        x: Heatmap column index.
+        y: Heatmap row index.
+    """
 
     patch_type: str
     x: float
@@ -168,11 +175,15 @@ def _heatmap_patch_position(
         if anc.x == 0:
             return HeatmapPosition("circle", 0.0, float(anc.y / 2 - 0.5))
         if anc.x == 2 * code.width:
-            return HeatmapPosition("circle", float(code.width - 1), float(anc.y / 2 - 0.5))
+            return HeatmapPosition(
+                "circle", float(code.width - 1), float(anc.y / 2 - 0.5)
+            )
         if anc.y == 0:
             return HeatmapPosition("circle", float(anc.x / 2 - 0.5), 0.0)
         if anc.y == 2 * code.height:
-            return HeatmapPosition("circle", float(anc.x / 2 - 0.5), float(code.height - 1))
+            return HeatmapPosition(
+                "circle", float(anc.x / 2 - 0.5), float(code.height - 1)
+            )
 
     msg = f"Unsupported stabiliser weight for heatmap rendering: {weight}."
     raise ValueError(msg)
@@ -408,7 +419,9 @@ def plot_detection_probability_on_patch(
     cmap_obj = plt.get_cmap(cmap)
 
     if style == "plaquette":
-        _draw_plaquette_style(ax, code, ancilla_values, norm, cmap_obj, show_data_qubits)
+        _draw_plaquette_style(
+            ax, code, ancilla_values, norm, cmap_obj, show_data_qubits
+        )
     elif style == "heatmap":
         _draw_heatmap_style(ax, code, ancilla_values, norm, cmap_obj)
     else:
