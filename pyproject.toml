@@ -57,7 +57,7 @@ test = [
   "pytest-skip-slow>=0.0.5",
   { include-group = "tests_extras" },
 ]
-lint = ["mypy~=1.17", "ruff~=0.14", "typos~=1.34", "deptry~=0.23", "pydoclint~=0.8"]
+lint = ["mypy>=1.17,<3.0", "ruff~=0.14", "typos~=1.34", "deptry~=0.23", "pydoclint~=0.8"]
 docs_extras = [
   "tqdm~=4.67",
   "stim>=1.12; python_version < '3.12'",
