@@ -127,7 +127,32 @@ def _lambda_shifted_fit(
     # Prepare log data for linear fit.
     log_leppr = np.log(leppr)
     log_leppr_std = leppr_std / leppr
-    # Fitting with the old 'numpy.polyfit' API provides standard deviations and a covariance matrix over the
+    # Perform linear fit: ln(ε_d) vs d (shifted distances)
+    # Use polyfit with weights (1/σ²) for weighted least squares
+    weights = 1.0 / (log_leppr_std ** 2)
+    coeffs, cov = np.polyfit(distances, log_leppr, deg=1, w=weights, cov=True)
+    slope, intercept = coeffs
+    # Recover Λ and Λ₀
+    lambda_ = np.exp(-2.0 * slope)
+    lambda0 = np.exp(-intercept - slope)
+    # Standard deviations from covariance matrix
+    slope_std = np.sqrt(cov[0, 0])
+    intercept_std = np.sqrt(cov[1, 1])
+    # Propagate uncertainties
+    lambda_std = 2.0 * lambda_ * slope_std
+    # For lambda0, use uncertainty propagation formula
+    # λ₀ = exp(-intercept - slope) => dλ₀ = λ₀ * sqrt( d_intercept² + d_slope² - 2*cov(intercept, slope) )
+    cov_off_slope = cov[0, 1]  # cov[slope, intercept] = cov[0,1]
+    lambda0_std = lambda0 * np.sqrt(intercept_std**2 + slope_std**2 - 2 * cov_off_slope)
+    return LambdaData(
+        lambda_=lambda_,
+        lambda_std=lambda_std,
+        lambda0=lambda0,
+        lambda0_std=lambda0_std,
+        distances=distances,
+        leppr=leppr,
+        leppr_std=leppr_std,
+    )rovides standard deviations and a covariance matrix over the
     # new 'numpy.polynomial.Polyfit' API. See for instance the transition guide:
     # https://numpy.org/doc/stable/reference/routines.polynomials.html
     (slope, offset), cov = np.polyfit(
