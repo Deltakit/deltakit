@@ -17,6 +17,12 @@ from deltakit_explorer.plotting._detection_on_patch import (
 
 mpl.use("Agg")
 
+
+@pytest.fixture(autouse=True)
+def _close_all_figures():
+    plt.close("all")
+
+
 RNG = np.random.default_rng(42)
 
 # Ancilla coordinates for a d=3 RotatedPlanarCode (verified at runtime)

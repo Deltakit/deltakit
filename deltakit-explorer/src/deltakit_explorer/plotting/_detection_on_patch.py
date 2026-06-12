@@ -29,6 +29,10 @@ def _aggregate_probabilities(
 
     Returns:
         Mapping from (x, y) coordinate pairs to the aggregated probability value.
+
+    Raises:
+        ValueError: If ``mode`` is not one of ``"average"``, ``"median"``, or
+            ``"variance"``.
     """
     result: dict[tuple[float, float], float] = {}
     for coord, rates in detection_probabilities.items():
@@ -127,7 +131,21 @@ def _heatmap_patch_position(
     stabiliser: Stabiliser,
     code: PlanarCode,
 ) -> tuple[str, float, float]:
-    """Map a stabiliser to a square-grid heatmap position."""
+    """Map a stabiliser to a square-grid heatmap position.
+
+    Args:
+        stabiliser: The stabiliser whose grid position to compute.
+        code: The planar code patch.
+
+    Returns:
+        A tuple ``(patch_type, x, y)`` where ``patch_type`` is ``"square"``
+        for interior weight-4 stabilisers or ``"circle"`` for boundary
+        weight-2 stabilisers, and ``(x, y)`` is the heatmap cell coordinate.
+
+    Raises:
+        ValueError: If the stabiliser has no ancilla qubit or an unsupported
+            weight.
+    """
     if stabiliser.ancilla_qubit is None:
         msg = "Cannot draw a detector heatmap for stabilisers without ancilla qubits."
         raise ValueError(msg)
