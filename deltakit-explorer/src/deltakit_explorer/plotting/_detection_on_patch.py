@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -57,7 +57,7 @@ def _match_ancilla_coords(
     code: PlanarCode,
     tolerance: float = 1e-3,
 ) -> dict[tuple[float, float], float]:
-    """Match aggregated probabilities to stabiliser ancilla coordinates.
+    """Match aggregated detection probabilities to stabiliser ancilla coordinates.
 
     Args:
         aggregated: Mapping from (x, y) coordinate pairs to probability values.
@@ -68,7 +68,7 @@ def _match_ancilla_coords(
     Returns:
         Mapping from ancilla (x, y) coordinate pairs to their matched probability.
     """
-    ancilla_values: dict[tuple[float, float], float] = {}
+    ancilla_det_prob: dict[tuple[float, float], float] = {}
     for stabilisers in code._stabilisers:
         for stabiliser in stabilisers:
             if stabiliser.ancilla_qubit is None:
@@ -79,10 +79,10 @@ def _match_ancilla_coords(
                     abs(prob_coord[0] - anc.x) < tolerance
                     and abs(prob_coord[1] - anc.y) < tolerance
                 ):
-                    ancilla_values[(float(anc.x), float(anc.y))] = prob_val
+                    ancilla_det_prob[(float(anc.x), float(anc.y))] = prob_val
                     break
 
-    return ancilla_values
+    return ancilla_det_prob
 
 
 def _stabiliser_vertices(stabiliser: Stabiliser) -> list[tuple[float, float]]:
@@ -127,10 +127,18 @@ def _stabiliser_vertices(stabiliser: Stabiliser) -> list[tuple[float, float]]:
     )
 
 
+class HeatmapPosition(NamedTuple):
+    """Position and shape of a stabiliser in the heatmap grid."""
+
+    patch_type: str
+    x: float
+    y: float
+
+
 def _heatmap_patch_position(
     stabiliser: Stabiliser,
     code: PlanarCode,
-) -> tuple[str, float, float]:
+) -> HeatmapPosition:
     """Map a stabiliser to a square-grid heatmap position.
 
     Args:
@@ -138,9 +146,9 @@ def _heatmap_patch_position(
         code: The planar code patch.
 
     Returns:
-        A tuple ``(patch_type, x, y)`` where ``patch_type`` is ``"square"``
-        for interior weight-4 stabilisers or ``"circle"`` for boundary
-        weight-2 stabilisers, and ``(x, y)`` is the heatmap cell coordinate.
+        A ``HeatmapPosition`` where ``patch_type`` is ``"square"`` for interior
+        weight-4 stabilisers or ``"circle"`` for boundary weight-2 stabilisers,
+        and ``(x, y)`` is the heatmap cell coordinate.
 
     Raises:
         ValueError: If the stabiliser has no ancilla qubit or an unsupported
@@ -154,20 +162,140 @@ def _heatmap_patch_position(
     weight = len([pauli for pauli in stabiliser.paulis if pauli is not None])
 
     if weight == 4:
-        return "square", float(anc.x / 2 - 1), float(anc.y / 2 - 1)
+        return HeatmapPosition("square", float(anc.x / 2 - 1), float(anc.y / 2 - 1))
 
     if weight == 2:
         if anc.x == 0:
-            return "circle", 0.0, float(anc.y / 2 - 0.5)
+            return HeatmapPosition("circle", 0.0, float(anc.y / 2 - 0.5))
         if anc.x == 2 * code.width:
-            return "circle", float(code.width - 1), float(anc.y / 2 - 0.5)
+            return HeatmapPosition("circle", float(code.width - 1), float(anc.y / 2 - 0.5))
         if anc.y == 0:
-            return "circle", float(anc.x / 2 - 0.5), 0.0
+            return HeatmapPosition("circle", float(anc.x / 2 - 0.5), 0.0)
         if anc.y == 2 * code.height:
-            return "circle", float(anc.x / 2 - 0.5), float(code.height - 1)
+            return HeatmapPosition("circle", float(anc.x / 2 - 0.5), float(code.height - 1))
 
     msg = f"Unsupported stabiliser weight for heatmap rendering: {weight}."
     raise ValueError(msg)
+
+
+def _draw_plaquette_style(
+    ax: Axes,
+    code: PlanarCode,
+    ancilla_values: dict[tuple[float, float], float],
+    norm: plt.Normalize,
+    cmap_obj: plt.cm.ScalarMappable,
+    show_data_qubits: bool,
+) -> None:
+    """Draw stabiliser plaquettes filled by detection probability colour.
+
+    Args:
+        ax: Matplotlib axes to draw on.
+        code: The planar code patch.
+        ancilla_values: Mapping from ancilla coordinates to probability values.
+        norm: Colour normalisation.
+        cmap_obj: Colour-map object.
+        show_data_qubits: Whether to draw data-qubit markers.
+    """
+    all_vertices: list[tuple[float, float]] = []
+    for stabilisers_group in code.stabilisers:
+        for stabiliser in stabilisers_group:
+            if stabiliser.ancilla_qubit is None:
+                continue
+            anc = stabiliser.ancilla_qubit.unique_identifier
+            val = ancilla_values.get((float(anc.x), float(anc.y)))
+            if val is None:
+                continue
+            vertices = _stabiliser_vertices(stabiliser)
+            all_vertices.extend(vertices)
+            ax.add_patch(
+                Polygon(
+                    vertices,
+                    closed=True,
+                    facecolor=cmap_obj(norm(val)),
+                    edgecolor="none",
+                    zorder=1,
+                )
+            )
+
+    if show_data_qubits:
+        for qubit in code.data_qubits:
+            coord = qubit.unique_identifier
+            ax.add_patch(
+                Circle(
+                    (float(coord.x), float(coord.y)),
+                    radius=0.12,
+                    facecolor="white",
+                    edgecolor="#666666",
+                    linewidth=0.6,
+                    zorder=2,
+                )
+            )
+
+    xs = [v[0] for v in all_vertices]
+    ys = [v[1] for v in all_vertices]
+    ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
+    ax.set_ylim(min(ys) - 0.6, max(ys) + 0.6)
+
+
+def _draw_heatmap_style(
+    ax: Axes,
+    code: PlanarCode,
+    ancilla_values: dict[tuple[float, float], float],
+    norm: plt.Normalize,
+    cmap_obj: plt.cm.ScalarMappable,
+) -> None:
+    """Draw a simplified heatmap grid of squares and circles.
+
+    Args:
+        ax: Matplotlib axes to draw on.
+        code: The planar code patch.
+        ancilla_values: Mapping from ancilla coordinates to probability values.
+        norm: Colour normalisation.
+        cmap_obj: Colour-map object.
+    """
+    grid_width = code.width - 1
+    grid_height = code.height - 1
+    boundary_patches: list[Circle] = []
+    interior_patches: list[Rectangle] = []
+
+    for stabilisers_group in code.stabilisers:
+        for stabiliser in stabilisers_group:
+            if stabiliser.ancilla_qubit is None:
+                continue
+            anc = stabiliser.ancilla_qubit.unique_identifier
+            val = ancilla_values.get((float(anc.x), float(anc.y)))
+            if val is None:
+                continue
+
+            pos = _heatmap_patch_position(stabiliser, code)
+            color = cmap_obj(norm(val))
+            if pos.patch_type == "square":
+                interior_patches.append(
+                    Rectangle(
+                        (pos.x, pos.y),
+                        1,
+                        1,
+                        facecolor=color,
+                        edgecolor="none",
+                        zorder=2,
+                    )
+                )
+            else:
+                boundary_patches.append(
+                    Circle(
+                        (pos.x, pos.y),
+                        radius=0.42,
+                        facecolor=color,
+                        edgecolor="none",
+                        zorder=1,
+                    )
+                )
+
+    for patch in boundary_patches + interior_patches:
+        ax.add_patch(patch)
+
+    ax.set_xlim(-0.55, grid_width + 0.55)
+    ax.set_ylim(-0.55, grid_height + 0.55)
 
 
 def plot_detection_probability_on_patch(
@@ -280,90 +408,9 @@ def plot_detection_probability_on_patch(
     cmap_obj = plt.get_cmap(cmap)
 
     if style == "plaquette":
-        all_vertices: list[tuple[float, float]] = []
-        for stabilisers_group in code.stabilisers:
-            for stabiliser in stabilisers_group:
-                if stabiliser.ancilla_qubit is None:
-                    continue
-                anc = stabiliser.ancilla_qubit.unique_identifier
-                val = ancilla_values.get((float(anc.x), float(anc.y)))
-                if val is None:
-                    continue
-                vertices = _stabiliser_vertices(stabiliser)
-                all_vertices.extend(vertices)
-                color = cmap_obj(norm(val))
-                ax.add_patch(
-                    Polygon(
-                        vertices,
-                        closed=True,
-                        facecolor=color,
-                        edgecolor="none",
-                        zorder=1,
-                    )
-                )
-
-        if show_data_qubits:
-            for qubit in code.data_qubits:
-                coord = qubit.unique_identifier
-                ax.add_patch(
-                    Circle(
-                        (float(coord.x), float(coord.y)),
-                        radius=0.12,
-                        facecolor="white",
-                        edgecolor="#666666",
-                        linewidth=0.6,
-                        zorder=2,
-                    )
-                )
-
-        xs = [v[0] for v in all_vertices]
-        ys = [v[1] for v in all_vertices]
-        ax.set_xlim(min(xs) - 0.6, max(xs) + 0.6)
-        ax.set_ylim(min(ys) - 0.6, max(ys) + 0.6)
+        _draw_plaquette_style(ax, code, ancilla_values, norm, cmap_obj, show_data_qubits)
     elif style == "heatmap":
-        grid_width = code.width - 1
-        grid_height = code.height - 1
-        boundary_patches: list[Circle] = []
-        interior_patches: list[Rectangle] = []
-
-        for stabilisers_group in code.stabilisers:
-            for stabiliser in stabilisers_group:
-                if stabiliser.ancilla_qubit is None:
-                    continue
-                anc = stabiliser.ancilla_qubit.unique_identifier
-                val = ancilla_values.get((float(anc.x), float(anc.y)))
-                if val is None:
-                    continue
-
-                patch_type, x, y = _heatmap_patch_position(stabiliser, code)
-                color = cmap_obj(norm(val))
-                if patch_type == "square":
-                    interior_patches.append(
-                        Rectangle(
-                            (x, y),
-                            1,
-                            1,
-                            facecolor=color,
-                            edgecolor="none",
-                            zorder=2,
-                        )
-                    )
-                else:
-                    boundary_patches.append(
-                        Circle(
-                            (x, y),
-                            radius=0.42,
-                            facecolor=color,
-                            edgecolor="none",
-                            zorder=1,
-                        )
-                    )
-
-        for patch in boundary_patches + interior_patches:
-            ax.add_patch(patch)
-
-        ax.set_xlim(-0.55, grid_width + 0.55)
-        ax.set_ylim(-0.55, grid_height + 0.55)
+        _draw_heatmap_style(ax, code, ancilla_values, norm, cmap_obj)
     else:
         msg = f"Unknown style: {style!r}. Expected 'plaquette' or 'heatmap'."
         raise ValueError(msg)
