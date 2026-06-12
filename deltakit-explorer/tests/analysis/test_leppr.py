@@ -182,11 +182,16 @@ class TestLEPPerRoundComputation:
         assert isinstance(res.leppr, float)
         assert isinstance(res.leppr_stddev, float)
 
-    def test_single_point_fit_matches_uncertainties_propagation(self) -> None:
-        rounds = 30
-        lep = 0.012
-        lep_stddev = 0.0015
-
+    @pytest.mark.parametrize(
+        ("rounds", "lep", "lep_stddev"),
+        [
+            (30, 0.012, 0.0015),
+            (45, 0.024, 0.0020),
+        ],
+    )
+    def test_single_point_fit_matches_uncertainties_propagation(
+        self, rounds: int, lep: float, lep_stddev: float
+    ) -> None:
         uncertain_lep = ufloat(lep, lep_stddev)
         expected_leppr = (1 - (1 - 2 * uncertain_lep) ** (1 / rounds)) / 2
 

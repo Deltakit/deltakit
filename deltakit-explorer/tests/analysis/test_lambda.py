@@ -82,11 +82,22 @@ class TestCalculateLambda:
         with pytest.raises(ValueError, match="^Multiple entries were provided"):
             calculate_lambda_and_lambda_stddev(distances, lepprs, lepprs_stds)
 
-    def test_shifted_method_matches_uncertainties_covariance_propagation(self) -> None:
-        distances = np.asarray([5, 7, 9])
-        leppr = np.asarray([1.992e-04, 4.314e-05, 7.556e-06])
-        leppr_std = np.asarray([1.2e-05, 9.3e-06, 3.9e-06])
-
+    @pytest.mark.parametrize(
+        ("distances", "leppr", "leppr_std"),
+        [
+            (
+                np.asarray([5, 7, 9]),
+                np.asarray([1.992e-04, 4.314e-05, 7.556e-06]),
+                np.asarray([1.2e-05, 9.3e-06, 3.9e-06]),
+            ),
+        ],
+    )
+    def test_shifted_method_matches_uncertainties_covariance_propagation(
+        self,
+        distances: np.ndarray,
+        leppr: np.ndarray,
+        leppr_std: np.ndarray,
+    ) -> None:
         (slope, offset), cov = np.polyfit(
             distances,
             np.log(leppr),
