@@ -7,6 +7,7 @@ from deltakit_explorer.plotting._correlation_matrix import (
     defect_rates,
 )
 from deltakit_explorer.plotting._detection_probability import (
+    DetectionProbabilityAggregation,
     plot_detection_probability_on_patch,
 )
 from deltakit_explorer.plotting._lambda import plot_lambda

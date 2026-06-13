@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from enum import Enum
 from itertools import chain
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
-from deltakit_circuit import PauliX
+from deltakit_circuit import Coord2D, PauliX
 from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
@@ -19,28 +20,61 @@ if TYPE_CHECKING:
     from deltakit_explorer.codes._planar_code import PlanarCode
     from deltakit_explorer.codes._stabiliser import Stabiliser
 
-Aggregation = Literal["mean", "median", "variance"]
+
+class DetectionProbabilityAggregation(Enum):
+    """Reduction applied to per-round detection probabilities.
+
+    Attributes:
+        MEAN: Arithmetic mean across all rounds.
+        MEDIAN: Median across all rounds.
+        VARIANCE: Variance across steady-state rounds, excluding the first and last.
+    """
+
+    MEAN = "mean"
+    MEDIAN = "median"
+    VARIANCE = "variance"
 
 
 def _aggregate_detection_probabilities(
     detection_probabilities: Mapping[tuple[float, ...], Sequence[float]],
     *,
-    aggregation: Aggregation = "mean",
+    aggregation: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
     round_index: int | None = None,
-) -> dict[tuple[float, float], float]:
-    """Reduce per-round detector probabilities to one value per coordinate."""
-    aggregated: dict[tuple[float, float], float] = {}
+) -> dict[Coord2D, float]:
+    """Reduce per-round detector probabilities to one value per coordinate.
+
+    Args:
+        detection_probabilities: Detector coordinates mapped to per-round values.
+        aggregation: Reduction to apply when ``round_index`` is not provided.
+        round_index: Optional round to select instead of aggregating.
+
+    Returns:
+        Detection probability or variance keyed by spatial detector coordinate.
+
+    Raises:
+        ValueError: If detector coordinates, probabilities, or the round are invalid.
+    """
+    aggregated: dict[Coord2D, float] = {}
     for coordinate, rates in detection_probabilities.items():
         if len(coordinate) < 2:
             msg = f"Detector coordinate {coordinate!r} must contain x and y values."
             raise ValueError(msg)
 
         values = np.asarray(rates, dtype=float)
+        if values.ndim != 1:
+            msg = f"Detector coordinate {coordinate!r} must have one value per round."
+            raise ValueError(msg)
         if values.size == 0:
             msg = f"Detector coordinate {coordinate!r} has no probability values."
             raise ValueError(msg)
         if not np.all(np.isfinite(values)):
             msg = f"Detector coordinate {coordinate!r} contains a non-finite value."
+            raise ValueError(msg)
+        if np.any((values < 0) | (values > 1)):
+            msg = (
+                f"Detector coordinate {coordinate!r} contains a probability "
+                "outside [0, 1]."
+            )
             raise ValueError(msg)
 
         if round_index is not None:
@@ -52,26 +86,25 @@ def _aggregate_detection_probabilities(
                     f"coordinate {coordinate!r}."
                 )
                 raise ValueError(msg) from error
-        elif aggregation == "mean":
+        elif aggregation is DetectionProbabilityAggregation.MEAN:
             value = float(np.mean(values))
-        elif aggregation == "median":
+        elif aggregation is DetectionProbabilityAggregation.MEDIAN:
             value = float(np.median(values))
-        elif aggregation == "variance":
+        elif aggregation is DetectionProbabilityAggregation.VARIANCE:
             if values.size < 3:
                 msg = (
                     "Variance requires at least three rounds so the first and last "
                     "rounds can be excluded."
                 )
                 raise ValueError(msg)
+            # State preparation and final measurement make the boundary rounds
+            # expected outliers, so variance describes only the steady-state rounds.
             value = float(np.var(values[1:-1]))
         else:
-            msg = (
-                f"Unknown aggregation {aggregation!r}; expected 'mean', 'median', "
-                "or 'variance'."
-            )
+            msg = f"Unknown aggregation {aggregation!r}."
             raise ValueError(msg)
 
-        aggregated[(float(coordinate[0]), float(coordinate[1]))] = value
+        aggregated[Coord2D(float(coordinate[0]), float(coordinate[1]))] = value
 
     if not aggregated:
         msg = "detection_probabilities is empty; there is nothing to plot."
@@ -80,7 +113,17 @@ def _aggregate_detection_probabilities(
 
 
 def _stabiliser_vertices(stabiliser: Stabiliser) -> list[tuple[float, float]]:
-    """Return ordered vertices for the stabiliser's plaquette."""
+    """Return ordered vertices for the stabiliser's plaquette.
+
+    Args:
+        stabiliser: Stabiliser whose data-qubit geometry should be drawn.
+
+    Returns:
+        Plaquette vertices ordered anticlockwise around their center.
+
+    Raises:
+        ValueError: If the stabiliser lacks the geometry required for a plaquette.
+    """
     coordinates = [
         (
             float(pauli.qubit.unique_identifier[0]),
@@ -112,9 +155,19 @@ def _stabiliser_vertices(stabiliser: Stabiliser) -> list[tuple[float, float]]:
 
 def _find_detection_probability(
     stabiliser: Stabiliser,
-    probabilities: Mapping[tuple[float, float], float],
+    probabilities: Mapping[Coord2D, float],
     tolerance: float,
 ) -> float | None:
+    """Match a stabiliser ancilla to an aggregated detector probability.
+
+    Args:
+        stabiliser: Stabiliser whose ancilla coordinate should be matched.
+        probabilities: Aggregated probabilities keyed by spatial coordinate.
+        tolerance: Absolute coordinate matching tolerance.
+
+    Returns:
+        Matching probability, or ``None`` when no coordinate matches.
+    """
     if stabiliser.ancilla_qubit is None:
         return None
     ancilla = cast(Sequence[float], stabiliser.ancilla_qubit.unique_identifier)
@@ -133,7 +186,7 @@ def plot_detection_probability_on_patch(
     code: PlanarCode,
     detection_probabilities: Mapping[tuple[float, ...], Sequence[float]],
     *,
-    aggregation: Aggregation = "mean",
+    aggregation: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
     round_index: int | None = None,
     cmap: str = "viridis",
     vmin: float | None = None,
@@ -153,7 +206,8 @@ def plot_detection_probability_on_patch(
         detection_probabilities: Detector coordinates mapped to per-round
             detection probabilities.
         aggregation: Reduction used when ``round_index`` is not provided.
-            Variance excludes the first and last rounds.
+            ``VARIANCE`` excludes the first and last rounds because state
+            preparation and final measurement make them expected outliers.
         round_index: Optional round to plot instead of aggregating all rounds.
         cmap: Matplotlib colour map used for detection probabilities.
         vmin: Optional lower limit for the shared colour scale.
@@ -255,7 +309,7 @@ def plot_detection_probability_on_patch(
         label = (
             f"Detection probability (round {round_index})"
             if round_index is not None
-            else f"Detection probability ({aggregation})"
+            else f"Detection probability ({aggregation.value})"
         )
         colour_bar.set_label(label)
 
