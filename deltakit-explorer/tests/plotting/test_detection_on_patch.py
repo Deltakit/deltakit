@@ -8,7 +8,10 @@ import pytest
 from matplotlib.patches import Circle, Polygon, Rectangle
 
 from deltakit_explorer.codes import RotatedPlanarCode
-from deltakit_explorer.plotting import plot_detection_probability_on_patch
+from deltakit_explorer.plotting import (
+    DetectionProbabilityAggregation,
+    plot_detection_probability_on_patch,
+)
 from deltakit_explorer.plotting._detection_on_patch import (
     _aggregate_probabilities,
     _match_ancilla_coords,
@@ -68,7 +71,7 @@ class TestDetectionOnPatch:
 
     def test_average_mode(self, code, detection_probabilities) -> None:
         _, ax = plot_detection_probability_on_patch(
-            code, detection_probabilities, mode="average"
+            code, detection_probabilities, mode=DetectionProbabilityAggregation.MEAN
         )
         assert len(ax.patches) == 8
 
@@ -87,13 +90,13 @@ class TestDetectionOnPatch:
 
     def test_median_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
-            code, detection_probabilities, mode="median"
+            code, detection_probabilities, mode=DetectionProbabilityAggregation.MEDIAN
         )
         assert isinstance(fig, plt.Figure)
 
     def test_variance_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
-            code, detection_probabilities, mode="variance"
+            code, detection_probabilities, mode=DetectionProbabilityAggregation.VARIANCE
         )
         assert isinstance(fig, plt.Figure)
 
@@ -153,7 +156,7 @@ class TestDetectionOnPatch:
         self, code, detection_probabilities
     ) -> None:
         fig, _ = plot_detection_probability_on_patch(
-            code, detection_probabilities, mode="variance"
+            code, detection_probabilities, mode=DetectionProbabilityAggregation.VARIANCE
         )
         assert isinstance(fig, plt.Figure)
 
@@ -161,18 +164,24 @@ class TestDetectionOnPatch:
 class TestAggregateProbabilities:
     def test_average(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2, 0.3]}
-        result = _aggregate_probabilities(data, mode="average")
+        result = _aggregate_probabilities(
+            data, mode=DetectionProbabilityAggregation.MEAN
+        )
         assert result[(0.0, 2.0)] == pytest.approx(0.2)
 
     def test_median(self) -> None:
         data = {(0.0, 2.0): [0.3, 0.1, 0.2]}
-        result = _aggregate_probabilities(data, mode="median")
+        result = _aggregate_probabilities(
+            data, mode=DetectionProbabilityAggregation.MEDIAN
+        )
         assert result[(0.0, 2.0)] == pytest.approx(0.2)
 
     def test_variance_excludes_outliers_with_flag(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
         result = _aggregate_probabilities(
-            data, mode="variance", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.VARIANCE,
+            include_outlier_rounds=False,
         )
         inner = [0.5, 0.5]
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var(inner)))
@@ -180,7 +189,9 @@ class TestAggregateProbabilities:
     def test_variance_short_no_removal(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2]}
         result = _aggregate_probabilities(
-            data, mode="variance", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.VARIANCE,
+            include_outlier_rounds=False,
         )
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.2])))
 
@@ -189,32 +200,38 @@ class TestAggregateProbabilities:
             (0.0, 2.0): [0.1, 0.2],
             (2.0, 2.0): [0.3, 0.4],
         }
-        result = _aggregate_probabilities(data, mode="average")
+        result = _aggregate_probabilities(
+            data, mode=DetectionProbabilityAggregation.MEAN
+        )
         assert len(result) == 2
         assert result[(0.0, 2.0)] == pytest.approx(0.15)
         assert result[(2.0, 2.0)] == pytest.approx(0.35)
 
     def test_variance_includes_all_rounds_by_default(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
-        result = _aggregate_probabilities(data, mode="variance")
+        result = _aggregate_probabilities(
+            data, mode=DetectionProbabilityAggregation.VARIANCE
+        )
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.5, 0.5, 0.1])))
 
     def test_unknown_mode_raises(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2]}
-        with pytest.raises(ValueError, match="Unknown mode"):
-            _aggregate_probabilities(data, mode="mean")
+        with pytest.raises(ValueError, match="Unknown"):
+            _aggregate_probabilities(data, mode="invalid")  # type: ignore[arg-type]
 
     def test_include_outlier_rounds_true_average(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
         result = _aggregate_probabilities(
-            data, mode="average", include_outlier_rounds=True
+            data, mode=DetectionProbabilityAggregation.MEAN, include_outlier_rounds=True
         )
         assert result[(0.0, 2.0)] == pytest.approx(0.3)
 
     def test_include_outlier_rounds_false_average(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
         result = _aggregate_probabilities(
-            data, mode="average", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.MEAN,
+            include_outlier_rounds=False,
         )
         inner = [0.5, 0.5]
         assert result[(0.0, 2.0)] == pytest.approx(float(np.mean(inner)))
@@ -222,14 +239,18 @@ class TestAggregateProbabilities:
     def test_include_outlier_rounds_true_variance(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
         result = _aggregate_probabilities(
-            data, mode="variance", include_outlier_rounds=True
+            data,
+            mode=DetectionProbabilityAggregation.VARIANCE,
+            include_outlier_rounds=True,
         )
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.5, 0.5, 0.1])))
 
     def test_include_outlier_rounds_false_variance(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
         result = _aggregate_probabilities(
-            data, mode="variance", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.VARIANCE,
+            include_outlier_rounds=False,
         )
         inner = [0.5, 0.5]
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var(inner)))
@@ -237,7 +258,9 @@ class TestAggregateProbabilities:
     def test_include_outlier_rounds_false_median(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.3, 0.5, 0.9]}
         result = _aggregate_probabilities(
-            data, mode="median", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.MEDIAN,
+            include_outlier_rounds=False,
         )
         inner = [0.3, 0.5]
         assert result[(0.0, 2.0)] == pytest.approx(float(np.median(inner)))
@@ -245,7 +268,9 @@ class TestAggregateProbabilities:
     def test_include_outlier_rounds_false_short_list(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2]}
         result = _aggregate_probabilities(
-            data, mode="average", include_outlier_rounds=False
+            data,
+            mode=DetectionProbabilityAggregation.MEAN,
+            include_outlier_rounds=False,
         )
         assert result[(0.0, 2.0)] == pytest.approx(0.15)
 
@@ -324,7 +349,10 @@ class TestDetectionOnPatchPlaquette:
 
     def test_plaquette_variance_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
-            code, detection_probabilities, mode="variance", style="plaquette"
+            code,
+            detection_probabilities,
+            mode=DetectionProbabilityAggregation.VARIANCE,
+            style="plaquette",
         )
         assert isinstance(fig, plt.Figure)
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import TYPE_CHECKING, Literal, NamedTuple
 
 import matplotlib.pyplot as plt
@@ -13,9 +14,15 @@ if TYPE_CHECKING:
     from deltakit_explorer.codes._stabiliser import Stabiliser
 
 
+class DetectionProbabilityAggregation(str, Enum):
+    MEAN = "mean"
+    MEDIAN = "median"
+    VARIANCE = "variance"
+
+
 def _aggregate_probabilities(
     detection_probabilities: dict[tuple[float, ...], list[float]],
-    mode: Literal["average", "median", "variance"],
+    mode: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
     include_outlier_rounds: bool = True,
 ) -> dict[tuple[float, float], float]:
     """Aggregate per-round detection probabilities into a single value per coordinate.
@@ -23,10 +30,10 @@ def _aggregate_probabilities(
     Args:
         detection_probabilities: Mapping from detector coordinates (x, y, ...) to
             per-round detection probability lists.
-        mode: Aggregation mode:
-            - ``"average"``: mean of all rounds.
-            - ``"median"``: median of all rounds.
-            - ``"variance"``: variance of all rounds.
+        mode: Aggregation mode. One of
+            ``DetectionProbabilityAggregation.MEAN``,
+            ``DetectionProbabilityAggregation.MEDIAN``, or
+            ``DetectionProbabilityAggregation.VARIANCE``.
         include_outlier_rounds: If ``True`` (default), all rounds are included.
             If ``False``, the first and last rounds (which are expected to be
             outliers) are excluded for all modes.
@@ -35,8 +42,8 @@ def _aggregate_probabilities(
         Mapping from (x, y) coordinate pairs to the aggregated probability value.
 
     Raises:
-        ValueError: If ``mode`` is not one of ``"average"``, ``"median"``, or
-            ``"variance"``.
+        ValueError: If ``mode`` is not a valid ``DetectionProbabilityAggregation``
+            member.
     """
     result: dict[tuple[float, float], float] = {}
     for coord, rates in detection_probabilities.items():
@@ -44,14 +51,14 @@ def _aggregate_probabilities(
         if not include_outlier_rounds and len(values) > 2:
             values = values[1:-1]
         match mode:
-            case "average":
+            case DetectionProbabilityAggregation.MEAN:
                 result[coord[:2]] = float(np.mean(values))
-            case "median":
+            case DetectionProbabilityAggregation.MEDIAN:
                 result[coord[:2]] = float(np.median(values))
-            case "variance":
+            case DetectionProbabilityAggregation.VARIANCE:
                 result[coord[:2]] = float(np.var(values))
             case _:
-                msg = f"Unknown mode: {mode!r}. Expected one of 'average', 'median', 'variance'."
+                msg = f"Unknown aggregation: {mode!r}."
                 raise ValueError(msg)
     return result
 
@@ -316,7 +323,7 @@ def plot_detection_probability_on_patch(
     code: PlanarCode,
     detection_probabilities: dict[tuple[float, ...], list[float]],
     *,
-    mode: Literal["average", "median", "variance"] = "average",
+    mode: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
     style: Literal["plaquette", "heatmap"] = "plaquette",
     include_outlier_rounds: bool = True,
     cmap: str = "viridis",
@@ -343,7 +350,10 @@ def plot_detection_probability_on_patch(
             coordinate, as returned by ``Client.defect_rates()`` or
             ``detect_and_aggregate()``. Keys are ``(x, y, ...)`` tuples, values are
             lists of per-round probabilities.
-        mode: How to aggregate the per-round values into a single number per detector.
+        mode: Aggregation mode. One of
+            ``DetectionProbabilityAggregation.MEAN``,
+            ``DetectionProbabilityAggregation.MEDIAN``, or
+            ``DetectionProbabilityAggregation.VARIANCE``.
         style: Visual style — ``"plaquette"`` fills the code plaquettes,
             ``"heatmap"`` uses a simplified square-and-circle grid.
         include_outlier_rounds: Whether to include the first and last round
