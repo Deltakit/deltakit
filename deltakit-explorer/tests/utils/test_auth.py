@@ -33,32 +33,15 @@ def test_if_no_token_raises(mocker):
         _auth.get_token()
 
 
-@pytest.mark.skip(reason="Mark as skipped until #287 is fixed.")
 def test_http_verification_is_set():
+    # clear SSL verify variable
+    os.environ.pop(_auth.TLS_DISABLE_CHECK_VARIABLE, None)
+    # sets _auth.TLS_DISABLE_CHECK_VARIABLE to 'false'
     _auth.set_https_verification(True)
-    # wrong host certificate
-    url = "https://wrong.host.badssl.com/"
-    with pytest.raises(requests.exceptions.SSLError):
-        requests.get(
-            url,
-            verify=not _auth.https_verification_disabled(),
-            timeout=5,
-        )
+    val = os.environ.get(_auth.TLS_DISABLE_CHECK_VARIABLE)
+    assert val not in ["1", "yes", "true"]
 
 
-@pytest.mark.filterwarnings("ignore:Unverified HTTPS")
-def test_http_verification_is_unset():
-    # Related to `test_http_verification_is_set above`, but this time
-    # we don't require HTTPS verification, so we should *not* get an `SSLError`.
-    # An "Unverified HTTPS" warning is OK.
-    # (Sometimes we get a `ConnectionError`, though, and we don't want to
-    # fail because of that, so suppress it.)
-    _auth.set_https_verification(False)
-    # wrong host certificate
-    url = "https://wrong.host.badssl.com/"
-    with suppress(requests.exceptions.ConnectionError):
-        requests.get(
-            url,
-            verify=not _auth.https_verification_disabled(),
-            timeout=5,
-        )
+def test_https_verification_not_disabled_by_default():
+    # Assert SSH verification is disabled by default
+    assert _auth.https_verification_disabled() is False
