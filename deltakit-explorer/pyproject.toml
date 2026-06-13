@@ -39,7 +39,8 @@ dependencies = [
   "graphql_core~=3.2",
   "numpy~=2.0",
   "scipy~=1.15",
-  "matplotlib~=3.10",
+  # Upper bound due to github.com/Deltakit/deltakit/issues/284
+  "matplotlib>=3.10,<3.11",
   "stim>=1.12; python_version < '3.12'",
   "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
   "stim>=1.15; python_version >= '3.13'",
