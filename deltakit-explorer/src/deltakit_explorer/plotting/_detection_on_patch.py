@@ -75,6 +75,7 @@ def _validate_detection_probabilities(
 def _aggregate_probabilities(
     detection_probabilities: dict[tuple[float, ...], list[float]],
     mode: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
+    round_index: int | None = None,
     include_outlier_rounds: bool = True,
 ) -> dict[tuple[float, float], float]:
     """Aggregate per-round detection probabilities into a single value per coordinate.
@@ -86,6 +87,9 @@ def _aggregate_probabilities(
             ``DetectionProbabilityAggregation.MEAN``,
             ``DetectionProbabilityAggregation.MEDIAN``, or
             ``DetectionProbabilityAggregation.VARIANCE``.
+        round_index: Optional round index to plot directly instead of aggregating.
+            When provided, ``mode`` and ``include_outlier_rounds`` are ignored for
+            that coordinate. Supports negative indexing.
         include_outlier_rounds: If ``True`` (default), all rounds are included.
             If ``False``, the first and last rounds (which are expected to be
             outliers) are excluded for all modes.
@@ -95,11 +99,23 @@ def _aggregate_probabilities(
 
     Raises:
         ValueError: If ``mode`` is not a valid ``DetectionProbabilityAggregation``
-            member.
+            member, or if ``round_index`` is out of range.
     """
     result: dict[tuple[float, float], float] = {}
     for coord, rates in detection_probabilities.items():
         values = np.asarray(rates)
+
+        if round_index is not None:
+            try:
+                result[coord[:2]] = float(values[round_index])
+            except IndexError:
+                msg = (
+                    f"Round index {round_index} is out of range for coordinate "
+                    f"{coord!r} with {len(values)} round(s)."
+                )
+                raise ValueError(msg) from None
+            continue
+
         if not include_outlier_rounds and len(values) > 2:
             values = values[1:-1]
         match mode:
@@ -376,6 +392,7 @@ def plot_detection_probability_on_patch(
     detection_probabilities: dict[tuple[float, ...], list[float]],
     *,
     mode: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
+    round_index: int | None = None,
     style: Literal["plaquette", "heatmap"] = "plaquette",
     include_outlier_rounds: bool = True,
     cmap: str = "viridis",
@@ -406,6 +423,9 @@ def plot_detection_probability_on_patch(
             ``DetectionProbabilityAggregation.MEAN``,
             ``DetectionProbabilityAggregation.MEDIAN``, or
             ``DetectionProbabilityAggregation.VARIANCE``.
+        round_index: Optional round index to plot directly instead of
+            aggregating across rounds. Supports negative indexing. When set,
+            ``mode`` and ``include_outlier_rounds`` are ignored.
         style: Visual style — ``"plaquette"`` fills the code plaquettes,
             ``"heatmap"`` uses a simplified square-and-circle grid.
         include_outlier_rounds: Whether to include the first and last round
@@ -424,10 +444,10 @@ def plot_detection_probability_on_patch(
         The matplotlib Figure and Axes objects containing the plot.
 
     Raises:
-        ValueError: If ``fig`` and ``ax`` are not both ``None`` or both set, or
-            if an unknown style is given, or if ``vmin`` is greater than
+        ValueError: If an unknown style is given, or if ``vmin`` is greater than
             ``vmax``, or if any detection probability input is invalid, or if
-            no coordinates match the code's stabiliser ancillas.
+            ``round_index`` is out of range, or if no coordinates match the
+            code's stabiliser ancillas.
 
     Examples:
 
@@ -457,10 +477,6 @@ def plot_detection_probability_on_patch(
             plot_detection_probability_on_patch(code, rates, style="plaquette", ax=ax1)
             plot_detection_probability_on_patch(code, rates, style="heatmap", ax=ax2)
     """
-    if (fig is None) ^ (ax is None):
-        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
-        raise ValueError(msg)
-
     if style not in ("plaquette", "heatmap"):
         msg = f"Unknown style: {style!r}. Expected 'plaquette' or 'heatmap'."
         raise ValueError(msg)
@@ -472,7 +488,7 @@ def plot_detection_probability_on_patch(
     _validate_detection_probabilities(detection_probabilities)
 
     aggregated = _aggregate_probabilities(
-        detection_probabilities, mode, include_outlier_rounds
+        detection_probabilities, mode, round_index, include_outlier_rounds
     )
 
     if not aggregated:
@@ -488,10 +504,12 @@ def plot_detection_probability_on_patch(
         msg = "Detector coordinates do not match any stabiliser ancilla coordinates."
         raise ValueError(msg)
 
-    if fig is None and ax is None:
-        fig, ax = plt.subplots()
+    if ax is not None:
+        fig = ax.get_figure()
+    elif fig is not None:
+        ax = fig.gca()
     else:
-        ax.set_aspect(1)
+        fig, ax = plt.subplots()
 
     values = np.array(list(ancilla_values.values()))
     _vmin = vmin if vmin is not None else float(np.min(values))

@@ -129,12 +129,22 @@ class TestDetectionOnPatch:
         with pytest.raises(ValueError, match="empty"):
             plot_detection_probability_on_patch(code, {})
 
-    def test_fig_ax_mismatch_raises(self, code, detection_probabilities) -> None:
+    def test_ax_alone_infers_fig(self, code, detection_probabilities) -> None:
+        _, ax = plt.subplots()
+        fig_out, ax_out = plot_detection_probability_on_patch(
+            code, detection_probabilities, ax=ax
+        )
+        assert ax_out is ax
+        assert fig_out is ax.get_figure()
+
+    def test_fig_alone_infers_ax(self, code, detection_probabilities) -> None:
         fig = plt.figure()
-        with pytest.raises(ValueError, match="both None or both set"):
-            plot_detection_probability_on_patch(
-                code, detection_probabilities, fig=fig, ax=None
-            )
+        fig_out, ax_out = plot_detection_probability_on_patch(
+            code, detection_probabilities, fig=fig
+        )
+        assert fig_out is fig
+        assert ax_out is not None
+        assert ax_out.get_figure() is fig
 
     def test_plot_matches_reference(
         self, code, detection_probabilities, tmp_path
@@ -170,6 +180,12 @@ class TestDetectionOnPatch:
     def test_no_matching_ancillas_raises(self, code) -> None:
         with pytest.raises(ValueError, match="do not match"):
             plot_detection_probability_on_patch(code, {(100.0, 100.0): [0.1, 0.2, 0.3]})
+
+    def test_round_index_integration(self, code, detection_probabilities) -> None:
+        fig, _ = plot_detection_probability_on_patch(
+            code, detection_probabilities, round_index=0
+        )
+        assert isinstance(fig, plt.Figure)
 
 
 class TestValidateDetectionProbabilities:
@@ -313,6 +329,29 @@ class TestAggregateProbabilities:
             include_outlier_rounds=False,
         )
         assert result[(0.0, 2.0)] == pytest.approx(0.15)
+
+    def test_round_index_selects_specific_round(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.2, 0.3]}
+        result = _aggregate_probabilities(data, round_index=1)
+        assert result[(0.0, 2.0)] == pytest.approx(0.2)
+
+    def test_round_index_negative(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.2, 0.3]}
+        result = _aggregate_probabilities(data, round_index=-1)
+        assert result[(0.0, 2.0)] == pytest.approx(0.3)
+
+    def test_round_index_out_of_range_raises(self) -> None:
+        with pytest.raises(ValueError, match="out of range"):
+            _aggregate_probabilities({(0.0, 2.0): [0.1, 0.2]}, round_index=5)
+
+    def test_round_index_takes_precedence_over_mode(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.3]}
+        result = _aggregate_probabilities(
+            data,
+            mode=DetectionProbabilityAggregation.MEAN,
+            round_index=2,
+        )
+        assert result[(0.0, 2.0)] == pytest.approx(0.3)
 
 
 class TestMatchAncillaCoords:
