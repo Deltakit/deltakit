@@ -16,6 +16,7 @@ from deltakit_explorer.plotting._detection_on_patch import (
     _aggregate_probabilities,
     _match_ancilla_coords,
     _stabiliser_vertices,
+    _validate_detection_probabilities,
 )
 
 mpl.use("Agg")
@@ -159,6 +160,45 @@ class TestDetectionOnPatch:
             code, detection_probabilities, mode=DetectionProbabilityAggregation.VARIANCE
         )
         assert isinstance(fig, plt.Figure)
+
+    def test_vmin_greater_than_vmax_raises(self, code, detection_probabilities) -> None:
+        with pytest.raises(ValueError, match="vmin"):
+            plot_detection_probability_on_patch(
+                code, detection_probabilities, vmin=0.5, vmax=0.1
+            )
+
+    def test_no_matching_ancillas_raises(self, code) -> None:
+        with pytest.raises(ValueError, match="do not match"):
+            plot_detection_probability_on_patch(code, {(100.0, 100.0): [0.1, 0.2, 0.3]})
+
+
+class TestValidateDetectionProbabilities:
+    def test_non_finite_values_raises(self) -> None:
+        with pytest.raises(ValueError, match="non-finite"):
+            _validate_detection_probabilities({(0.0, 2.0): [np.nan, 0.2]})
+        with pytest.raises(ValueError, match="non-finite"):
+            _validate_detection_probabilities({(0.0, 2.0): [np.inf, 0.2]})
+
+    def test_out_of_range_values_raises(self) -> None:
+        with pytest.raises(ValueError, match="outside"):
+            _validate_detection_probabilities({(0.0, 2.0): [-0.1, 0.2]})
+        with pytest.raises(ValueError, match="outside"):
+            _validate_detection_probabilities({(0.0, 2.0): [1.1, 0.2]})
+
+    def test_non_1d_values_raises(self) -> None:
+        with pytest.raises(ValueError, match="2D"):
+            _validate_detection_probabilities({(0.0, 2.0): [[0.1, 0.2], [0.3, 0.4]]})
+
+    def test_empty_values_per_coord_raises(self) -> None:
+        with pytest.raises(ValueError, match="empty probability"):
+            _validate_detection_probabilities({(0.0, 2.0): []})
+
+    def test_coord_too_short_raises(self) -> None:
+        with pytest.raises(ValueError, match="at least 2"):
+            _validate_detection_probabilities({(0.0,): [0.1, 0.2]})
+
+    def test_valid_data_passes(self) -> None:
+        _validate_detection_probabilities({(0.0, 2.0): [0.1, 0.2, 0.3]})
 
 
 class TestAggregateProbabilities:

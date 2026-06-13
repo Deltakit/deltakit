@@ -20,6 +20,58 @@ class DetectionProbabilityAggregation(str, Enum):
     VARIANCE = "variance"
 
 
+def _validate_detection_probabilities(
+    detection_probabilities: dict[tuple[float, ...], list[float]],
+) -> None:
+    """Validate detection-probability inputs before aggregation.
+
+    All errors are accumulated and reported together so the caller can fix
+    every issue in a single pass rather than fixing one at a time.
+
+    Args:
+        detection_probabilities: Mapping from detector coordinates to per-round
+            probability lists.
+
+    Raises:
+        ValueError: If any coordinate or probability value is invalid, with
+            all detected issues reported in a single message.
+    """
+    errors: list[str] = []
+    for coord, rates in detection_probabilities.items():
+        if len(coord) < 2:
+            errors.append(
+                f"Detector coordinate {coord!r} has {len(coord)} spatial "
+                "component(s); expected at least 2 (x, y)."
+            )
+        values = np.asarray(rates)
+        if values.ndim != 1:
+            errors.append(
+                f"Detector coordinate {coord!r} has {values.ndim}D probability "
+                "values; expected a 1D sequence."
+            )
+        elif values.size == 0:
+            errors.append(
+                f"Detector coordinate {coord!r} has an empty probability list; "
+                "expected at least one round value."
+            )
+        else:
+            if not np.all(np.isfinite(values)):
+                errors.append(
+                    f"Detector coordinate {coord!r} contains a non-finite "
+                    "probability value (NaN or inf)."
+                )
+            if np.any((values < 0) | (values > 1)):
+                errors.append(
+                    f"Detector coordinate {coord!r} contains a probability "
+                    "outside [0, 1]."
+                )
+    if errors:
+        raise ValueError(
+            "Invalid detection_probabilities:\n"
+            + "\n".join(f"  - {err}" for err in errors)
+        )
+
+
 def _aggregate_probabilities(
     detection_probabilities: dict[tuple[float, ...], list[float]],
     mode: DetectionProbabilityAggregation = DetectionProbabilityAggregation.MEAN,
@@ -373,7 +425,9 @@ def plot_detection_probability_on_patch(
 
     Raises:
         ValueError: If ``fig`` and ``ax`` are not both ``None`` or both set, or
-            if an unknown style is given.
+            if an unknown style is given, or if ``vmin`` is greater than
+            ``vmax``, or if any detection probability input is invalid, or if
+            no coordinates match the code's stabiliser ancillas.
 
     Examples:
 
@@ -411,15 +465,28 @@ def plot_detection_probability_on_patch(
         msg = f"Unknown style: {style!r}. Expected 'plaquette' or 'heatmap'."
         raise ValueError(msg)
 
+    if vmin is not None and vmax is not None and vmin > vmax:
+        msg = f"vmin ({vmin}) cannot be greater than vmax ({vmax})."
+        raise ValueError(msg)
+
+    _validate_detection_probabilities(detection_probabilities)
+
     aggregated = _aggregate_probabilities(
         detection_probabilities, mode, include_outlier_rounds
     )
 
     if not aggregated:
-        msg = "The detection_probabilities dict is empty. Nothing to plot."
+        msg = (
+            "detection_probabilities is empty; "
+            "provide at least one detector coordinate with probability values."
+        )
         raise ValueError(msg)
 
     ancilla_values = _match_ancilla_coords(aggregated, code)
+
+    if not ancilla_values:
+        msg = "Detector coordinates do not match any stabiliser ancilla coordinates."
+        raise ValueError(msg)
 
     if fig is None and ax is None:
         fig, ax = plt.subplots()
