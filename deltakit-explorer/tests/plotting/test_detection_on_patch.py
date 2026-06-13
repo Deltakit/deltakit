@@ -53,12 +53,12 @@ def detection_probabilities() -> dict[tuple[float, float], list[float]]:
 
 
 class TestDetectionOnPatch:
-    def test_output_type(self, code, detection_probabilities):
+    def test_output_type(self, code, detection_probabilities) -> None:
         fig, ax = plot_detection_probability_on_patch(code, detection_probabilities)
         assert isinstance(fig, plt.Figure)
         assert isinstance(ax, plt.Axes)
 
-    def test_custom_fig_ax(self, code, detection_probabilities):
+    def test_custom_fig_ax(self, code, detection_probabilities) -> None:
         fig, ax = plt.subplots()
         fig_out, ax_out = plot_detection_probability_on_patch(
             code, detection_probabilities, fig=fig, ax=ax
@@ -66,18 +66,18 @@ class TestDetectionOnPatch:
         assert fig_out is fig
         assert ax_out is ax
 
-    def test_average_mode(self, code, detection_probabilities):
+    def test_average_mode(self, code, detection_probabilities) -> None:
         _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="average"
         )
         assert len(ax.patches) == 8
 
-    def test_plaquette_patch_shapes(self, code, detection_probabilities):
+    def test_plaquette_patch_shapes(self, code, detection_probabilities) -> None:
         _, ax = plot_detection_probability_on_patch(code, detection_probabilities)
         assert sum(isinstance(patch, Polygon) for patch in ax.patches) == 8
         assert not ax.axison
 
-    def test_heatmap_patch_shapes(self, code, detection_probabilities):
+    def test_heatmap_patch_shapes(self, code, detection_probabilities) -> None:
         _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, style="heatmap"
         )
@@ -85,54 +85,56 @@ class TestDetectionOnPatch:
         assert sum(isinstance(patch, Circle) for patch in ax.patches) == 4
         assert not ax.axison
 
-    def test_median_mode(self, code, detection_probabilities):
+    def test_median_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="median"
         )
         assert isinstance(fig, plt.Figure)
 
-    def test_variance_mode(self, code, detection_probabilities):
+    def test_variance_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="variance"
         )
         assert isinstance(fig, plt.Figure)
 
-    def test_no_colorbar(self, code, detection_probabilities):
+    def test_no_colorbar(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, show_colorbar=False
         )
         assert isinstance(fig, plt.Figure)
         assert len(fig.axes) == 1
 
-    def test_custom_cmap(self, code, detection_probabilities):
+    def test_custom_cmap(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, cmap="plasma"
         )
         assert isinstance(fig, plt.Figure)
 
-    def test_fixed_vmin_vmax(self, code, detection_probabilities):
+    def test_fixed_vmin_vmax(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, vmin=0.0, vmax=0.5
         )
         assert isinstance(fig, plt.Figure)
 
-    def test_missing_ancilla_coords(self, code):
+    def test_missing_ancilla_coords(self, code) -> None:
         partial_data = {(0.0, 2.0): [0.05, 0.08, 0.07, 0.09]}
         fig, _ = plot_detection_probability_on_patch(code, partial_data)
         assert isinstance(fig, plt.Figure)
 
-    def test_empty_raises(self, code):
+    def test_empty_raises(self, code) -> None:
         with pytest.raises(ValueError, match="empty"):
             plot_detection_probability_on_patch(code, {})
 
-    def test_fig_ax_mismatch_raises(self, code, detection_probabilities):
+    def test_fig_ax_mismatch_raises(self, code, detection_probabilities) -> None:
         fig = plt.figure()
         with pytest.raises(ValueError, match="both None or both set"):
             plot_detection_probability_on_patch(
                 code, detection_probabilities, fig=fig, ax=None
             )
 
-    def test_plot_matches_reference(self, code, detection_probabilities, tmp_path):
+    def test_plot_matches_reference(
+        self, code, detection_probabilities, tmp_path
+    ) -> None:
         fig, _ = plot_detection_probability_on_patch(code, detection_probabilities)
         path = tmp_path / "detection_on_patch.png"
         fig.savefig(path)
@@ -141,30 +143,48 @@ class TestDetectionOnPatch:
         assert loaded.ndim == 3
         assert loaded.shape[-1] in (3, 4)
 
+    def test_include_outlier_rounds_flag(self, code, detection_probabilities) -> None:
+        fig, _ = plot_detection_probability_on_patch(
+            code, detection_probabilities, include_outlier_rounds=False
+        )
+        assert isinstance(fig, plt.Figure)
+
+    def test_variance_includes_outliers_by_default(
+        self, code, detection_probabilities
+    ) -> None:
+        fig, _ = plot_detection_probability_on_patch(
+            code, detection_probabilities, mode="variance"
+        )
+        assert isinstance(fig, plt.Figure)
+
 
 class TestAggregateProbabilities:
-    def test_average(self):
+    def test_average(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2, 0.3]}
         result = _aggregate_probabilities(data, mode="average")
         assert result[(0.0, 2.0)] == pytest.approx(0.2)
 
-    def test_median(self):
+    def test_median(self) -> None:
         data = {(0.0, 2.0): [0.3, 0.1, 0.2]}
         result = _aggregate_probabilities(data, mode="median")
         assert result[(0.0, 2.0)] == pytest.approx(0.2)
 
-    def test_variance_removes_outliers(self):
+    def test_variance_excludes_outliers_with_flag(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
-        result = _aggregate_probabilities(data, mode="variance")
+        result = _aggregate_probabilities(
+            data, mode="variance", include_outlier_rounds=False
+        )
         inner = [0.5, 0.5]
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var(inner)))
 
-    def test_variance_short_no_removal(self):
+    def test_variance_short_no_removal(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2]}
-        result = _aggregate_probabilities(data, mode="variance")
+        result = _aggregate_probabilities(
+            data, mode="variance", include_outlier_rounds=False
+        )
         assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.2])))
 
-    def test_multiple_coords(self):
+    def test_multiple_coords(self) -> None:
         data = {
             (0.0, 2.0): [0.1, 0.2],
             (2.0, 2.0): [0.3, 0.4],
@@ -174,14 +194,64 @@ class TestAggregateProbabilities:
         assert result[(0.0, 2.0)] == pytest.approx(0.15)
         assert result[(2.0, 2.0)] == pytest.approx(0.35)
 
-    def test_unknown_mode_raises(self):
+    def test_variance_includes_all_rounds_by_default(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(data, mode="variance")
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.5, 0.5, 0.1])))
+
+    def test_unknown_mode_raises(self) -> None:
         data = {(0.0, 2.0): [0.1, 0.2]}
         with pytest.raises(ValueError, match="Unknown mode"):
             _aggregate_probabilities(data, mode="mean")
 
+    def test_include_outlier_rounds_true_average(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(
+            data, mode="average", include_outlier_rounds=True
+        )
+        assert result[(0.0, 2.0)] == pytest.approx(0.3)
+
+    def test_include_outlier_rounds_false_average(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(
+            data, mode="average", include_outlier_rounds=False
+        )
+        inner = [0.5, 0.5]
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.mean(inner)))
+
+    def test_include_outlier_rounds_true_variance(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(
+            data, mode="variance", include_outlier_rounds=True
+        )
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.var([0.1, 0.5, 0.5, 0.1])))
+
+    def test_include_outlier_rounds_false_variance(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.5, 0.5, 0.1]}
+        result = _aggregate_probabilities(
+            data, mode="variance", include_outlier_rounds=False
+        )
+        inner = [0.5, 0.5]
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.var(inner)))
+
+    def test_include_outlier_rounds_false_median(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.3, 0.5, 0.9]}
+        result = _aggregate_probabilities(
+            data, mode="median", include_outlier_rounds=False
+        )
+        inner = [0.3, 0.5]
+        assert result[(0.0, 2.0)] == pytest.approx(float(np.median(inner)))
+
+    def test_include_outlier_rounds_false_short_list(self) -> None:
+        data = {(0.0, 2.0): [0.1, 0.2]}
+        result = _aggregate_probabilities(
+            data, mode="average", include_outlier_rounds=False
+        )
+        assert result[(0.0, 2.0)] == pytest.approx(0.15)
+
 
 class TestMatchAncillaCoords:
-    def test_basic_match(self, code):
+    def test_basic_match(self, code) -> None:
         aggregated = {
             (0.0, 2.0): 0.15,
             (2.0, 2.0): 0.25,
@@ -192,12 +262,12 @@ class TestMatchAncillaCoords:
         assert result[(0.0, 2.0)] == 0.15
         assert result[(2.0, 2.0)] == 0.25
 
-    def test_no_match(self, code):
+    def test_no_match(self, code) -> None:
         aggregated = {(99.0, 99.0): 0.5}
         result = _match_ancilla_coords(aggregated, code)
         assert result == {}
 
-    def test_partial_match(self, code):
+    def test_partial_match(self, code) -> None:
         aggregated = {
             (0.0, 2.0): 0.15,
             (99.0, 99.0): 0.5,
@@ -206,7 +276,7 @@ class TestMatchAncillaCoords:
         assert (0.0, 2.0) in result
         assert (99.0, 99.0) not in result
 
-    def test_tolerance(self, code):
+    def test_tolerance(self, code) -> None:
         aggregated = {
             (0.0005, 2.0005): 0.15,
         }
@@ -216,19 +286,19 @@ class TestMatchAncillaCoords:
 
 
 class TestDetectionOnPatchPlaquette:
-    def test_plaquette_default_style(self, code, detection_probabilities):
+    def test_plaquette_default_style(self, code, detection_probabilities) -> None:
         fig, ax = plot_detection_probability_on_patch(code, detection_probabilities)
         assert isinstance(fig, plt.Figure)
         assert all(isinstance(p, Polygon) for p in ax.patches)
 
-    def test_plaquette_explicit(self, code, detection_probabilities):
+    def test_plaquette_explicit(self, code, detection_probabilities) -> None:
         fig, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, style="plaquette"
         )
         assert isinstance(fig, plt.Figure)
         assert all(isinstance(p, Polygon) for p in ax.patches)
 
-    def test_plaquette_data_qubits(self, code, detection_probabilities):
+    def test_plaquette_data_qubits(self, code, detection_probabilities) -> None:
         _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, show_data_qubits=True
         )
@@ -236,27 +306,29 @@ class TestDetectionOnPatchPlaquette:
         assert len(circles) > 0
         assert any(p.radius == 0.12 for p in circles)
 
-    def test_plaquette_no_data_qubits_default(self, code, detection_probabilities):
+    def test_plaquette_no_data_qubits_default(
+        self, code, detection_probabilities
+    ) -> None:
         _, ax = plot_detection_probability_on_patch(
             code, detection_probabilities, style="plaquette"
         )
         circles = [p for p in ax.patches if isinstance(p, Circle)]
         assert len(circles) == 0
 
-    def test_plaquette_no_colorbar(self, code, detection_probabilities):
+    def test_plaquette_no_colorbar(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, show_colorbar=False, style="plaquette"
         )
         assert isinstance(fig, plt.Figure)
         assert len(fig.axes) == 1
 
-    def test_plaquette_variance_mode(self, code, detection_probabilities):
+    def test_plaquette_variance_mode(self, code, detection_probabilities) -> None:
         fig, _ = plot_detection_probability_on_patch(
             code, detection_probabilities, mode="variance", style="plaquette"
         )
         assert isinstance(fig, plt.Figure)
 
-    def test_plaquette_custom_fig_ax(self, code, detection_probabilities):
+    def test_plaquette_custom_fig_ax(self, code, detection_probabilities) -> None:
         fig, ax = plt.subplots()
         fig_out, ax_out = plot_detection_probability_on_patch(
             code, detection_probabilities, fig=fig, ax=ax, style="plaquette"
@@ -264,7 +336,7 @@ class TestDetectionOnPatchPlaquette:
         assert fig_out is fig
         assert ax_out is ax
 
-    def test_unknown_style_raises(self, code, detection_probabilities):
+    def test_unknown_style_raises(self, code, detection_probabilities) -> None:
         with pytest.raises(ValueError, match="Unknown style"):
             plot_detection_probability_on_patch(
                 code,
@@ -272,7 +344,7 @@ class TestDetectionOnPatchPlaquette:
                 style="invalid",  # type: ignore[arg-type]
             )
 
-    def test_plaquette_missing_ancilla_coords(self, code):
+    def test_plaquette_missing_ancilla_coords(self, code) -> None:
         partial_data = {(0.0, 2.0): [0.05, 0.08, 0.07, 0.09]}
         fig, _ = plot_detection_probability_on_patch(
             code, partial_data, style="plaquette"
@@ -281,7 +353,7 @@ class TestDetectionOnPatchPlaquette:
 
 
 class TestStabiliserVertices:
-    def test_weight_4_has_4_vertices(self, code):
+    def test_weight_4_has_4_vertices(self, code) -> None:
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
@@ -291,7 +363,7 @@ class TestStabiliserVertices:
                     vertices = _stabiliser_vertices(stabiliser)
                     assert len(vertices) == 4
 
-    def test_weight_2_has_3_vertices(self, code):
+    def test_weight_2_has_3_vertices(self, code) -> None:
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
@@ -301,7 +373,7 @@ class TestStabiliserVertices:
                     vertices = _stabiliser_vertices(stabiliser)
                     assert len(vertices) == 3
 
-    def test_polygon_is_counter_clockwise(self, code):
+    def test_polygon_is_counter_clockwise(self, code) -> None:
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:
                 if stabiliser.ancilla_qubit is None:
@@ -318,7 +390,7 @@ class TestStabiliserVertices:
                 area /= 2.0
                 assert area > 0, f"Polygon area should be positive, got {area}"
 
-    def test_vertices_close_to_data_qubits(self, code):
+    def test_vertices_close_to_data_qubits(self, code) -> None:
         data_coords = {
             (float(q.unique_identifier.x), float(q.unique_identifier.y))
             for q in code.data_qubits
@@ -340,7 +412,7 @@ class TestStabiliserVertices:
                     )
                     assert matches, f"Vertex {v} not found in data/ancilla qubits"
 
-    def test_no_ancilla_raises(self, code):
+    def test_no_ancilla_raises(self, code) -> None:
         stabiliser_no_anc = None
         for stabilisers_group in code.stabilisers:
             for stabiliser in stabilisers_group:

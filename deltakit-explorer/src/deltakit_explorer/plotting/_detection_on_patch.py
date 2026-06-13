@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 def _aggregate_probabilities(
     detection_probabilities: dict[tuple[float, ...], list[float]],
     mode: Literal["average", "median", "variance"],
+    include_outlier_rounds: bool = True,
 ) -> dict[tuple[float, float], float]:
     """Aggregate per-round detection probabilities into a single value per coordinate.
 
@@ -25,7 +26,10 @@ def _aggregate_probabilities(
         mode: Aggregation mode:
             - ``"average"``: mean of all rounds.
             - ``"median"``: median of all rounds.
-            - ``"variance"``: variance excluding first and last rounds.
+            - ``"variance"``: variance of all rounds.
+        include_outlier_rounds: If ``True`` (default), all rounds are included.
+            If ``False``, the first and last rounds (which are expected to be
+            outliers) are excluded for all modes.
 
     Returns:
         Mapping from (x, y) coordinate pairs to the aggregated probability value.
@@ -37,14 +41,14 @@ def _aggregate_probabilities(
     result: dict[tuple[float, float], float] = {}
     for coord, rates in detection_probabilities.items():
         values = np.asarray(rates)
+        if not include_outlier_rounds and len(values) > 2:
+            values = values[1:-1]
         match mode:
             case "average":
                 result[coord[:2]] = float(np.mean(values))
             case "median":
                 result[coord[:2]] = float(np.median(values))
             case "variance":
-                if len(values) > 2:
-                    values = values[1:-1]
                 result[coord[:2]] = float(np.var(values))
             case _:
                 msg = f"Unknown mode: {mode!r}. Expected one of 'average', 'median', 'variance'."
@@ -137,14 +141,13 @@ class HeatmapPosition(NamedTuple):
         y: Heatmap row index.
     """
 
-    patch_type: str
+    patch_type: Literal["square", "circle"]
     x: float
     y: float
 
 
 def _heatmap_patch_position(
-    stabiliser: Stabiliser,
-    code: PlanarCode,
+    stabiliser: Stabiliser, code: PlanarCode
 ) -> HeatmapPosition:
     """Map a stabiliser to a square-grid heatmap position.
 
@@ -315,6 +318,7 @@ def plot_detection_probability_on_patch(
     *,
     mode: Literal["average", "median", "variance"] = "average",
     style: Literal["plaquette", "heatmap"] = "plaquette",
+    include_outlier_rounds: bool = True,
     cmap: str = "viridis",
     vmin: float | None = None,
     vmax: float | None = None,
@@ -342,6 +346,9 @@ def plot_detection_probability_on_patch(
         mode: How to aggregate the per-round values into a single number per detector.
         style: Visual style — ``"plaquette"`` fills the code plaquettes,
             ``"heatmap"`` uses a simplified square-and-circle grid.
+        include_outlier_rounds: Whether to include the first and last round
+            (expected outliers). If ``True`` (default), all rounds are used for
+            all modes. If ``False``, the first and last rounds are excluded.
         cmap: Matplotlib colour-map name for mapping probabilities to colours.
         vmin: Lower bound of the colour scale. If ``None``, inferred from data.
         vmax: Upper bound of the colour scale. If ``None``, inferred from data.
@@ -394,7 +401,9 @@ def plot_detection_probability_on_patch(
         msg = f"Unknown style: {style!r}. Expected 'plaquette' or 'heatmap'."
         raise ValueError(msg)
 
-    aggregated = _aggregate_probabilities(detection_probabilities, mode)
+    aggregated = _aggregate_probabilities(
+        detection_probabilities, mode, include_outlier_rounds
+    )
 
     if not aggregated:
         msg = "The detection_probabilities dict is empty. Nothing to plot."
