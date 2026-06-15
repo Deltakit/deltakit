@@ -539,7 +539,10 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             # Append a tick after every gate layer but not after the last one
             if isinstance(layer, GateLayer) and layer is not last_gate_layer:
                 inner_stim_circuit.append("TICK")
-        stim_circuit += self.iterations * inner_stim_circuit
+        if self.iterations > 1:
+            inner_stim_circuit.append("TICK")
+            inner_stim_circuit = self.iterations * inner_stim_circuit
+        stim_circuit += inner_stim_circuit
 
     def as_detector_error_model(  # noqa: PLR0913
         self,
