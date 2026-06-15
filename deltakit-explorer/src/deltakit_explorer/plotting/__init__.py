@@ -11,7 +11,7 @@ from deltakit_explorer.plotting._detection_on_patch import (
     plot_detection_probability_on_patch,
 )
 from deltakit_explorer.plotting._lambda import plot_lambda
-from deltakit_explorer.plotting._leppr import plot_logical_error_probability_per_round
+from deltakit_explorer.plotting._leppr import plot_leppr
 from deltakit_explorer.plotting.plotting import plot
 from deltakit_explorer.plotting.results import (
     LambdaResult,

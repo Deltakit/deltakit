@@ -7,9 +7,9 @@ from deltakit_decode._mwpm_decoder import PyMatchingDecoder
 from deltakit_decode.analysis._matching_decoder_managers import StimDecoderManager
 
 from deltakit_explorer.analysis import (
+    calculate_lep_and_lep_stddev,
     simulate_different_round_numbers_for_lep_per_round_estimation,
 )
-from deltakit_explorer.analysis._analysis import calculate_lep_and_lep_stddev
 from deltakit_explorer.analysis.error_budget._memory import (
     MemoryGenerator,
     get_rotated_surface_code_memory_circuit,

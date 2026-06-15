@@ -1,118 +1,74 @@
-from collections.abc import Sequence
+# (c) Copyright Riverlane 2020-2025.
+"""Plotting helpers for logical-error-probability-per-round results."""
 
-import matplotlib.pyplot as plt
-import numpy as np
-import numpy.typing as npt
+from __future__ import annotations
+
 from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis import LogicalErrorProbabilityPerRoundData as LEPPRData
-from deltakit_explorer.plotting.plotting import plot
-from deltakit_explorer.plotting.results import interpolate_leppr
+from deltakit_explorer.plotting._utils import get_figure_and_axes
+from deltakit_explorer.plotting.results import (
+    LogicalErrorProbabilityPerRoundResult as LEPPRResult,
+)
 
 
-def plot_logical_error_probability_per_round(
-    leppr_data: LEPPRData,
-    num_rounds: npt.NDArray[np.int_] | Sequence[int],
-    logical_error_probability: npt.NDArray[np.float64] | Sequence[float],
-    logical_error_probability_stddev: (
-        npt.NDArray[np.float64] | Sequence[float] | None
-    ) = None,
+def plot_leppr(
+    leppr_result: LEPPRResult,
     *,
-    num_sigmas: int = 3,
     fig: Figure | None = None,
     ax: Axes | None = None,
+    title: str | None = None,
 ) -> tuple[Figure, Axes]:
-    """Plot the logical error probability per round data and the fitted curve.
+    """Plot an interpolated logical error probability per round result.
+
+    LEPPR stands for logical error probability per round. This specialised
+    plotter owns only the LEPPR-specific rendering logic. It expects a
+    ready-to-plot
+    :class:`~deltakit_explorer.plotting.results.LogicalErrorProbabilityPerRoundResult`.
+    Higher-level data preparation, such as interpolation from raw LEPPR data,
+    should be handled by :func:`deltakit_explorer.plotting.plot` before dispatch.
 
     Args:
-        leppr_data: Data class containing logical error probability per round
-            fit results.
-        num_rounds: a sequence of integers representing the number of rounds
-            used to get the corresponding results in ``num_failed_shots`` and
-            ``num_shots``.
-        logical_error_probability: a sequence of floats representing the logical
-            error probabilities corresponding to the number of rounds in
-            ``num_rounds``.
-        logical_error_probability_stddev: a sequence of floats representing the
-            standard deviation of the logical error probabilities corresponding
-            to the number of rounds in ``num_rounds``. If None, no error bars
-            will be plotted. Default is None.
-        num_sigmas: number of sigmas to consider when plotting error bars.
-        fig: a matplotlib Figure object to plot on. If None, a new figure
+        leppr_result: Interpolated logical error probability per round result
+            to plot.
+        fig: A matplotlib Figure object to plot on. If None, a new figure
             will be created. Default is None.
-        ax: a matplotlib Axes object to plot on. If None, a new axes will
+        ax: A matplotlib Axes object to plot on. If None, a new axes will
             be created. Default is None.
+        title: An optional custom title for the plot. If None, the default
+            LEPPR title will be used.
 
     Returns:
         The matplotlib Figure and Axes objects containing the plot.
 
-    Example:
+    Examples:
 
-        >>> from deltakit_explorer.analysis import (
-        ...     calculate_lep_and_lep_stddev,
-        ...     compute_logical_error_per_round,
-        ... )
-        >>> num_failed_shots = [34, 151, 356]
-        >>> num_shots = [500000] * 3
-        >>> num_rounds = [2, 4, 6]
-        >>> res = compute_logical_error_per_round(
-        ...     num_failed_shots=num_failed_shots,
-        ...     num_shots=num_shots,
-        ...     num_rounds=num_rounds,
-        ... )
-        >>> lep, lep_stddev = calculate_lep_and_lep_stddev(
-        ...     fails=num_failed_shots, shots=num_shots
-        ... )
-        >>> fig, ax = plot_logical_error_probability_per_round(
-        ...     res,
-        ...     num_rounds=num_rounds,
-        ...     logical_error_probability=lep,
-        ...     logical_error_probability_stddev=lep_stddev,
-        ... )
+        Plotting an interpolated logical error probability per round result::
+
+            from deltakit_explorer.plotting import interpolate_leppr, plot_leppr
+
+            leppr_result = interpolate_leppr(leppr_data)
+            fig, ax = plot_leppr(leppr_result)
+
     """
-    if (fig is None) ^ (ax is None):
-        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
-        raise ValueError(msg)
-
-    if fig is None and ax is None:
-        fig, ax = plt.subplots()
-
-    assert ax is not None
-    assert fig is not None
-
-    lens = {len(num_rounds), len(logical_error_probability)}
-    if logical_error_probability_stddev is not None:
-        lens.add(len(logical_error_probability_stddev))
-    if len(lens) > 1:
-        msg = (
-            "The lengths of 'num_rounds', 'logical_error_probability' and "
-            "'logical_error_probability_stddev' must be the same. Got the following "
-            f"lengths: {lens}."
-        )
-        raise ValueError(msg)
-
-    isort = np.argsort(num_rounds)
-    num_rounds = np.asarray(num_rounds)[isort]
-    logical_error_probability = np.asarray(logical_error_probability)[isort]
-    if logical_error_probability_stddev is not None:
-        logical_error_probability_stddev = (
-            num_sigmas * np.asarray(logical_error_probability_stddev)[isort]
-        )
-
-    # Plot the logical error probabilities
-    ax.errorbar(
-        num_rounds,
-        logical_error_probability,
-        yerr=logical_error_probability_stddev,
-        fmt=".",
-        color=RIVERLANE_PLOT_COLOURS[0],
-        label=f"Logical error probabilities (±{num_sigmas}σ)",  # noqa: RUF001
+    fig, ax = get_figure_and_axes(fig, ax)
+    ax.plot(
+        leppr_result.rounds,
+        leppr_result.interpolated,
+        label=leppr_result.fit_label,
+        color=RIVERLANE_PLOT_COLOURS[1],
     )
-
-    leppr_result = interpolate_leppr(leppr_data, num_rounds, num_sigmas=num_sigmas)
-
-    plot(leppr_result, fig=fig, ax=ax)
-
+    ax.fill_between(
+        leppr_result.rounds,
+        leppr_result.lower_boundary,
+        leppr_result.upper_boundary,
+        label=leppr_result.confidence_interval_label,
+        color=RIVERLANE_PLOT_COLOURS[0],
+        alpha=0.2,
+    )
+    ax.set_title(title if title is not None else "Logical Error Probability per Round")
+    ax.set_xlabel("Rounds")
+    ax.set_ylabel("Logical Error Probability")
+    ax.legend()
     return fig, ax
