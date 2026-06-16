@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import stim
+import deltakit_stim as stim
 from deltakit_circuit.gates import PauliBasis
 
 from deltakit_explorer.enums._api_enums import (

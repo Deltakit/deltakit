@@ -41,9 +41,7 @@ dependencies = [
   "plotly >=5.0, <7.0",
   "pymatching~=2.2",
   "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
-  "stim>=1.12; python_version < '3.12'",
-  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim>=1.15; python_version >= '3.13'",
+  "deltakit-stim>=0.1.2,<0.2",
   "pathos~=0.3",
   # This is the first version to be compatible with numpy>=2.0 according to
   # https://pandas.pydata.org/pandas-docs/stable/whatsnew/v2.2.2.html

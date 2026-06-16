@@ -2,8 +2,8 @@
 import contextlib
 from itertools import combinations
 
+import deltakit_stim as stim
 import pytest
-import stim
 
 import deltakit_circuit as sp
 
@@ -1410,7 +1410,7 @@ class TestStimCircuit:
 
     def test_repeated_circuit_can_be_converted_into_correct_stim_circuit(self):
         circuit = sp.Circuit(sp.GateLayer(sp.gates.X(sp.Qubit(0))), iterations=4)
-        assert circuit.as_stim_circuit() == stim.Circuit("REPEAT 4 {\nX 0\n}")
+        assert circuit.as_stim_circuit() == stim.Circuit("REPEAT 4 {\nX 0\nTICK\n}")
 
     def test_deltakit_circuit_circuit_with_single_repeat_doesnt_create_stim_repeat_block(
         self,
@@ -1431,9 +1431,11 @@ class TestStimCircuit:
             TICK
             REPEAT 3 {
                 CX 0 1
+                TICK
             }
             REPEAT 5 {
                 CZ 0 1
+                TICK
             }
         """)
 
@@ -1451,7 +1453,9 @@ class TestStimCircuit:
                 TICK
                 REPEAT 3 {
                     CZ 0 1
+                    TICK
                 }
+                TICK
             }
         """)
 

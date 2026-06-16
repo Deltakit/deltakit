@@ -9,7 +9,7 @@ from collections.abc import Generator, Mapping, Sequence
 from enum import Enum
 from typing import ClassVar, Generic, TypeVar, cast
 
-import stim
+import deltakit_stim as stim
 from typing_extensions import Self
 
 from deltakit_circuit._qubit_identifiers import MeasurementRecord, Qubit, SweepBit, T, U

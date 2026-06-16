@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import deltakit_stim as stim
 import pytest
-import stim
 
 from deltakit_explorer.data._data_analysis import (
     get_binary_data_size,

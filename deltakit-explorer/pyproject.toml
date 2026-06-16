@@ -41,9 +41,7 @@ dependencies = [
   "scipy~=1.15",
   # Upper bound due to github.com/Deltakit/deltakit/issues/284
   "matplotlib>=3.10,<3.11",
-  "stim>=1.12; python_version < '3.12'",
-  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim>=1.15; python_version >= '3.13'",
+  "deltakit-stim>=0.1.2,<0.2",
   "requests~=2.32",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",

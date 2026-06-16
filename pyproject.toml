@@ -60,9 +60,7 @@ test = [
 lint = ["mypy>=1.17,<3.0", "ruff~=0.14", "typos~=1.34", "deptry~=0.23", "pydoclint~=0.8"]
 docs_extras = [
   "tqdm~=4.67",
-  "stim>=1.12; python_version < '3.12'",
-  "stim>=1.13; python_version >= '3.12' and python_version < '3.13'",
-  "stim>=1.15; python_version >= '3.13'",
+  "deltakit-stim>=0.1.2,<0.2",
   "numpy~=2.0",
   "matplotlib~=3.10,>=3.10.7",
   "pandas~=2.2,>=2.2.2",
@@ -70,7 +68,7 @@ docs_extras = [
 docs = [
   { include-group = "docs_extras" },
   "myst_nb>=1.0",
-  "sphinxawesome-theme>=5.3,<6.0.3",
+  "sphinxawesome-theme>=5.3,<6.0.6",
   "sphinx-autodoc-typehints>=3.0",
   "sphinx-copybutton>=0.5",
   "sphinx-design>=0.6",

@@ -10,7 +10,7 @@ from enum import IntEnum, auto
 from itertools import chain
 from typing import Generic, Literal, Protocol, get_args, no_type_check
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._annotations._observable import Observable
@@ -539,7 +539,10 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
             # Append a tick after every gate layer but not after the last one
             if isinstance(layer, GateLayer) and layer is not last_gate_layer:
                 inner_stim_circuit.append("TICK")
-        stim_circuit += self.iterations * inner_stim_circuit
+        if self.iterations > 1:
+            inner_stim_circuit.append("TICK")
+            inner_stim_circuit = self.iterations * inner_stim_circuit
+        stim_circuit += inner_stim_circuit
 
     def as_detector_error_model(  # noqa: PLR0913
         self,
@@ -602,7 +605,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
 
         Examples
         --------
-        >>> import stim
+        >>> import deltakit_stim as stim
         >>> import deltakit_circuit as sp
         >>> stim_circuit = stim.Circuit('''
         ... X 0 1 2

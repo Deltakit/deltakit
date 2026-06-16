@@ -1,18 +1,13 @@
 # (c) Copyright Riverlane 2020-2025.
-from importlib.metadata import version
 
 import pytest
 from deltakit_circuit import PauliX, PauliZ, Qubit
 from deltakit_circuit._basic_types import Coord2D
-from packaging.version import Version
-from stim import PauliString
+from deltakit_stim import PauliString
 
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
     pauli_gates_to_stim_pauli_string,
 )
-
-CURRENT_STIM_VERSION = Version(version("stim"))
-STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 class TestPauliGatesToStimPauliString:
@@ -52,14 +47,6 @@ class TestPauliGatesToStimPauliString:
         ):
             pauli_gates_to_stim_pauli_string(pauli_gates, data_qubit_to_index_lookup)
 
-    @pytest.mark.skipif(
-        CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0,
-        reason=(
-            "Parsing Pauli strings with indices has been introduced in Stim v1.13.0."
-            "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0."
-            f"Current Stim version is {CURRENT_STIM_VERSION}."
-        ),
-    )
     @pytest.mark.parametrize(
         ("pauli_gates", "data_qubit_to_index_lookup", "expected_pauli_string"),
         [

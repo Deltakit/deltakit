@@ -4,10 +4,10 @@ from __future__ import annotations
 from collections.abc import Iterable
 from functools import cached_property
 
+import deltakit_stim as stim
 import networkx as nx
 import numpy as np
 import pymatching
-import stim
 from deltakit_circuit import Circuit
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,

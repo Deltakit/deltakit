@@ -11,9 +11,9 @@ from collections.abc import Collection, Iterable
 import numpy as np
 from deltakit_circuit import PauliX, PauliY, PauliZ, Qubit
 from deltakit_circuit._qubit_identifiers import _PauliGate
+from deltakit_stim import PauliString, Tableau
 from ldpc import mod2
 from numpy.typing import NDArray
-from stim import PauliString, Tableau
 
 from deltakit_explorer.codes._css._stabiliser_helper_functions import (
     pauli_gates_to_stim_pauli_string,

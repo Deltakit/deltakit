@@ -6,7 +6,7 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from itertools import chain
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
 from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available

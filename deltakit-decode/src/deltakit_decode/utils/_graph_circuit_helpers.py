@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 """Module containing useful functions to aid in the interaction of decoding graphs and Stim circuits."""
 
-import stim
+import deltakit_stim as stim
 from deltakit_circuit import Circuit, trim_detectors
 from deltakit_core.decoding_graphs import (
     DecodingEdge,

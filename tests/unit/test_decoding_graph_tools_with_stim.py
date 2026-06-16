@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from pathlib import Path
 
+import deltakit_stim as stim
 import pytest
-import stim
 from deltakit_core.decoding_graphs import NXDecodingGraph
 from deltakit_core.decoding_graphs._decoding_graph_tools import (
     compute_graph_distance,

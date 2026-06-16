@@ -5,13 +5,13 @@ from packaging.version import Version
 
 def _get_stim_version() -> Version | None:
     try:
-        return Version(version("stim"))
+        return Version(version("deltakit_stim"))
     except PackageNotFoundError:
         return None
 
 
 _INSTALLED_STIM_VERSION = _get_stim_version()
-_LOWEST_STIM_VERSION_WITH_TAG_FEATURE = Version("1.15")
+_LOWEST_STIM_VERSION_WITH_TAG_FEATURE = Version("0.1.2")
 
 
 def is_stim_tag_feature_available() -> bool:

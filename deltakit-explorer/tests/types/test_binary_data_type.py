@@ -1,9 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 from __future__ import annotations
 
+import deltakit_stim as stim
 import numpy as np
 import pytest
-import stim
 
 from deltakit_explorer.enums import DataFormat
 from deltakit_explorer.types import (

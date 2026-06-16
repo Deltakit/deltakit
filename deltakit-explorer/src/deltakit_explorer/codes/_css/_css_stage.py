@@ -8,7 +8,7 @@ import itertools
 from collections.abc import Iterable, Mapping, Sequence
 from functools import cached_property
 
-import stim
+import deltakit_stim as stim
 from deltakit_circuit import Circuit, Coordinate, GateLayer, Qubit
 from deltakit_circuit._basic_maps import BASIS_TO_PAULI
 from deltakit_circuit.gates import (

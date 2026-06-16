@@ -7,9 +7,9 @@ from __future__ import annotations
 
 import os
 
+import deltakit_stim as stim
 import numpy as np
 import numpy.typing as npt
-import stim
 
 from deltakit_explorer import simulation
 from deltakit_explorer._api._api_client import APIClient

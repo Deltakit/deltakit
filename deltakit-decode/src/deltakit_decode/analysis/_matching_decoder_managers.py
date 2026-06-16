@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any, TypeAlias
 from warnings import warn
 
+import deltakit_stim as stim
 import numpy as np
 import numpy.typing as npt
-import stim
 from deltakit_core.data_formats import b8_to_logical_flip, b8_to_syndromes
 from deltakit_core.decoding_graphs import (
     DecodingHyperEdge,
