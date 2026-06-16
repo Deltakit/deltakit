@@ -79,19 +79,28 @@ class TestCalculateLep:
 
     def test_calculate_lep_returns_correct_values_with_scalars(self):
         true_lep = 0.1
-        true_lep_stddev = 0.00948683  # copied from above
-        lep, lep_stddev = calculate_lep_and_lep_stddev(fails=100, shots=1000)
+        # Asymmetric (Wilson score, 1-sigma) errors around lep = 0.1, n = 1000.
+        true_lep_error_low = 0.00909091
+        true_lep_error_high = 0.00989011
+        lep, lep_error_low, lep_error_high = calculate_lep_and_lep_stddev(
+            fails=100, shots=1000
+        )
         np.testing.assert_allclose(lep, true_lep)
-        np.testing.assert_allclose(lep_stddev, true_lep_stddev, atol=1e-8)
+        np.testing.assert_allclose(lep_error_low, true_lep_error_low, atol=1e-8)
+        np.testing.assert_allclose(lep_error_high, true_lep_error_high, atol=1e-8)
+        # The interval is asymmetric: the upper error is larger than the lower.
+        assert lep_error_high > lep_error_low
 
     def test_calculate_lep_returns_correct_values(self):
         true_leps = [0.1, 0.02, 0.005]
-        true_lep_stddevs = [0.00948683, 0.00442719, 0.00223047]
-        leps, lep_stddevs = calculate_lep_and_lep_stddev(
+        true_lep_error_lows = [0.00909091, 0.00397136, 0.00178904]
+        true_lep_error_highs = [0.00989011, 0.0049304, 0.00277805]
+        leps, lep_error_lows, lep_error_highs = calculate_lep_and_lep_stddev(
             fails=[100, 20, 5], shots=1000
         )
         np.testing.assert_allclose(leps, true_leps)
-        np.testing.assert_allclose(lep_stddevs, true_lep_stddevs, atol=1e-8)
+        np.testing.assert_allclose(lep_error_lows, true_lep_error_lows, atol=1e-8)
+        np.testing.assert_allclose(lep_error_highs, true_lep_error_highs, atol=1e-8)
 
 
 class TestGetLambdaFit:

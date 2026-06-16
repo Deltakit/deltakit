@@ -29,7 +29,7 @@ class TestLEPPerRoundComputation:
         lep *= 1 - random_generator.normal(0, 1e-4, lep.size)
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
 
-        res = compute_logical_error_per_round(rounds, lep, lep_stddev)
+        res = compute_logical_error_per_round(rounds, lep, lep_stddev, lep_stddev)
         # Test that the estimated quantities are within 3*sigma of the real one.
         assert pytest.approx(res.leppr, abs=4 * res.leppr_stddev) == leppr
         assert (
@@ -52,7 +52,7 @@ class TestLEPPerRoundComputation:
 
         message = "^Multiple entries were provided for the following number of rounds:"
         with pytest.raises(RuntimeError, match=message):
-            compute_logical_error_per_round(nprounds, lep, lep_stddev)
+            compute_logical_error_per_round(nprounds, lep, lep_stddev, lep_stddev)
 
     @pytest.mark.parametrize(
         "rounds", [[0, 1, 2, 3, 4], [-1, 4, 5, 7], [8, 4, 0, 5, -1, -34]]
@@ -65,7 +65,7 @@ class TestLEPPerRoundComputation:
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
 
         with pytest.warns(UserWarning) as reporter:
-            compute_logical_error_per_round(nprounds, lep, lep_stddev)
+            compute_logical_error_per_round(nprounds, lep, lep_stddev, lep_stddev)
         # Check that at least the "invalid number of rounds" warning has been raised
         # once or more.
         pattern = r"Found an invalid number of rounds: -?[0-9]+"
@@ -80,8 +80,12 @@ class TestLEPPerRoundComputation:
         num_failed_shots = [9949, 8434, 9649, 9926]
         num_shots = [50000, 20000, 20000, 20000]
         num_rounds = [5, 10, 15, 20]
-        lep, lep_stddev = calculate_lep_and_lep_stddev(num_failed_shots, num_shots)
-        res = compute_logical_error_per_round(num_rounds, lep, lep_stddev)
+        lep, lep_error_low, lep_error_high = calculate_lep_and_lep_stddev(
+            num_failed_shots, num_shots
+        )
+        res = compute_logical_error_per_round(
+            num_rounds, lep, lep_error_low, lep_error_high
+        )
 
         assert pytest.approx(res.leppr, 3 * res.leppr_stddev) == 0.11912
 
@@ -92,26 +96,32 @@ class TestLEPPerRoundComputation:
         )
         with pytest.warns(UserWarning, match=message):
             compute_logical_error_per_round(
-                [2, 4, 6], [0.01, 0.02, 0.03], [1e-12, 1e-12, 1e-12]
+                [2, 4, 6],
+                [0.01, 0.02, 0.03],
+                [1e-12, 1e-12, 1e-12],
+                [1e-12, 1e-12, 1e-12],
             )
 
     def test_warn_when_invalid_lep(self):
         message = (
-            r"Found at least one invalid \(i.e., > 0.5\) logical error probability. "
-            "Ignoring all the provided logical error probabilities above 0.5."
+            r"Found at least one invalid \(i.e., >= 0.5\) logical error probability. "
+            "Ignoring all the provided logical error probabilities at or above 0.5."
         )
         with pytest.warns(UserWarning, match=message):
             compute_logical_error_per_round(
-                [2, 4, 6], [0.2, 0.4, 0.6], [1e-12, 1e-12, 1e-12]
+                [2, 4, 6],
+                [0.2, 0.4, 0.6],
+                [1e-12, 1e-12, 1e-12],
+                [1e-12, 1e-12, 1e-12],
             )
 
     def test_raise_on_empty_input(self):
         msg = "No valid data was provided\\..+"
         with pytest.raises(ValueError, match=msg):
-            compute_logical_error_per_round([], [], [])
+            compute_logical_error_per_round([], [], [], [])
 
         with pytest.raises(ValueError, match=msg), pytest.warns(UserWarning):
-            compute_logical_error_per_round([0], [0.1], [0.001])
+            compute_logical_error_per_round([0], [0.1], [0.001], [0.001])
 
     def test_warn_when_linear_fit_is_bad(self):
         f_0 = 1 - 0.01
@@ -139,7 +149,7 @@ class TestLEPPerRoundComputation:
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
         message = r"Got a R2 value of -?[0-9]+\.[0-9]+ < 0.98."
         with pytest.warns(UserWarning, match=message):
-            compute_logical_error_per_round(rounds, lep, lep_stddev)
+            compute_logical_error_per_round(rounds, lep, lep_stddev, lep_stddev)
 
     @pytest.mark.parametrize("leppr", [5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2])
     def test_single_point_fit(self, leppr: float) -> None:
@@ -149,7 +159,9 @@ class TestLEPPerRoundComputation:
         lep_stddev = lep * (1 - lep) / sqrt(100_000)
 
         with pytest.warns(UserWarning) as warning_collector:
-            res = compute_logical_error_per_round([rounds], [lep], [lep_stddev])
+            res = compute_logical_error_per_round(
+                [rounds], [lep], [lep_stddev], [lep_stddev]
+            )
         expected_message = (
             "^Only one valid data-point provided for logical error probability per "
             "round. Continuing computation assuming that SPAM error is negligible.$"

@@ -53,6 +53,7 @@ dependencies = [
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
   "ldpc~=2.2",
+  "sinter~=1.15.0"
 ]
 
 [project.urls]
