@@ -11,8 +11,8 @@ from dataclasses import dataclass
 from functools import reduce
 from operator import mul
 
+import deltakit_stim as stim
 import numpy as np
-import stim
 from deltakit_circuit import Circuit, GateLayer, Layer, Qubit
 from deltakit_circuit.gates import (
     CX,

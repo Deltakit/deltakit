@@ -10,7 +10,7 @@ from enum import IntEnum, auto
 from itertools import chain
 from typing import Generic, Literal, Protocol, get_args, no_type_check
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._annotations._detector import Detector
 from deltakit_circuit._annotations._observable import Observable
@@ -605,7 +605,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
 
         Examples
         --------
-        >>> import stim
+        >>> import deltakit_stim as stim
         >>> import deltakit_circuit as sp
         >>> stim_circuit = stim.Circuit('''
         ... X 0 1 2

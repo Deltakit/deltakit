@@ -1,8 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 
 import deltakit_circuit as sp
+import deltakit_stim as stim
 import pytest
-import stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,

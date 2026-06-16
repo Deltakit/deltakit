@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-import stim
+import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import Coordinate
 from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available

@@ -10,7 +10,7 @@ import functools
 import itertools
 from typing import Any
 
-import stim
+import deltakit_stim as stim
 import tqdm
 
 from deltakit_explorer._utils._logging import Logging

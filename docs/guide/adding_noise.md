@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.2
+    jupytext_version: 1.19.3
 kernelspec:
   name: python3
   display_name: Python 3 (ipykernel)
@@ -47,10 +47,11 @@ so you may have to sacrifice model accuracy for simulation speed.
 
 ## Practical solution
 
-The [Stim](https://github.com/quantumlib/Stim) library offers tools for both quick simulation (thanks to its limitation to Clifford gates)
+The [Deltakit-Stim](https://github.com/Deltakit/deltakit-stim) an extension to the [Stim](https://github.com/quantumlib/Stim) library
+to non-computational errors offers tools for both quick simulation (thanks to its limitation to Clifford gates)
 and a reasonably rich palette of error mechanisms,
 which may be used to approximate different types of noise.
-Deltakit benefits from both Stim's simulation and error implementation approaches.
+Deltakit benefits from both Deltakit-Stim's simulation and error implementation approaches.
 You may read about these building blocks in detail in the
 [Noise Channels section](https://github.com/quantumlib/Stim/blob/main/doc/gates.md)
 of the Stim documentation.
@@ -68,7 +69,7 @@ each time a gate or measurement is executed, or when a qubit remains idle.
 Please refer to the documentation for this class.
 
 All other noise models in Deltakit inherit from this class.
-It defines a uniform way of adding Stim noise channels to the circuit.
+It defines a uniform way of adding Deltakit-Stim noise channels to the circuit.
 
 ## `ToyNoise`
 
@@ -89,7 +90,7 @@ In the example below, you can see how `p/10`-scaled noise follows gates,
 and `p_measurement_flip` becomes a parameter of the measurement gate.
 
 ```{code-cell} ipython3
-import stim
+import deltakit_stim
 from deltakit.circuit import Circuit
 
 simple_stim = """
@@ -106,7 +107,7 @@ I 1
 TICK
 MZ 0 1
 """
-stim_circuit = stim.Circuit(simple_stim)
+stim_circuit = deltakit_stim.Circuit(simple_stim)
 deltakit_circuit = Circuit.from_stim_circuit(stim_circuit)
 ```
 

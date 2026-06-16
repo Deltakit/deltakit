@@ -3,10 +3,10 @@
 import warnings
 from pathlib import Path
 
+import deltakit_stim as stim
 import numpy as np
 import numpy.testing as npt
 import pytest
-import stim
 from deltakit_core.decoding_graphs import dem_to_decoding_graph_and_logicals
 from pytest_lazy_fixtures import lf
 

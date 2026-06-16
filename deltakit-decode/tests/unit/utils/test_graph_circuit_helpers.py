@@ -2,9 +2,9 @@
 from itertools import tee
 
 import deltakit_circuit as sp
+import deltakit_stim as stim
 import networkx as nx
 import pytest
-import stim
 from deltakit_core.decoding_graphs import FixedWidthBitstring
 
 from deltakit_decode.utils._graph_circuit_helpers import (

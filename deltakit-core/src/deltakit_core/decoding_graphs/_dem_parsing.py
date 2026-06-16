@@ -15,7 +15,7 @@ from typing_extensions import Self
 try:
     import lestim as stim
 except ImportError:
-    import stim
+    import deltakit_stim as stim
 
 
 from deltakit_core.decoding_graphs._data_qubits import (

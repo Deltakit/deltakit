@@ -1,18 +1,13 @@
 # (c) Copyright Riverlane 2020-2025.
-from importlib.metadata import version
 
+import deltakit_stim as stim
 import pytest
-import stim
-from packaging.version import Version
 
 import deltakit_circuit as sp
 from deltakit_circuit._parse_stim import (
     _classify_pauli_target,
     parse_stim_gate_instruction,
 )
-
-CURRENT_STIM_VERSION = Version(version("stim"))
-STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 def test_probability_is_added_on_measurement_gates():
@@ -182,18 +177,13 @@ def test_parsing_stim_circuit_with_single_gate_layer_returns_the_correct_deltaki
 ):
     expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
     assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
-    # Enable CZSWAP test if Stim > 1.13.0.
-    # TODO: If the condition is met, this part is
-    # executed for every test parameter. There should
-    # be a clause for executing once.
-    if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
-        stim_circuit = stim.Circuit("CZSWAP 0 1 2 3")
-        expected_gates = [
-            sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
-            sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
-        ]
-        expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
-        assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
+    stim_circuit = stim.Circuit("CZSWAP 0 1 2 3")
+    expected_gates = [
+        sp.gates.CZSWAP(sp.Qubit(0), sp.Qubit(1)),
+        sp.gates.CZSWAP(sp.Qubit(2), sp.Qubit(3)),
+    ]
+    expected_circuit = sp.Circuit(sp.GateLayer(expected_gates))
+    assert sp.Circuit.from_stim_circuit(stim_circuit) == expected_circuit
 
 
 @pytest.mark.parametrize(

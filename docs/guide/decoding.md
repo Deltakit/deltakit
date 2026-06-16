@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.17.2
+    jupytext_version: 1.19.3
 kernelspec:
   name: python3
   display_name: Python 3 (ipykernel)
@@ -37,11 +37,11 @@ and observables describe the quantum state.
 The aim of a decoder is to use the detector measurements to determine if
 errors have caused the observable measurement result to flip.
 
-Detectors and observables can be computed for a given stim circuit and set of
+Detectors and observables can be computed for a given deltakit-stim circuit and set of
 measurement results using the {class}`deltakit.explorer.types.Measurements` class:
 
 ```{code-cell} ipython3
-import stim
+import deltakit_stim
 from deltakit.explorer import types
 from deltakit.explorer.qpu import QPU, ToyNoise
 from deltakit.explorer.codes import RepetitionCode, css_code_memory_circuit
@@ -86,7 +86,7 @@ OBSERVABLE_INCLUDE(0) rec[-1]
 OBSERVABLE_INCLUDE(1) rec[-2]
 """
 
-sweeps_stim_circuit = stim.Circuit(circuit_with_sweeps)
+sweeps_stim_circuit = deltakit_stim.Circuit(circuit_with_sweeps)
 measurements = np.zeros((1000, 4), dtype=np.uint8)
 
 # assume these were initial states of your data qubits
@@ -174,7 +174,7 @@ from deltakit.explorer.types import PhysicalNoiseModel
 
 very_low_noise = PhysicalNoiseModel.get_floor_superconducting_noise()
 low_noise_circuit = cloud.add_noise(stim_circuit, very_low_noise)
-low_noise_stim = stim.Circuit(low_noise_circuit).flattened()
+low_noise_stim = deltakit_stim.Circuit(low_noise_circuit).flattened()
 
 decoder = MWPMDecoder(circuit=low_noise_stim, use_experimental_graph_method=True, client=cloud)
 ```
@@ -192,7 +192,7 @@ code. For other codes, such as general qLDPC codes, a hypergraph decoder, such a
 BP-OSD or Ambiguity Clustering (AC), is required.
 
 **Ambiguity Clustering** (AC) is Riverlane's proprietary decoder for decoding
-general qLDPC codes. It works on any code with a parity check matrix (or a Stim detector error model),
+general qLDPC codes. It works on any code with a parity check matrix (or a Deltakit-Stim detector error model),
 and in a typical code allows orders of magnitude faster decoding whilst achieving the same
 logical fidelity as BP-OSD, the industry standard qLDPC decoder. It works by combining the
 ideas of clustering and Gaussian elimination to find local vector spaces of solutions to
@@ -230,14 +230,14 @@ The performance of the decoders may depend on parameters. We allow decoders
 to accept arbitrary named values using the `parameters` argument.
 All decoders have access to the following parameters:
 
-* ``decompose_errors`` (bool) - if set to `True`, Stim tries to
+* ``decompose_errors`` (bool) - if set to `True`, Deltakit-Stim tries to
   decompose composite error mechanisms into simpler errors with at
   most two detectors affected. This option is important for decoders
   which do not support hypergraph detector error models (e.g. `MWPMDecoder`, `CCDecoder`).
 * `approximate_disjoint_errors` (bool) -- approximates the noise as independent errors.
 
 These two parameters work together and allow decoders to deal with composite
-error mechanisms defined in the Stim circuit. By default, both are False.
+error mechanisms defined in the Deltakit-Stim circuit. By default, both are False.
 More about these two parameters can be found in the
 [the `stim.Circuit.detector_error_model` documentation](https://github.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev.md).
 

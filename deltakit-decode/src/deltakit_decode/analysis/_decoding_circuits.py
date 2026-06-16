@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 
+import deltakit_stim as stim
 import numpy as np
-import stim
 from tqdm import tqdm
 
 from deltakit_decode._abstract_matching_decoders import DecoderProtocol

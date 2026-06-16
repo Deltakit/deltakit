@@ -5,9 +5,9 @@ from functools import reduce
 from importlib.metadata import version
 from operator import add, mul
 
+import deltakit_stim as stim
 import numpy as np
 import pytest
-import stim
 from deltakit_circuit import (
     Circuit,
     Detector,

@@ -4,7 +4,7 @@ import math
 from collections.abc import Callable
 from itertools import combinations
 
-import stim
+import deltakit_stim as stim
 from deltakit_core.decoding_graphs import (
     DecodingEdge,
     DecodingHyperEdge,

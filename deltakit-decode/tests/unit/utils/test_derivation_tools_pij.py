@@ -4,8 +4,8 @@ import math
 from pathlib import Path
 from unittest import mock
 
+import deltakit_stim as stim
 import pytest
-import stim
 from deltakit_core.data_formats import b8_to_syndromes
 from deltakit_core.decoding_graphs import (
     dem_to_decoding_graph_and_logicals,

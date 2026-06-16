@@ -1,11 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
-from importlib.metadata import version
 
+import deltakit_stim as stim
 import pytest
-import stim
-from packaging.version import Version
 
 from deltakit_circuit import (
     Circuit,
@@ -27,9 +25,6 @@ from deltakit_circuit import (
 )
 from deltakit_circuit._gate_layer import DuplicateQubitError
 from deltakit_circuit.noise_channels import PauliXError
-
-CURRENT_STIM_VERSION = Version(version("stim"))
-STIM_VERSION_V1_13_0 = Version("1.13.0")
 
 
 @pytest.fixture
@@ -504,6 +499,7 @@ class TestStimCircuit:
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
+            (gates.CZSWAP(Qubit(0), Qubit(1)), stim.Circuit("CZSWAP 0 1")),
         ],
     )
     def test_stim_circuit_with_layer_that_contains_a_single_two_qubit_gate(
@@ -512,18 +508,6 @@ class TestStimCircuit:
         empty_layer.add_gates(gate)
         empty_layer.permute_stim_circuit(empty_circuit)
         assert empty_circuit == expected_circuit
-        # Enable CZSWAP test if Stim > 1.13.0.
-        # TODO: If the condition is met, this part is
-        # executed for every test parameter. There should
-        # be a clause for executing once.
-        if CURRENT_STIM_VERSION >= STIM_VERSION_V1_13_0:
-            gate = gates.CZSWAP(Qubit(0), Qubit(1))
-            expected_circuit = stim.Circuit("CZSWAP 0 1")
-            empty_layer = GateLayer()
-            empty_circuit = stim.Circuit()
-            empty_layer.add_gates(gate)
-            empty_layer.permute_stim_circuit(empty_circuit)
-            assert empty_circuit == expected_circuit
 
     @pytest.mark.parametrize(
         ("mpp_gate", "expected_circuit"),
@@ -620,12 +604,6 @@ class TestStimCircuit:
     def test_stim_string_on_same_gate_is_on_the_same_line_for_two_qubit_gates(
         self, empty_layer: GateLayer, gate_class, empty_circuit
     ) -> None:
-        if CURRENT_STIM_VERSION < STIM_VERSION_V1_13_0 and gate_class == gates.CZSWAP:
-            pytest.skip(
-                "CZSWAP gate has been introduced in Stim v1.13.0. "
-                "See https://github.com/quantumlib/Stim/releases/tag/v1.13.0. "
-                f"Current Stim version is {CURRENT_STIM_VERSION}."
-            )
         empty_layer.add_gates(
             [gate_class(Qubit(0), Qubit(1)), gate_class(Qubit(2), Qubit(3))]
         )
