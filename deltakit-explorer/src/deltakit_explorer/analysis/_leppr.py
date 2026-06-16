@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -5,7 +7,7 @@ from math import floor
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import curve_fit
+import scipy.optimize
 
 
 @dataclass(frozen=True)
@@ -18,20 +20,30 @@ class LogicalErrorProbabilityPerRoundResults:
         leppr_stddev (float): LEPPR standard deviation.
         spam_error (float): computed SPAM error probability.
         spam_error_stddev (float): SPAM error probability standard deviation.
+        leppr_error_high (float): High (upper) asymmetric 1-sigma error on LEPPR.
+        leppr_error_low (float): Low (lower) asymmetric 1-sigma error on LEPPR.
+        spam_error_high (float): High (upper) asymmetric 1-sigma error on SPAM error.
+        spam_error_low (float): Low (lower) asymmetric 1-sigma error on SPAM error.
     """
 
     leppr: float
     leppr_stddev: float
     spam_error: float
     spam_error_stddev: float
+    leppr_error_high: float
+    leppr_error_low: float
+    spam_error_high: float
+    spam_error_low: float
 
 
 def compute_logical_error_per_round(
     num_rounds: npt.NDArray[np.int_] | Sequence[int],
     logical_error_probabilities: npt.NDArray[np.floating] | Sequence[float],
-    logical_error_probabilities_stddev: npt.NDArray[np.floating] | Sequence[float],
+    logical_error_probabilities_low: npt.NDArray[np.floating] | Sequence[float],
+    logical_error_probabilities_high: npt.NDArray[np.floating] | Sequence[float],
     *,
     force_include_single_round: bool = False,
+    num_sigmas: int = 1,
 ) -> LogicalErrorProbabilityPerRoundResults:
     """Compute the logical error probability per round from different logical error
     probability computations.
@@ -45,16 +57,25 @@ def compute_logical_error_per_round(
     to recover an estimator of the logical error probability per round from the
     estimated values of logical error probabilities for several round durations.
 
+    The logical error probabilities carry *asymmetric* lower and upper errors (for
+    example the Wilson-score interval returned by
+    :func:`calculate_lep_and_lep_stddev`). These are consumed directly: the weighted
+    least-square fit uses Barlow's dynamic ("variable variance") weighting so that the
+    effective variance of each point depends on which side of the fitted curve it falls
+    on. See R. Barlow, "Asymmetric Statistical Errors" (arXiv:physics/0406120).
+
     Args:
         num_rounds (npt.NDArray[numpy.int_] | Sequence[int]):
             a sequence of integers representing the number of rounds used to get the
-            corresponding results in ``logical_error_probabilities`` and
-            ``logical_error_probabilities_stddev``. Any value below 1 (``< 1``) is
+            corresponding results in ``logical_error_probabilities``,
+            ``logical_error_probabilities_low`` and
+            ``logical_error_probabilities_high``. Any value below 1 (``< 1``) is
             automatically removed from this list along with the corresponding values in
-            ``logical_error_probabilities`` and ``logical_error_probabilities_stddev``.
-            Any value equal to 1 is removed from this list along with the corresponding
-            values in ``logical_error_probabilities`` and
-            ``logical_error_probabilities_stddev`` iff ``force_include_single_round`` is
+            ``logical_error_probabilities``, ``logical_error_probabilities_low`` and
+            ``logical_error_probabilities_high``. Any value equal to 1 is removed from
+            this list along with the corresponding values in
+            ``logical_error_probabilities``, ``logical_error_probabilities_low`` and
+            ``logical_error_probabilities_high`` iff ``force_include_single_round`` is
             ``False``. If only one data-point is provided (or left after the removal
             process described just before), the SPAM error is assumed to be ``0`` and an
             estimation will still be returned.
@@ -66,30 +87,47 @@ def compute_logical_error_per_round(
         logical_error_probabilities (npt.NDArray[numpy.floating] | Sequence[float]):
             logical error probabilities computed for each of the provided
             ``num_rounds``. Should be the same length as ``num_rounds``.
-        logical_error_probabilities_stddev (npt.NDArray[numpy.floating] | Sequence[float]):
-            standard deviation of the logical error probabilities provided in
-            ``logical_error_probabilities``. Should be the same length as
-            ``num_rounds``.
+        logical_error_probabilities_low (npt.NDArray[numpy.floating] | Sequence[float]):
+            lower (low-side) asymmetric error on the logical error probabilities provided
+            in ``logical_error_probabilities``, such that the lower bound of the interval
+            is ``logical_error_probabilities - logical_error_probabilities_low``. Should
+            be the same length as ``num_rounds``.
+        logical_error_probabilities_high (npt.NDArray[numpy.floating] | Sequence[float]):
+            upper (high-side) asymmetric error on the logical error probabilities provided
+            in ``logical_error_probabilities``, such that the upper bound of the interval
+            is ``logical_error_probabilities + logical_error_probabilities_high``. Should
+            be the same length as ``num_rounds``.
         force_include_single_round (bool):
             if ``True``, data obtained from 1-round experiment will be used in the
             computation if provided in ``num_rounds``. Default to ``False`` which
             results in 1-round data being ignored due to boundary effects that affect
             the final estimation. See https://arxiv.org/pdf/2207.06431.pdf (p.21).
+        num_sigmas (int): number of standard deviations defining the confidence level of
+            the returned asymmetric errors (``leppr_error_high``/``leppr_error_low`` and
+            ``spam_error_high``/``spam_error_low``). For example, ``num_sigmas=3``
+            returns a 3σ asymmetric confidence interval. Defaults to ``1``. Note that the
+            symmetric ``leppr_stddev``/``spam_error_stddev`` fields are always 1σ and are
+            not affected by this parameter.
 
     Returns:
-        LEPPRResults: detailed results of the computation.
+        LogicalErrorProbabilityPerRoundResults: detailed results of the computation.
 
     Examples:
-        Calculating per-round logical error probability and its standard deviation
-        given number of fails, and number of shots for several rounds::
+        Calculating per-round logical error probability and its asymmetric error given
+        the number of fails and the number of shots for several rounds::
 
+            lep, lep_error_low, lep_error_high = calculate_lep_and_lep_stddev(
+                fails=[34, 151, 356], shots=[500000] * 3
+            )
             res = compute_logical_error_per_round(
-                num_failed_shots=[34, 151, 356],
-                num_shots=[500000] * 3,
                 num_rounds=[2, 4, 6],
+                logical_error_probabilities=lep,
+                logical_error_probabilities_low=lep_error_low,
+                logical_error_probabilities_high=lep_error_high,
             )
             leppr, leppr_stddev = res.leppr, res.leppr_stddev
             spam, spam_stddev = res.spam_error, res.spam_error_stddev
+            leppr_high, leppr_low = res.leppr_error_high, res.leppr_error_low
 
     """
     # Get the inputs as numpy arrays.
@@ -97,9 +135,8 @@ def compute_logical_error_per_round(
     isort = np.argsort(num_rounds)
     num_rounds = np.asarray(num_rounds)[isort]
     logical_error_probabilities = np.asarray(logical_error_probabilities)[isort]
-    logical_error_probabilities_stddev = np.asarray(
-        logical_error_probabilities_stddev
-    )[isort]
+    logical_error_probabilities_low = np.asarray(logical_error_probabilities_low)[isort]
+    logical_error_probabilities_high = np.asarray(logical_error_probabilities_high)[isort]
 
     # Check that we do not have duplicate data for the same number of rounds as that
     # will confuse the numerical methods used in this function.
@@ -122,26 +159,31 @@ def compute_logical_error_per_round(
         )
         num_rounds = num_rounds[1:]
         logical_error_probabilities = logical_error_probabilities[1:]
-        logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
+        logical_error_probabilities_low = logical_error_probabilities_low[1:]
+        logical_error_probabilities_high = logical_error_probabilities_high[1:]
 
     # Filter out the r == 1 input if not forced to include it by the user.
     if num_rounds.size > 0 and num_rounds[0] == 1 and not force_include_single_round:
         num_rounds = num_rounds[1:]
         logical_error_probabilities = logical_error_probabilities[1:]
-        logical_error_probabilities_stddev = logical_error_probabilities_stddev[1:]
+        logical_error_probabilities_low = logical_error_probabilities_low[1:]
+        logical_error_probabilities_high = logical_error_probabilities_high[1:]
 
-    # Filter out logical error probabilities above 0.5 as that will lead to negative
-    # fidelities.
-    invalid_lep_indices = logical_error_probabilities > 0.5
+    # Filter out logical error probabilities of 0.5 or above as that will lead to a
+    # null-or-negative fidelity (1 - 2 * lep), whose logarithm is undefined.
+    invalid_lep_indices = logical_error_probabilities >= 0.5
     if np.any(invalid_lep_indices):
         warnings.warn(
-            "Found at least one invalid (i.e., > 0.5) logical error probability. "
-            "Ignoring all the provided logical error probabilities above 0.5."
+            "Found at least one invalid (i.e., >= 0.5) logical error probability. "
+            "Ignoring all the provided logical error probabilities at or above 0.5."
         )
         valid_lep_indices = np.logical_not(invalid_lep_indices)
         num_rounds = num_rounds[valid_lep_indices]
         logical_error_probabilities = logical_error_probabilities[valid_lep_indices]
-        logical_error_probabilities_stddev = logical_error_probabilities_stddev[
+        logical_error_probabilities_low = logical_error_probabilities_low[
+            valid_lep_indices
+        ]
+        logical_error_probabilities_high = logical_error_probabilities_high[
             valid_lep_indices
         ]
 
@@ -163,18 +205,35 @@ def compute_logical_error_per_round(
         )
         rounds = num_rounds[0]
         lep = float(logical_error_probabilities[0])
-        lep_stddev = float(logical_error_probabilities_stddev[0])
+        lep_low = float(logical_error_probabilities_low[0])
+        lep_high = float(logical_error_probabilities_high[0])
         # Implement Eq. (4) from section A.2.2. at page 40 of
         # https://arxiv.org/pdf/2310.05900.
         estimated_logical_error_per_round = (1 - (1 - 2 * lep) ** (1 / rounds)) / 2
-        estimated_logical_error_per_round_stddev = (
-            lep_stddev * (1 - 2 * lep) ** (1 / rounds - 1) / rounds
+        # The transform ``(1 - (1 - 2*lep) ** (1/r)) / 2`` is monotonically increasing in
+        # ``lep``, so the low/high LEP errors map onto the low/high LEPPR errors directly
+        # (no need to symmetrise). A symmetric 1σ standard deviation is reported using the
+        # average of the two asymmetric errors as a representative width.
+        leppr_error_low = (
+            estimated_logical_error_per_round
+            - (1 - (1 - 2 * (lep - lep_low)) ** (1 / rounds)) / 2
         )
+        leppr_error_high = (
+            (1 - (1 - 2 * (lep + lep_high)) ** (1 / rounds)) / 2
+            - estimated_logical_error_per_round
+        )
+        estimated_logical_error_per_round_stddev = (
+            leppr_error_low + leppr_error_high
+        ) / 2
         return LogicalErrorProbabilityPerRoundResults(
             estimated_logical_error_per_round,
             estimated_logical_error_per_round_stddev,
             0,
             0,
+            leppr_error_high,
+            leppr_error_low,
+            0.0,
+            0.0,
         )
 
     # Check if the heuristic guideline on the number of rounds is verified.
@@ -197,33 +256,55 @@ def compute_logical_error_per_round(
     # variance of each observation.
     # See https://en.wikipedia.org/wiki/Weighted_least_squares.
     logfidelity = np.log(fidelities)
-    # We approximate the standard deviation with an error propagation analysis. This
-    # method has been tested against scipy and returns similar results.
-    logfidelities_stddev = 2 * logical_error_probabilities_stddev / fidelities
+    # We propagate the asymmetric LEP errors onto the log-fidelity through an error
+    # propagation analysis. ``log(1 - 2*lep)`` is monotonically *decreasing* in ``lep``,
+    # so a high-side LEP error maps onto a low-side log-fidelity error and vice-versa. The
+    # ``2 / fidelity`` factor is the magnitude of the derivative ``d log(F) / d lep``.
+    logfidelities_low = 2 * logical_error_probabilities_high / fidelities
+    logfidelities_high = 2 * logical_error_probabilities_low / fidelities
 
-    # Note that the covariance matrix is used later to estimate the logical error
-    # probability per round standard deviation.
-    (slope, offset), cov = curve_fit(
-        lambda x, s, o: s * x + o,
-        num_rounds,
-        logfidelity,
-        sigma=logfidelities_stddev,
-        absolute_sigma=True,
-        # If the error probabilities are exactly 0, the solution should be (0, 0).
-        # Because we expect the error probabilities to be close to 0, start from (0, 0)
-        # as a first estimate.
-        p0=(0, 0),
-        # Both slope and offset are used to recover a probability with the expression
-        # p = (1 - numpy.exp(value)) / 2. Because a probability needs to be in [0, 1], we
-        # have that value <= numpy.log(1).
-        # Note: even though the below bounds are valid, setting bounds changes the
-        # default optimisation method from "lm" to "trf". There is at least one
-        # real-world example where setting those bounds led to incorrect results, so not
-        # including them for the moment.
-        # bounds=((-numpy.inf, -numpy.inf), (numpy.log(1), numpy.log(1))),
-    )
+    x = num_rounds.astype(float)
+
+    def _residual(
+        beta: npt.NDArray[np.float64],
+    ) -> npt.NDArray[np.float64]:
+        slope, offset = beta
+        delta = logfidelity - (slope * x + offset)
+        # Barlow's dynamic ("variable variance") weighting for asymmetric errors. The
+        # effective variance of each point depends on which side of the fitted curve the
+        # observation falls on: it uses the high-side error when the data is above the fit
+        # (``delta > 0``) and the low-side error otherwise. Following Barlow's
+        # linear-variance model (arXiv:physics/0406120), with mean error
+        # ``sigma = (sigma_high + sigma_low) / 2`` and asymmetry
+        # ``sigma_prime = (sigma_high - sigma_low) / 2``, the variance is
+        # ``V(delta) = sigma**2 + 2 * sigma_prime * delta``. This makes the weighting
+        # depend on the current fit parameters and is therefore recomputed at every
+        # iteration. We clip ``V`` to a small positive value to keep it well defined for
+        # large negative deltas.
+        sigma = (logfidelities_high + logfidelities_low) / 2
+        sigma_prime = (logfidelities_high - logfidelities_low) / 2
+        variance = np.clip(sigma**2 + 2 * sigma_prime * delta, 1e-300, None)
+        return delta / np.sqrt(variance)
+
+    result = scipy.optimize.least_squares(_residual, x0=np.array([0.0, 0.0]))
+
+    slope = float(result.x[0])
+    offset = float(result.x[1])
+
+    # Recover the parameter covariance matrix from the Jacobian at the solution. The
+    # residual is already scaled by 1/sqrt(variance), so the covariance is (JᵀJ)⁻¹. We
+    # invert it through the SVD of ``J`` (rather than forming ``JᵀJ`` directly) to avoid
+    # squaring the condition number, matching what ``scipy.optimize.curve_fit`` does.
+    _, sv, vt = np.linalg.svd(result.jac, full_matrices=False)
+    threshold = np.finfo(float).eps * max(result.jac.shape) * sv[0]
+    sv = sv[sv > threshold]
+    vt = vt[: sv.size]
+    cov = (vt.T / sv**2) @ vt
+    slope_stddev, offset_stddev = (float(v) for v in np.sqrt(np.diagonal(cov)))
 
     estimated_logical_error_per_round = float((1 - np.exp(slope)) / 2)
+    estimated_spam_error = float((1 - np.exp(offset)) / 2)
+
     # Compute the standard R2 (Coefficient of determination) using the formula
     # ``R2 = 1 - SSE / SST`` where SSE is the Sum of Squares Error and SST is the Sum of
     # Square Total that are computed below.
@@ -243,19 +324,40 @@ def compute_logical_error_per_round(
     #      sigma(Perrc) = (1 - Perrc) * sigma(slope)
     # The standard deviation on the linear fit parameters can be obtained through the
     # covariance matrix diagonal entries.
-    slope_stddev, offset_stddev = np.sqrt(np.diagonal(cov))
     estimated_logical_error_per_round_stddev = float(
         (1 - 2 * estimated_logical_error_per_round) * slope_stddev / 2
     )
-    estimated_spam_error = float((1 - np.exp(offset)) / 2)
     estimated_spam_error_stddev = float(
         (1 - 2 * estimated_spam_error) * offset_stddev / 2
+    )
+
+    # Asymmetric num_sigmas CI obtained by propagating the (symmetric) num_sigmas-scaled
+    # slope/offset standard deviations through the (1 - exp(.)) / 2 transform. The interval
+    # is symmetric in slope/offset space but becomes asymmetric after the transform.
+    # ``slope`` is negative; a lower (more negative) slope → higher leppr (high side).
+    slope_delta = num_sigmas * slope_stddev
+    offset_delta = num_sigmas * offset_stddev
+    leppr_error_high = max(
+        0.0, float((np.exp(slope) - np.exp(slope - slope_delta)) / 2)
+    )
+    leppr_error_low = max(
+        0.0, float((np.exp(slope + slope_delta) - np.exp(slope)) / 2)
+    )
+    spam_error_high = max(
+        0.0, float((np.exp(offset) - np.exp(offset - offset_delta)) / 2)
+    )
+    spam_error_low = max(
+        0.0, float((np.exp(offset + offset_delta) - np.exp(offset)) / 2)
     )
     return LogicalErrorProbabilityPerRoundResults(
         estimated_logical_error_per_round,
         estimated_logical_error_per_round_stddev,
         estimated_spam_error,
         estimated_spam_error_stddev,
+        leppr_error_high,
+        leppr_error_low,
+        spam_error_high,
+        spam_error_low,
     )
 
 

@@ -69,9 +69,9 @@ def get_exp_fit(
         shots_all_rounds
     )
     fidelity = 1 - 2 * logical_perr_per_round
-    assert not np.any(fidelity < 0.0), (
-        f"Fidelity values (1-2*p) should be non-negative, but were {fidelity}."
-    )
+    assert not np.any(
+        fidelity < 0.0
+    ), f"Fidelity values (1-2*p) should be non-negative, but were {fidelity}."
 
     yerr = np.sqrt(
         logical_perr_per_round * (1 - logical_perr_per_round) / shots_all_rounds
@@ -121,39 +121,75 @@ def get_exp_fit(
 def calculate_lep_and_lep_stddev(
     fails: npt.NDArray[np.int_] | Sequence[int] | int,
     shots: npt.NDArray[np.int_] | Sequence[int] | int,
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    """Calculate the logical error probability and its standard deviation.
+    *,
+    num_sigmas: float = 1.0,
+) -> tuple[
+    npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]
+]:
+    """Calculate the logical error probability and its asymmetric error.
+
+    The logical error probability (LEP) is a binomial proportion estimated as
+    ``fails / shots``. Instead of the symmetric normal (Wald) standard deviation
+    ``sqrt(p(1-p)/n)``, which is inaccurate for small ``fails`` and can produce
+    bounds outside ``[0, 1]``, this function returns the asymmetric lower and
+    upper errors derived from the Wilson score interval. The Wilson interval is
+    closed-form, requires no extra dependencies, and is well-behaved as the LEP
+    approaches ``0`` or ``1``.
 
     Args:
         fails (npt.NDArray[np.int\\_] | Sequence[int] | int):
             The number of logical failures.
         shots (npt.NDArray[np.int\\_] | Sequence[int] | int):
             The number of shots the experiment was run for.
+        num_sigmas (float):
+            Number of standard deviations defining the confidence level of the
+            returned Wilson interval (the ``z`` value). For example,
+            ``num_sigmas=3`` returns a 3σ interval. Defaults to ``1``.
 
     Returns:
-        tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        tuple[npt.NDArray[np.float64], npt.NDArray[np.float64], npt.NDArray[np.float64]]:
             A tuple consisting of
-            - the logical error probability;
-            - the standard deviation of the logical error probability.
+            - the logical error probability ``lep``;
+            - the lower error ``lep_error_low`` such that the lower bound of the
+              interval is ``lep - lep_error_low``;
+            - the upper error ``lep_error_high`` such that the upper bound of the
+              interval is ``lep + lep_error_high``.
 
     Examples:
-        Calculating logical error probability and standard deviation
+        Calculating logical error probability and asymmetric error
         given number of fails, and number of shots::
 
-            lep, lep_stddev = Analysis.calculate_lep_and_lep_stddev(
-                fails=[498, 151, 34],
-                shots=[500000] * 3,
+            lep, lep_error_low, lep_error_high = calculate_lep_and_lep_stddev(
+                    fails=[498, 151, 34],
+                    shots=[500000] * 3,
+                
             )
     """
-    fails, shots = np.asarray(fails), np.asarray(shots)
+
+    fails = np.asarray(fails, dtype=np.float64)
+    shots = np.asarray(shots, dtype=np.float64)
     lep = fails / shots
     if np.any(lep <= 0):
         msg = "Must have > 0 fails to calculate logical error probability."
         raise ValueError(msg)
-    lep_stddev = np.sqrt(lep * (1 - lep) / shots)
 
-    return lep, lep_stddev
+    # Wilson score interval for a binomial proportion. See
+    # https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval.
+    z = num_sigmas
+    z2 = z**2
+    denom = 1.0 + z2 / shots
+    center = (lep + z2 / (2.0 * shots)) / denom
+    half_width = (
+        z * np.sqrt(lep * (1.0 - lep) / shots + z2 / (4.0 * shots**2)) / denom
+    )
+    lower = center - half_width
+    upper = center + half_width
 
+    # Convert the interval bounds into errors relative to the point estimate.
+    lep_error_low = lep - lower
+    lep_error_high = upper - lep
+
+    return lep, lep_error_low, lep_error_high
 
 
 @deprecated(

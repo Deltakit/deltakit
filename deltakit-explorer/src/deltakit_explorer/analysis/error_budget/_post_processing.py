@@ -111,5 +111,11 @@ def _compute_logical_error_rate_per_round_from_results(
     num_fails = np.asarray(num_fails)[non_zeros_mask]
     max_shots = np.asarray(max_shots)[non_zeros_mask]
 
-    lep, lep_stddev = calculate_lep_and_lep_stddev(num_fails, max_shots)
-    return compute_logical_error_per_round(num_rounds, lep, lep_stddev)
+    lep, lep_error_low, lep_error_high = calculate_lep_and_lep_stddev(
+        num_fails, max_shots
+    )
+    # Pass the asymmetric Wilson errors straight through: the fit consumes them via
+    # Barlow's dynamic weighting and produces asymmetric LEPPR errors.
+    return compute_logical_error_per_round(
+        num_rounds, lep, lep_error_low, lep_error_high
+    )

@@ -92,13 +92,17 @@ def compute_ideal_rounds_for_noise_model_and_distance(
         decoder_manager = StimDecoderManager(decoder_circuit, decoder)
 
         nshots, nfails = decoder_manager.run_batch_shots(batch_size)
-        _, stddev = calculate_lep_and_lep_stddev(nfails, nshots)
+        # Use the larger (upper) asymmetric error as a conservative width for the
+        # convergence criterion.
+        _, error_low, error_high = calculate_lep_and_lep_stddev(nfails, nshots)
+        stddev = max(error_low, error_high)
         while (stddev > target_stddev or nfails < min_fails) and nshots < max_shots:
             nshots_to_perform = min(batch_size, max_shots - nshots)
             ns, nf = decoder_manager.run_batch_shots(nshots_to_perform)
             nshots += ns
             nfails += nf
-            _, stddev = calculate_lep_and_lep_stddev(nfails, nshots)
+            _, error_low, error_high = calculate_lep_and_lep_stddev(nfails, nshots)
+            stddev = max(error_low, error_high)
         return nfails, nshots
 
     nrounds, *_ = simulate_different_round_numbers_for_lep_per_round_estimation(

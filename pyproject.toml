@@ -36,6 +36,7 @@ dependencies = [
   "deltakit-core>=0.7.1",
   "deltakit-decode>=0.7.1",
   "deltakit-explorer>=0.7.1",
+  "sinter>=1.15.0",
 ]
 
 [project.urls]

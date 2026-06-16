@@ -58,6 +58,7 @@ indent-width = 4
 target-version = "py310"
 
 [lint]
+allowed-confusables = ["σ"]
 select = [
     "A", "ARG", "B", "C4", "E", "EM", "EXE", "F", "FURB", "G", "I", "ICN", "N", "NPY", "PD",
     "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RUF", "SIM", "T", "UP", "W", "YTT"
@@ -69,11 +70,13 @@ ignore = [
 
 # Specific per-file ignores
 [lint.per-file-ignores]
+
 "**/__init__.py" = [
     # For the moment, dynamic __all__ generation raises a lot of issues with
     # F401 enabled, so ignore it where it happens, in __init__.py files.
     "F401",
 ]
+
 
 [format]
 # Like Black, use double quotes for strings.
