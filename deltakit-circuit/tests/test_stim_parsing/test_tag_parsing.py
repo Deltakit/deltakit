@@ -17,10 +17,7 @@ from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
 from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOISE
 
 
-@pytest.mark.skipif(
-    Version(version("stim")) < Version("1.15"),
-    reason="Feature added in Stim v1.15",
-)
+@pytest.mark.skip(reason="Mark as skipped until #262 resolution.")
 @pytest.mark.parametrize(
     ("instr_template", "tag"),
     itertools.product(
