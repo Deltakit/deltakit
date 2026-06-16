@@ -700,18 +700,9 @@ class Measurements(BinaryDataType):
                 Detector and observable data.
         """
         if isinstance(stim_circuit, stim.Circuit):
-            circuit = stim_circuit
-        else:
-            try:
-                circuit = stim.Circuit(stim_circuit)
-            except ValueError:
-                stim_circuit = self._deinstrument_leakage_circuit(stim_circuit)
-                try:
-                    circuit = stim.Circuit(stim_circuit)
-                except ValueError as stim_ex:
-                    msg = "Provided circuit is not a valid stim circuit."
-                    raise ValueError(msg) from stim_ex
-
+            stim_circuit = str(stim_circuit)
+        circuit_without_leakage = self._deinstrument_leakage_circuit(stim_circuit)
+        circuit = stim.Circuit(circuit_without_leakage)
         converter = circuit.compile_m2d_converter()
         sweeps = None
         if sweep_bits is not None:
