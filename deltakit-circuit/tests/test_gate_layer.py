@@ -1,11 +1,9 @@
 # (c) Copyright Riverlane 2020-2025.
 import re
 from copy import copy, deepcopy
-from importlib.metadata import version
 
 import deltakit_stim as stim
 import pytest
-from packaging.version import Version
 
 from deltakit_circuit import (
     Circuit,
@@ -501,7 +499,7 @@ class TestStimCircuit:
             (gates.CXSWAP(Qubit(0), Qubit(1)), stim.Circuit("CXSWAP 0 1")),
             (gates.ISWAP(Qubit(0), Qubit(1)), stim.Circuit("ISWAP 0 1")),
             (gates.SWAP(Qubit(0), Qubit(1)), stim.Circuit("SWAP 0 1")),
-            (gates.CZSWAP(Qubit(0), Qubit(1)), stim.Circuit("CZSWAP 0 1"))
+            (gates.CZSWAP(Qubit(0), Qubit(1)), stim.Circuit("CZSWAP 0 1")),
         ],
     )
     def test_stim_circuit_with_layer_that_contains_a_single_two_qubit_gate(

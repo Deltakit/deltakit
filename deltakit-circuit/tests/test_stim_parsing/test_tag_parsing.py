@@ -1,9 +1,7 @@
 import itertools
-from importlib.metadata import version
 
 import deltakit_stim as stim
 import pytest
-from packaging.version import Version
 
 from deltakit_circuit._circuit import Circuit
 from deltakit_circuit.gates._measurement_gates import (
