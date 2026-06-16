@@ -4,6 +4,7 @@ import numpy as np
 import numpy.typing as npt
 from deltakit_circuit._circuit import Circuit
 from deltakit_decode.analysis import RunAllAnalysisEngine
+from uncertainties import ufloat
 
 from deltakit_explorer.analysis.error_budget._generation import (
     generate_decoder_managers_for_lambda,
@@ -17,6 +18,19 @@ from deltakit_explorer.analysis.error_budget._parameters import SamplingParamete
 from deltakit_explorer.analysis.error_budget._post_processing import (
     compute_lambda_and_stddev_from_results,
 )
+
+
+def reciprocal_stddev(value: float, stddev: float) -> float:
+    """Standard deviation of ``1 / value`` via the ``uncertainties`` package.
+
+    Args:
+        value: Nominal value.
+        stddev: Standard deviation of the nominal value.
+
+    Returns:
+        Standard deviation of the reciprocal.
+    """
+    return float((1 / ufloat(value, stddev)).std_dev)
 
 
 def inverse_lambda_at(
@@ -90,6 +104,6 @@ def inverse_lambda_at(
         point, noise_parameter_names, num_rounds_by_distances, report
     )
     lambda_reciprocals = 1 / lambdas
-    lambda_reciprocal_stddevs = np.abs(lambda_stddevs / lambdas**2)
+    lambda_reciprocal_stddevs = np.vectorize(reciprocal_stddev)(lambdas, lambda_stddevs)
 
     return float(lambda_reciprocals[0, 0]), float(lambda_reciprocal_stddevs[0, 0])

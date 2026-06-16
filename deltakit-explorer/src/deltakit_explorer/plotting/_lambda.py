@@ -1,79 +1,69 @@
-import matplotlib.pyplot as plt
+# (c) Copyright Riverlane 2020-2025.
+"""Plotting helpers for error-suppression factor results."""
+
+from __future__ import annotations
+
 from deltakit_core.plotting.colours import RIVERLANE_PLOT_COLOURS
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from deltakit_explorer.analysis import LambdaData
-from deltakit_explorer.plotting.plotting import plot
-from deltakit_explorer.plotting.results import interpolate_lambda
+from deltakit_explorer.plotting._utils import get_figure_and_axes
+from deltakit_explorer.plotting.results import LambdaResult
 
 
 def plot_lambda(
-    lambda_data: LambdaData,
+    lambda_result: LambdaResult,
     *,
-    num_sigmas: int = 3,
-    num_points: int = 200,
     fig: Figure | None = None,
     ax: Axes | None = None,
+    title: str | None = None,
 ) -> tuple[Figure, Axes]:
-    """Interpolate and plot Λ-fitted data.
+    """Plot an interpolated Lambda result.
 
-    This function interpolates and plots both the logical error-probability per round that has been used
-    to compute Λ, the associated error-rates if provided, and the resulting fit, showing
-    how close the fit is from actual data.
+    This specialised plotter owns only the Lambda-specific rendering logic. It
+    expects a ready-to-plot :class:`~deltakit_explorer.plotting.results.LambdaResult`.
+    Higher-level data preparation, such as interpolation from raw Lambda data,
+    should be handled by :func:`deltakit_explorer.plotting.plot` before dispatch.
 
     Args:
-        lambda_data: Result of a fit containing Λ, Λ₀, their standard deviations, and the original data.
-        num_sigmas: Number of standard deviations for the error band. Default 3.
-        num_points: Number of interpolation points. Default 200.
+        lambda_result: Interpolated Lambda result to plot.
         fig: A matplotlib Figure object to plot on. If None, a new figure
             will be created. Default is None.
         ax: A matplotlib Axes object to plot on. If None, a new axes will
             be created. Default is None.
+        title: An optional custom title for the plot. If None, the default
+            Lambda title will be used.
 
     Returns:
         The matplotlib Figure and Axes objects containing the plot.
 
-    Example:
-        from deltakit_explorer.analysis import calculate_lambda_and_lambda_std
+    Examples:
 
-        lambda_data = calculate_lambda_and_lambda_std(
-            distances=[5, 7, 9],
-            leppr=[0.15, 0.1, 0.05],
-            leppr_stddev=[0.01, 0.008, 0.005],
-        )
-        fig, ax = plot_lambda(
-            lambda_data=lambda_data,
-        )
-        ax.set_yscale("log")
-        plt.show()
+        Plotting an interpolated Lambda result::
+
+            from deltakit_explorer.plotting import interpolate_lambda, plot_lambda
+
+            lambda_result = interpolate_lambda(lambda_data)
+            fig, ax = plot_lambda(lambda_result)
+
     """
-    if (fig is None) ^ (ax is None):
-        msg = "The 'fig' and 'ax' parameters should either be both None or both set."
-        raise ValueError(msg)
-
-    if fig is None and ax is None:
-        fig, ax = plt.subplots()
-
-    # These should be already checked by the above code, but type checkers are not able
-    # to infer that information, so including the asserts explicitly for type checkers
-    # to understand.
-    assert ax is not None
-    assert fig is not None
-
-    # Plot the logical error probabilities per round
-    ax.errorbar(
-        lambda_data.distances,
-        lambda_data.leppr,
-        yerr=lambda_data.leppr_std * num_sigmas,
-        fmt=".",
+    fig, ax = get_figure_and_axes(fig, ax)
+    ax.plot(
+        lambda_result.distances,
+        lambda_result.interpolated,
+        label=lambda_result.fit_label,
         color=RIVERLANE_PLOT_COLOURS[1],
-        label=f"Logical error probabilities per round (±{num_sigmas}σ)",  # noqa: RUF001
     )
-
-    lambda_result = interpolate_lambda(
-        lambda_data, num_sigmas=num_sigmas, num_points=num_points
+    ax.fill_between(
+        lambda_result.distances,
+        lambda_result.lower_boundary,
+        lambda_result.upper_boundary,
+        label=lambda_result.confidence_interval_label,
+        color=RIVERLANE_PLOT_COLOURS[0],
+        alpha=0.2,
     )
-
-    plot(lambda_result, fig=fig, ax=ax)
+    ax.set_title(title if title is not None else "Error Suppression Factor Λ")
+    ax.set_xlabel("Code distance")
+    ax.set_ylabel("Logical Error Probability per Round")
+    ax.legend()
     return fig, ax

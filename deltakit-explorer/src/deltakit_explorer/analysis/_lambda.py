@@ -8,6 +8,90 @@ from enum import Enum
 import numpy as np
 import numpy.typing as npt
 import scipy.optimize
+from uncertainties import correlated_values
+from uncertainties.umath import exp as uexp
+from uncertainties.umath import log as ulog
+
+from deltakit_explorer.analysis._estimate import Estimate
+
+
+def lambda_from_shifted_fit(
+    slope: float,
+    offset: float,
+    cov: npt.NDArray[np.floating],
+) -> tuple[Estimate, Estimate]:
+    """Error suppression factors from a shifted-distance linear fit.
+
+    Recovers ``Λ = exp(-2 · slope)`` and ``Λ₀ = exp(-offset - ln(Λ)/2)``, with
+    standard deviations propagated from the fit covariance matrix using the
+    ``uncertainties`` package (see
+    https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae).
+
+    Args:
+        slope: Slope from the shifted linear fit.
+        offset: Offset from the shifted linear fit.
+        cov: Covariance matrix of the fit parameters.
+
+    Returns:
+        ``(Estimate(lambda_, lambda_std), Estimate(lambda0, lambda0_std))``.
+    """
+    uncertain_slope, uncertain_offset = correlated_values([slope, offset], cov)
+    uncertain_lambda = uexp(-2 * uncertain_slope)
+    uncertain_lambda0 = uexp(-uncertain_offset - ulog(uncertain_lambda) / 2)
+    return (
+        Estimate.from_ufloat(uncertain_lambda),
+        Estimate.from_ufloat(uncertain_lambda0),
+    )
+
+
+def lambda_from_lin_fit(
+    slope: float,
+    offset: float,
+    cov: npt.NDArray[np.floating],
+) -> tuple[Estimate, Estimate]:
+    """Error suppression factors from a ``(d+1)/2`` linear fit.
+
+    Recovers ``Λ = exp(-slope)`` and ``Λ₀ = exp(-offset)``, with standard
+    deviations propagated from the fit covariance matrix using the
+    ``uncertainties`` package.
+
+    Args:
+        slope: Slope from the linear fit over ``(d+1)/2``.
+        offset: Offset from the linear fit over ``(d+1)/2``.
+        cov: Covariance matrix of the fit parameters.
+
+    Returns:
+        ``(Estimate(lambda_, lambda_std), Estimate(lambda0, lambda0_std))``.
+    """
+    uncertain_slope, uncertain_offset = correlated_values([slope, offset], cov)
+    uncertain_lambda = uexp(-uncertain_slope)
+    uncertain_lambda0 = uexp(-uncertain_offset)
+    return (
+        Estimate.from_ufloat(uncertain_lambda),
+        Estimate.from_ufloat(uncertain_lambda0),
+    )
+
+
+def lambda_from_curve_fit(
+    lamb0: float,
+    lamb: float,
+    cov: npt.NDArray[np.floating],
+) -> tuple[Estimate, Estimate]:
+    """Error suppression factors from a non-linear ``curve_fit``.
+
+    Args:
+        lamb0: Fitted lambda prefactor.
+        lamb: Fitted error suppression factor.
+        cov: Covariance matrix of the fit parameters.
+
+    Returns:
+        ``(Estimate(lambda_, lambda_std), Estimate(lambda0, lambda0_std))``.
+    """
+    uncertain_lamb0, uncertain_lamb = correlated_values([lamb0, lamb], cov)
+    return (
+        Estimate.from_ufloat(uncertain_lamb),
+        Estimate.from_ufloat(uncertain_lamb0),
+    )
 
 
 @dataclass(frozen=True)
@@ -102,8 +186,8 @@ def _lambda_shifted_fit(
          Λ  = exp(-2 · slope)
          Λ₀ = exp(-offset - ln(Λ)/2)
 
-    Standard deviations for both fitted parameters are also computed using
-    standard formulae found in:
+    Standard deviations are propagated with the `uncertainties` package, following
+    the standard formulae found in:
     https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
 
         (ln(Λ)/2) = Δ(Λ) / (2 · Λ)
@@ -138,20 +222,13 @@ def _lambda_shifted_fit(
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-2 * slope))
-    estimated_lambda_std = float(estimated_lambda * 2 * slope_std)
-    estimated_lambda0 = float(np.exp(-offset - np.log(estimated_lambda) / 2))
-    # Uncertainty propagation.
-    estimated_lambda0_std = float(
-        estimated_lambda0
-        * np.sqrt(
-            offset_std**2
-            + estimated_lambda_std**2 / (4 * estimated_lambda**2)
-            - 2 * cov[0, 1]
-        )
-    )
+    (
+        (estimated_lambda, estimated_lambda_std),
+        (
+            estimated_lambda0,
+            estimated_lambda0_std,
+        ),
+    ) = lambda_from_shifted_fit(slope, offset, cov)
     return LambdaData(
         lambda_=estimated_lambda,
         lambda_std=estimated_lambda_std,
@@ -190,8 +267,8 @@ def _lambda_lin_fit(
          Λ  = exp(-slope)
          Λ₀ = exp(-offset)
 
-    Standard deviations for both fitted parameters are also computed using
-    standard formulae found in:
+    Standard deviations are propagated with the `uncertainties` package, following
+    the standard formulae found in:
     https://en.wikipedia.org/wiki/Propagation_of_uncertainty#Example_formulae
 
         Δ(Λ)  = Λ · Δ(slope)
@@ -219,12 +296,13 @@ def _lambda_lin_fit(
         full=False,
         cov="unscaled",
     )
-    slope_std, offset_std = np.sqrt(np.diagonal(cov))
-    # Estimate error suppression factors.
-    estimated_lambda = float(np.exp(-slope))
-    estimated_lambda_std = float(estimated_lambda * slope_std)
-    estimated_lambda0 = float(np.exp(-offset))
-    estimated_lambda0_std = float(estimated_lambda0 * offset_std)
+    (
+        (estimated_lambda, estimated_lambda_std),
+        (
+            estimated_lambda0,
+            estimated_lambda0_std,
+        ),
+    ) = lambda_from_lin_fit(slope, offset, cov)
     return LambdaData(
         lambda_=estimated_lambda,
         lambda_std=estimated_lambda_std,
@@ -273,12 +351,12 @@ def _lambda_curve_fit(
         bounds=(0, np.inf),  # Ensure convergence in pathological cases.
         maxfev=10000,
     )
-    lamb0_std, lamb_std = np.sqrt(np.diagonal(cov))
+    (lamb, lamb_std), (lamb0, lamb0_std) = lambda_from_curve_fit(lamb0, lamb, cov)
     return LambdaData(
-        lambda_=float(lamb),
-        lambda_std=float(lamb_std),
-        lambda0=float(lamb0),
-        lambda0_std=float(lamb0_std),
+        lambda_=lamb,
+        lambda_std=lamb_std,
+        lambda0=lamb0,
+        lambda0_std=lamb0_std,
         distances=distances,
         leppr=leppr,
         leppr_std=leppr_std,

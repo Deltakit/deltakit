@@ -39,7 +39,8 @@ dependencies = [
   "graphql_core~=3.2",
   "numpy~=2.0",
   "scipy~=1.15",
-  "matplotlib~=3.10",
+  # Upper bound due to github.com/Deltakit/deltakit/issues/284
+  "matplotlib>=3.10,<3.11",
   "deltakit-stim>=0.1.2",
   "requests~=2.32",
   "tqdm~=4.66",
@@ -50,6 +51,9 @@ dependencies = [
   "pandas>=2.2.2",
   "pandas~=2.3; python_version >= '3.13'",
   "ldpc~=2.2",
+  # >=3.2.3: earlier 3.2 releases import the deprecated ``numpy.core`` in
+  # ``unumpy``, which fails under the test suite's ``filterwarnings = error``.
+  "uncertainties>=3.2.3,<4",
 ]
 [project.optional-dependencies]
 vis = ["seaborn"]
@@ -115,6 +119,10 @@ follow_imports_for_stubs = true
 [[tool.mypy.overrides]]
 module = ["adjustText"]
 follow_untyped_imports = true
+
+[[tool.mypy.overrides]]
+module = ["uncertainties", "uncertainties.umath", "uncertainties.unumpy"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
