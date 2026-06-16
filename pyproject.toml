@@ -57,10 +57,16 @@ test = [
   "pytest-skip-slow>=0.0.5",
   { include-group = "tests_extras" },
 ]
-lint = ["mypy>=1.17,<3.0", "ruff~=0.14", "typos~=1.34", "deptry~=0.23", "pydoclint~=0.8"]
+lint = [
+  "mypy>=1.17,<3.0",
+  "ruff~=0.14",
+  "typos~=1.34",
+  "deptry~=0.23",
+  "pydoclint~=0.8",
+]
 docs_extras = [
   "tqdm~=4.67",
-  "deltakit-stim>=0.1.2,<0.2",
+  "deltakit-stim>=0.2,<0.3",
   "numpy~=2.0",
   "matplotlib~=3.10,>=3.10.7",
   "pandas~=2.2,>=2.2.2",

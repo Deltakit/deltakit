@@ -35,7 +35,7 @@ dependencies = [
   "numpy>=1.26",
   "numpy~=2.1; python_version >= '3.13'",
   "networkx~=3.1",
-  "deltakit-stim>=0.1.2,<0.2",
+  "deltakit-stim>=0.2,<0.3",
   "typing_extensions~=4.0",
   "packaging>=25.0",
 ]
@@ -75,21 +75,10 @@ dev = [
 [tool.deptry]
 known_first_party = ["deltakit_core"]
 
-[tool.deptry.per_rule_ignores]
-DEP001 = ["lestim"]
-
 [tool.mypy]
 files = "src/**/*.py"
 # The below list of disabled checks should eventually be empty.
 disable_error_code = "arg-type,attr-defined"
-
-[[tool.mypy.overrides]]
-module = ["stim"]
-follow_untyped_imports = true
-
-[[tool.mypy.overrides]]
-module = ["lestim"]
-ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["./tests/"]
