@@ -252,7 +252,7 @@ def _get_tableau_from_sequence_of_gates(
         (
             stim.Tableau.from_named_gate(gate.stim_string)
             for gate in unitary_block[::-1]
-            # ensuring circuit order, since lestim assumes matrix order for mul
+            # ensuring circuit order, since deltakit_stim assumes matrix order for mul
         ),
         stim.Tableau.from_named_gate("I"),  # default in case unitary_block empty
     )
@@ -299,7 +299,7 @@ def _get_tableau_from_sequence_of_1q_gates(gates: Sequence[str]) -> stim.Tableau
             (
                 stim.Tableau.from_named_gate(gate)
                 for gate in gates[::-1]
-                # ensuring circuit order, since lestim assumes matrix order for mul
+                # ensuring circuit order, since deltakit_stim assumes matrix order for mul
             ),
         )
     except ValueError as ve:

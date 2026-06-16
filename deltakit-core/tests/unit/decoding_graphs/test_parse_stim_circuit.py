@@ -2,12 +2,8 @@
 # ("Riverlane") and is Riverlane Confidential Information.
 # (c) Copyright Riverlane 2021-2025. All rights reserved.
 
+import deltakit_stim as stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import deltakit_stim as stim
 
 from deltakit_core.decoding_graphs._decoding_graph_tools import parse_stim_circuit
 
