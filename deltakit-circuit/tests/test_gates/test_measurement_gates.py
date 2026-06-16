@@ -56,10 +56,12 @@ def test_one_qubit_measurement_gate_bases_match_expected_basis(
 
 @pytest.mark.parametrize(
     ("measurement_gate_class", "tag", "probability"),
-    itertools.product(
-        gates.MEASUREMENT_GATES - {gates.MPP},
-        [None, "", "sjkdhf", "λ", "leaky<0>"],
-        [0.0, 0.02],
+    list(
+        itertools.product(
+            gates.MEASUREMENT_GATES - {gates.MPP},
+            [None, "", "sjkdhf", "λ", "leaky<0>"],
+            [0.0, 0.02],
+        )
     ),
 )
 def test_repr_of_non_inverted_one_qubit_measurement_gate_matches_expected_representation(
@@ -74,9 +76,11 @@ def test_repr_of_non_inverted_one_qubit_measurement_gate_matches_expected_repres
 
 @pytest.mark.parametrize(
     ("measurement_gate_class", "tag"),
-    itertools.product(
-        gates.MEASUREMENT_GATES - {gates.MPP},
-        [None, "", "sjkdhf", "λ", "leaky<0>"],
+    list(
+        itertools.product(
+            gates.MEASUREMENT_GATES - {gates.MPP},
+            [None, "", "sjkdhf", "λ", "leaky<0>"],
+        )
     ),
 )
 def test_repr_of_inverted_one_qubit_measurement_gate_matches_expected_representation(
@@ -167,7 +171,7 @@ class TestSingleQubitMeasurements:
 
     @pytest.mark.parametrize(
         ("measurement_gate1", "measurement_gate2"),
-        permutations(SINGLE_QUBIT_MEASUREMENTS, 2),
+        list(permutations(SINGLE_QUBIT_MEASUREMENTS, 2)),
     )
     def test_different_single_qubit_measurements_on_same_qubit_are_not_equal(
         self, measurement_gate1, measurement_gate2
@@ -184,7 +188,7 @@ class TestSingleQubitMeasurements:
 
     @pytest.mark.parametrize(
         ("measurement_gate1", "measurement_gate2"),
-        permutations(SINGLE_QUBIT_MEASUREMENTS, 2),
+        list(permutations(SINGLE_QUBIT_MEASUREMENTS, 2)),
     )
     def test_equal_measurement_gates_except_gate_type_are_not_approximately_equal(
         self, measurement_gate1, measurement_gate2
@@ -218,7 +222,7 @@ class TestSingleQubitMeasurements:
         )
 
     @pytest.mark.parametrize(
-        "measurement_gate", (gate(Qubit(0), 0.01) for gate in SINGLE_QUBIT_MEASUREMENTS)
+        "measurement_gate", [gate(Qubit(0), 0.01) for gate in SINGLE_QUBIT_MEASUREMENTS]
     )
     def test_inverting_single_qubit_measurement_sets_inverted_flag(
         self, measurement_gate
@@ -226,7 +230,7 @@ class TestSingleQubitMeasurements:
         assert (~measurement_gate).is_inverted
 
     @pytest.mark.parametrize(
-        "measurement_gate", (gate(Qubit(0), 0.01) for gate in SINGLE_QUBIT_MEASUREMENTS)
+        "measurement_gate", [gate(Qubit(0), 0.01) for gate in SINGLE_QUBIT_MEASUREMENTS]
     )
     def test_inverse_of_an_inverted_measurement_gate_is_equal_to_non_inverted_gate(
         self, measurement_gate
@@ -311,7 +315,7 @@ class TestMPPGate:
 
     @pytest.mark.parametrize(
         ("qubit_identifier1", "qubit_identifier2"),
-        permutations(MPP_QUBIT_IDENTIFIERS, 2),
+        list(permutations(MPP_QUBIT_IDENTIFIERS, 2)),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -320,7 +324,7 @@ class TestMPPGate:
 
     @pytest.mark.parametrize(
         ("qubit_identifier1", "qubit_identifier2"),
-        permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_ONE_QUBIT, 2),
+        list(permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_ONE_QUBIT, 2)),
     )
     def test_mpp_gate_with_equivalent_one_qubit_identifiers_are_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -329,7 +333,7 @@ class TestMPPGate:
 
     @pytest.mark.parametrize(
         ("qubit_identifier1", "qubit_identifier2"),
-        permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_TWO_QUBIT, 2),
+        list(permutations(EQUAL_MPP_QUBIT_IDENTIFIERS_TWO_QUBIT, 2)),
     )
     def test_mpp_gate_with_equivalent_two_qubit_identifiers_are_equal(
         self, qubit_identifier1, qubit_identifier2
@@ -354,7 +358,7 @@ class TestMPPGate:
 
     @pytest.mark.parametrize(
         ("qubit_identifier1", "qubit_identifier2"),
-        permutations(MPP_QUBIT_IDENTIFIERS, 2),
+        list(permutations(MPP_QUBIT_IDENTIFIERS, 2)),
     )
     def test_mpp_gate_on_different_qubit_identifiers_are_not_approx_equal(
         self, qubit_identifier1, qubit_identifier2

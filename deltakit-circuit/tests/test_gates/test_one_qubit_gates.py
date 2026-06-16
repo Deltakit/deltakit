@@ -37,7 +37,9 @@ def test_one_qubit_gate_stim_string_matches_expected_string(
 
 @pytest.mark.parametrize(
     ("one_qubit_gate", "tag"),
-    itertools.product(gates.ONE_QUBIT_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+    list(
+        itertools.product(gates.ONE_QUBIT_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"])
+    ),
 )
 def test_one_qubit_gates_repr_matches_expected_representation(
     one_qubit_gate, tag: str | None
@@ -65,7 +67,7 @@ def test_one_qubit_gates_on_different_qubits_are_not_equal(one_qubit_gate):
 
 
 @pytest.mark.parametrize(
-    ("one_qubit_gate1", "one_qubit_gate2"), permutations(gates.ONE_QUBIT_GATES, 2)
+    ("one_qubit_gate1", "one_qubit_gate2"), list(permutations(gates.ONE_QUBIT_GATES, 2))
 )
 def test_different_one_qubit_gates_on_same_qubit_are_different(
     one_qubit_gate1, one_qubit_gate2

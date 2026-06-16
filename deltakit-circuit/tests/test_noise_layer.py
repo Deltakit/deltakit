@@ -159,19 +159,21 @@ class TestNoiseLayerEquality:
 
     @pytest.mark.parametrize(
         ("noise_channels1", "noise_channels2"),
-        permutations(
-            [
-                (noise_channels.PauliXError(Qubit(0), 0.1),),
-                (
-                    noise_channels.Depolarise1(Qubit(1), 0.2),
-                    noise_channels.PauliChannel1(Qubit(0), 0.1, 0.2, 0.3),
-                ),
-                (
-                    noise_channels.Depolarise2(Qubit(0), Qubit(1), 0.2),
-                    noise_channels.PauliZError(Qubit(2), 0.2),
-                ),
-            ],
-            2,
+        list(
+            permutations(
+                [
+                    (noise_channels.PauliXError(Qubit(0), 0.1),),
+                    (
+                        noise_channels.Depolarise1(Qubit(1), 0.2),
+                        noise_channels.PauliChannel1(Qubit(0), 0.1, 0.2, 0.3),
+                    ),
+                    (
+                        noise_channels.Depolarise2(Qubit(0), Qubit(1), 0.2),
+                        noise_channels.PauliZError(Qubit(2), 0.2),
+                    ),
+                ],
+                2,
+            )
         ),
     )
     def test_noise_layers_with_different_noise_channels_are_different(
@@ -288,19 +290,21 @@ class TestNoiseLayerApproxEquals:
 
     @pytest.mark.parametrize(
         ("noise_channels1", "noise_channels2"),
-        permutations(
-            [
-                (noise_channels.PauliXError(Qubit(0), 0.1),),
-                (
-                    noise_channels.Depolarise1(Qubit(1), 0.2),
-                    noise_channels.PauliChannel1(Qubit(0), 0.1, 0.2, 0.3),
-                ),
-                (
-                    noise_channels.Depolarise2(Qubit(0), Qubit(1), 0.2),
-                    noise_channels.PauliZError(Qubit(2), 0.2),
-                ),
-            ],
-            2,
+        list(
+            permutations(
+                [
+                    (noise_channels.PauliXError(Qubit(0), 0.1),),
+                    (
+                        noise_channels.Depolarise1(Qubit(1), 0.2),
+                        noise_channels.PauliChannel1(Qubit(0), 0.1, 0.2, 0.3),
+                    ),
+                    (
+                        noise_channels.Depolarise2(Qubit(0), Qubit(1), 0.2),
+                        noise_channels.PauliZError(Qubit(2), 0.2),
+                    ),
+                ],
+                2,
+            )
         ),
     )
     def test_noise_layers_with_different_noise_channels_are_not_approx_equal(

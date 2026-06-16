@@ -128,7 +128,7 @@ class TestFromConsecutive:
 
 @pytest.mark.parametrize(
     ("two_qubit_gate", "tag"),
-    itertools.product(CONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+    list(itertools.product(CONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"])),
 )
 def test_repr_of_controlled_gates_matches_expected_representation(
     two_qubit_gate, tag: str | None
@@ -142,7 +142,7 @@ def test_repr_of_controlled_gates_matches_expected_representation(
 
 @pytest.mark.parametrize(
     ("two_qubit_gate", "tag"),
-    itertools.product(UNCONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+    list(itertools.product(UNCONTROLLED_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"])),
 )
 def test_repr_of_uncontrolled_gate_matches_expected_representation(
     two_qubit_gate, tag: str | None
@@ -167,17 +167,19 @@ def test_error_is_raised_if_consecutive_data_has_an_odd_number_of_elements(
 
 @pytest.mark.parametrize(
     ("two_qubit_gate_class", "operands"),
-    chain(
-        product(
-            gates.TWO_QUBIT_GATES, [(Qubit(0), Qubit(0)), (0, Qubit(0)), ("a", "a")]
-        ),
-        product(
-            CONTROLLED_GATES,
-            [
-                (SweepBit(0), SweepBit(0)),
-                (MeasurementRecord(-1), MeasurementRecord(-1)),
-            ],
-        ),
+    list(
+        chain(
+            product(
+                gates.TWO_QUBIT_GATES, [(Qubit(0), Qubit(0)), (0, Qubit(0)), ("a", "a")]
+            ),
+            product(
+                CONTROLLED_GATES,
+                [
+                    (SweepBit(0), SweepBit(0)),
+                    (MeasurementRecord(-1), MeasurementRecord(-1)),
+                ],
+            ),
+        )
     ),
 )
 def test_error_is_raised_if_operands_of_two_qubit_gates_are_equal(
@@ -232,7 +234,8 @@ class TestEquality:
         assert two_qubit_gate(Qubit(0), Qubit(1)) != two_qubit_gate(Qubit(2), Qubit(3))
 
     @pytest.mark.parametrize(
-        ("two_qubit_gate1", "two_qubit_gate2"), permutations(gates.TWO_QUBIT_GATES, 2)
+        ("two_qubit_gate1", "two_qubit_gate2"),
+        list(permutations(gates.TWO_QUBIT_GATES, 2)),
     )
     def test_different_two_qubit_gates_on_same_qubits_are_not_equal(
         self, two_qubit_gate1, two_qubit_gate2
@@ -244,7 +247,7 @@ class TestEquality:
     @pytest.mark.parametrize("two_qubit_gate", [gates.CX, gates.CY, gates.CZ])
     @pytest.mark.parametrize(
         ("control1", "control2"),
-        permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2),
+        list(permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2)),
     )
     def test_classically_controlled_gates_are_not_equal_if_control_is_different(
         self, two_qubit_gate, control1, control2
@@ -254,7 +257,7 @@ class TestEquality:
     @pytest.mark.parametrize("two_qubit_gate", [gates.XCZ, gates.YCZ])
     @pytest.mark.parametrize(
         ("target1", "target2"),
-        permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2),
+        list(permutations([Qubit(0), SweepBit(0), MeasurementRecord(-1)], 2)),
     )
     def test_classically_targeted_gates_are_not_equal_if_target_is_different(
         self, two_qubit_gate, target1, target2

@@ -18,18 +18,23 @@ from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOI
 @pytest.mark.skip(reason="Mark as skipped until #262 resolution.")
 @pytest.mark.parametrize(
     ("instr_template", "tag"),
-    itertools.product(
-        [
-            *(f"{sqg.stim_string}[{{tag}}] 0" for sqg in ONE_QUBIT_GATES),
-            *(f"{tqg.stim_string}[{{tag}}] 0 1" for tqg in TWO_QUBIT_GATES),
-            *(
-                f"{mg.stim_string}[{{tag}}] 0"
-                for mg in (MEASUREMENT_GATES - {MPP, HERALD_LEAKAGE_EVENT})
-            ),
-            *(f"{rg.stim_string}[{{tag}}] 0" for rg in RESET_GATES),
-            *(f"{cng.stim_string}[{{tag}}](0.1) X1 Z2" for cng in ALL_CORRELATED_NOISE),
-        ],
-        ["", "sjkdhf", "λ", "leaky<0>"],
+    list(
+        itertools.product(
+            [
+                *(f"{sqg.stim_string}[{{tag}}] 0" for sqg in ONE_QUBIT_GATES),
+                *(f"{tqg.stim_string}[{{tag}}] 0 1" for tqg in TWO_QUBIT_GATES),
+                *(
+                    f"{mg.stim_string}[{{tag}}] 0"
+                    for mg in (MEASUREMENT_GATES - {MPP, HERALD_LEAKAGE_EVENT})
+                ),
+                *(f"{rg.stim_string}[{{tag}}] 0" for rg in RESET_GATES),
+                *(
+                    f"{cng.stim_string}[{{tag}}](0.1) X1 Z2"
+                    for cng in ALL_CORRELATED_NOISE
+                ),
+            ],
+            ["", "sjkdhf", "λ", "leaky<0>"],
+        )
     ),
 )
 def test_parse_tagged_instruction(instr_template: str, tag: str) -> None:

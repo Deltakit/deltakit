@@ -98,7 +98,8 @@ def test_correlated_errors_with_probabilities_within_tolerance_are_approx_equal(
 
 
 @pytest.mark.parametrize(
-    ("pauli_prod_1", "pauli_prod_2"), permutations(EQUAL_ONE_QUBIT_PAULI_PRODUCTS, 2)
+    ("pauli_prod_1", "pauli_prod_2"),
+    list(permutations(EQUAL_ONE_QUBIT_PAULI_PRODUCTS, 2)),
 )
 @pytest.mark.parametrize("error_class", [CorrelatedError, ElseCorrelatedError])
 def test_correlated_errors_with_equivalent_one_qubit_input_pauli_products_are_equal(

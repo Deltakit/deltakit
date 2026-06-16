@@ -35,7 +35,7 @@ def test_reset_gate_basis_is_expected_basis(reset_gate, expected_basis):
 
 @pytest.mark.parametrize(
     ("reset_gate", "tag"),
-    itertools.product(gates.RESET_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"]),
+    list(itertools.product(gates.RESET_GATES, [None, "", "sjkdhf", "λ", "leaky<0>"])),
 )
 def test_repr_of_reset_gate_matches_the_expected_representation(
     reset_gate, tag: str | None
@@ -63,7 +63,7 @@ def test_reset_gates_on_different_qubits_are_not_equal(reset_gate):
 
 
 @pytest.mark.parametrize(
-    ("reset_gate1", "reset_gate2"), permutations(gates.RESET_GATES, 2)
+    ("reset_gate1", "reset_gate2"), list(permutations(gates.RESET_GATES, 2))
 )
 def test_different_reset_gates_on_same_qubit_are_not_equal(reset_gate1, reset_gate2):
     assert reset_gate1(Qubit(0)) != reset_gate2(Qubit(0))

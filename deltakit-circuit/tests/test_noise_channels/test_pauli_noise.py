@@ -216,7 +216,7 @@ class TestPauliNoiseEquality:
 
     @pytest.mark.parametrize(
         ("error_class1", "error_class2"),
-        combinations([PauliXError, PauliYError, PauliZError], 2),
+        list(combinations([PauliXError, PauliYError, PauliZError], 2)),
     )
     def test_two_different_pauli_errors_on_the_same_qubits_are_not_equal(
         self, error_class1, error_class2
@@ -228,7 +228,7 @@ class TestPauliNoiseEquality:
 
     @pytest.mark.parametrize(
         ("error_class1", "error_class2"),
-        combinations([PauliXError, PauliYError, PauliZError], 2),
+        list(combinations([PauliXError, PauliYError, PauliZError], 2)),
     )
     def test_two_different_pauli_errors_on_the_same_qubits_are_not_approx_equal(
         self, error_class1, error_class2

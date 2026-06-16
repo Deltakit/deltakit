@@ -329,15 +329,19 @@ class TestCircuitApproxEquals:
 
     @pytest.mark.parametrize(
         ("layer1", "layer2"),
-        combinations(
-            [
-                sp.Detector(sp.MeasurementRecord(-1)),
-                sp.Detector((sp.MeasurementRecord(-1), sp.MeasurementRecord(-2))),
-                sp.Observable(0, sp.MeasurementRecord(-1)),
-                sp.Observable(1, (sp.MeasurementRecord(-1), sp.MeasurementRecord(-2))),
-                sp.ShiftCoordinates((0, 0, 1)),
-            ],
-            2,
+        list(
+            combinations(
+                [
+                    sp.Detector(sp.MeasurementRecord(-1)),
+                    sp.Detector((sp.MeasurementRecord(-1), sp.MeasurementRecord(-2))),
+                    sp.Observable(0, sp.MeasurementRecord(-1)),
+                    sp.Observable(
+                        1, (sp.MeasurementRecord(-1), sp.MeasurementRecord(-2))
+                    ),
+                    sp.ShiftCoordinates((0, 0, 1)),
+                ],
+                2,
+            )
         ),
     )
     def test_circuits_with_deterministic_layers_in_wrong_order_are_not_approx_equal(
