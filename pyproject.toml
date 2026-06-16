@@ -180,6 +180,7 @@ neighbors = "neighbors"
 capitalize = "capitalize"
 labeled = "labeled"
 labeler = "labeler"
+Normalize = "Normalize"             # matplotlib API name
 
 [tool.typos.files]
 # Paths/patterns to exclude from spell checking
