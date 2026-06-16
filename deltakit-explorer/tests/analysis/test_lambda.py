@@ -42,12 +42,14 @@ class TestCalculateLambda:
 
     @pytest.mark.parametrize(
         ("method", "distances", "lambda_", "lambda0", "relative_std"),
-        itertools.product(
-            ("shifted", "lin", "curve"),
-            ((5, 7, 9), (5, 6, 7, 8, 9), tuple(range(5, 50, 6))),
-            (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
-            (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
-            (10 ** (-x) for x in (1, 3, 5, 7, 9)),
+        list(
+            itertools.product(
+                ("shifted", "lin", "curve"),
+                ((5, 7, 9), (5, 6, 7, 8, 9), tuple(range(5, 50, 6))),
+                (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
+                (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
+                (10 ** (-x) for x in (1, 3, 5, 7, 9)),
+            )
         ),
     )
     def test_synthetic_values(
@@ -82,9 +84,11 @@ class TestCalculateLambda:
 
     @pytest.mark.parametrize(
         ("lamb", "distances"),
-        itertools.product(
-            (0.1, 0.5, 0.9, 1 - 1e-7, 1 + 1e-7, 1.1, 1.2, 1.3, 1.4),
-            ([3, 5, 7], list(range(3, 20, 4))),
+        list(
+            itertools.product(
+                (0.1, 0.5, 0.9, 1 - 1e-7, 1 + 1e-7, 1.1, 1.2, 1.3, 1.4),
+                ([3, 5, 7], list(range(3, 20, 4))),
+            )
         ),
     )
     def test_small_lambda_and_low_distance_warns(
@@ -98,12 +102,14 @@ class TestCalculateLambda:
 
     @pytest.mark.parametrize(
         ("methods", "distances", "lambda_", "lambda0", "relative_std"),
-        itertools.product(
-            itertools.combinations(["shifted", "lin", "curve"], 2),
-            ((5, 7, 9), (5, 9, 13)),
-            (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
-            (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
-            (10 ** (-x) for x in (1, 3, 5, 7, 9)),
+        list(
+            itertools.product(
+                itertools.combinations(["shifted", "lin", "curve"], 2),
+                ((5, 7, 9), (5, 9, 13)),
+                (0.7, 0.9, 1 - 1e-7, 1, 1 + 1e-7, 1.1, 1.5, 2, 10, 20),
+                (0.01, 0.1, 1 - 1e-7, 1, 1 + 1e-7, 2, 10, 100),
+                (10 ** (-x) for x in (1, 3, 5, 7, 9)),
+            )
         ),
     )
     def test_different_methods_agree(

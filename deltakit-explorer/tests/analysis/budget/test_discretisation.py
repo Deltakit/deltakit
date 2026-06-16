@@ -18,7 +18,7 @@ def _assert_is_linear(arr: npt.NDArray[np.floating]) -> None:
 
 @pytest.mark.parametrize(
     ("a", "b", "c", "num_points", "degree"),
-    itertools.product([-1, 0, 0.1], [1, 2], [0.5], [5, 10, 1000], [1, 2, 3]),
+    list(itertools.product([-1, 0, 0.1], [1, 2], [0.5], [5, 10, 1000], [1, 2, 3])),
 )
 def test_linear_points(
     a: float, b: float, c: float, num_points: int, degree: int
@@ -31,7 +31,9 @@ def test_linear_points(
 
 @pytest.mark.parametrize(
     ("a", "b", "c", "num_points", "degree"),
-    itertools.product([0.1, 0.5, 1.0], [1.1, 2.0, 5.0], [1.05], [5, 10], [1, 2, 3]),
+    list(
+        itertools.product([0.1, 0.5, 1.0], [1.1, 2.0, 5.0], [1.05], [5, 10], [1, 2, 3])
+    ),
 )
 def test_logarithmic_points(
     a: float, b: float, c: float, num_points: int, degree: int
@@ -45,15 +47,17 @@ def test_logarithmic_points(
 
 @pytest.mark.parametrize(
     ("func", "abc"),
-    itertools.product(
-        [get_linear_points, get_logarithmic_points],
-        [
-            (1, 2, 3),  # a < b < c
-            (2, 1, 3),  # b < a < c
-            (3, 1, 2),  # b < c < a
-            (2, 3, 1),  # c < a < b
-            (3, 2, 1),  # c < b < a
-        ],
+    list(
+        itertools.product(
+            [get_linear_points, get_logarithmic_points],
+            [
+                (1, 2, 3),  # a < b < c
+                (2, 1, 3),  # b < a < c
+                (3, 1, 2),  # b < c < a
+                (2, 3, 1),  # c < a < b
+                (3, 2, 1),  # c < b < a
+            ],
+        )
     ),
 )
 def test_raises_on_invalid_inputs(

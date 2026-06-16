@@ -189,7 +189,7 @@ class TestStabiliserClass:
 
     @pytest.mark.parametrize(
         ("paulis_ancilla_0", "paulis_ancilla_1"),
-        itertools.combinations(paulis_and_ancilla_qubits_pair_examples, r=2),
+        list(itertools.combinations(paulis_and_ancilla_qubits_pair_examples, r=2)),
     )
     def test__neq__and__hash__work_correctly_for_different_paulis(
         self, paulis_ancilla_0, paulis_ancilla_1

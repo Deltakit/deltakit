@@ -32,7 +32,7 @@ class TestLEPPerRoundComputation:
 
     @pytest.mark.parametrize(
         ("leppr", "spam_error"),
-        itertools.product((1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2)),
+        list(itertools.product((1e-5, 1e-4, 1e-3, 1e-2), (1e-5, 1e-4, 1e-3, 1e-2))),
     )
     def test_on_synthetic_inputs(
         self,

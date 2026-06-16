@@ -43,15 +43,17 @@ def test_variate_ith_parameter_by(
 
 @pytest.mark.parametrize(
     ("degree", "func_and_expected_derivative"),
-    itertools.product(
-        [3, 4, 5],
-        [
-            (lambda x: x**2, 1),
-            (lambda x: x**3, 3 / 4),
-            (lambda x: x**4, 1 / 2),
-            (lambda x: 4 * x + 0.5 * x**2, 4.5),
-            (lambda x: -30 + 4 * x + 0.5 * x**2, 4.5),
-        ],
+    list(
+        itertools.product(
+            [3, 4, 5],
+            [
+                (lambda x: x**2, 1),
+                (lambda x: x**3, 3 / 4),
+                (lambda x: x**4, 1 / 2),
+                (lambda x: 4 * x + 0.5 * x**2, 4.5),
+                (lambda x: -30 + 4 * x + 0.5 * x**2, 4.5),
+            ],
+        )
     ),
 )
 def test_approximate_derivative_at_point_from_values(

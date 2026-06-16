@@ -573,7 +573,7 @@ class TestCSSStageWithAllParameters:
         )
 
     @pytest.mark.parametrize(
-        ("stage1", "stage2"), itertools.combinations(all_example_stages, 2)
+        ("stage1", "stage2"), list(itertools.combinations(all_example_stages, 2))
     )
     def test___eq___returns_false_for_not_equal_stages(self, stage1, stage2):
         assert stage1 != stage2

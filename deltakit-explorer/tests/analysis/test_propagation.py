@@ -158,7 +158,7 @@ class TestPropagationParity:
 
     @pytest.mark.parametrize(
         ("degree", "point"),
-        itertools.product([3, 4, 5], [0.25, 0.5, 0.75]),
+        list(itertools.product([3, 4, 5], [0.25, 0.5, 0.75])),
     )
     def test_polynomial_derivative_stddev(self, degree: int, point: float) -> None:
         x = np.linspace(0, 1, degree + 5)
