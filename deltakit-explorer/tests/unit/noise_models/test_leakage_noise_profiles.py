@@ -39,7 +39,8 @@ class TestRelaxationNoiseProfiles:
     relaxation_prob = 0.5
 
     @pytest.fixture(scope="class")
-    def five_qubit_circuit(self):
+    @classmethod
+    def five_qubit_circuit(cls):
         return Circuit(GateLayer(RZ(qubit) for qubit in range(5)))
 
     @pytest.mark.parametrize(

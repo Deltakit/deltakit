@@ -16,7 +16,8 @@ from deltakit_explorer.qpu._noise import SD6Noise
 
 class TestSD6NoiseModel:
     @pytest.fixture(scope="class")
-    def noise_model(self):
+    @classmethod
+    def noise_model(cls):
         return SD6Noise(p=0.1)
 
     @pytest.mark.parametrize("prob", [0.1])
