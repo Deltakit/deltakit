@@ -30,13 +30,13 @@ class TestGraphToJSON:
             graph_to_json(graph, logicals)
 
     @pytest.fixture(
-        scope="class",
         params=[
             "surface_code:rotated_memory_x",
             "surface_code:unrotated_memory_z",
         ],
     )
-    def stim_circuit(self, request):
+    @classmethod
+    def stim_circuit(cls, request):
         distance = 5
         return stim.Circuit.generated(
             request.param,
