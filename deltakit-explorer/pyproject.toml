@@ -41,7 +41,7 @@ dependencies = [
   "scipy~=1.15",
   # Upper bound due to github.com/Deltakit/deltakit/issues/284
   "matplotlib>=3.10,<3.11",
-  "deltakit-stim>=0.1.2,<0.2",
+  "deltakit-stim>=0.2,<0.3",
   "requests~=2.32",
   "tqdm~=4.66",
   "galois>=0.4.6,~=0.4",
@@ -104,10 +104,6 @@ known_first_party = ["deltakit_explorer"]
 files = "src/**/*.py"
 # The below list of disabled checks should eventually be empty.
 disable_error_code = "arg-type,assignment,attr-defined,dict-item,index,list-item,misc,operator,override,return-value,union-attr,var-annotated"
-
-[[tool.mypy.overrides]]
-module = ["stim"]
-follow_untyped_imports = true
 
 # The ldpc.mod2 stubs files contain syntax errors, and so make mypy fail earlier than expected
 # with a SyntaxError. Ignoring the whole module for mypy.

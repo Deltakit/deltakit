@@ -1,12 +1,8 @@
 # (c) Copyright Riverlane 2020-2025.
 from pathlib import Path
 
+import deltakit_stim as stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import deltakit_stim as stim
 
 from deltakit_core.decoding_graphs import (
     DecodingEdge,

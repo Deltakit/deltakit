@@ -4,12 +4,8 @@ from __future__ import annotations
 import math
 from typing import Literal
 
+import deltakit_stim as stim
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import deltakit_stim as stim
 from pytest_mock.plugin import MockerFixture
 
 from deltakit_core.decoding_graphs import (

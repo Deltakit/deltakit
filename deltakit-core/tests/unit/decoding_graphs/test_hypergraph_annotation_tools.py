@@ -1,12 +1,8 @@
 """Unit tests for hypergraph annotation utilities focused on edge-based window ids."""
 
+import deltakit_stim as stim
 import networkx as nx
 import pytest
-
-try:
-    import lestim as stim
-except ImportError:
-    import deltakit_stim as stim
 
 from deltakit_core.decoding_graphs._decoding_graph import (
     DecodingCode,

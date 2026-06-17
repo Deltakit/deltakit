@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from collections.abc import Set as AbstractSet
 from typing import no_type_check
 
+import deltakit_stim as stim
 import networkx as nx
 import numpy as np
 
@@ -29,11 +30,6 @@ from deltakit_core.decoding_graphs._dem_parsing import (
     DetectorCounter,
     dem_to_decoding_graph_and_logicals,
 )
-
-try:
-    import lestim as stim
-except ImportError:
-    import deltakit_stim as stim
 
 
 def filter_to_data_edges(graph: NXDecodingGraph) -> list[DecodingEdge]:
