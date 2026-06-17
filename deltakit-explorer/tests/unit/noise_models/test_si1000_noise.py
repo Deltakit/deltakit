@@ -14,11 +14,13 @@ from deltakit_explorer.qpu._noise import SI1000Noise
 
 class TestSI1000Noise:
     @pytest.fixture(scope="class")
-    def si1000_noise_model(self):
+    @classmethod
+    def si1000_noise_model(cls):
         return SI1000Noise(p=0.1)
 
     @pytest.fixture(scope="class")
-    def si1000_reset_noise_model(self):
+    @classmethod
+    def si1000_reset_noise_model(cls):
         return SI1000Noise(p=0.1)
 
     @pytest.mark.parametrize("prob", [0.1])
