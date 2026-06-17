@@ -13,7 +13,8 @@ class TestToyNoise:
         assert ToyNoise(p=1e-2).p_measurement_flip == p_measurement_flip
 
     @pytest.fixture(scope="class")
-    def toy_noise_model(self):
+    @classmethod
+    def toy_noise_model(cls):
         return ToyNoise(p=0.1)
 
     @pytest.mark.parametrize("prob", [0.1])
