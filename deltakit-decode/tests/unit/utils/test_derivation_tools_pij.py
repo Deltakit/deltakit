@@ -31,13 +31,15 @@ REFERENCE_DATA_DIR = (
 
 class TestDerivationToolsPij:
     @pytest.fixture(scope="class")
-    def stim_circuit(self, reference_data_dir: Path):
+    @classmethod
+    def stim_circuit(cls, reference_data_dir: Path):
         return stim.Circuit.from_file(
             reference_data_dir / "stim" / "circuit_noisy.stim"
         )
 
     @pytest.fixture(scope="class")
-    def detection_events(self, reference_data_dir: Path):
+    @classmethod
+    def detection_events(cls, reference_data_dir: Path):
         return reference_data_dir / "b801" / "detection_events.b8"
 
     @pytest.mark.parametrize(

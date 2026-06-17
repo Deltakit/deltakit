@@ -293,7 +293,8 @@ class TestGraphToJSON:
             "surface_code:unrotated_memory_z",
         ],
     )
-    def stim_circuit(self, request):
+    @classmethod
+    def stim_circuit(cls, request):
         distance = 5
         return stim.Circuit.generated(
             request.param,
@@ -343,7 +344,8 @@ class TestInverseLogical:
             ),
         ],
     )
-    def graph(self, request) -> NXDecodingGraph:
+    @classmethod
+    def graph(cls, request) -> NXDecodingGraph:
         return request.param
 
     @staticmethod

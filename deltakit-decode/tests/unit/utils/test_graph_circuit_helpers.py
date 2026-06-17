@@ -158,10 +158,12 @@ class TestParseStimCircuit:
         ],
         scope="class",
     )
-    def stim_circuit(self, request):
+    @classmethod
+    def stim_circuit(cls, request):
         return request.param
 
     @pytest.fixture(scope="class")
+    @classmethod
     def original_graph_trimmed_graph_logicals(self, stim_circuit):
         trimmed_graph, logicals, _ = parse_stim_circuit(stim_circuit, trim_circuit=True)
         original_graph, _, _ = parse_stim_circuit(stim_circuit, trim_circuit=False)

@@ -716,15 +716,17 @@ class TestExampleRPlanar3x3x1DemToDecodingGraph:
     """
 
     @pytest.fixture(scope="class")
+    @classmethod
     def example_decoding_graph(
-        self, dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed
+        cls, dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed
     ):
         dem, _, _, _ = dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed
         nx_graph, _ = dem_to_decoding_graph_and_logicals(dem)
         return nx_graph
 
     @pytest.fixture(scope="class")
-    def example_logical(self, dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed):
+    @classmethod
+    def example_logical(cls, dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed):
         dem, _, _, _ = dem_nodes_edges_logicals_RP_3x3_X_1_round_decomposed
         _, logical = dem_to_decoding_graph_and_logicals(dem)
         return logical

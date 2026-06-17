@@ -223,7 +223,8 @@ class TestExplainedDemParsing:
 
 class TestExtractLogicals:
     @pytest.fixture(scope="class")
-    def decoding_edge(self):
+    @classmethod
+    def decoding_edge(cls):
         return DecodingHyperEdge({0, 1, 2})
 
     def test_edges_affecting_logical_zero_are_in_zeroth_logical(

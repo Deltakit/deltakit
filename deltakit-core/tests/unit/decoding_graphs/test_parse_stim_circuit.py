@@ -47,7 +47,8 @@ class TestParseStimCircuit:
         ],
         scope="class",
     )
-    def stim_circuit(self, request) -> stim.Circuit:
+    @classmethod
+    def stim_circuit(cls, request) -> stim.Circuit:
         return request.param
 
     def test_trimmed_stim_circuit_has_same_number_of_detectors_as_its_corresponding_trimmed_graph(
