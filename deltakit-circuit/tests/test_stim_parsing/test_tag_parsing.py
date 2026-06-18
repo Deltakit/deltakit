@@ -15,7 +15,6 @@ from deltakit_circuit.gates._two_qubit_gates import TWO_QUBIT_GATES
 from deltakit_circuit.noise_channels._correlated_noise import ALL_CORRELATED_NOISE
 
 
-@pytest.mark.skip(reason="Mark as skipped until #262 resolution.")
 @pytest.mark.parametrize(
     ("instr_template", "tag"),
     list(
