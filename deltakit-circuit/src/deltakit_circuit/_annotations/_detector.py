@@ -9,7 +9,6 @@ from itertools import chain
 import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import Coordinate, MeasurementRecord
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class Detector:
@@ -96,7 +95,7 @@ class Detector:
         stim_arguments = self.coordinate if self.coordinate is not None else ()
         kwargs = (
             {"tag": self.tag}
-            if self.tag is not None and is_stim_tag_feature_available()
+            if self.tag is not None
             else {}
         )
         stim_circuit.append(self.stim_string, stim_targets, stim_arguments, **kwargs)

@@ -8,7 +8,6 @@ from collections.abc import Iterable
 import deltakit_stim as stim
 
 from deltakit_circuit._qubit_identifiers import Coordinate
-from deltakit_circuit._stim_version_compatibility import is_stim_tag_feature_available
 
 
 class ShiftCoordinates:
@@ -51,7 +50,7 @@ class ShiftCoordinates:
         """
         kwargs = (
             {"tag": self.tag}
-            if self.tag is not None and is_stim_tag_feature_available()
+            if self.tag is not None
             else {}
         )
         stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift, **kwargs)
