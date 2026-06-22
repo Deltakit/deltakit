@@ -34,7 +34,6 @@ classifiers = [
 dependencies = [
   "deltakit-stim>=0.2,<0.3",
   "typing-extensions~=4.0",
-  "packaging>=25.0",
 ]
 
 [project.urls]
