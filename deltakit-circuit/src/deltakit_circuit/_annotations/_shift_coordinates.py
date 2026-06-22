@@ -48,11 +48,7 @@ class ShiftCoordinates:
         _qubit_mapping : None
             Unused argument to keep interface with other layer classes clean.
         """
-        kwargs = (
-            {"tag": self.tag}
-            if self.tag is not None
-            else {}
-        )
+        kwargs = {"tag": self.tag} if self.tag is not None else {}
         stim_circuit.append("SHIFT_COORDS", [], self._coordinate_shift, **kwargs)
 
     def __eq__(self, other: object) -> bool:
