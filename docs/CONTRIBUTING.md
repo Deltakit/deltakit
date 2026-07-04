@@ -12,14 +12,14 @@ Thank you for considering a contribution to Deltakit. We welcome contributions o
 
 > For introductory information about contributing to open source projects, please see the [Scientific Python Contributor Guide](https://learn.scientific-python.org/contributors/).
 
-Prior to making a contribution, we kindly ask to review our [code of conduct](CODE_OF_CONDUCT.md).
+Prior to making a contribution, we kindly ask to review our [code of conduct](https://github.com/Deltakit/deltakit/blob/main/docs/CODE_OF_CONDUCT.md).
 
 ## Reporting an issue
 
-Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug) first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
+Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the [issue tracker](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue%20state%3Aopen) first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
 
-- **Bug reports**: A "bug" is defined as a discrepancy between documented and actual behaviour or an *inaccurate* error message. Bug reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=bug.md).
-- **Enhancement and feature requests**: Requests for improvements, enhancements, or new features are highly appreciated. Request reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=request.md).
+- **Bug reports**: A "bug" is defined as a discrepancy between documented and actual behaviour or an *inaccurate* error message. Bug reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=bug.yml).
+- **Enhancement and feature requests**: Requests for improvements, enhancements, or new features are highly appreciated. Request reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=request.yml).
 - **Issue participation**: It is also possible to constructively participate in current [issues](https://github.com/Deltakit/deltakit/issues/) by reproducing bugs, investigating their causes, or contributing to discussions on best fixes and implementation designs.
 
 ## Submitting a Pull Request
@@ -143,11 +143,11 @@ Decisions are made by consensus of participants in a GitHub issue or PR. In case
 
 ### Release
 
-For more information about release processes, see the [Deltakit release procedure](RELEASE.md).
+For more information about release processes, see the [Deltakit release procedure](https://github.com/Deltakit/deltakit/blob/main/docs/RELEASE.md).
 
 ### Security
 
-For more information about security, see the [Deltakit security policy](SECURITY.md).
+For more information about security, see the [Deltakit security policy](https://github.com/Deltakit/deltakit/blob/main/docs/SECURITY.md).
 
 ### Contributor License Agreement
 
