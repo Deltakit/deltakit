@@ -2,6 +2,94 @@
 
 <!-- version list -->
 
+## v0.9.0 (2026-07-09)
+
+### Bug Fixes
+
+- Corrected the links in CONTRIBUTING.md ([#305](https://github.com/Deltakit/deltakit/pull/305),
+  [`d0856bc`](https://github.com/Deltakit/deltakit/commit/d0856bc25bc1671df53e57db496c959ba623a31c))
+
+- Increase linkcheck_timeout to 180s to reduce flaky CI failures
+  ([#291](https://github.com/Deltakit/deltakit/pull/291),
+  [`f56fbcf`](https://github.com/Deltakit/deltakit/commit/f56fbcf38c618761ab109dd31edaa078f1fd28a6))
+
+- **circuit**: Proper TICK placement with REPEAT
+  ([#289](https://github.com/Deltakit/deltakit/pull/289),
+  [`3f8b19d`](https://github.com/Deltakit/deltakit/commit/3f8b19dff8194f8a2a463d410f885f812ba915a9))
+
+- **circuit**: Tag propagation in deltakit stim
+  ([#302](https://github.com/Deltakit/deltakit/pull/302),
+  [`dc4054a`](https://github.com/Deltakit/deltakit/commit/dc4054abb90c95d41a276d5d5894960a5a357cf4))
+
+- **dependencies**: Deltakit-stim>=0.2 ([#296](https://github.com/Deltakit/deltakit/pull/296),
+  [`7ba2de1`](https://github.com/Deltakit/deltakit/commit/7ba2de144a05be941278714f497b8641da080a42))
+
+- **dependencies**: Update gql[requests] requirement from ~=3.5 to >=3.5,<5.0 in /deltakit-explorer
+  in the prod-deps group across 1 directory ([#300](https://github.com/Deltakit/deltakit/pull/300),
+  [`2f00bd1`](https://github.com/Deltakit/deltakit/commit/2f00bd1e8d20e6cd408f461308723c6ac746510a))
+
+- **docs**: Add upper-bound for sphinx theme ([#280](https://github.com/Deltakit/deltakit/pull/280),
+  [`76818c9`](https://github.com/Deltakit/deltakit/commit/76818c9a4b3cb96a08b8a69c04f6cb8ea7aee482))
+
+- **docs**: Update release documentation ([#267](https://github.com/Deltakit/deltakit/pull/267),
+  [`ead6b7f`](https://github.com/Deltakit/deltakit/commit/ead6b7f24b50317eb664a026d17ff5f42bb6bffc))
+
+- **explorer**: Fix auth test. ([#288](https://github.com/Deltakit/deltakit/pull/288),
+  [`9fad696`](https://github.com/Deltakit/deltakit/commit/9fad69613d5931113a4f851c7666e88c2250261b))
+
+- **explorer**: Upper bound matplotlib version
+  ([#285](https://github.com/Deltakit/deltakit/pull/285),
+  [`de10516`](https://github.com/Deltakit/deltakit/commit/de10516c8d480937191323c4f98c85e15635879d))
+
+- **other**: Move conftest.py file to analysis folder
+  ([#255](https://github.com/Deltakit/deltakit/pull/255),
+  [`f6cb203`](https://github.com/Deltakit/deltakit/commit/f6cb203a7785ab623d3f18623c71f980e3b39f78))
+
+- **other**: Typo in documentation ([#254](https://github.com/Deltakit/deltakit/pull/254),
+  [`63466b3`](https://github.com/Deltakit/deltakit/commit/63466b3d50f354942d7790d2f6a4607b31fa4a9e))
+
+- **others**: Avoid coverage failing on dependabot PRs
+  ([#256](https://github.com/Deltakit/deltakit/pull/256),
+  [`60e8281`](https://github.com/Deltakit/deltakit/commit/60e8281c89f00b3399da43df668f28a668ee50fe))
+
+### Features
+
+- Allow even distances for lambda ([#242](https://github.com/Deltakit/deltakit/pull/242),
+  [`1ed0ca3`](https://github.com/Deltakit/deltakit/commit/1ed0ca33d6ecfc7cd778f06fe0a2dc9ea6f3ccf4))
+
+- Improve plotting function calls ([#245](https://github.com/Deltakit/deltakit/pull/245),
+  [`80087d5`](https://github.com/Deltakit/deltakit/commit/80087d51bbdbdafc149d1eb3882d53febbcf2216))
+
+- Lepprresults renaming ([#244](https://github.com/Deltakit/deltakit/pull/244),
+  [`3e0c276`](https://github.com/Deltakit/deltakit/commit/3e0c2761e5f37c31584baeebe7134babbabff125))
+
+- Refactor Generic Plot to Dispatch to Specialized Plotters
+  ([#268](https://github.com/Deltakit/deltakit/pull/268),
+  [`546117a`](https://github.com/Deltakit/deltakit/commit/546117ac34eb8b103d3da8cb131ac0b996de5c3f))
+
+- Rename class to avoid name ambiguity. ([#243](https://github.com/Deltakit/deltakit/pull/243),
+  [`a521905`](https://github.com/Deltakit/deltakit/commit/a521905fd9872c7a738e286ddc34165ccd613483))
+
+- Replace stim imports ([#277](https://github.com/Deltakit/deltakit/pull/277),
+  [`57126ab`](https://github.com/Deltakit/deltakit/commit/57126ab25cfe96b089ad0b90896de999cf7814b2))
+
+- Visualise detection probability on patch (#135)
+  ([#271](https://github.com/Deltakit/deltakit/pull/271),
+  [`c79d4a0`](https://github.com/Deltakit/deltakit/commit/c79d4a0f45406de487e33cf1ac852b41b6ef2267))
+
+- **analysis**: Support asymmetric error bars
+  ([#275](https://github.com/Deltakit/deltakit/pull/275),
+  [`26dae51`](https://github.com/Deltakit/deltakit/commit/26dae515059f07cabec0f6628c0c8864d44466b6))
+
+- **analysis**: Use the uncertainties package for error propagation
+  ([#274](https://github.com/Deltakit/deltakit/pull/274),
+  [`6e3e31b`](https://github.com/Deltakit/deltakit/commit/6e3e31b58a91b4488da79cf59a9d6457e511f2d1))
+
+- **explorer**: Implement c-optimal discretisation strategy to reduce gradient variance in error
+  budgeting feature ([#266](https://github.com/Deltakit/deltakit/pull/266),
+  [`f59bb4c`](https://github.com/Deltakit/deltakit/commit/f59bb4cd05a03f47d4b0effd0fc5f7a6fc704c1a))
+
+
 ## v0.8.0 (2026-03-09)
 
 ### Breaking Changes
