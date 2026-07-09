@@ -45,7 +45,6 @@ Documentation = "https://deltakit.riverlane.com/"
 Issues = "https://github.com/Deltakit/deltakit/issues"
 Changelog = "https://github.com/Deltakit/deltakit/releases"
 
-
 [dependency-groups]
 tests_extras = [
   "matplotlib~=3.10,>=3.10.7",
