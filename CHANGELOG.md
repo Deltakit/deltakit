@@ -63,7 +63,7 @@
 - Lepprresults renaming ([#244](https://github.com/Deltakit/deltakit/pull/244),
   [`3e0c276`](https://github.com/Deltakit/deltakit/commit/3e0c2761e5f37c31584baeebe7134babbabff125))
 
-- Refactor Generic Plot to Dispatch to Specialized Plotters
+- Refactor Generic Plot to Dispatch to Specialised Plotters
   ([#268](https://github.com/Deltakit/deltakit/pull/268),
   [`546117a`](https://github.com/Deltakit/deltakit/commit/546117ac34eb8b103d3da8cb131ac0b996de5c3f))
 
