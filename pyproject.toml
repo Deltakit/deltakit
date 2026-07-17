@@ -96,9 +96,9 @@ dev = [
   "validate-pyproject>=0.24.1,<0.26.0",
 ]
 release = [
-  "tomlkit~=0.14",
+  "tomlkit<0.16,>=0.13",
   "pip-licenses>=5.0",
-  "python-semantic-release~=10.2",
+  "python-semantic-release>=10.6.1,<11",
 ]
 
 [tool.uv.workspace]
