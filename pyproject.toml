@@ -96,7 +96,7 @@ dev = [
   "validate-pyproject>=0.24.1,<0.26.0",
 ]
 release = [
-  "tomlkit<0.16,>=0.13",
+  "tomlkit>=0.13,<0.16",
   "pip-licenses>=5.0",
   "python-semantic-release>=10.6.1,<11",
 ]
