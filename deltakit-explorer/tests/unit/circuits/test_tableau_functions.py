@@ -2,7 +2,6 @@ import random
 import re
 from copy import deepcopy
 from functools import reduce
-from importlib.metadata import version
 from operator import add, mul
 
 import deltakit_stim as stim
@@ -66,7 +65,6 @@ from deltakit_circuit.gates import (
     Z,
 )
 from deltakit_circuit.noise_channels import Depolarise2
-from packaging.version import Version
 
 from deltakit_explorer.codes._css._css_code_experiment_circuit import (
     css_code_memory_circuit,
@@ -101,7 +99,6 @@ from deltakit_explorer.qpu._circuits._tableau_functions import (
     _is_identity_like,
 )
 from deltakit_explorer.qpu._native_gate_set import NativeGateSet
-
 
 # define set of compilation dictionaries for testing
 compilation_dict0 = {("+X", "+Z"): ()}
