@@ -7,7 +7,7 @@ name = "deltakit"
 version = "0.9.0"
 description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10,<3.15"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 
