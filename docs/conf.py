@@ -110,5 +110,5 @@ suppress_warnings = [
     "autosummary.import_cycle",
 ]
 
-linkcheck_timeout = 180
+linkcheck_timeout = 360
 linkcheck_retries = 2
