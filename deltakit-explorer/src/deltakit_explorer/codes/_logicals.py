@@ -264,7 +264,11 @@ def pivot_rows(parity_check_matrix: galois.FieldArray) -> NDArray[np.int_]:
 
 
 def css_code_compute_logicals(
-    hx: NDArray[np.floating], hz: NDArray[np.floating]
+    hx: NDArray[np.floating],
+    hz: NDArray[np.floating],
+    *,
+    lx_preferred: NDArray[np.floating] | None = None,
+    lz_preferred: NDArray[np.floating] | None = None,
 ) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
     """Drop-in replacement for calling bposd.css_code.compute_logicals.
 
@@ -284,6 +288,11 @@ def css_code_compute_logicals(
             5. Add a docstring.
             6. Add typing to the internal `compute_lz` function.
             7. Only use dense matrices because the inputs are dense anyway.
+            8. Add ``lx_preferred``/``lz_preferred`` to let a caller bias which
+               representative is picked for a logical class, since the basis a
+               plain kernel/quotient computation returns is not unique and a
+               caller may rely on a structural property that isn't guaranteed
+               by an arbitrary basis.
 
         You can check the original version of this function at
         [this permalink](https://github.com/quantumgizmos/bp_osd/blob/8894ec654b24ae875c07e5a361dcae9a77d748ce/src/bposd/css.py#L75).
@@ -291,13 +300,42 @@ def css_code_compute_logicals(
     Args:
         hx: parity check matrix for the X code.
         hz: parity check matrix for the Z code.
+        lx_preferred: optional binary vectors, each already lying in
+            ``ker(hz)``, to prefer as representatives of their logical class.
+            Vectors that are stabilisers or dependent on earlier rows are
+            skipped and contribute nothing extra.
+        lz_preferred: as ``lx_preferred``, but for Z logicals, each already
+            lying in ``ker(hx)``.
 
     Returns:
         a tuple ``(lx, lz)`` representing the X and Z logicals.
     """
 
+    def validate_preferred_logicals(
+        _preferred: NDArray[np.floating],
+        _hx_gf: galois.FieldArray,
+    ) -> None:
+        """Validate optional preferred logical representatives.
+
+        Args:
+            _preferred: Binary row vectors to prioritise.
+            _hx_gf: Check matrix whose kernel must contain ``_preferred``.
+
+        Raises:
+            ValueError: If the preferred rows are non-binary or do not lie in
+                the required kernel.
+        """
+        if not np.all((_preferred == 0) | (_preferred == 1)):
+            msg = "Preferred logicals must be binary."
+            raise ValueError(msg)
+        if not np.all((_preferred @ np.asarray(_hx_gf.T, dtype=np.int_)) % 2 == 0):
+            msg = "Preferred logicals must lie in the kernel of the check matrix."
+            raise ValueError(msg)
+
     def compute_lz(
-        _hx: NDArray[np.floating], _hz: NDArray[np.floating]
+        _hx: NDArray[np.floating],
+        _hz: NDArray[np.floating],
+        _preferred: NDArray[np.floating] | None,
     ) -> NDArray[np.floating]:
         """Compute a basis of logical operators for one side of a CSS code.
 
@@ -307,6 +345,9 @@ def css_code_compute_logicals(
         Args:
             _hx: Check matrix used to define valid operators.
             _hz: Check matrix used to remove redundant operators.
+            _preferred: Optional vectors, already lying in ``ker(_hx)``, to
+                prefer as representatives of their logical class over other
+                representatives that would otherwise be found.
 
         Returns:
             A binary matrix whose rows are logical operators.
@@ -317,9 +358,19 @@ def css_code_compute_logicals(
         ker_hx_gf = _hx_gf.null_space()
         rank_hz_gf = np.linalg.matrix_rank(_hz_gf)
 
-        log_stack = np.vstack((_hz_gf, ker_hx_gf))
+        stack = [_hz_gf]
+        if _preferred is not None:
+            validate_preferred_logicals(_preferred, _hx_gf)
+            preferred_gf = galois.GF2(_preferred.astype(np.int_))
+            stack.append(preferred_gf)
+
+        stack.append(ker_hx_gf)
+        log_stack = np.vstack(stack)
         pivots = pivot_rows(log_stack)[rank_hz_gf:]
 
         return np.asarray(log_stack[pivots])
 
-    return compute_lz(hz, hx), compute_lz(hx, hz)
+    return (
+        compute_lz(hz, hx, lx_preferred),
+        compute_lz(hx, hz, lz_preferred),
+    )

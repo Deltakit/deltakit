@@ -754,8 +754,28 @@ class BivariateBicycleCode(CSSCode):
             x_logicals[i],z_logicals[j] anti-commute exactly when i=j
             and commute otherwise.
         """
-        # get a subset of logicals from css_code, and compute the rest
-        x_logs, _ = css_code_compute_logicals(self.m_Hx, self.m_Hz)
+        # get a subset of logicals from css_code, and compute the rest.
+        #
+        # X logicals are of the form X(f,0) and X(g,h), eq. (16). A basis of
+        # ker(hz) mod im(hx.T) does not necessarily contain any X(f,0)-type
+        # representatives (the split is a property of a *class*, not of an
+        # arbitrary representative chosen for it), so pure f-type kernel
+        # vectors -- i.e. ker(hz[:, :half]) embedded as (f, 0) -- are passed
+        # as preferred representatives, guaranteeing as many X(f,0) logicals
+        # as exist are found before falling back to mixed X(g,h) logicals.
+        half = self.n // 2
+        hz_gf = galois.GF2(np.asarray(self.m_Hz, dtype=np.int_))
+        pure_f_kernel = hz_gf[:, :half].null_space()
+        pure_f_logs = np.hstack(
+            (
+                np.asarray(pure_f_kernel, dtype=np.int_),
+                np.zeros((pure_f_kernel.shape[0], half), dtype=np.int_),
+            )
+        )
+
+        x_logs, _ = css_code_compute_logicals(
+            self.m_Hx, self.m_Hz, lx_preferred=pure_f_logs
+        )
 
         # get f and g,h from X logicals
         # X logicals are of the form X(f,0) and X(g,h), eq. (16)
