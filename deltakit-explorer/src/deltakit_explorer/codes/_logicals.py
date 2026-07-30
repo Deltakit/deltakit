@@ -241,26 +241,29 @@ def get_logical_operators_from_css_parity_check_matrices(
     )
 
 
-def pivot_rows(parity_check_matrix: galois.FieldArray) -> NDArray[np.int_]:
+def independent_row_indices_in_order(
+    parity_check_matrix: galois.FieldArray,
+) -> NDArray[np.int_]:
     """
-    Compute the pivot row indices of a dense binary check matrix over GF(2).
+    Compute independent row indices for a dense binary check matrix over GF(2).
 
     Args:
         parity_check_matrix: A dense binary check matrix represented as a
             ``galois.FieldArray`` over GF(2).
 
     Returns:
-        The pivot row indices of ``parity_check_matrix``.
+        Row indices that are independent of earlier rows in
+        ``parity_check_matrix``.
     """
-    # Pivot rows of ``parity_check_matrix`` are the non-zero pivot columns of
-    # ``parity_check_matrix.T``.
+    # Independent rows of ``parity_check_matrix`` are the non-zero pivot columns
+    # of ``parity_check_matrix.T``.
     row_reduced = parity_check_matrix.T.row_reduce()
-    pivots: list[int] = []
+    independent_rows: list[int] = []
     for row in row_reduced:
         non_zero_row = np.flatnonzero(row != 0)
         if non_zero_row.size:
-            pivots.append(int(non_zero_row[0]))
-    return np.asarray(pivots, dtype=np.int_)
+            independent_rows.append(int(non_zero_row[0]))
+    return np.asarray(independent_rows, dtype=np.int_)
 
 
 def css_code_compute_logicals(
@@ -358,15 +361,18 @@ def css_code_compute_logicals(
         ker_hx_gf = _hx_gf.null_space()
         rank_hz_gf = np.linalg.matrix_rank(_hz_gf)
 
-        stack = [_hz_gf]
+        # stabilisers are considered first, then preferred rows,
+        # then the arbitrary kernel basis.
+        candidate_bases = [_hz_gf]
         if _preferred is not None:
             validate_preferred_logicals(_preferred, _hx_gf)
             preferred_gf = galois.GF2(_preferred.astype(np.int_))
-            stack.append(preferred_gf)
+            candidate_bases.append(preferred_gf)
 
-        stack.append(ker_hx_gf)
-        log_stack = np.vstack(stack)
-        pivots = pivot_rows(log_stack)[rank_hz_gf:]
+        candidate_bases.append(ker_hx_gf)
+        log_stack = np.vstack(candidate_bases)
+
+        pivots = independent_row_indices_in_order(log_stack)[rank_hz_gf:]
 
         return np.asarray(log_stack[pivots])
 
