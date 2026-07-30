@@ -774,7 +774,10 @@ class BivariateBicycleCode(CSSCode):
         )
 
         x_logs, _ = css_code_compute_logicals(
-            self.m_Hx, self.m_Hz, lx_preferred=pure_f_logs
+            self.m_Hx,
+            self.m_Hz,
+            lx_preferred=pure_f_logs,
+            compute_both_logicals=False,
         )
 
         # get f and g,h from X logicals

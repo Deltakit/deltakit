@@ -272,6 +272,7 @@ def css_code_compute_logicals(
     *,
     lx_preferred: NDArray[np.floating] | None = None,
     lz_preferred: NDArray[np.floating] | None = None,
+    compute_both_logicals: bool = True,
 ) -> tuple[NDArray[np.floating], NDArray[np.floating]]:
     """Drop-in replacement for calling bposd.css_code.compute_logicals.
 
@@ -309,6 +310,9 @@ def css_code_compute_logicals(
             skipped and contribute nothing extra.
         lz_preferred: as ``lx_preferred``, but for Z logicals, each already
             lying in ``ker(hx)``.
+        compute_both_logicals: Whether to compute both X and Z logicals. If
+            ``False``, only X logicals are computed and the returned Z logical
+            matrix is empty.
 
     Returns:
         a tuple ``(lx, lz)`` representing the X and Z logicals.
@@ -378,5 +382,7 @@ def css_code_compute_logicals(
 
     return (
         compute_lz(hz, hx, lx_preferred),
-        compute_lz(hx, hz, lz_preferred),
+        compute_lz(hx, hz, lz_preferred)
+        if compute_both_logicals
+        else np.empty((0, hx.shape[1]), dtype=np.int_),
     )
