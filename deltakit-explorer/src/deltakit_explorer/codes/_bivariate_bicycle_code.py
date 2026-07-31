@@ -27,21 +27,30 @@ from deltakit_explorer.codes._stabiliser import Stabiliser
 class _BivariateBicycleMatrices(NamedTuple):
     """Matrices used to construct a bivariate bicycle code.
 
+    The notation follows Bravyi et al., "High-threshold and low-overhead
+    fault-tolerant quantum memory", arXiv:2308.07915.
+
     Attributes:
-        m_x: Binary matrix representing ``x`` in the IBM paper.
-        m_y: Binary matrix representing ``y`` in the IBM paper.
-        m_A_submatrices: Submatrices whose sum defines matrix ``A``.
-        m_B_submatrices: Submatrices whose sum defines matrix ``B``.
-        m_Hx: Parity check matrix for X checks.
-        m_Hz: Parity check matrix for Z checks.
+        x: Cyclic shift matrix for the `l` coordinate, defined as
+            `kron(S_l, I_m)`.
+        y: Cyclic shift matrix for the `m` coordinate, defined as
+            `kron(I_l, S_m)`.
+        A_submatrices: Binary polynomial terms whose sum (modulo 2) defines
+            matrix `A`. For powers `[a, b, c]`, these are `x^a`, `y^b`,
+            and `y^c`.
+        B_submatrices: Binary polynomial terms whose sum (modulo 2) defines
+            matrix `B`. For powers `[d, e, f]`, these are `y^d`, `x^e`,
+            and `x^f`.
+        Hx: Parity check matrix for X checks, `[A | B]`.
+        Hz: Parity check matrix for Z checks, `[B.T | A.T]`.
     """
 
-    m_x: npt.NDArray[np.int_]
-    m_y: npt.NDArray[np.int_]
-    m_A_submatrices: tuple[npt.NDArray[np.int_], ...]
-    m_B_submatrices: tuple[npt.NDArray[np.int_], ...]
-    m_Hx: npt.NDArray[np.int_]
-    m_Hz: npt.NDArray[np.int_]
+    x: npt.NDArray[np.int_]
+    y: npt.NDArray[np.int_]
+    A_submatrices: tuple[npt.NDArray[np.int_], ...]
+    B_submatrices: tuple[npt.NDArray[np.int_], ...]
+    Hx: npt.NDArray[np.int_]
+    Hz: npt.NDArray[np.int_]
 
 
 def _find_anticommuting_pairs(
@@ -409,20 +418,20 @@ class BivariateBicycleCode(CSSCode):
         # work out code parameters
         self.n = 2 * param_l * param_m
 
-        matrices = self._construct_matrices(param_l, param_m, m_A_powers, m_B_powers)
+        matrices = self._construct_bb_matrices(param_l, param_m, m_A_powers, m_B_powers)
         if validate:
             half = param_l * param_m
-            self._assert_x_y_properties(param_l, param_m, matrices.m_x, matrices.m_y)
+            self._assert_x_y_properties(param_l, param_m, matrices.x, matrices.y)
             self._assert_matrix_ma_mb_properties(
-                matrices.m_Hx[:, :half], matrices.m_Hx[:, half:]
+                matrices.Hx[:, :half], matrices.Hx[:, half:]
             )
 
-        self.m_x = matrices.m_x
-        self.m_y = matrices.m_y
-        self.m_A_submatrices = matrices.m_A_submatrices
-        self.m_B_submatrices = matrices.m_B_submatrices
-        self.m_Hx = matrices.m_Hx
-        self.m_Hz = matrices.m_Hz
+        self.m_x = matrices.x
+        self.m_y = matrices.y
+        self.m_A_submatrices = matrices.A_submatrices
+        self.m_B_submatrices = matrices.B_submatrices
+        self.m_Hx = matrices.Hx
+        self.m_Hz = matrices.Hz
 
         # place qubits on a square grid
         (
@@ -469,7 +478,7 @@ class BivariateBicycleCode(CSSCode):
         )
 
     @staticmethod
-    def _construct_matrices(
+    def _construct_bb_matrices(
         param_l: int,
         param_m: int,
         m_A_powers: list[int],
@@ -477,15 +486,31 @@ class BivariateBicycleCode(CSSCode):
     ) -> _BivariateBicycleMatrices:
         """Construct the matrices used by a bivariate bicycle code.
 
+        This follows the BB-code construction from Bravyi et al.,
+        "High-threshold and low-overhead fault-tolerant quantum memory",
+        arXiv:2308.07915. The construction is based on coordinate-wise
+        cyclic shifts. If `S_l` and `S_m` are the cyclic shift matrices for
+        the `l` and `m` coordinates, then `x = kron(S_l, I_m)` and
+        `y = kron(I_l, S_m)`.
+
+        The inputs `m_A_powers = [a, b, c]` and `m_B_powers = [d, e, f]`
+        parameterise the polynomial terms as `A1 = x^a`, `A2 = y^b`,
+        `A3 = y^c`, `B1 = y^d`, `B2 = x^e`, and `B3 = x^f`. The matrices
+        `A = A1 + A2 + A3` and `B = B1 + B2 + B3` are computed modulo 2.
+        The CSS parity check matrices are then `Hx = [A | B]` and
+        `Hz = [B.T | A.T]`.
+
         Args:
-            param_l: Parameter ``l`` as in the IBM paper.
-            param_m: Parameter ``m`` as in the IBM paper.
-            m_A_powers: Powers defining matrix ``A``.
-            m_B_powers: Powers defining matrix ``B``.
+            param_l: Size of the `l` coordinate.
+            param_m: Size of the `m` coordinate.
+            m_A_powers: Exponents `[a, b, c]` defining `A1 = x^a`,
+                `A2 = y^b`, and `A3 = y^c`.
+            m_B_powers: Exponents `[d, e, f]` defining `B1 = y^d`,
+                `B2 = x^e`, and `B3 = x^f`.
 
         Returns:
-            The shift, polynomial submatrices, and parity check matrices used
-            by the code construction.
+            The cyclic shift matrices, polynomial submatrices, and parity
+            check matrices used by the code construction.
         """
 
         # create S and I for l and m
@@ -517,12 +542,12 @@ class BivariateBicycleCode(CSSCode):
         m_Hz = np.hstack((m_B.T, m_A.T))
 
         return _BivariateBicycleMatrices(
-            m_x=m_x,
-            m_y=m_y,
-            m_A_submatrices=(m_A1, m_A2, m_A3),
-            m_B_submatrices=(m_B1, m_B2, m_B3),
-            m_Hx=m_Hx,
-            m_Hz=m_Hz,
+            x=m_x,
+            y=m_y,
+            A_submatrices=(m_A1, m_A2, m_A3),
+            B_submatrices=(m_B1, m_B2, m_B3),
+            Hx=m_Hx,
+            Hz=m_Hz,
         )
 
     @staticmethod
@@ -818,8 +843,8 @@ class BivariateBicycleCode(CSSCode):
         """Compute BB-specific logical operators as binary vectors.
 
         Args:
-            param_l: Parameter ``l`` as in the IBM paper.
-            param_m: Parameter ``m`` as in the IBM paper.
+            param_l: Parameter ``l``.
+            param_m: Parameter ``m``.
             m_Hx: Parity check matrix for X checks.
             m_Hz: Parity check matrix for Z checks.
             num_logical_qubits: Number of logical qubits encoded by the code.

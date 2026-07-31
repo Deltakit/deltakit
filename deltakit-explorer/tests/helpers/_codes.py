@@ -24,10 +24,10 @@ def bivariate_bicycle_parity_check_matrices(
     Returns:
         The X and Z parity check matrices.
     """
-    matrices = BivariateBicycleCode._construct_matrices(
+    matrices = BivariateBicycleCode._construct_bb_matrices(
         param_l, param_m, m_A_powers, m_B_powers
     )
-    return matrices.m_Hx, matrices.m_Hz
+    return matrices.Hx, matrices.Hz
 
 
 def planar_code_parity_check_matrices(
