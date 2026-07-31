@@ -1,8 +1,94 @@
 # (c) Copyright Riverlane 2020-2025.
 
+import galois
+import numpy as np
 import pytest
 
-from deltakit_explorer.codes._bivariate_bicycle_code import Monomial, Polynomial
+from deltakit_explorer.codes._bivariate_bicycle_code import (
+    Monomial,
+    Polynomial,
+)
+from deltakit_explorer.codes._logicals import css_code_compute_logicals
+from tests.helpers._codes import bivariate_bicycle_parity_check_matrices
+from tests.helpers._gf2 import quotient_dimension_gf2, rank_gf2
+
+
+@pytest.mark.parametrize(
+    ("param_l", "param_m", "m_A_powers", "m_B_powers", "expected_n", "expected_k"),
+    [
+        pytest.param(
+            3,
+            5,
+            [1, 1, 4],
+            [0, 1, 2],
+            30,
+            8,
+            id="bivariate-bicycle-3x5",
+        ),
+        pytest.param(
+            6,
+            6,
+            [3, 1, 2],
+            [3, 1, 2],
+            72,
+            12,
+            id="bivariate-bicycle-6x6",
+        ),
+    ],
+)
+def test_bivariate_bicycle_parity_check_matrix_fixtures_have_expected_dimension(
+    param_l: int,
+    param_m: int,
+    m_A_powers: list[int],
+    m_B_powers: list[int],
+    expected_n: int,
+    expected_k: int,
+):
+    hx, hz = bivariate_bicycle_parity_check_matrices(
+        param_l, param_m, m_A_powers, m_B_powers
+    )
+
+    assert hx.shape == hz.shape == (param_l * param_m, expected_n)
+    assert np.all((hx @ hz.T) % 2 == 0)
+    assert expected_k == expected_n - rank_gf2(hx) - rank_gf2(hz)
+
+
+@pytest.mark.parametrize(
+    ("param_l", "param_m", "m_A_powers", "m_B_powers"),
+    [
+        pytest.param(3, 5, [1, 1, 4], [0, 1, 2], id="bivariate-bicycle-3x5"),
+    ],
+)
+def test_bivariate_bicycle_preferred_x_logicals_span_right_zero_classes(
+    param_l: int, param_m: int, m_A_powers: list[int], m_B_powers: list[int]
+):
+    hx, hz = bivariate_bicycle_parity_check_matrices(
+        param_l, param_m, m_A_powers, m_B_powers
+    )
+    half = hx.shape[1] // 2
+    pure_f_kernel = galois.GF2(np.asarray(hz[:, :half], dtype=np.int_)).null_space()
+    pure_f_logical_candidates = np.hstack(
+        (
+            np.asarray(pure_f_kernel, dtype=np.int_),
+            np.zeros((pure_f_kernel.shape[0], half), dtype=np.int_),
+        )
+    )
+
+    lx, _ = css_code_compute_logicals(
+        hx.astype(float),
+        hz.astype(float),
+        lx_preferred=pure_f_logical_candidates.astype(float),
+        compute_both_logicals=False,
+    )
+    lx = np.asarray(lx, dtype=np.int_)
+    right_zero_lx = lx[np.all(lx[:, half:] == 0, axis=1)]
+
+    expected_right_zero_dimension = quotient_dimension_gf2(
+        pure_f_logical_candidates, hx
+    )
+    actual_right_zero_dimension = quotient_dimension_gf2(right_zero_lx, hx)
+
+    assert actual_right_zero_dimension == expected_right_zero_dimension
 
 
 class TestPolynomial:

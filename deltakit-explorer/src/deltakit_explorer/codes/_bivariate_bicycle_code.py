@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from functools import reduce
 from itertools import product
+from typing import NamedTuple
 
 import galois
 import numpy as np
@@ -21,6 +22,26 @@ from deltakit_circuit._basic_types import Coord2D
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._logicals import css_code_compute_logicals
 from deltakit_explorer.codes._stabiliser import Stabiliser
+
+
+class _BivariateBicycleMatrices(NamedTuple):
+    """Matrices used to construct a bivariate bicycle code.
+
+    Attributes:
+        m_x: Binary matrix representing ``x`` in the IBM paper.
+        m_y: Binary matrix representing ``y`` in the IBM paper.
+        m_A_submatrices: Submatrices whose sum defines matrix ``A``.
+        m_B_submatrices: Submatrices whose sum defines matrix ``B``.
+        m_Hx: Parity check matrix for X checks.
+        m_Hz: Parity check matrix for Z checks.
+    """
+
+    m_x: npt.NDArray[np.int_]
+    m_y: npt.NDArray[np.int_]
+    m_A_submatrices: tuple[npt.NDArray[np.int_], ...]
+    m_B_submatrices: tuple[npt.NDArray[np.int_], ...]
+    m_Hx: npt.NDArray[np.int_]
+    m_Hz: npt.NDArray[np.int_]
 
 
 def _find_anticommuting_pairs(
@@ -379,6 +400,7 @@ class BivariateBicycleCode(CSSCode):
     ):
         if validate:
             self._validate_input_parameters(param_l, param_m, m_A_powers, m_B_powers)
+
         self.param_l = param_l
         self.param_m = param_m
         self.m_A_powers = m_A_powers
@@ -387,45 +409,20 @@ class BivariateBicycleCode(CSSCode):
         # work out code parameters
         self.n = 2 * param_l * param_m
 
-        # create S and I for l and m
-        m_S_l = np.roll(np.eye(param_l, dtype=np.int_), shift=1, axis=1)
-        m_S_m = np.roll(np.eye(param_m, dtype=np.int_), shift=1, axis=1)
-        m_I_l = np.eye(param_l, dtype=np.int_)
-        m_I_m = np.eye(param_m, dtype=np.int_)
-
-        # create x and y. Note that x and y commute
-        m_x = np.kron(m_S_l, m_I_m)
-        m_y = np.kron(m_I_l, m_S_m)
-
+        matrices = self._construct_matrices(param_l, param_m, m_A_powers, m_B_powers)
         if validate:
-            # assert properties of x,y to catch errors
-            self._assert_x_y_properties(self.param_l, self.param_m, m_x, m_y)
-        self.m_x = m_x
-        self.m_y = m_y
+            half = param_l * param_m
+            self._assert_x_y_properties(param_l, param_m, matrices.m_x, matrices.m_y)
+            self._assert_matrix_ma_mb_properties(
+                matrices.m_Hx[:, :half], matrices.m_Hx[:, half:]
+            )
 
-        # create A and B
-        # A = x^a + y^b + y^c, B = y^d + x^e + x^f
-        # add powers of x and y to create A and B
-        m_A1 = np.linalg.matrix_power(m_x, m_A_powers[0])
-        m_A2 = np.linalg.matrix_power(m_y, m_A_powers[1])
-        m_A3 = np.linalg.matrix_power(m_y, m_A_powers[2])
-        m_A = reduce(np.add, [m_A1, m_A2, m_A3]) % 2
-
-        m_B1 = np.linalg.matrix_power(m_y, m_B_powers[0])
-        m_B2 = np.linalg.matrix_power(m_x, m_B_powers[1])
-        m_B3 = np.linalg.matrix_power(m_x, m_B_powers[2])
-        m_B = reduce(np.add, [m_B1, m_B2, m_B3]) % 2
-
-        if validate:
-            # assert properties of A and B:
-            self._assert_matrix_ma_mb_properties(m_A, m_B)
-        self.m_A_submatrices = (m_A1, m_A2, m_A3)
-        self.m_B_submatrices = (m_B1, m_B2, m_B3)
-
-        # create Hx and Hz check matrices. Note that since A and B
-        # commute, these are valid check matrices
-        self.m_Hx = np.hstack((m_A, m_B))
-        self.m_Hz = np.hstack((m_B.T, m_A.T))
+        self.m_x = matrices.m_x
+        self.m_y = matrices.m_y
+        self.m_A_submatrices = matrices.m_A_submatrices
+        self.m_B_submatrices = matrices.m_B_submatrices
+        self.m_Hx = matrices.m_Hx
+        self.m_Hz = matrices.m_Hz
 
         # place qubits on a square grid
         (
@@ -455,6 +452,63 @@ class BivariateBicycleCode(CSSCode):
             z_logical_operators=z_logicals,
             use_ancilla_qubits=True,
             check_logical_operators_are_independent=check_logical_operators_are_independent,
+        )
+
+    @staticmethod
+    def _construct_matrices(
+        param_l: int,
+        param_m: int,
+        m_A_powers: list[int],
+        m_B_powers: list[int],
+    ) -> _BivariateBicycleMatrices:
+        """Construct the matrices used by a bivariate bicycle code.
+
+        Args:
+            param_l: Parameter ``l`` as in the IBM paper.
+            param_m: Parameter ``m`` as in the IBM paper.
+            m_A_powers: Powers defining matrix ``A``.
+            m_B_powers: Powers defining matrix ``B``.
+
+        Returns:
+            The shift, polynomial submatrices, and parity check matrices used
+            by the code construction.
+        """
+
+        # create S and I for l and m
+        m_S_l = np.roll(np.eye(param_l, dtype=np.int_), shift=1, axis=1)
+        m_S_m = np.roll(np.eye(param_m, dtype=np.int_), shift=1, axis=1)
+        m_I_l = np.eye(param_l, dtype=np.int_)
+        m_I_m = np.eye(param_m, dtype=np.int_)
+
+        # create x and y. Note that x and y commute
+        m_x = np.kron(m_S_l, m_I_m)
+        m_y = np.kron(m_I_l, m_S_m)
+
+        # create A and B
+        # A = x^a + y^b + y^c, B = y^d + x^e + x^f
+        # add powers of x and y to create A and B
+        m_A1 = np.linalg.matrix_power(m_x, m_A_powers[0])
+        m_A2 = np.linalg.matrix_power(m_y, m_A_powers[1])
+        m_A3 = np.linalg.matrix_power(m_y, m_A_powers[2])
+        m_A = reduce(np.add, [m_A1, m_A2, m_A3]) % 2
+
+        m_B1 = np.linalg.matrix_power(m_y, m_B_powers[0])
+        m_B2 = np.linalg.matrix_power(m_x, m_B_powers[1])
+        m_B3 = np.linalg.matrix_power(m_x, m_B_powers[2])
+        m_B = reduce(np.add, [m_B1, m_B2, m_B3]) % 2
+
+        # create Hx and Hz check matrices. Note that since A and B
+        # commute, these are valid check matrices
+        m_Hx = np.hstack((m_A, m_B))
+        m_Hz = np.hstack((m_B.T, m_A.T))
+
+        return _BivariateBicycleMatrices(
+            m_x=m_x,
+            m_y=m_y,
+            m_A_submatrices=(m_A1, m_A2, m_A3),
+            m_B_submatrices=(m_B1, m_B2, m_B3),
+            m_Hx=m_Hx,
+            m_Hz=m_Hz,
         )
 
     @staticmethod
