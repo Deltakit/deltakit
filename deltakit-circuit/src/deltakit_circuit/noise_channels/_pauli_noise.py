@@ -14,6 +14,24 @@ from deltakit_circuit.noise_channels._abstract_noise_channels import (
     TwoQubitNoiseChannel,
 )
 
+_PAULI_CHANNEL_2_PROBABILITY_NAMES = (
+    "p_ix",
+    "p_iy",
+    "p_iz",
+    "p_xi",
+    "p_xx",
+    "p_xy",
+    "p_xz",
+    "p_yi",
+    "p_yx",
+    "p_yy",
+    "p_yz",
+    "p_zi",
+    "p_zx",
+    "p_zy",
+    "p_zz",
+)
+
 
 class PauliXError(OneQubitOneProbabilityNoiseChannel[T]):
     """Applies a Pauli X with a given probability.
@@ -158,36 +176,12 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
         The first qubit in the noise channel.
     qubit2: Qubit[T] | T
         The second qubit in the noise channel.
-    p_ix : float, optional
-        Probability of applying an IX operation, by default 0.0
-    p_iy : float, optional
-        Probability of applying an IY operation, by default 0.0
-    p_iz : float, optional
-        Probability of applying an IZ operation, by default 0.0
-    p_xi : float, optional
-        Probability of applying an XI operation, by default 0.0
-    p_xx : float, optional
-        Probability of applying an XX operation, by default 0.0
-    p_xy : float, optional
-        Probability of applying an XY operation, by default 0.0
-    p_xz : float, optional
-        Probability of applying an XZ operation, by default 0.0
-    p_yi : float, optional
-        Probability of applying a YI operation, by default 0.0
-    p_yx : float, optional
-        Probability of applying a YX operation, by default 0.0
-    p_yy : float, optional
-        Probability of applying a YY operation, by default 0.0
-    p_yz : float, optional
-        Probability of applying a YZ operation, by default 0.0
-    p_zi : float, optional
-        Probability of applying a ZI operation, by default 0.0
-    p_zx : float, optional
-        Probability of applying a ZX operation, by default 0.0
-    p_zy : float, optional
-        Probability of applying a ZY operation, by default 0.0
-    p_zz : float, optional
-        Probability of applying a ZZ operation, by default 0.0
+    *positional_probabilities : float, optional
+        Positional probabilities in ``p_ix`` through ``p_zz`` order.
+    tag : str | None, optional
+        An optional tag for the noise channel, by default None.
+    **probability_kwargs : float, optional
+        Named probabilities in ``p_ix`` through ``p_zz`` order.
 
     Notes
     -----
@@ -216,29 +210,51 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
 
     stim_string: ClassVar[str] = "PAULI_CHANNEL_2"
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         qubit1: Qubit[T] | T,
         qubit2: Qubit[T] | T,
-        p_ix: float = 0.0,
-        p_iy: float = 0.0,
-        p_iz: float = 0.0,
-        p_xi: float = 0.0,
-        p_xx: float = 0.0,
-        p_xy: float = 0.0,
-        p_xz: float = 0.0,
-        p_yi: float = 0.0,
-        p_yx: float = 0.0,
-        p_yy: float = 0.0,
-        p_yz: float = 0.0,
-        p_zi: float = 0.0,
-        p_zx: float = 0.0,
-        p_zy: float = 0.0,
-        p_zz: float = 0.0,
-        *,
+        *positional_probabilities: float,
         tag: str | None = None,
+        **probability_kwargs: float,
     ):
-        probabilities = (
+        if len(positional_probabilities) > len(_PAULI_CHANNEL_2_PROBABILITY_NAMES):
+            msg = (
+                "PauliChannel2 accepts at most 15 positional probability "
+                f"arguments, got {len(positional_probabilities)}."
+            )
+            raise TypeError(msg)
+        unknown_probability_names = (
+            probability_kwargs.keys() - _PAULI_CHANNEL_2_PROBABILITY_NAMES
+        )
+        if unknown_probability_names:
+            msg = (
+                "Unexpected PauliChannel2 probability arguments: "
+                f"{', '.join(sorted(unknown_probability_names))}."
+            )
+            raise TypeError(msg)
+        positional_probability_names = _PAULI_CHANNEL_2_PROBABILITY_NAMES[
+            : len(positional_probabilities)
+        ]
+        duplicate_probability_names = (
+            probability_kwargs.keys() & positional_probability_names
+        )
+        if duplicate_probability_names:
+            msg = (
+                "PauliChannel2 got both positional and keyword values for: "
+                f"{', '.join(sorted(duplicate_probability_names))}."
+            )
+            raise TypeError(msg)
+
+        probability_by_name = dict.fromkeys(_PAULI_CHANNEL_2_PROBABILITY_NAMES, 0.0)
+        probability_by_name.update(
+            zip(positional_probability_names, positional_probabilities, strict=True)
+        )
+        probability_by_name.update(probability_kwargs)
+        probabilities = tuple(
+            probability_by_name[name] for name in _PAULI_CHANNEL_2_PROBABILITY_NAMES
+        )
+        (
             p_ix,
             p_iy,
             p_iz,
@@ -254,7 +270,7 @@ class PauliChannel2(MultiProbabilityNoiseChannel[T], TwoQubitNoiseChannel[T]):
             p_zx,
             p_zy,
             p_zz,
-        )
+        ) = probabilities
         super().__init__(
             qubit1=qubit1, qubit2=qubit2, probabilities=probabilities, tag=tag
         )

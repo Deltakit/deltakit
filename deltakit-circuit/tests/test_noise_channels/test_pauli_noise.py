@@ -380,6 +380,54 @@ def test_error_is_raised_if_sum_of_pauli_channel_2_probabilities_is_greater_than
         PauliChannel2(Qubit(0), Qubit(1), 0.4, 0.4, 0.2, 0.1)
 
 
+def test_pauli_channel_2_accepts_named_probability_kwargs():
+    pauli_channel = PauliChannel2(Qubit(0), Qubit(1), p_ix=0.01, p_zz=0.02)
+
+    assert pauli_channel.probabilities == (
+        0.01,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.02,
+    )
+    assert pauli_channel.p_ix == 0.01
+    assert pauli_channel.p_zz == 0.02
+
+
+def test_pauli_channel_2_accepts_mixed_positional_and_named_probabilities():
+    pauli_channel = PauliChannel2(Qubit(0), Qubit(1), 0.01, p_iz=0.03)
+
+    assert pauli_channel.p_ix == 0.01
+    assert pauli_channel.p_iy == 0.0
+    assert pauli_channel.p_iz == 0.03
+
+
+def test_pauli_channel_2_rejects_duplicate_positional_and_named_probabilities():
+    with pytest.raises(
+        TypeError,
+        match="PauliChannel2 got both positional and keyword values for: p_ix.",
+    ):
+        PauliChannel2(Qubit(0), Qubit(1), 0.01, p_ix=0.02)
+
+
+def test_pauli_channel_2_rejects_unknown_probability_kwargs():
+    with pytest.raises(
+        TypeError,
+        match="Unexpected PauliChannel2 probability arguments: probability.",
+    ):
+        PauliChannel2(Qubit(0), Qubit(1), probability=0.01)
+
+
 def test_error_is_raised_if_constructing_pauli_channel_two_with_odd_number_of_qubits():
     with pytest.raises(
         ValueError,

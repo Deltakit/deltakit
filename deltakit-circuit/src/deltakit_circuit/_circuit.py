@@ -551,6 +551,7 @@ class Circuit(Generic[T]):  # pylint: disable=too-many-public-methods
         allow_gauge_detectors: bool = False,
         approximate_disjoint_errors: bool | float = False,
         ignore_decomposition_failures: bool = False,
+        *,
         block_decomposition_from_introducing_remnant_edges: bool = False,
     ) -> stim.DetectorErrorModel:
         # pylint: disable=line-too-long,too-many-arguments
