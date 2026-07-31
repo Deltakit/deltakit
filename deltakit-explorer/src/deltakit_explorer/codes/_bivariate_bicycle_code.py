@@ -443,7 +443,21 @@ class BivariateBicycleCode(CSSCode):
         stabilisers = self._get_stabilisers()
 
         # work out logicals
-        x_logicals, z_logicals = self._get_logicals()
+        x_logical_vectors, z_logical_vectors = self.compute_bb_structured_logicals(
+            self.param_l,
+            self.param_m,
+            self.m_Hx,
+            self.m_Hz,
+            self.k,
+        )
+        x_logicals, z_logicals = self._logical_vectors_to_paulis(
+            x_logical_vectors,
+            z_logical_vectors,
+            self.param_l,
+            self.param_m,
+            self._mat_col_to_l_data_map,
+            self._mat_col_to_r_data_map,
+        )
 
         # construct CSSCode
         super().__init__(
@@ -793,21 +807,42 @@ class BivariateBicycleCode(CSSCode):
 
         return x_stabilisers + z_stabilisers
 
-    def _get_logicals(
-        self,
-    ) -> tuple[list[list[PauliX[Coord2D]]], list[list[PauliZ[Coord2D]]]]:
-        """
-        Will return a tuple of lists of the X and Z logicals, respectively.
-        They are paired up in order, that is, they anticommute when the
-        indices of the two lists are aligned and commute otherwise.
+    @staticmethod
+    def compute_bb_structured_logicals(
+        param_l: int,
+        param_m: int,
+        m_Hx: npt.NDArray[np.integer],
+        m_Hz: npt.NDArray[np.integer],
+        num_logical_qubits: int,
+    ) -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_]]:
+        """Compute BB-specific logical operators as binary vectors.
 
-        Returns
-        -------
-        Tuple[List[List[PauliX[Coord2D]]], List[List[PauliZ[Coord2D]]]]
-            Tuple of X and Z logical operators, in order such that
-            x_logicals[i],z_logicals[j] anti-commute exactly when i=j
-            and commute otherwise.
+        Args:
+            param_l: Parameter ``l`` as in the IBM paper.
+            param_m: Parameter ``m`` as in the IBM paper.
+            m_Hx: Parity check matrix for X checks.
+            m_Hz: Parity check matrix for Z checks.
+            num_logical_qubits: Number of logical qubits encoded by the code.
+
+        Returns:
+            X and Z logical operator vectors. The rows are ordered so
+            ``x_logicals[i]`` and ``z_logicals[j]`` anti-commute exactly when
+            ``i == j``.
+
+        Raises:
+            ValueError: If the parity check matrices are not shaped like a BB
+                code with parameters ``param_l`` and ``param_m``.
         """
+        m_Hx = np.asarray(m_Hx, dtype=np.int_)
+        m_Hz = np.asarray(m_Hz, dtype=np.int_)
+        expected_shape = (param_l * param_m, 2 * param_l * param_m)
+        if m_Hx.shape != expected_shape or m_Hz.shape != expected_shape:
+            msg = (
+                "BB parity check matrices should both have shape "
+                f"{expected_shape}, got {m_Hx.shape} and {m_Hz.shape}."
+            )
+            raise ValueError(msg)
+
         # get a subset of logicals from css_code, and compute the rest.
         #
         # X logicals are of the form X(f,0) and X(g,h), eq. (16). A basis of
@@ -817,8 +852,8 @@ class BivariateBicycleCode(CSSCode):
         # vectors -- i.e. ker(hz[:, :half]) embedded as (f, 0) -- are passed
         # as preferred representatives, guaranteeing as many X(f,0) logicals
         # as exist are found before falling back to mixed X(g,h) logicals.
-        half = self.n // 2
-        hz_gf = galois.GF2(np.asarray(self.m_Hz, dtype=np.int_))
+        half = m_Hx.shape[1] // 2
+        hz_gf = galois.GF2(m_Hz)
         pure_f_kernel = hz_gf[:, :half].null_space()
         pure_f_logs = np.hstack(
             (
@@ -828,8 +863,8 @@ class BivariateBicycleCode(CSSCode):
         )
 
         x_logs, _ = css_code_compute_logicals(
-            self.m_Hx,
-            self.m_Hz,
+            m_Hx,
+            m_Hz,
             lx_preferred=pure_f_logs,
             compute_both_logicals=False,
         )
@@ -851,16 +886,16 @@ class BivariateBicycleCode(CSSCode):
         # we have a subset of all possible f,g,h, so find the rest
         # by multiplying in each monomial to get a set of |M|=lm
         all_monomials_of_lm = [
-            Monomial(x, y, self.param_l, self.param_m)
-            for x, y in product(range(self.param_l), range(self.param_m))
+            Monomial(x, y, param_l, param_m)
+            for x, y in product(range(param_l), range(param_m))
         ]
         all_f_vecs = f_vecs.copy()
         all_gT_vecs = [
-            Polynomial.from_vec(vec, self.param_l, self.param_m).reverse().to_vec()
+            Polynomial.from_vec(vec, param_l, param_m).reverse().to_vec()
             for vec in g_vecs
         ]
         all_hT_vecs = [
-            Polynomial.from_vec(vec, self.param_l, self.param_m).reverse().to_vec()
+            Polynomial.from_vec(vec, param_l, param_m).reverse().to_vec()
             for vec in h_vecs
         ]
         for list_to_extend, list_to_iterate, is_g_or_h in [
@@ -869,7 +904,7 @@ class BivariateBicycleCode(CSSCode):
             (all_hT_vecs, h_vecs, True),
         ]:
             for vec in list_to_iterate:
-                vec_as_poly = Polynomial.from_vec(vec, self.param_l, self.param_m)
+                vec_as_poly = Polynomial.from_vec(vec, param_l, param_m)
                 for mon in all_monomials_of_lm:
                     if is_g_or_h:
                         shifted_vec = (
@@ -882,13 +917,13 @@ class BivariateBicycleCode(CSSCode):
 
         # now combine f,g,h to make logical operators
         # create the unprimed block, X(f, 0) and Z(h.T, g.T)
-        all_f_logs = [list(f) + [0] * (self.n // 2) for f in all_f_vecs]
+        all_f_logs = [list(f) + [0] * half for f in all_f_vecs]
         all_gh_logs = [list(hT) + list(gT) for gT, hT in zip(all_gT_vecs, all_hT_vecs)]
 
         # find pairs with correct commutation relations
         # find anticommuting pairs of logical operators
         unprime_x_logs, unprime_z_logs = _find_anticommuting_pairs(
-            all_f_logs, all_gh_logs, self.k // 2, self.n
+            all_f_logs, all_gh_logs, num_logical_qubits // 2, m_Hx.shape[1]
         )
 
         # get primed block from unprimed
@@ -897,51 +932,61 @@ class BivariateBicycleCode(CSSCode):
         for up_x_log in unprime_x_logs:
             prime_z_logs.append(
                 [0] * (len(up_x_log) // 2)
-                + Polynomial.from_vec(
-                    up_x_log[: len(up_x_log) // 2], self.param_l, self.param_m
-                )
+                + Polynomial.from_vec(up_x_log[: len(up_x_log) // 2], param_l, param_m)
                 .reverse()
                 .to_vec()
             )
         for up_z_log in unprime_z_logs:
             prime_x_logs.append(
-                Polynomial.from_vec(
-                    up_z_log[(len(up_z_log) // 2) :], self.param_l, self.param_m
-                )
+                Polynomial.from_vec(up_z_log[(len(up_z_log) // 2) :], param_l, param_m)
                 .reverse()
                 .to_vec()
                 + Polynomial.from_vec(
-                    up_z_log[: (len(up_z_log) // 2)], self.param_l, self.param_m
+                    up_z_log[: (len(up_z_log) // 2)], param_l, param_m
                 )
                 .reverse()
                 .to_vec()
             )
 
+        return (
+            np.asarray(unprime_x_logs + prime_x_logs, dtype=np.int_),
+            np.asarray(unprime_z_logs + prime_z_logs, dtype=np.int_),
+        )
+
+    @staticmethod
+    def _logical_vectors_to_paulis(
+        x_logical_vectors: npt.NDArray[np.integer],
+        z_logical_vectors: npt.NDArray[np.integer],
+        param_l: int,
+        param_m: int,
+        mat_col_to_l_data_map: dict[int, Qubit],
+        mat_col_to_r_data_map: dict[int, Qubit],
+    ) -> tuple[list[list[PauliX[Coord2D]]], list[list[PauliZ[Coord2D]]]]:
+        """Convert BB logical vectors to Pauli operators.
+
+        Args:
+            x_logical_vectors: Binary row vectors for X logical operators.
+            z_logical_vectors: Binary row vectors for Z logical operators.
+            param_l: Parameter ``l`` as in the IBM paper.
+            param_m: Parameter ``m`` as in the IBM paper.
+            mat_col_to_l_data_map: Map from left-block matrix column to qubit.
+            mat_col_to_r_data_map: Map from right-block matrix column to qubit.
+
+        Returns:
+            X and Z logical operators as Pauli terms on the code data qubits.
+        """
         # convert binary arrays to arrays of Pauli terms.
         # the first coordinate is whether its in A or B submatrix
         # the second coordinate is the relative coordinate within A or B
-        dict_lookup = {2: self._mat_col_to_l_data_map, 3: self._mat_col_to_r_data_map}
+        half = param_l * param_m
+        dict_lookup = (mat_col_to_l_data_map, mat_col_to_r_data_map)
         x_logicals_as_paulis = [
-            [
-                PauliX(
-                    dict_lookup[2 + j // (self.param_l * self.param_m)][
-                        j % (self.param_l * self.param_m)
-                    ]
-                )
-                for j in np.where(logical)[0]
-            ]
-            for logical in unprime_x_logs + prime_x_logs
+            [PauliX(dict_lookup[j // half][j % half]) for j in np.where(logical)[0]]
+            for logical in x_logical_vectors
         ]
         z_logicals_as_paulis = [
-            [
-                PauliZ(
-                    dict_lookup[2 + j // (self.param_l * self.param_m)][
-                        j % (self.param_l * self.param_m)
-                    ]
-                )
-                for j in np.where(logical)[0]
-            ]
-            for logical in unprime_z_logs + prime_z_logs
+            [PauliZ(dict_lookup[j // half][j % half]) for j in np.where(logical)[0]]
+            for logical in z_logical_vectors
         ]
 
         return x_logicals_as_paulis, z_logicals_as_paulis

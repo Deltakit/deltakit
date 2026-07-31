@@ -5,10 +5,10 @@ import numpy as np
 import pytest
 
 from deltakit_explorer.codes._bivariate_bicycle_code import (
+    BivariateBicycleCode,
     Monomial,
     Polynomial,
 )
-from deltakit_explorer.codes._logicals import css_code_compute_logicals
 from tests.helpers._codes import bivariate_bicycle_parity_check_matrices
 from tests.helpers._gf2 import quotient_dimension_gf2, rank_gf2
 
@@ -59,13 +59,19 @@ def test_bivariate_bicycle_parity_check_matrix_fixtures_have_expected_dimension(
         pytest.param(3, 5, [1, 1, 4], [0, 1, 2], id="bivariate-bicycle-3x5"),
     ],
 )
-def test_bivariate_bicycle_preferred_x_logicals_span_right_zero_classes(
+def test_bivariate_bicycle_compute_bb_structured_logicals_keeps_pure_f_classes(
     param_l: int, param_m: int, m_A_powers: list[int], m_B_powers: list[int]
 ):
     hx, hz = bivariate_bicycle_parity_check_matrices(
         param_l, param_m, m_A_powers, m_B_powers
     )
     half = hx.shape[1] // 2
+    num_logical_qubits = hx.shape[1] - rank_gf2(hx) - rank_gf2(hz)
+
+    lx, lz = BivariateBicycleCode.compute_bb_structured_logicals(
+        param_l, param_m, hx, hz, num_logical_qubits
+    )
+
     pure_f_kernel = galois.GF2(np.asarray(hz[:, :half], dtype=np.int_)).null_space()
     pure_f_logical_candidates = np.hstack(
         (
@@ -73,14 +79,6 @@ def test_bivariate_bicycle_preferred_x_logicals_span_right_zero_classes(
             np.zeros((pure_f_kernel.shape[0], half), dtype=np.int_),
         )
     )
-
-    lx, _ = css_code_compute_logicals(
-        hx.astype(float),
-        hz.astype(float),
-        lx_preferred=pure_f_logical_candidates.astype(float),
-        compute_both_logicals=False,
-    )
-    lx = np.asarray(lx, dtype=np.int_)
     right_zero_lx = lx[np.all(lx[:, half:] == 0, axis=1)]
 
     expected_right_zero_dimension = quotient_dimension_gf2(
@@ -88,6 +86,8 @@ def test_bivariate_bicycle_preferred_x_logicals_span_right_zero_classes(
     )
     actual_right_zero_dimension = quotient_dimension_gf2(right_zero_lx, hx)
 
+    assert lx.shape == lz.shape == (num_logical_qubits, hx.shape[1])
+    # The right-zero logicals should add all pure-f classes beyond X stabilisers.
     assert actual_right_zero_dimension == expected_right_zero_dimension
 
 
