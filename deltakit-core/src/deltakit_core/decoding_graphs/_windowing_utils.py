@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from collections import deque
 from collections.abc import Iterable
+from heapq import heapify, heappop, heappush
+from math import inf
 
 from deltakit_core.decoding_graphs._data_qubits import EdgeRecord
 from deltakit_core.decoding_graphs._decoding_graph import (
@@ -69,9 +71,56 @@ def weighted_nodes_within_radius(
     -------
     Set[int]
         Nodes reachable with total path weight <= ``radius``.
+
+    Raises
+    ------
+    ValueError
+        If ``radius`` is negative, or if growth reaches an edge whose weight is
+        negative. ``EdgeRecord.weight`` is ``log((1 - p_err) / p_err)``, so an
+        error mechanism with ``p_err > 0.5`` weighs less than nothing and the
+        shortest path is no longer well defined. Refusing is better than
+        returning a set that quietly depends on visit order.
+
+    Notes
+    -----
+    Cost is accumulated per edge traversed, so every vertex of a hyperedge is
+    the same distance from the vertex being left. A default ``EdgeRecord`` has
+    ``p_err`` of 0 and therefore infinite weight, which means an error mechanism
+    that never fires is infinitely far away and growth stops at it. That is the
+    intended reading, and it is why this is not interchangeable with
+    :func:`nodes_within_radius`, which counts hops.
     """
-    msg = "Weighted growth is not yet implemented."
-    raise NotImplementedError(msg)
+    if radius < 0:
+        msg = "Radius must be non-negative"
+        raise ValueError(msg)
+    best: dict[int, float] = dict.fromkeys(start_nodes, 0.0)
+    if radius == 0:
+        return set(best)
+    frontier: list[tuple[float, int]] = [(0.0, node) for node in best]
+    heapify(frontier)
+    while frontier:
+        distance, node = heappop(frontier)
+        if distance > best[node]:
+            continue
+        for edge in hypergraph.incident_edges(node):
+            weight = hypergraph.edge_records[edge].weight
+            if weight < 0:
+                vertices = tuple(sorted(edge.vertices))
+                msg = (
+                    f"Edge {vertices} has negative weight {weight}, so weighted "
+                    "growth has no well defined shortest path."
+                )
+                raise ValueError(msg)
+            reached = distance + weight
+            if reached > radius:
+                continue
+            for neighbour in edge.vertices:
+                if neighbour == node:
+                    continue
+                if reached < best.get(neighbour, inf):
+                    best[neighbour] = reached
+                    heappush(frontier, (reached, neighbour))
+    return set(best)
 
 
 def induce_subhypergraph(
