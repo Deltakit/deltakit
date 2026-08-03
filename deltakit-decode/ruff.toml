@@ -20,6 +20,8 @@ ignore = [
     # function".
     # This check cannot "hide" potential bugs.
     "PLR0913",
+    # Ignore too many positional arguments error.
+    "PLR0917",
     # Use of `zip` without the `strict` argument.
     # For the moment we keep this ignore as technical debt. It will be properly removed
     # in a future PR.
