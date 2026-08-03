@@ -5,7 +5,10 @@ extend = "../ruff.toml"
 include = ["src/deltakit_circuit/**/*.py", "tests/**/*.py"]
 
 [lint]
-ignore = []
+ignore = [
+    # Ignore too many positional arguments error.
+    "PLR0917",
+]
 
 # Specific per-file ignores
 [lint.per-file-ignores]
