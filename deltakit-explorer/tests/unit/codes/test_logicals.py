@@ -23,7 +23,7 @@ from tests.helpers._gf2 import assert_valid_css_logical_basis, rank_gf2
 
 
 @pytest.mark.parametrize("string", ["+XY", "+YX", "-ZXY"])
-def test_paulistring_to_operator(string):
+def test_paulistring_to_operator(string) -> None:
     paulistring = stim.PauliString(string)
     index_to_qubit = {i: circuit.Qubit(i) for i in range(len(string[1:]))}
     operator = paulistring_to_operator(paulistring, index_to_qubit)
@@ -152,7 +152,7 @@ def _dimension(space: set[tuple[int, ...]]) -> int:
 )
 def test_css_code_compute_logicals_returns_valid_css_logical_bases(
     hx: npt.NDArray[np.uint8], hz: npt.NDArray[np.uint8]
-):
+) -> None:
     assert np.all((hx @ hz.T) % 2 == 0)
 
     lx, lz = css_code_compute_logicals(hx.astype(float), hz.astype(float))
@@ -173,7 +173,7 @@ def test_css_code_compute_logicals_returns_valid_css_logical_bases(
     )
 
 
-def test_css_code_compute_logicals_is_invariant_to_redundant_rows():
+def test_css_code_compute_logicals_is_invariant_to_redundant_rows() -> None:
     hx = _binary_matrix([[1, 1, 0], [0, 1, 1]])
     redundant_hx = _binary_matrix([[1, 1, 0], [0, 1, 1], [1, 0, 1]])
     hz = _empty_binary_matrix(3)
@@ -191,7 +191,9 @@ def test_css_code_compute_logicals_is_invariant_to_redundant_rows():
     )
 
 
-def test_css_code_compute_logicals_preserves_logical_dimension_for_known_rank_checks():
+def test_css_code_compute_logicals_preserves_logical_dimension_for_known_rank_checks() -> (
+    None
+):
     # Adapted from the explicit GF(2) row-reduction fixture in galois/tests/fields/test_linalg.py.
     hx = _binary_matrix(
         [
@@ -257,7 +259,7 @@ def test_css_code_compute_logicals_returns_valid_bases_for_code_fixtures(
     ],
     expected_n: int,
     expected_num_logicals: int,
-):
+) -> None:
     hx, hz = parity_check_matrix_factory()
 
     assert hx.shape[1] == hz.shape[1] == expected_n

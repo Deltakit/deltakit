@@ -43,7 +43,7 @@ def test_bivariate_bicycle_parity_check_matrix_fixtures_have_expected_dimension(
     m_B_powers: list[int],
     expected_n: int,
     expected_k: int,
-):
+) -> None:
     hx, hz = bivariate_bicycle_parity_check_matrices(
         param_l, param_m, m_A_powers, m_B_powers
     )
@@ -61,7 +61,7 @@ def test_bivariate_bicycle_parity_check_matrix_fixtures_have_expected_dimension(
 )
 def test_bivariate_bicycle_compute_bb_structured_logicals_keeps_pure_f_classes(
     param_l: int, param_m: int, m_A_powers: list[int], m_B_powers: list[int]
-):
+) -> None:
     hx, hz = bivariate_bicycle_parity_check_matrices(
         param_l, param_m, m_A_powers, m_B_powers
     )
@@ -92,7 +92,7 @@ def test_bivariate_bicycle_compute_bb_structured_logicals_keeps_pure_f_classes(
 
 
 class TestPolynomial:
-    def test_Polynomial_init_works_as_expected(self):
+    def test_Polynomial_init_works_as_expected(self) -> None:
         assert Polynomial([Monomial(1, 2, 3, 3)]).monomials == [Monomial(1, 2, 3, 3)]
 
     @pytest.mark.parametrize(
@@ -139,7 +139,7 @@ class TestPolynomial:
             ),
         ],
     )
-    def test_Polynomial_from_vec_works_as_expected(self, vec, l, m, exp_poly):  # noqa: E741
+    def test_Polynomial_from_vec_works_as_expected(self, vec, l, m, exp_poly) -> None:  # noqa: E741
         assert Polynomial.from_vec(vec, l, m) == exp_poly
 
     @pytest.mark.parametrize(
@@ -158,10 +158,10 @@ class TestPolynomial:
             ([1, 1, 1, 1], 2, 2),
         ],
     )
-    def test_Polynomial_to_vec_works_as_expected(self, vec, l, m):  # noqa: E741
+    def test_Polynomial_to_vec_works_as_expected(self, vec, l, m) -> None:  # noqa: E741
         assert Polynomial.from_vec(vec, l, m).to_vec() == vec
 
-    def test_Polynomial_repr_str_works_as_expected(self):
+    def test_Polynomial_repr_str_works_as_expected(self) -> None:
         assert (
             str(Polynomial([Monomial(0, 1, 2, 2), Monomial(1, 1, 2, 2)]))
             == "['x^0 y^1', 'x^1 y^1']"
@@ -193,7 +193,7 @@ class TestPolynomial:
             ),
         ],
     )
-    def test_Polynomial_inverse_correct(self, poly, exp_inv):
+    def test_Polynomial_inverse_correct(self, poly, exp_inv) -> None:
         assert poly.reverse() == exp_inv
 
     @pytest.mark.parametrize(
@@ -211,10 +211,12 @@ class TestPolynomial:
             ),
         ],
     )
-    def test_Polynomial_mult_by_monomial_correct(self, poly, mon, exp_poly):
+    def test_Polynomial_mult_by_monomial_correct(self, poly, mon, exp_poly) -> None:
         assert poly.mult_by_monomial(mon) == exp_poly
 
-    def test_Polynomial_eq_returns_False_if_compared_to_non_Polynomial_type(self):
+    def test_Polynomial_eq_returns_False_if_compared_to_non_Polynomial_type(
+        self,
+    ) -> None:
         assert Polynomial([]) != 1
 
 
@@ -223,14 +225,14 @@ class TestMonomial:
         ("x_pow", "y_pow", "l", "m"),
         [(1, 1, 2, 2), (2, 2, 3, 3), (3, 3, 4, 4), (4, 4, 5, 5)],
     )
-    def test_Monomial_init_correct_for_valid_values(self, x_pow, y_pow, l, m):  # noqa: E741
+    def test_Monomial_init_correct_for_valid_values(self, x_pow, y_pow, l, m) -> None:  # noqa: E741
         mon = Monomial(x_pow, y_pow, l, m)
         assert mon.x_pow == x_pow
         assert mon.y_pow == y_pow
         assert mon.l == l
         assert mon.m == m
 
-    def test_Monomial_init_throws_ValueError_if_l_m_less_than_1(self):
+    def test_Monomial_init_throws_ValueError_if_l_m_less_than_1(self) -> None:
         with pytest.raises(ValueError, match="l and m must be >= 0"):
             Monomial(0, 0, 0, 0)
 
@@ -251,7 +253,7 @@ class TestMonomial:
         m,
         exp_x_pow,
         exp_y_pow,
-    ):
+    ) -> None:
         mon = Monomial(x_pow, y_pow, l, m)
         assert mon.x_pow == exp_x_pow
         assert mon.y_pow == exp_y_pow
@@ -264,10 +266,10 @@ class TestMonomial:
             (Monomial(0, 3, 3, 3), Monomial(2, 1, 3, 3), Monomial(2, 1, 3, 3)),
         ],
     )
-    def test_Monomial_mul_correct(self, mon1, mon2, prod):
+    def test_Monomial_mul_correct(self, mon1, mon2, prod) -> None:
         assert mon1 * mon2 == prod
 
-    def test_Monomial_print_works_as_expected(self):
+    def test_Monomial_print_works_as_expected(self) -> None:
         assert str(Monomial(2, 2, 3, 3)) == "x^2 y^2"
 
     @pytest.mark.parametrize(
@@ -279,8 +281,8 @@ class TestMonomial:
             (Monomial(1, 2, 3, 5), Monomial(2, 3, 3, 5)),
         ],
     )
-    def test_Monomial_inverse_works_as_expected(self, mon: Monomial, inv):
+    def test_Monomial_inverse_works_as_expected(self, mon: Monomial, inv) -> None:
         assert mon.inverse() == inv
 
-    def test_Monomial_eq_returns_False_if_compared_to_non_Monomial(self):
+    def test_Monomial_eq_returns_False_if_compared_to_non_Monomial(self) -> None:
         assert Monomial(1, 1, 2, 2) != 2
