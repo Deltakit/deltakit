@@ -465,6 +465,8 @@ deltakit-circuit/src/deltakit_circuit/noise_channels/_pauli_noise.py
     DOC601: Class `PauliChannel2`: Class docstring contains fewer class attributes than actual class attributes.  (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC603: Class `PauliChannel2`: Class docstring attributes are different from actual class attributes. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Attributes in the class definition but not in the docstring: [stim_string: ClassVar[str]]. (Please read https://jsh9.github.io/pydoclint/checking_class_attributes.html on how to correctly document class attributes.)
     DOC003: Function/method `__init__`: Docstring style mismatch. (Please read more at https://jsh9.github.io/pydoclint/style_mismatch.html ). You specified "google" style, but the docstring is likely not written in this style.
+    DOC101: Method `PauliChannel2.__init__`: Docstring contains fewer arguments than in function signature.
+    DOC103: Method `PauliChannel2.__init__`: Docstring arguments are different from function arguments. (Or could be other formatting issues: https://jsh9.github.io/pydoclint/violation_codes.html#notes-on-doc103 ). Arguments in the function signature but not in the docstring: [tag: str | None].
 --------------------
 deltakit-circuit/tests/test_noise_factory.py
     DOC101: Function `test_stim_circuits_can_be_manipulated_with_same_noise_as_exposed_in_stim`: Docstring contains fewer arguments than in function signature.
