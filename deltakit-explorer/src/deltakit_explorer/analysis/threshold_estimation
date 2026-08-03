@@ -1,0 +1,111 @@
+from __future__ import annotations
+
+import matplotlib.pyplot as plt
+import stim
+
+from deltakit.explorer import Client
+from deltakit.explorer.enums import DecoderType
+from deltakit.explorer.types import (
+    Decoder,
+    SI1000NoiseModel,
+)
+
+from deltakit.explorer import codes
+from deltakit.explorer.codes import css_code_memory_circuit
+from deltakit.circuit.gates import PauliBasis
+
+
+def find_threshold(
+    distances: list[int],
+    min_p: float = 0.001,
+    max_p: float = 0.05,
+    precision: float = 0.0001,
+    num_shots: int = 100_000,
+) -> float:
+    """
+    This function computes the threshold estimation of a QEC code using a bisection search.
+
+    It performs a search based on an initial noise parameter midpoint and computes the logical error probability (LEP) for the distances included.
+    Its function iteratively discards the left or right region until the threshold is found up to the requested precision.
+
+    Args:
+        distances (list[int]): 
+            A list of exactly two code distances to compare, e.g. [3, 5].
+        min_p (float): 
+            The lower bound for the physical error rate search window. Default is 0.001.
+        max_p (float): 
+            The upper bound for the physical error rate search window. Default is 0.05.
+        precision (float): 
+            The target precision for the bisection search to terminate. Default is 0.0001.
+        num_shots (int): 
+            The number of shots to simulate per data point. Default is 100,000.
+
+    Returns:
+        float:
+            The estimated threshold physical error rate.
+    """
+    # Safety check
+    if len(distances) != 2:
+        raise ValueError("You must provide exactly two distances for this bisection search.")
+
+    client = Client.get_instance()
+    decoder = Decoder(DecoderType.MWPM)
+
+    while (max_p - min_p) > precision:
+        mid_p = (min_p + max_p) / 2
+        current_leps = {}
+        print(f"\n--- Testing new midpoint: p = {mid_p} ---")
+        
+        for d in distances:
+            code = codes.RotatedPlanarCode(width=d, height=d)
+            circuit = css_code_memory_circuit(
+                code,
+                num_rounds=d, 
+                logical_basis=PauliBasis.Z,
+            )
+            compiled_circuit = circuit.as_stim_circuit()
+                
+            current_noise_model = SI1000NoiseModel(p=mid_p, p_l=0.0)
+                
+            noisy_circuit = client.add_noise(
+                stim_circuit=compiled_circuit,
+                noise_model=current_noise_model,
+            )
+                
+            measurements, _ = client.simulate_stim_circuit(
+                stim_circuit=noisy_circuit,
+                shots=num_shots, 
+            )
+                
+            decode_result = client.decode_measurements(
+                measurements=measurements,
+                decoder=decoder,
+                ideal_stim_circuit=compiled_circuit,
+                noise_model=current_noise_model,
+            )
+            current_leps[d] = decode_result.get_logical_error_probability()
+            print(f"d={d}, p={mid_p} -> LEP: {current_leps[d]}")
+                
+        
+        lep_d1 = current_leps[distances[0]]
+        lep_d2 = current_leps[distances[1]]
+        
+        if lep_d1 > lep_d2:
+            min_p = mid_p
+        elif lep_d1 < lep_d2:
+            max_p = mid_p
+            
+    
+    return mid_p
+
+
+if __name__ == "__main__":
+    print("Starting bisection search...")
+    
+    
+    my_calculated_threshold = find_threshold(
+        distances=[3, 5], 
+        num_shots=100_000
+    )
+    
+    print(f"\nThe threshold is approximately: {my_calculated_threshold}")
