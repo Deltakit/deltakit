@@ -842,6 +842,18 @@ class BivariateBicycleCode(CSSCode):
     ) -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_]]:
         """Compute BB-specific logical operators as binary vectors.
 
+        This follows the logical representative families described in
+        Eq. (16) of Bravyi et al., arXiv:2308.07915. The BB construction
+        splits each logical vector into left and right data-qubit blocks.
+        The logical families used here are `X(alpha f, 0)`,
+        `Z(alpha h.T, alpha g.T)`, `X(alpha g, alpha h)`, and
+        `Z(0, alpha f.T)` for monomial shifts `alpha`.
+
+        A generic CSS logical basis need not expose representatives with the
+        pure right-zero shape `(f, 0)`. This function therefore biases the CSS
+        logical computation with available pure-`f` representatives before
+        generating the shifted BB logical families.
+
         Args:
             param_l: Parameter ``l``.
             param_m: Parameter ``m``.
