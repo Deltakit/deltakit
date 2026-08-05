@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from functools import reduce
 from itertools import product
+from typing import NamedTuple
 
 import galois
 import numpy as np
@@ -21,6 +22,35 @@ from deltakit_circuit._basic_types import Coord2D
 from deltakit_explorer.codes._css._css_code import CSSCode
 from deltakit_explorer.codes._logicals import css_code_compute_logicals
 from deltakit_explorer.codes._stabiliser import Stabiliser
+
+
+class _BivariateBicycleMatrices(NamedTuple):
+    """Matrices used to construct a bivariate bicycle code.
+
+    The notation follows Bravyi et al., "High-threshold and low-overhead
+    fault-tolerant quantum memory", arXiv:2308.07915.
+
+    Attributes:
+        x: Cyclic shift matrix for the `l` coordinate, defined as
+            `kron(S_l, I_m)`.
+        y: Cyclic shift matrix for the `m` coordinate, defined as
+            `kron(I_l, S_m)`.
+        A_submatrices: Binary polynomial terms whose sum (modulo 2) defines
+            matrix `A`. For powers `[a, b, c]`, these are `x^a`, `y^b`,
+            and `y^c`.
+        B_submatrices: Binary polynomial terms whose sum (modulo 2) defines
+            matrix `B`. For powers `[d, e, f]`, these are `y^d`, `x^e`,
+            and `x^f`.
+        Hx: Parity check matrix for X checks, `[A | B]`.
+        Hz: Parity check matrix for Z checks, `[B.T | A.T]`.
+    """
+
+    x: npt.NDArray[np.int_]
+    y: npt.NDArray[np.int_]
+    A_submatrices: tuple[npt.NDArray[np.int_], ...]
+    B_submatrices: tuple[npt.NDArray[np.int_], ...]
+    Hx: npt.NDArray[np.int_]
+    Hz: npt.NDArray[np.int_]
 
 
 def _find_anticommuting_pairs(
@@ -379,6 +409,7 @@ class BivariateBicycleCode(CSSCode):
     ):
         if validate:
             self._validate_input_parameters(param_l, param_m, m_A_powers, m_B_powers)
+
         self.param_l = param_l
         self.param_m = param_m
         self.m_A_powers = m_A_powers
@@ -387,45 +418,20 @@ class BivariateBicycleCode(CSSCode):
         # work out code parameters
         self.n = 2 * param_l * param_m
 
-        # create S and I for l and m
-        m_S_l = np.roll(np.eye(param_l, dtype=np.int_), shift=1, axis=1)
-        m_S_m = np.roll(np.eye(param_m, dtype=np.int_), shift=1, axis=1)
-        m_I_l = np.eye(param_l, dtype=np.int_)
-        m_I_m = np.eye(param_m, dtype=np.int_)
-
-        # create x and y. Note that x and y commute
-        m_x = np.kron(m_S_l, m_I_m)
-        m_y = np.kron(m_I_l, m_S_m)
-
+        matrices = self._construct_bb_matrices(param_l, param_m, m_A_powers, m_B_powers)
         if validate:
-            # assert properties of x,y to catch errors
-            self._assert_x_y_properties(self.param_l, self.param_m, m_x, m_y)
-        self.m_x = m_x
-        self.m_y = m_y
+            half = param_l * param_m
+            self._assert_x_y_properties(param_l, param_m, matrices.x, matrices.y)
+            self._assert_matrix_ma_mb_properties(
+                matrices.Hx[:, :half], matrices.Hx[:, half:]
+            )
 
-        # create A and B
-        # A = x^a + y^b + y^c, B = y^d + x^e + x^f
-        # add powers of x and y to create A and B
-        m_A1 = np.linalg.matrix_power(m_x, m_A_powers[0])
-        m_A2 = np.linalg.matrix_power(m_y, m_A_powers[1])
-        m_A3 = np.linalg.matrix_power(m_y, m_A_powers[2])
-        m_A = reduce(np.add, [m_A1, m_A2, m_A3]) % 2
-
-        m_B1 = np.linalg.matrix_power(m_y, m_B_powers[0])
-        m_B2 = np.linalg.matrix_power(m_x, m_B_powers[1])
-        m_B3 = np.linalg.matrix_power(m_x, m_B_powers[2])
-        m_B = reduce(np.add, [m_B1, m_B2, m_B3]) % 2
-
-        if validate:
-            # assert properties of A and B:
-            self._assert_matrix_ma_mb_properties(m_A, m_B)
-        self.m_A_submatrices = (m_A1, m_A2, m_A3)
-        self.m_B_submatrices = (m_B1, m_B2, m_B3)
-
-        # create Hx and Hz check matrices. Note that since A and B
-        # commute, these are valid check matrices
-        self.m_Hx = np.hstack((m_A, m_B))
-        self.m_Hz = np.hstack((m_B.T, m_A.T))
+        self.m_x = matrices.x
+        self.m_y = matrices.y
+        self.m_A_submatrices = matrices.A_submatrices
+        self.m_B_submatrices = matrices.B_submatrices
+        self.m_Hx = matrices.Hx
+        self.m_Hz = matrices.Hz
 
         # place qubits on a square grid
         (
@@ -446,7 +452,21 @@ class BivariateBicycleCode(CSSCode):
         stabilisers = self._get_stabilisers()
 
         # work out logicals
-        x_logicals, z_logicals = self._get_logicals()
+        x_logical_vectors, z_logical_vectors = self.compute_bb_structured_logicals(
+            self.param_l,
+            self.param_m,
+            self.m_Hx,
+            self.m_Hz,
+            self.k,
+        )
+        x_logicals, z_logicals = self._logical_vectors_to_paulis(
+            x_logical_vectors,
+            z_logical_vectors,
+            self.param_l,
+            self.param_m,
+            self._mat_col_to_l_data_map,
+            self._mat_col_to_r_data_map,
+        )
 
         # construct CSSCode
         super().__init__(
@@ -455,6 +475,79 @@ class BivariateBicycleCode(CSSCode):
             z_logical_operators=z_logicals,
             use_ancilla_qubits=True,
             check_logical_operators_are_independent=check_logical_operators_are_independent,
+        )
+
+    @staticmethod
+    def _construct_bb_matrices(
+        param_l: int,
+        param_m: int,
+        m_A_powers: list[int],
+        m_B_powers: list[int],
+    ) -> _BivariateBicycleMatrices:
+        """Construct the matrices used by a bivariate bicycle code.
+
+        This follows the BB-code construction from Bravyi et al.,
+        "High-threshold and low-overhead fault-tolerant quantum memory",
+        arXiv:2308.07915. The construction is based on coordinate-wise
+        cyclic shifts. If `S_l` and `S_m` are the cyclic shift matrices for
+        the `l` and `m` coordinates, then `x = kron(S_l, I_m)` and
+        `y = kron(I_l, S_m)`.
+
+        The inputs `m_A_powers = [a, b, c]` and `m_B_powers = [d, e, f]`
+        parameterise the polynomial terms as `A1 = x^a`, `A2 = y^b`,
+        `A3 = y^c`, `B1 = y^d`, `B2 = x^e`, and `B3 = x^f`. The matrices
+        `A = A1 + A2 + A3` and `B = B1 + B2 + B3` are computed modulo 2.
+        The CSS parity check matrices are then `Hx = [A | B]` and
+        `Hz = [B.T | A.T]`.
+
+        Args:
+            param_l: Size of the `l` coordinate.
+            param_m: Size of the `m` coordinate.
+            m_A_powers: Exponents `[a, b, c]` defining `A1 = x^a`,
+                `A2 = y^b`, and `A3 = y^c`.
+            m_B_powers: Exponents `[d, e, f]` defining `B1 = y^d`,
+                `B2 = x^e`, and `B3 = x^f`.
+
+        Returns:
+            The cyclic shift matrices, polynomial submatrices, and parity
+            check matrices used by the code construction.
+        """
+
+        # create S and I for l and m
+        m_S_l = np.roll(np.eye(param_l, dtype=np.int_), shift=1, axis=1)
+        m_S_m = np.roll(np.eye(param_m, dtype=np.int_), shift=1, axis=1)
+        m_I_l = np.eye(param_l, dtype=np.int_)
+        m_I_m = np.eye(param_m, dtype=np.int_)
+
+        # create x and y. Note that x and y commute
+        m_x = np.kron(m_S_l, m_I_m)
+        m_y = np.kron(m_I_l, m_S_m)
+
+        # create A and B
+        # A = x^a + y^b + y^c, B = y^d + x^e + x^f
+        # add powers of x and y to create A and B
+        m_A1 = np.linalg.matrix_power(m_x, m_A_powers[0])
+        m_A2 = np.linalg.matrix_power(m_y, m_A_powers[1])
+        m_A3 = np.linalg.matrix_power(m_y, m_A_powers[2])
+        m_A = reduce(np.add, [m_A1, m_A2, m_A3]) % 2
+
+        m_B1 = np.linalg.matrix_power(m_y, m_B_powers[0])
+        m_B2 = np.linalg.matrix_power(m_x, m_B_powers[1])
+        m_B3 = np.linalg.matrix_power(m_x, m_B_powers[2])
+        m_B = reduce(np.add, [m_B1, m_B2, m_B3]) % 2
+
+        # create Hx and Hz check matrices. Note that since A and B
+        # commute, these are valid check matrices
+        m_Hx = np.hstack((m_A, m_B))
+        m_Hz = np.hstack((m_B.T, m_A.T))
+
+        return _BivariateBicycleMatrices(
+            x=m_x,
+            y=m_y,
+            A_submatrices=(m_A1, m_A2, m_A3),
+            B_submatrices=(m_B1, m_B2, m_B3),
+            Hx=m_Hx,
+            Hz=m_Hz,
         )
 
     @staticmethod
@@ -739,23 +832,79 @@ class BivariateBicycleCode(CSSCode):
 
         return x_stabilisers + z_stabilisers
 
-    def _get_logicals(
-        self,
-    ) -> tuple[list[list[PauliX[Coord2D]]], list[list[PauliZ[Coord2D]]]]:
-        """
-        Will return a tuple of lists of the X and Z logicals, respectively.
-        They are paired up in order, that is, they anticommute when the
-        indices of the two lists are aligned and commute otherwise.
+    @staticmethod
+    def compute_bb_structured_logicals(
+        param_l: int,
+        param_m: int,
+        m_Hx: npt.NDArray[np.integer],
+        m_Hz: npt.NDArray[np.integer],
+        num_logical_qubits: int,
+    ) -> tuple[npt.NDArray[np.int_], npt.NDArray[np.int_]]:
+        """Compute BB-specific logical operators as binary vectors.
 
-        Returns
-        -------
-        Tuple[List[List[PauliX[Coord2D]]], List[List[PauliZ[Coord2D]]]]
-            Tuple of X and Z logical operators, in order such that
-            x_logicals[i],z_logicals[j] anti-commute exactly when i=j
-            and commute otherwise.
+        This follows the logical representative families described in
+        Eq. (16) of Bravyi et al., arXiv:2308.07915. The BB construction
+        splits each logical vector into left and right data-qubit blocks.
+        The logical families used here are `X(alpha f, 0)`,
+        `Z(alpha h.T, alpha g.T)`, `X(alpha g, alpha h)`, and
+        `Z(0, alpha f.T)` for monomial shifts `alpha`.
+
+        A generic CSS logical basis need not expose representatives with the
+        pure right-zero shape `(f, 0)`. This function therefore biases the CSS
+        logical computation with available pure-`f` representatives before
+        generating the shifted BB logical families.
+
+        Args:
+            param_l: Parameter ``l``.
+            param_m: Parameter ``m``.
+            m_Hx: Parity check matrix for X checks.
+            m_Hz: Parity check matrix for Z checks.
+            num_logical_qubits: Number of logical qubits encoded by the code.
+
+        Returns:
+            X and Z logical operator vectors. The rows are ordered so
+            ``x_logicals[i]`` and ``z_logicals[j]`` anti-commute exactly when
+            ``i == j``.
+
+        Raises:
+            ValueError: If the parity check matrices are not shaped like a BB
+                code with parameters ``param_l`` and ``param_m``.
         """
-        # get a subset of logicals from css_code, and compute the rest
-        x_logs, _ = css_code_compute_logicals(self.m_Hx, self.m_Hz)
+        m_Hx = np.asarray(m_Hx, dtype=np.int_)
+        m_Hz = np.asarray(m_Hz, dtype=np.int_)
+        expected_shape = (param_l * param_m, 2 * param_l * param_m)
+        if m_Hx.shape != expected_shape or m_Hz.shape != expected_shape:
+            msg = (
+                "BB parity check matrices should both have shape "
+                f"{expected_shape}, got {m_Hx.shape} and {m_Hz.shape}."
+            )
+            raise ValueError(msg)
+
+        # get a subset of logicals from css_code, and compute the rest.
+        #
+        # X logicals are of the form X(f,0) and X(g,h), eq. (16). A basis of
+        # ker(hz) mod im(hx.T) does not necessarily contain any X(f,0)-type
+        # representatives (the split is a property of a *class*, not of an
+        # arbitrary representative chosen for it), so pure f-type kernel
+        # vectors -- i.e. ker(hz[:, :half]) embedded as (f, 0) -- are passed
+        # as preferred representatives, guaranteeing as many X(f,0) logicals
+        # as exist are found before falling back to mixed X(g,h) logicals.
+        half = m_Hx.shape[1] // 2
+        hz_gf = galois.GF2(m_Hz)
+        pure_f_kernel = hz_gf[:, :half].null_space()
+        pure_f_logs = np.hstack(
+            (
+                np.asarray(pure_f_kernel, dtype=np.int_),
+                np.zeros((pure_f_kernel.shape[0], half), dtype=np.int_),
+            )
+        )
+
+        x_logs, _ = css_code_compute_logicals(
+            m_Hx,
+            m_Hz,
+            lx_preferred=pure_f_logs,
+            compute_both_logicals=False,
+        )
 
         # get f and g,h from X logicals
         # X logicals are of the form X(f,0) and X(g,h), eq. (16)
@@ -774,16 +923,16 @@ class BivariateBicycleCode(CSSCode):
         # we have a subset of all possible f,g,h, so find the rest
         # by multiplying in each monomial to get a set of |M|=lm
         all_monomials_of_lm = [
-            Monomial(x, y, self.param_l, self.param_m)
-            for x, y in product(range(self.param_l), range(self.param_m))
+            Monomial(x, y, param_l, param_m)
+            for x, y in product(range(param_l), range(param_m))
         ]
         all_f_vecs = f_vecs.copy()
         all_gT_vecs = [
-            Polynomial.from_vec(vec, self.param_l, self.param_m).reverse().to_vec()
+            Polynomial.from_vec(vec, param_l, param_m).reverse().to_vec()
             for vec in g_vecs
         ]
         all_hT_vecs = [
-            Polynomial.from_vec(vec, self.param_l, self.param_m).reverse().to_vec()
+            Polynomial.from_vec(vec, param_l, param_m).reverse().to_vec()
             for vec in h_vecs
         ]
         for list_to_extend, list_to_iterate, is_g_or_h in [
@@ -792,7 +941,7 @@ class BivariateBicycleCode(CSSCode):
             (all_hT_vecs, h_vecs, True),
         ]:
             for vec in list_to_iterate:
-                vec_as_poly = Polynomial.from_vec(vec, self.param_l, self.param_m)
+                vec_as_poly = Polynomial.from_vec(vec, param_l, param_m)
                 for mon in all_monomials_of_lm:
                     if is_g_or_h:
                         shifted_vec = (
@@ -805,13 +954,13 @@ class BivariateBicycleCode(CSSCode):
 
         # now combine f,g,h to make logical operators
         # create the unprimed block, X(f, 0) and Z(h.T, g.T)
-        all_f_logs = [list(f) + [0] * (self.n // 2) for f in all_f_vecs]
+        all_f_logs = [list(f) + [0] * half for f in all_f_vecs]
         all_gh_logs = [list(hT) + list(gT) for gT, hT in zip(all_gT_vecs, all_hT_vecs)]
 
         # find pairs with correct commutation relations
         # find anticommuting pairs of logical operators
         unprime_x_logs, unprime_z_logs = _find_anticommuting_pairs(
-            all_f_logs, all_gh_logs, self.k // 2, self.n
+            all_f_logs, all_gh_logs, num_logical_qubits // 2, m_Hx.shape[1]
         )
 
         # get primed block from unprimed
@@ -820,51 +969,61 @@ class BivariateBicycleCode(CSSCode):
         for up_x_log in unprime_x_logs:
             prime_z_logs.append(
                 [0] * (len(up_x_log) // 2)
-                + Polynomial.from_vec(
-                    up_x_log[: len(up_x_log) // 2], self.param_l, self.param_m
-                )
+                + Polynomial.from_vec(up_x_log[: len(up_x_log) // 2], param_l, param_m)
                 .reverse()
                 .to_vec()
             )
         for up_z_log in unprime_z_logs:
             prime_x_logs.append(
-                Polynomial.from_vec(
-                    up_z_log[(len(up_z_log) // 2) :], self.param_l, self.param_m
-                )
+                Polynomial.from_vec(up_z_log[(len(up_z_log) // 2) :], param_l, param_m)
                 .reverse()
                 .to_vec()
                 + Polynomial.from_vec(
-                    up_z_log[: (len(up_z_log) // 2)], self.param_l, self.param_m
+                    up_z_log[: (len(up_z_log) // 2)], param_l, param_m
                 )
                 .reverse()
                 .to_vec()
             )
 
+        return (
+            np.asarray(unprime_x_logs + prime_x_logs, dtype=np.int_),
+            np.asarray(unprime_z_logs + prime_z_logs, dtype=np.int_),
+        )
+
+    @staticmethod
+    def _logical_vectors_to_paulis(
+        x_logical_vectors: npt.NDArray[np.integer],
+        z_logical_vectors: npt.NDArray[np.integer],
+        param_l: int,
+        param_m: int,
+        mat_col_to_l_data_map: dict[int, Qubit],
+        mat_col_to_r_data_map: dict[int, Qubit],
+    ) -> tuple[list[list[PauliX[Coord2D]]], list[list[PauliZ[Coord2D]]]]:
+        """Convert BB logical vectors to Pauli operators.
+
+        Args:
+            x_logical_vectors: Binary row vectors for X logical operators.
+            z_logical_vectors: Binary row vectors for Z logical operators.
+            param_l: Parameter ``l`` as in the IBM paper.
+            param_m: Parameter ``m`` as in the IBM paper.
+            mat_col_to_l_data_map: Map from left-block matrix column to qubit.
+            mat_col_to_r_data_map: Map from right-block matrix column to qubit.
+
+        Returns:
+            X and Z logical operators as Pauli terms on the code data qubits.
+        """
         # convert binary arrays to arrays of Pauli terms.
         # the first coordinate is whether its in A or B submatrix
         # the second coordinate is the relative coordinate within A or B
-        dict_lookup = {2: self._mat_col_to_l_data_map, 3: self._mat_col_to_r_data_map}
+        half = param_l * param_m
+        dict_lookup = (mat_col_to_l_data_map, mat_col_to_r_data_map)
         x_logicals_as_paulis = [
-            [
-                PauliX(
-                    dict_lookup[2 + j // (self.param_l * self.param_m)][
-                        j % (self.param_l * self.param_m)
-                    ]
-                )
-                for j in np.where(logical)[0]
-            ]
-            for logical in unprime_x_logs + prime_x_logs
+            [PauliX(dict_lookup[j // half][j % half]) for j in np.where(logical)[0]]
+            for logical in x_logical_vectors
         ]
         z_logicals_as_paulis = [
-            [
-                PauliZ(
-                    dict_lookup[2 + j // (self.param_l * self.param_m)][
-                        j % (self.param_l * self.param_m)
-                    ]
-                )
-                for j in np.where(logical)[0]
-            ]
-            for logical in unprime_z_logs + prime_z_logs
+            [PauliZ(dict_lookup[j // half][j % half]) for j in np.where(logical)[0]]
+            for logical in z_logical_vectors
         ]
 
         return x_logicals_as_paulis, z_logicals_as_paulis
