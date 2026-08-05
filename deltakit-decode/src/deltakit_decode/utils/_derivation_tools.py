@@ -73,7 +73,8 @@ def _generate_expectation_data_multiprocess(
     split_samples = [
         list(islice(samples, n, n + step)) for n in range(0, len(samples), step)
     ]
-    with pathos.helpers.mp.Pool(num_processes) as p:
+    spawn_context = pathos.helpers.mp.get_context("spawn")
+    with spawn_context.Pool(num_processes) as p:
         results = p.starmap(
             _compute_combinations_of_detectors,
             [(samples, max_degree) for samples in split_samples],

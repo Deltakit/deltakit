@@ -142,10 +142,6 @@ addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 filterwarnings = [
   "error",
-  # Note: the below line ignore a specific warning about changes in multiprocessing.
-  # This warning is only raised by a few tests in deltakit-decode. This is a temporary
-  # fix.
-  "ignore:This process .* is multi-threaded, use of fork\\(\\) may lead to deadlocks in the child.:DeprecationWarning",
   # Note: pytest 9.1 deprecates passing a bare iterator (e.g. ``itertools.product``)
   # as parametrize argvalues. Several existing tests across the repo still do this;
   # until they are wrapped in ``list(...)`` this keeps the deprecation from being
