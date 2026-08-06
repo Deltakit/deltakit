@@ -101,22 +101,6 @@ release = [
   "python-semantic-release>=10.6.1,<11",
 ]
 
-[tool.uv.workspace]
-members = [
-  "deltakit-core",
-  "deltakit-circuit",
-  "deltakit-decode",
-  "deltakit-explorer",
-  "deltakit-compile",
-]
-
-[tool.uv.sources]
-deltakit-core = { workspace = true }
-deltakit-circuit = { workspace = true }
-deltakit-decode = { workspace = true }
-deltakit-explorer = { workspace = true }
-deltakit-compile = { workspace = true }
-
 [tool.mypy]
 files = "src/**/*.py"
 
