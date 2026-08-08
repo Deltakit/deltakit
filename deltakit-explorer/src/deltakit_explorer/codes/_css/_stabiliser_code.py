@@ -4,9 +4,12 @@ This module contains common implementation parts for stabiliser codes.
 CSSCode class derives from StabiliserCode.
 """
 
+from __future__ import annotations
+
 import itertools
 from abc import ABC, abstractmethod
 from collections.abc import Collection, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 from deltakit_circuit import Qubit
 from deltakit_circuit._basic_types import PauliBasis
@@ -17,6 +20,9 @@ from deltakit_explorer.codes._css._stabiliser_helper_functions import (
     pauli_gates_to_stim_pauli_string,
 )
 from deltakit_explorer.codes._stabiliser import Stabiliser
+
+if TYPE_CHECKING:
+    from deltakit_circuit import Circuit, MeasurementRecord
 
 
 class StabiliserCode(ABC):
@@ -149,6 +155,30 @@ class StabiliserCode(ABC):
             stabilisers=self._stabilisers,
             use_ancilla_qubits=self._use_ancilla_qubits,
         )
+
+    def check_redundancy_record_sets(
+        self,
+        circuit: Circuit,
+        logical_basis: PauliBasis,
+        num_rounds: int,
+    ) -> tuple[frozenset[MeasurementRecord], ...]:
+        """
+        Return meta-check measurement-record sets for a memory circuit.
+
+        Args:
+            circuit: Base memory circuit before meta-check DETECTORs are appended.
+            logical_basis: Z- or X-memory basis.
+            num_rounds: Number of syndrome rounds in ``circuit``.
+
+        Returns:
+            One record set per independent check redundancy on the
+            random-basis syndrome side.
+        """
+        from deltakit_explorer.codes._css._check_redundancies import (  # noqa: PLC0415
+            check_redundancy_record_sets as _check_redundancy_record_sets,
+        )
+
+        return _check_redundancy_record_sets(self, circuit, logical_basis, num_rounds)
 
     @abstractmethod
     def measure_z_logicals(self) -> CSSStage:

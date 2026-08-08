@@ -13,6 +13,9 @@ from deltakit_circuit.gates import PauliBasis
 
 import deltakit_explorer
 from deltakit_explorer.codes._bivariate_bicycle_code import BivariateBicycleCode
+from deltakit_explorer.codes._css._check_redundancies import (
+    append_check_redundancy_detectors,
+)
 from deltakit_explorer.codes._css._experiment_circuit import experiment_circuit
 from deltakit_explorer.codes._css._stabiliser_code import StabiliserCode
 from deltakit_explorer.codes._planar_code._planar_code import PlanarCode
@@ -34,6 +37,7 @@ def css_code_memory_circuit(
     logical_basis: PauliBasis,
     client: deltakit_explorer.Client | None = None,
     use_iswap_gates: bool = False,
+    include_check_redundancies: bool = False,
 ) -> Circuit:
     """
     Return a noiseless `deltakit.circuit.Circuit` for an X or Z quantum memory experiment
@@ -53,6 +57,12 @@ def css_code_memory_circuit(
     use_iswap_gates : bool
         If you generate using cloud, you may request using
         iSWAP native gate set. Default is False.
+    include_check_redundancies : bool
+        If True, append optional DETECTOR annotations for check-matrix dependency
+        products (meta-checks) on the random-basis syndrome side. Default False
+        because dense meta-check rows can regress standard BP+OSD decoding when
+        injected into the default detector stream. Only supported for local (non-cloud)
+        circuit generation.
 
     Returns
     -------
@@ -65,6 +75,8 @@ def css_code_memory_circuit(
         If num_rounds is not positive.
     ValueError
         If logical_basis is neither PauliBasis.X nor PauliBasis.Z.
+    NotImplementedError
+        If ``include_check_redundancies`` is requested with cloud generation.
     """
     if num_rounds < 1:
         msg = "Invalid num_rounds, it has to be positive."
@@ -74,6 +86,12 @@ def css_code_memory_circuit(
         raise ValueError(msg)
     if use_iswap_gates and client is None:
         msg = "`use_iswap_gates == True` is only supported when a `client` object is provided."
+        raise NotImplementedError(msg)
+    if include_check_redundancies and client is not None:
+        msg = (
+            "`include_check_redundancies=True` is only supported for local circuit "
+            "generation (client=None)."
+        )
         raise NotImplementedError(msg)
     if client is not None:
         return _cloud_css_code_experiment_circuit(
@@ -95,9 +113,14 @@ def css_code_memory_circuit(
         if logical_basis == PauliBasis.Z
         else css_code.measure_x_logicals()
     )
-    return experiment_circuit(
+    circuit = experiment_circuit(
         experiment=[data_qubit_init_stage, stabiliser_meas_stage, data_qubit_meas_stage]
     )
+    if include_check_redundancies:
+        circuit = append_check_redundancy_detectors(
+            circuit, css_code, logical_basis, num_rounds
+        )
+    return circuit
 
 
 def _cloud_css_code_experiment_circuit(
