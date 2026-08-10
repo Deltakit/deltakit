@@ -39,8 +39,9 @@ dependencies = [
   "seaborn~=0.12",
   "matplotlib~=3.5",
   "plotly >=5.0, <7.0",
-  "pymatching~=2.2",
-  "pymatching>=2.2.2,~=2.2; python_version >= '3.13'",
+  # 2.2.0 crashes in Matching.decode_batch under numpy>=2 and 2.2.1 requires
+  # numpy==1.*; 2.2.2 is the first version compatible with numpy>=2.
+  "pymatching>=2.2.2,~=2.2",
   "deltakit-stim>=0.2,<0.3",
   "pathos~=0.3",
   # This is the first version to be compatible with numpy>=2.0 according to
