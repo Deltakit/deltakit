@@ -79,52 +79,36 @@ jobs:
   # Perform static check on each deltakit project package.
   static-checks:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        projects:
-          - {'project': 'deltakit', 'path': './'}
-          - {'project': 'deltakit-circuit', 'path': './deltakit-circuit'}
-          - {'project': 'deltakit-core', 'path': './deltakit-core'}
-          - {'project': 'deltakit-decode', 'path': './deltakit-decode'}
-          - {'project': 'deltakit-explorer', 'path': './deltakit-explorer'}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Setup venv
-        run: uv sync --group=lint --group=security --package ${{ matrix.projects.project }}
+        run: uv sync --group=lint --group=security
       - name: Check for typos
         run: uv run --no-sync typos
-        working-directory: ./${{ matrix.projects.path }}
       - name: Run `ruff` syntax checker
         run: uv run --no-sync ruff check
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `ruff` formatting
         run: uv run --no-sync ruff format --check
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `pydoclint` documentation formatting
         run: uv run --no-sync pydoclint .
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `mypy` type checker
         run: uv run --no-sync mypy
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `deptry` for dependency hygiene
         run: uv run --no-sync deptry .
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `bandit` for code vulnerabilities
         run: uv run --no-sync bandit .
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
       - name: Run `pip_audit` to check dependencies for known vulnerabilities
         # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
         # `nbconvert` is only used for documentation building on Linux.
         # Remove when https://github.com/jupyter/nbconvert/issues/2258 is fixed.
         run: uv run --no-sync pip-audit --ignore-vuln CVE-2025-53000
-        working-directory: ./${{ matrix.projects.path }}
         if: ${{ always() }}
