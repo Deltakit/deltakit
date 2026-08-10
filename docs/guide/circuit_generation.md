@@ -175,7 +175,7 @@ Some experiments explore `ISWAP` gates as the entangling gate.
 Native `ISWAP` circuit generation is accessible using Deltakit Cloud API.
 
 ```{code-cell} ipython3
-import stim
+import deltakit_stim
 from deltakit.explorer import Client, types, enums
 from deltakit.circuit import Circuit
 
