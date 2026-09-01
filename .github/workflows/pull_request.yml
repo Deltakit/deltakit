@@ -101,7 +101,7 @@ jobs:
         run: uv run --no-sync mypy
         if: ${{ always() }}
       - name: Run `deptry` for dependency hygiene
-        run: uv run --no-sync deptry .
+        run: uv run --no-sync deptry src
         if: ${{ always() }}
       - name: Run `bandit` for code vulnerabilities
         run: uv run --no-sync bandit .
