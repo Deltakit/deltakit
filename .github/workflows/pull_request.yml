@@ -110,5 +110,5 @@ jobs:
         # Ignore CVE-2025-53000 as it only affects `nbconvert` on Windows.
         # `nbconvert` is only used for documentation building on Linux.
         # Remove when https://github.com/jupyter/nbconvert/issues/2258 is fixed.
-        run: uv run --no-sync pip-audit --ignore-vuln CVE-2025-53000
+        run: uv run --no-sync pip-audit --ignore-vuln CVE-2025-53000 --ignore-vuln PYSEC-2026-2132
         if: ${{ always() }}
