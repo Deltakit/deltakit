@@ -1,0 +1,3 @@
+method,bound_lo,bound_hi,p,p_over_2,contains_p,contains_half_point,contribution,stddev,seconds,diff_sigma,agree
+manual_documented,0.001,0.02,0.005,0.0025,True,True,0.43268265684532625,0.006290391373447552,374.9328043460846,0.0,True
+auto_explored,0.00125,0.01,0.005,0.0025,True,True,0.4185953237831655,0.01085214665293419,254.41498613357544,1.1230829065429246,True

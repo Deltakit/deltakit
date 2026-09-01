@@ -1,0 +1,4 @@
+param,regime,bound_lo,bound_hi,iters,stop_reason,insensitive_flag,gradient
+boundary,weakly_sensitive,0.014268441367510709,0.01576906644564036,1,snr_satisfied,False,152.01015963224035
+bulk,highly_sensitive,0.014268441367510709,0.01576906644564036,1,snr_satisfied,False,-325.51218521524174
+dummy0,insensitive,0.0030284477699198307,0.07429548636592673,9,eps_cap,True,0.0
