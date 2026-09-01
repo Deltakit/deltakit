@@ -112,3 +112,10 @@ suppress_warnings = [
 
 linkcheck_timeout = 360
 linkcheck_retries = 2
+
+# `npmjs.com` sits behind bot protection that answers non-browser clients with
+# HTTP 403, so `linkcheck` reports these URLs as broken from CI runners even
+# though they resolve fine in a browser.
+linkcheck_ignore = [
+    r"https://www\.npmjs\.com/.*",
+]
