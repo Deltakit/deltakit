@@ -2,6 +2,30 @@
 
 <!-- version list -->
 
+## v0.10.0 (2026-09-02)
+
+### Bug Fixes
+
+- Increase link check timeout and remove reminiscent stim tests
+  ([#315](https://github.com/Deltakit/deltakit/pull/315),
+  [`f090140`](https://github.com/Deltakit/deltakit/commit/f0901409a17d17d905cc21c4abae114d4cc47d0e))
+
+### Documentation
+
+- Documents standalone component repositories
+  ([#338](https://github.com/Deltakit/deltakit/pull/338),
+  [`1e62c14`](https://github.com/Deltakit/deltakit/commit/1e62c14ad6589df9418bb0880fe6a2d1b1955c38))
+
+### Features
+
+- Remove subpackages ([#332](https://github.com/Deltakit/deltakit/pull/332),
+  [`bcf5a70`](https://github.com/Deltakit/deltakit/commit/bcf5a70f5e8ce1180596476c62660ea707ad82e1))
+
+- **packages**: Add deltakit-visualise and deltakit-compile docs
+  ([#344](https://github.com/Deltakit/deltakit/pull/344),
+  [`1e05a44`](https://github.com/Deltakit/deltakit/commit/1e05a44c19a79e06a85981c4cff083c945043639))
+
+
 ## v0.9.0 (2026-07-09)
 
 ### Bug Fixes

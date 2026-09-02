@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltakit"
-version = "0.9.0"
+version = "0.10.0"
 description = "A Python toolkit to enable users with the design and execution of quantum error correction (QEC) experiments."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Scientific/Engineering",
   "Topic :: Scientific/Engineering :: Quantum Computing",
@@ -32,10 +33,12 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit>=0.8.0",
-  "deltakit-core>=0.8.0",
-  "deltakit-decode>=0.8.0",
-  "deltakit-explorer==0.9.2.dev1785941698",
+  "deltakit-circuit>=0.9.0, <0.10",
+  "deltakit-core>=0.9.0, <0.10",
+  "deltakit-decode>=0.9.0, <0.10",
+  "deltakit-explorer>=0.9.1, <0.10",
+  "deltakit-compile>=0.1.0, <0.2",
+  "deltakit-visualise>=0.3.0, <0.4",
 ]
 
 [project.urls]
@@ -242,6 +245,12 @@ allowed_tags = [
 
 [tool.deptry]
 extend_exclude = ["deltakit_*", "docs/", "tools/"]
+
+[tool.deptry.per_rule_ignores]
+DEP002 = [
+  "deltakit-compile",
+  "deltakit-visualise",
+]
 
 [tool.coverage.report]
 exclude_also = ["raise NotImplementedError", "return NotImplemented"]
