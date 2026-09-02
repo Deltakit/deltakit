@@ -246,12 +246,6 @@ allowed_tags = [
 [tool.deptry]
 extend_exclude = ["deltakit_*", "docs/", "tools/"]
 
-[tool.deptry.per_rule_ignores]
-DEP002 = [
-  "deltakit-compile",
-  "deltakit-visualise",
-]
-
 [tool.coverage.report]
 exclude_also = ["raise NotImplementedError", "return NotImplemented"]
 skip_covered = true
