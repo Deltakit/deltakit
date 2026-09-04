@@ -113,11 +113,16 @@ suppress_warnings = [
 linkcheck_timeout = 360
 linkcheck_retries = 2
 
-# Hosts that answer a normal request but stall or refuse for the CI runners.
-# Raising linkcheck_timeout does not help there. It only makes the job wait
-# longer before failing on something that says nothing about the documentation.
-# Both were checked by hand on 2026-08-04 and answered 200 in under a second.
+# `npmjs.com` sits behind bot protection that answers non-browser clients with
+# HTTP 403, so `linkcheck` reports these URLs as broken from CI runners even
+# though they resolve fine in a browser.
 linkcheck_ignore = [
+    r"https://www\.npmjs\.com/.*",
+    # Hosts that answer a normal request but stall or refuse for the CI runners.
+    # Raising linkcheck_timeout does not help there. It only makes the job wait
+    # longer before failing on something that says nothing about the documentation.
+    # Both were checked by hand on 2026-08-04 and answered 200 in under a second.
+    #
     # Read timed out at the full linkcheck_timeout in runs 30798353783 and
     # 30752780915. Unreachable in 30797197824.
     r"https://learn\.scientific-python\.org/",
