@@ -3,7 +3,7 @@ import importlib.metadata
 
 __version__: str = importlib.metadata.version(distribution_name=__package__)
 
-# import deltakit_compile as compile  # noqa: A004
+# import deltakit_compile as compile
 # import deltakit_visualise as visualise
 from deltakit_explorer import Client
 
