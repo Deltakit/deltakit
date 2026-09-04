@@ -118,4 +118,15 @@ linkcheck_retries = 2
 # though they resolve fine in a browser.
 linkcheck_ignore = [
     r"https://www\.npmjs\.com/.*",
+    # Hosts that answer a normal request but stall or refuse for the CI runners.
+    # Raising linkcheck_timeout does not help there. It only makes the job wait
+    # longer before failing on something that says nothing about the documentation.
+    # Both were checked by hand on 2026-08-04 and answered 200 in under a second.
+    #
+    # Read timed out at the full linkcheck_timeout in runs 30798353783 and
+    # 30752780915. Unreachable in 30797197824.
+    r"https://learn\.scientific-python\.org/",
+    # Answers 403 to requests that do not look like a browser, seen in run
+    # 30797197824.
+    r"https://www\.twilio\.com/",
 ]
