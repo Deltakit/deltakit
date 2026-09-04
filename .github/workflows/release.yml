@@ -83,18 +83,18 @@ jobs:
       - name: Setup venv (UNIX)
         if: matrix.os != 'windows-latest'
         run: |
-          uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
-          uv run --python ${{ matrix.python-version }} --no-sync pytest ./ ./deltakit-*
+          uv run --python ${{ matrix.python-version }} --no-sync pytest .
 
       - name: Setup venv + tests (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          uv sync --all-packages --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
+          uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           cd dist
-          uv pip install (Get-ChildItem deltakit*.whl).FullName
+          uv pip install deltakit*.whl
           cd ..
-          uv run --python ${{ matrix.python-version }} --no-sync pytest . (Get-ChildItem deltakit-*).FullName
+          uv run --python ${{ matrix.python-version }} --no-sync pytest .
 
 
   test_sdists:
