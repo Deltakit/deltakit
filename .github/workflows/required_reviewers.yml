@@ -1,0 +1,44 @@
+name: Required Reviewers
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+jobs:
+  check-reviewers:
+    runs-on: ubuntu-latest
+    outputs:
+      is_approved: ${{ steps.run_check.outputs.is_approved }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Check reviewers
+        id: run_check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_IS_DRAFT: ${{ github.event.pull_request.draft }}
+        run: |
+          if python tools/check_reviewers.py; then
+            echo "is_approved=true" >> $GITHUB_OUTPUT
+          else
+            if [ $? == 1 ]; then
+              # The script exited with an error
+              exit 1
+            fi
+            echo "is_approved=false" >> $GITHUB_OUTPUT
+          fi
+
+
+  enforce-reviewers:
+    needs: [check-reviewers]
+    if: ${{ needs.check-reviewers.outputs.is_approved == 'true' && ! github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pass reviewer check (skipped if not approved)
+        run: echo "Required reviewer check passed"

@@ -1,44 +1,65 @@
 """
 Script to set prerelease version number in all `pyproject.toml`s.
 Usage: `python tools/set_pre_version.py <suffix>`
-e.g.  `python tools/set_pre_version.py .dev20250820160500`
+e.g.  `python tools/set_pre_version.py -s .dev20250820160500`
 """
 
 import argparse
-import os
+import logging
+from pathlib import Path
+from packaging.version import Version
 
-import tomlkit  # type: ignore[import-not-found]
 
-# Read the top-level version
-with open("pyproject.toml", "r", encoding="utf-8") as f:
-    top_data = tomlkit.load(f)
+import tomlkit
 
-base_version = top_data["project"]["version"]
+# logging
+stream_handler = logging.StreamHandler()
+logger = logging.Logger(__name__)
+logger.addHandler(stream_handler)
 
-parser = argparse.ArgumentParser(description="Append a suffix to the base version")
-parser.add_argument("suffix")
-args = parser.parse_args()
 
-version = base_version + args.suffix
+PROJ_HOME = Path(__file__).parents[1]
 
-projects = [
-    ".",
-    "deltakit-explorer",
-    "deltakit-circuit",
-    "deltakit-core",
-    "deltakit-decode",
-]
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Append prerelease suffix to the base version."
+    )
+    parser.add_argument(
+        "-t",
+        "--timestamp",
+        help=(
+            "Prerelease version timestamp suffix in seconds."
+        ),
+    )
+    parser.add_argument(
+        "-c",
+        "--commit",
+        default=None,
+        help=(
+            "Prerelease version short commit hash suffix."
+        ),
+    )
+    args = parser.parse_args()
+    timestamp_version_suffix = args.timestamp
 
-for project in projects:
-    path = f"{project}/pyproject.toml"
+    commit_version_suffix = ".g" + args.commit if args.commit is not None else ""
 
-    with open(path, "r", encoding="utf-8") as f:
-        data = tomlkit.load(f)
-        data["project"]["version"] = version
+    # Update project version with suffix
+    path = PROJ_HOME / "pyproject.toml"
 
-    with open(path, "w", encoding="utf-8") as f:
+    # Update file data
+    with path.open("r") as f:
+        data: dict = tomlkit.load(f)
+
+    version = Version(data["project"]["version"])
+    prerelease_version = f"{version.major}.{version.minor}.{version.micro + 1}"
+    data["project"]["version"] = (
+        prerelease_version +
+        f".dev{timestamp_version_suffix}{commit_version_suffix}"
+    )
+
+    # Write updated data to file
+    with path.open("w", encoding="utf-8") as f:
         tomlkit.dump(data, f)
 
-filename = str(os.getenv("GITHUB_ENV"))
-with open(filename, "a") as f:
-    f.write(f"VERSION={version}\n")
+    logger.info("Project successfully updated")
