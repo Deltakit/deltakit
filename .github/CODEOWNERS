@@ -1,0 +1,13 @@
+# The primary mechanism for mandating specific reviewers on a per-file basis in
+# this repo is REQUIRED_REVIEWERS. CODEOWNERS is only used as a secondary
+# measure to protect against modifications to the files involved in the required
+# reviewers mechanism and itself.
+
+# Order: last matching pattern takes the most precedence.
+#   Please refer the link for the detail
+#   https://help.github.com/en/articles/about-code-owners
+
+/.github/CODEOWNERS @nelimee @rolandriver
+/.github/REQUIRED_REVIEWERS @nelimee @rolandriver
+/.github/workflows/required_reviewers.yml @nelimee @rolandriver
+/tools/check_reviewers.py @nelimee @rolandriver
