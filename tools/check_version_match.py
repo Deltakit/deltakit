@@ -14,7 +14,7 @@ logger = logging.Logger(__name__)
 logger.addHandler(stream_handler)
 
 
-def parse_version(v: str) -> tuple:
+def parse_version(v: str) -> tuple[int, int, int]:
     """
     Parse a semantic version string.
 
@@ -28,11 +28,18 @@ def parse_version(v: str) -> tuple:
         argparse.ArgumentTypeError: If v is not in the format
             MAJOR.MINOR.PATCH or contains non-integer components.
     """
+    parts = v.split(".")
+    if len(parts) != 3:
+        msg = f"Invalid semver format: '{v}' (expected MAJOR.MINOR.PATCH)"
+        raise argparse.ArgumentTypeError(msg)
+
     try:
-        return tuple(map(int, v.split(".")))
+        major, minor, patch = (int(p) for p in parts)
     except ValueError as err:
         msg = f"Invalid semver format: '{v}' (expected MAJOR.MINOR.PATCH)"
         raise argparse.ArgumentTypeError(msg) from err
+
+    return major, minor, patch
 
 
 def main():
