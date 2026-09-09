@@ -1,0 +1,17 @@
+# This file functions just like a CODEOWNERS but without automatic assignment
+# of all codeowners to every PR that touches code they own - it is the
+# responsibility of the PR author to pick a few people from the list.
+
+# You are encouraged to add non-default reviewers where you know someone else
+# may have useful insight or has been recently working in the area touched by
+# your PR. Anyone is able to contribute to pull request review, and is
+# encouraged to do so
+
+# Order: last matching pattern takes the most precedence.
+#   Please refer the link for the detail
+#   https://help.github.com/en/articles/about-code-owners
+
+* @nelimee @rolandriver
+
+# Dependency changes should also be reviewed by the deltakit core maintainers
+/pyproject.toml @rolandriver @nelimee
