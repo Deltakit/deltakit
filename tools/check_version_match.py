@@ -60,8 +60,8 @@ def main():
 
     if proj_version_tup != tag_version_tup:
         log_msg = (
-            f"Project version {proj_version} do not match "
-            f"latest tag version {tag_version_tup}."
+            f"Project version {proj_version} does not match "
+            f"latest tag version {tag_version}."
         )
         logger.error(log_msg)
         sys.exit(1)
