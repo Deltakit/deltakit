@@ -36,10 +36,18 @@ def get_changed_files(repo: str, pr_number: int, token: str) -> list[str]:
     Returns:
         The list of changed file paths.
     """
-    files = requests.get(
-        f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files",
-        headers={"Authorization": f"token {token}"},
-    ).json()
+    url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
+    files: list[dict] = []
+
+    while url:
+        resp = requests.get(
+            url,
+            headers={"Authorization": f"token {token}"},
+            params={"per_page": 100},
+        )
+        resp.raise_for_status()
+        files.extend(resp.json())
+        url = resp.links.get("next", {}).get("url")
 
     return [f["filename"] for f in files]
 
