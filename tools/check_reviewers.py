@@ -64,12 +64,24 @@ def get_approved_reviewers(repo: str, pr_number: int, token: str) -> set[str]:
     Returns:
         The set of usernames of approving reviewers.
     """
-    reviews = requests.get(
-        f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews",
-        headers={"Authorization": f"token {token}"},
-    ).json()
+    url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/reviews"
+    reviews: list[dict] = []
 
-    return {r["user"]["login"] for r in reviews if r["state"] == "APPROVED"}
+    while url:
+        resp = requests.get(
+            url,
+            headers={"Authorization": f"token {token}"},
+            params={"per_page": 100},
+        )
+        resp.raise_for_status()
+        reviews.extend(resp.json())
+        url = resp.links.get("next", {}).get("url")
+
+    last_state: dict[str, str] = {}
+    for r in reviews:
+        last_state[r["user"]["login"]] = r["state"]
+
+    return {login for login, state in last_state.items() if state == "APPROVED"}
 
 
 def parse_required_reviewers_file(path: Path) -> list[ReqReviewerRule]:
