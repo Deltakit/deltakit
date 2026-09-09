@@ -43,7 +43,7 @@ def parse_version(v: str) -> tuple[int, int, int]:
 
 
 def main():
-    desc = "Check that the project version is higher than the provided version."
+    desc = "Check that the project version matches the provided version."
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
         "version",
