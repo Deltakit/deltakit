@@ -10,4 +10,4 @@
 /.github/CODEOWNERS @nelimee @rolandriver
 /.github/REQUIRED_REVIEWERS @nelimee @rolandriver
 /.github/workflows/required_reviewers.yml @nelimee @rolandriver
-/tools/check_reviewers.py @nelimee @rolandriver
+/tools/check_reviewers.py @nelimee @rolandriver @theinsanetramp

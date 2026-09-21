@@ -14,4 +14,4 @@
 * @nelimee @rolandriver
 
 # Dependency changes should also be reviewed by the deltakit core maintainers
-/pyproject.toml @rolandriver @nelimee
+/pyproject.toml @rolandriver @nelimee @theinsanetramp
