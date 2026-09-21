@@ -7,7 +7,7 @@
 #   Please refer the link for the detail
 #   https://help.github.com/en/articles/about-code-owners
 
-/.github/CODEOWNERS @nelimee @rolandriver
-/.github/REQUIRED_REVIEWERS @nelimee @rolandriver
-/.github/workflows/required_reviewers.yml @nelimee @rolandriver
+/.github/CODEOWNERS @nelimee @rolandriver @theinsanetramp
+/.github/REQUIRED_REVIEWERS @nelimee @rolandriver @theinsanetramp
+/.github/workflows/required_reviewers.yml @nelimee @rolandriver @theinsanetramp
 /tools/check_reviewers.py @nelimee @rolandriver @theinsanetramp
