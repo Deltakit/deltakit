@@ -161,7 +161,7 @@ Typically, the focus is not on the individual measurement outcomes but on logica
 
 Deltakit currently exposes one decoder for use locally, [PyMatching](https://github.com/oscarhiggott/PyMatching). (However, there are many other decoder options when using the remote workflow, and there are many local decoder analysis and manipulation tools in {ref}`api-deltakit-decode`.)
 
-({meth}`PyMatchingDecoder.construct_decoder_and_stim_circuit <deltakit.decode.PyMatchingDecoder.construct_decoder_and_stim_circuit>`) is a helper factor that accepts a circuit and returns two things:
+({meth}`PyMatchingDecoder.construct_decoder_and_stim_circuit <deltakit.decode.PyMatchingDecoder.construct_decoder_and_stim_circuit>`) is a helper function that accepts a circuit and returns two things:
 
 - an object representing a Minimum Weight Perfect Matching decoder and
 - a modified version of the original circuit configured to operate with the decoder.
