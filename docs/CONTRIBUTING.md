@@ -50,41 +50,67 @@ uv sync
 
 in your local repository. `uv` also allows you to configure and run tasks via [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and command-line interfaces as illustrated next.
 
+Deltakit provides a `justfile` containing shortcuts for common development tasks. `just` is optional; the recipes delegate to `uv`, which remains the project's environment and dependency manager. See the [official `just` installation instructions](https://github.com/casey/just#installation) for how to install it.
+
 ### Executing tests
 
-The complete `deltakit` test suite can be run by following these steps:
-
-1. Sync the environment using a supported Python version and include the `test` dependency group:
+Run the test suite with:
 
 ```sh
-uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+just test
 ```
 
-The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
-
-2. Execute the tests using the [Pytest](https://docs.pytest.org/en/stable/) framework:
+This is a convenience wrapper that runs:
 
 ```sh
 uv run --group test pytest
 ```
 
-### Building documentation
+`just` is optional. If you do not have it installed, use the `uv run` command directly.
 
-Similarly, the documentation can be built locally following the steps:
-
-1. First, sync the environment with the `docs` dependency group:
+To test against the exact dependency versions used in CI (Python 3.13 with `lowest-direct` resolution), use:
 
 ```sh
-uv sync --python 3.13 --resolution highest --group docs
+uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+uv run --no-sync pytest
 ```
 
-2. Then build the HTML documentation:
+The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
+
+### Building documentation
+
+Build the HTML documentation with:
+
+```sh
+just docs
+```
+
+This is a convenience wrapper that runs:
 
 ```sh
 uv run --group docs sphinx-build -W -b html docs docs/_build/html
 ```
 
-The generated documentation can then be viewed in any web browser.
+`just` is optional. If you do not have it installed, use the `uv run` command directly.
+
+To sync the docs environment explicitly (e.g., for CI-like resolution):
+
+```sh
+uv sync --python 3.13 --resolution highest --group docs
+```
+
+### Other common tasks
+
+Additional shortcuts:
+
+```sh
+just lint
+just security
+just check
+just build
+```
+
+Each delegates to the corresponding `uv run --group ...` command (or `uv build` for `build`). Run `just --list` to see all available recipes.
 
 ### Pre-commit
 
