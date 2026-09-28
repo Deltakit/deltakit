@@ -42,66 +42,70 @@ After completing your development work, push your changes to your fork and open 
 
 ## Setup `deltakit` in development mode
 
-We recommend using [`uv`](https://docs.astral.sh/uv/) as the project manager. To synchronise the project dependencies with your environment, simply run:
+We recommend using [`uv`](https://docs.astral.sh/uv/) as the project manager. To synchronise the project dependencies with your environment, run:
 
 ```sh
 uv sync
 ```
 
-in your local repository. `uv` also allows you to configure and run tasks via [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and command-line interfaces as illustrated next.
+from the repository root. By default, `uv sync` includes the `dev` dependency group, which installs `just` through `rust-just`. To sync without installing `just`, run `uv sync --no-install-package rust-just`.
 
-Deltakit provides a `justfile` containing shortcuts for common development tasks. `just` is optional; the recipes delegate to `uv`, which remains the project's environment and dependency manager. See the [official `just` installation instructions](https://github.com/casey/just#installation) for how to install it.
+Deltakit provides a [`justfile`](../justfile) with optional shortcuts for common development tasks. You can use the `just` recipes below or run their `uv` commands directly. The commands use [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) to install the tools needed for each task.
 
 ### Executing tests
 
-Run the test suite with:
+To run the complete `deltakit` test suite, sync the environment with the `test` dependency group:
+
+1. Sync the environment using a supported Python version and include the `test` dependency group:
+
+```sh
+uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+```
+
+The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
+
+Then run the test suite with either command:
 
 ```sh
 just test
 ```
 
-This is a convenience wrapper that runs:
-
 ```sh
 uv run --group test pytest
 ```
 
-`just` is optional. If you do not have it installed, use the `uv run` command directly.
+Tests are executed using the [Pytest](https://docs.pytest.org/en/stable/) framework.
 
-To test against the exact dependency versions used in CI (Python 3.13 with `lowest-direct` resolution), use:
+To use the exact dependency versions used in CI (Python 3.13 with `lowest-direct` resolution), sync and run:
 
 ```sh
 uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
 uv run --no-sync pytest
 ```
 
-The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
-
 ### Building documentation
 
-Build the HTML documentation with:
-
-```sh
-just docs
-```
-
-This is a convenience wrapper that runs:
-
-```sh
-uv run --group docs sphinx-build -W -b html docs docs/_build/html
-```
-
-`just` is optional. If you do not have it installed, use the `uv run` command directly.
-
-To sync the docs environment explicitly (e.g., for CI-like resolution):
+Sync the environment with the `docs` dependency group:
 
 ```sh
 uv sync --python 3.13 --resolution highest --group docs
 ```
 
+Then build the HTML documentation with either command:
+
+```sh
+just docs
+```
+
+```sh
+uv run --group docs sphinx-build -W -b html docs docs/_build/html
+```
+
+The generated documentation can then be viewed in any web browser.
+
 ### Other common tasks
 
-Additional shortcuts:
+Run any of these shortcuts or their corresponding `uv` commands directly:
 
 ```sh
 just lint
@@ -110,7 +114,19 @@ just check
 just build
 ```
 
-Each delegates to the corresponding `uv run --group ...` command (or `uv build` for `build`). Run `just --list` to see all available recipes.
+```sh
+uv run --group lint typos
+uv run --group lint ruff check
+uv run --group lint ruff format --check
+uv run --group lint pydoclint .
+uv run --group lint mypy
+uv run --group lint deptry src
+uv run --group security bandit .
+uv run --group security pip-audit --ignore-vuln CVE-2025-53000 --ignore-vuln PYSEC-2026-2132
+uv build --no-sources --all-packages
+```
+
+`just check` runs the lint, security, and test recipes. Run `just --list` to see all available recipes.
 
 ### Pre-commit
 
