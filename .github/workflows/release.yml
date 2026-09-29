@@ -82,6 +82,7 @@ jobs:
       - name: Install and test on Unix
         if: matrix.os != 'windows-latest'
         run: |
+          uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
           uv run --python ${{ matrix.python-version }} --no-sync pytest .
           uv run python -c "import deltakit"
