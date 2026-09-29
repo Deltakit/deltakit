@@ -92,7 +92,7 @@ Deltakit is developed across the following standalone component repositories:
 
 Standard QEC experiments proceed through several fundamental stages, each of which is facilitated by the functionality provided in the `deltakit` package:
 
-* **Circuit generation:** brings together a representative noisy circuit for the experiment of choice and a quantum error correcting code.
+* **Circuit generation:** brings together a representative noisy circuit for the experiment of choice and a quantum error-correcting code.
 * **Simulation:** generates measurement results by executing and sampling the circuit on the numerical simulator [Stim](https://github.com/quantumlib/Stim).
 * **Decoding & analysis:** uses either a standard decoder of choice or Riverlane's proprietary ones to decode measurement samples, apply corrections and produce interpretable relevant metrics.
 
@@ -106,7 +106,7 @@ pip install deltakit
 
 ## Quick Start - Performing a QEC memory experiment on a local machine
 
-`deltakit` helps the design and execution of complete QEC experiments. The first step is to define an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
+`deltakit` helps with the design and execution of complete QEC experiments. The first step is to define an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU-compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
 
 ```python
 from deltakit.circuit.gates import PauliBasis
