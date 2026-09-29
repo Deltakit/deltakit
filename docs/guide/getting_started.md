@@ -23,7 +23,7 @@ Performing a QEC experiment with Deltakit typically involves four steps.
    circuit based on your QPU's native gates and their characteristics.
 2. In the *simulation* step, you simulate the circuit using [Stim](https://github.com/quantumlib/Stim).
 3. In the *decoding* step, you choose a decoder to decode your measurement results. You can use
-   both open-source decoders, like minimum weight perfect matching (MWPM), and propriety
+   both open-source decoders, like minimum weight perfect matching (MWPM), and proprietary
    decoders, like Ambiguity Clustering (AC).
 4. In the *analysis* step, you interpret the results of your QEC experiment, and calculate and visualise
    the logical error probability and error suppression factor $\Lambda$.
