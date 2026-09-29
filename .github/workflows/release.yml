@@ -82,6 +82,9 @@ jobs:
       - name: Install and test on Unix
         if: matrix.os != 'windows-latest'
         run: |
+          pwd
+          ls -la
+          test -f pyproject.toml
           uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
           uv run --python ${{ matrix.python-version }} --no-sync pytest .
