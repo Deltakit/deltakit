@@ -9,4 +9,4 @@ from deltakit_explorer import Client
 del importlib
 
 # List only public members in `__all__`.
-__all__: list[str] = ["Client", "compile", "visualise"]
+__all__: list[str] = ["Client"]
