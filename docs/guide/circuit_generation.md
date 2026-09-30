@@ -157,7 +157,7 @@ rotated_code = RotatedPlanarCode(
 rotated_code.draw_patch()
 ```
 
-Now you can generate a quantum memory experiment using this code. Its native gates will be a mixture or `CX` and `CZ`.
+Now you can generate a quantum memory experiment using this code. Its native gates will be a mixture of `CX` and `CZ`.
 
 ```{code-cell} ipython3
 circuit = css_code_memory_circuit(
