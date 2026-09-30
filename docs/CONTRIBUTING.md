@@ -69,7 +69,7 @@ Tests are executed using the [Pytest](https://docs.pytest.org/en/stable/) framew
 To use the exact dependency versions used in CI (Python 3.13 with `lowest-direct` resolution), sync and run:
 
 ```sh
-uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+uv sync --python 3.13 --resolution lowest-direct --group test
 uv run --no-sync pytest
 ```
 
@@ -107,7 +107,7 @@ uv run --group lint mypy
 uv run --group lint deptry src
 uv run --group security bandit .
 uv run --group security pip-audit --ignore-vuln CVE-2025-53000 --ignore-vuln PYSEC-2026-2132
-uv build --no-sources --all-packages
+uv build --no-sources
 ```
 
 `just check` runs the lint, security, and test recipes. Run `just --list` to see all available recipes.
