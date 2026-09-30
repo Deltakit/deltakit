@@ -1,8 +1,6 @@
 # (c) Copyright Riverlane 2020-2025.
 """Three tests that run the circuit-generation, simulation, decoding and
 analysis pipeline end to end with real components rather than mocks.
-
-A first slice towards https://github.com/Deltakit/deltakit/issues/45.
 """
 
 import warnings
