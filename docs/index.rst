@@ -67,6 +67,8 @@ To get started with Deltakit, follow these steps:
    setup
    guide/getting_started
    examples/index
+   deltakit_compile/index
+   deltakit_visualise/index
 
 .. toctree::
    :maxdepth: 1
