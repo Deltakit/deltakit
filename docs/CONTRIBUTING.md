@@ -42,29 +42,19 @@ After completing your development work, push your changes to your fork and open 
 
 ## Setup `deltakit` in development mode
 
-We recommend using [`uv`](https://docs.astral.sh/uv/) as the project manager. To synchronise the project dependencies with your environment, run:
+We recommend using [`uv`](https://docs.astral.sh/uv/) as the project manager. To synchronise the project dependencies with your environment, simply run:
 
 ```sh
 uv sync
 ```
 
-from the repository root. By default, `uv sync` includes the `dev` dependency group, which installs `just` through `rust-just`. To sync without installing `just`, run `uv sync --no-install-package rust-just`.
-
-Deltakit provides a [`justfile`](../justfile) with optional shortcuts for common development tasks. You can use the `just` recipes below or run their `uv` commands directly. The commands use [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) to install the tools needed for each task.
+in your local repository. `uv` also allows you to configure and run tasks via [dependency groups](https://docs.astral.sh/uv/concepts/projects/dependencies/#dependency-groups) and command-line interfaces as illustrated next.
 
 ### Executing tests
 
-To run the complete `deltakit` test suite, sync the environment with the `test` dependency group:
+Deltakit provides a [`justfile`](../justfile) with optional shortcuts for common development tasks. Each `just` recipe is shorthand for an equivalent `uv` command. Learn more about [`just`](https://github.com/casey/just).
 
-1. Sync the environment using a supported Python version and include the `test` dependency group:
-
-```sh
-uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
-```
-
-The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
-
-Then run the test suite with either command:
+After running `uv sync`, run the test suite with either command:
 
 ```sh
 just test
@@ -85,13 +75,7 @@ uv run --no-sync pytest
 
 ### Building documentation
 
-Sync the environment with the `docs` dependency group:
-
-```sh
-uv sync --python 3.13 --resolution highest --group docs
-```
-
-Then build the HTML documentation with either command:
+Build the HTML documentation with either command:
 
 ```sh
 just docs
