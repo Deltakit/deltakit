@@ -73,11 +73,26 @@ For more detailed information, check out the [Deltakit documentation](https://de
 
 For any usage questions or comments, visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
 
+## Component repositories
+
+Deltakit is developed across the following standalone component repositories:
+
+| Repository                                                             | Description                                                                                                                     |
+|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| [`deltakit-circuit`](https://github.com/Deltakit/deltakit-circuit)     | Circuit representations, gates, noise channels and [Stim](https://github.com/quantumlib/Stim) conversion utilities.                                               |
+| [`deltakit-core`](https://github.com/Deltakit/deltakit-core)           | Shared data formats and decoding graph utilities.                                                                               |
+| [`deltakit-decode`](https://github.com/Deltakit/deltakit-decode)       | Decoders, decoding workflows, noise sources and decoding analysis utilities.                                                    |
+| [`deltakit-explorer`](https://github.com/Deltakit/deltakit-explorer)   | Tools for constructing, simulating, analysing and visualising QEC experiments.                                                  |
+| [`deltakit-compile`](https://github.com/Deltakit/deltakit-compile)     | Compiler infrastructure for Deltakit.                                                                                           |
+| [`deltakit-visualise`](https://github.com/Deltakit/deltakit-visualise) | Python visualisation and debugging tools for QEC programs compiled by `deltakit-compile`.                                       |
+| [`deltakit-vis`](https://github.com/Deltakit/deltakit-vis)             | Frontend rendering library used by `deltakit-visualise`.                                                                        |
+| [`deltakit-stim`](https://github.com/Deltakit/deltakit-stim)           | [Stim](https://github.com/quantumlib/Stim) fork supporting non-computational leakage errors and adaptive detector error models. |
+
 ## Feature highlights
 
 Standard QEC experiments proceed through several fundamental stages, each of which is facilitated by the functionality provided in the `deltakit` package:
 
-* **Circuit generation:** brings together a representative noisy circuit for the experiment of choice and a quantum error correcting code.
+* **Circuit generation:** brings together a representative noisy circuit for the experiment of choice and a quantum error-correcting code.
 * **Simulation:** generates measurement results by executing and sampling the circuit on the numerical simulator [Stim](https://github.com/quantumlib/Stim).
 * **Decoding & analysis:** uses either a standard decoder of choice or Riverlane's proprietary ones to decode measurement samples, apply corrections and produce interpretable relevant metrics.
 
@@ -91,7 +106,7 @@ pip install deltakit
 
 ## Quick Start - Performing a QEC memory experiment on a local machine
 
-`deltakit` helps the design and execution of complete QEC experiments. The first step is to define an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
+`deltakit` helps with the design and execution of complete QEC experiments. The first step is to define an encoding process from a quantum circuit and a parametrisable code chosen from a standard family. For instance, here we use the [rotated surface code](https://errorcorrectionzoo.org/c/rotated_surface) from the [Calderbank–Shor–Steane](https://en.wikipedia.org/wiki/CSS_code) (CSS) family. The next step is to declare a QPU instance together with a noise model and a native gate set to compile the circuit to. This produces a QPU-compliant noisy circuit that can be executed either on numerical simulators (Stim) or physical hardware to generate noisy bitstring samples. The final step is to apply the decoding process on these bitstrings and correct the circuit. In the following example, a [Minimum Weight Perfect Matching](https://en.wikipedia.org/wiki/Matching_(graph_theory))-based decoder publicly available from the [PyMatching](https://github.com/oscarhiggott/PyMatching) library is used and the logical error probability (LEP) is generated for interpretation.
 
 ```python
 from deltakit.circuit.gates import PauliBasis

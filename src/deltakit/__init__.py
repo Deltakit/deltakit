@@ -1,7 +1,7 @@
 # (c) Copyright Riverlane 2020-2025.
 import importlib.metadata
 
-__version__ = importlib.metadata.version(__package__)
+__version__: str = importlib.metadata.version(distribution_name=__package__)
 
 from deltakit_explorer import Client
 
@@ -9,4 +9,4 @@ from deltakit_explorer import Client
 del importlib
 
 # List only public members in `__all__`.
-__all__ = [s for s in dir() if not s.startswith("_")]
+__all__: list[str] = ["Client"]

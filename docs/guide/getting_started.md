@@ -23,7 +23,7 @@ Performing a QEC experiment with Deltakit typically involves four steps.
    circuit based on your QPU's native gates and their characteristics.
 2. In the *simulation* step, you simulate the circuit using [Stim](https://github.com/quantumlib/Stim).
 3. In the *decoding* step, you choose a decoder to decode your measurement results. You can use
-   both open-source decoders, like minimum weight perfect matching (MWPM), and propriety
+   both open-source decoders, like minimum weight perfect matching (MWPM), and proprietary
    decoders, like Ambiguity Clustering (AC).
 4. In the *analysis* step, you interpret the results of your QEC experiment, and calculate and visualise
    the logical error probability and error suppression factor $\Lambda$.
@@ -161,7 +161,7 @@ Typically, the focus is not on the individual measurement outcomes but on logica
 
 Deltakit currently exposes one decoder for use locally, [PyMatching](https://github.com/oscarhiggott/PyMatching). (However, there are many other decoder options when using the remote workflow, and there are many local decoder analysis and manipulation tools in {ref}`api-deltakit-decode`.)
 
-({meth}`PyMatchingDecoder.construct_decoder_and_stim_circuit <deltakit.decode.PyMatchingDecoder.construct_decoder_and_stim_circuit>`) is a helper factor that accepts a circuit and returns two things:
+({meth}`PyMatchingDecoder.construct_decoder_and_stim_circuit <deltakit.decode.PyMatchingDecoder.construct_decoder_and_stim_circuit>`) is a helper function that accepts a circuit and returns two things:
 
 - an object representing a Minimum Weight Perfect Matching decoder and
 - a modified version of the original circuit configured to operate with the decoder.
