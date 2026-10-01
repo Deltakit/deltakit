@@ -107,7 +107,7 @@ uv run --group lint mypy
 uv run --group lint deptry src
 uv run --group security bandit .
 uv run --group security pip-audit --ignore-vuln CVE-2025-53000 --ignore-vuln PYSEC-2026-2132
-uv build --no-sources
+uv build --no-sources --all-packages
 ```
 
 `just check` runs the lint, security, and test recipes. Run `just --list` to see all available recipes.

@@ -6,14 +6,14 @@ A new version of Deltakit is released on a regular basis. Only stable releases a
 
 Stable releases are performed whenever new features are implemented or bug fixes are made.
 The target audience of stable releases is typical users.
-Semantic versioning communicates whether releases include any backward compatible changes so that users can
+Semantic versioning communicates whether releases include any backward incompatible changes so that users can
 decide when/whether to upgrade.
 
 A stable release currently consists of:
 - a version [tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging) (human-readable label) associated with a commit,
-- assets published to PyPI (which gets added to the "Release history" there), and
-- assets published to "Releases" on our GitHub repo.
-- documentation, currently published using GitHub pages.
+- assets published to PyPI (which gets added to the "Release history" there),
+- assets published to "Releases" on our GitHub repo, and
+- documentation, currently published using Read the Docs.
 
 "Assets" currently refers to [wheel](https://peps.python.org/pep-0427/)s (pre-built Python package format)
 and sdists ("source distribution") of `deltakit` and all component libraries.

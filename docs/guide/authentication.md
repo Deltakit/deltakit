@@ -58,7 +58,7 @@ In a shell:
 :::{tab-item} Linux / macOS
 :sync: tab1
 ```bash
-DELTAKIT_TOKEN=your_token && python3 some_script.py
+DELTAKIT_TOKEN=your_token python3 some_script.py
 ```
 :::
 :::{tab-item} Windows
@@ -75,15 +75,15 @@ In GitHub CI, you may store a token as a secret and use it in the action's YAML:
 jobs:
   your-job-name:
     runs-on: ubuntu-latest
-      steps:
-        - name: Install Deltakit
-          run: |
-            python3 -m pip install deltakit
-        - name: your step name
-          run: |
-            python3 some_script.py
-          env:
-            DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
+    steps:
+      - name: Install Deltakit
+        run: |
+          python3 -m pip install deltakit
+      - name: your step name
+        run: |
+          python3 some_script.py
+        env:
+          DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
 ```
 
 ## Troubleshooting
