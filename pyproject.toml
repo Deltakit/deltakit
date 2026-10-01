@@ -97,6 +97,7 @@ dev = [
   { include-group = "lint" },
   { include-group = "docs" },
   { include-group = "security" },
+  "rust-just",
   # other
   "pre-commit~=4.2",
   "validate-pyproject>=0.24.1,<0.27.0",

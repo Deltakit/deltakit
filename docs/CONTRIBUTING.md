@@ -52,39 +52,65 @@ in your local repository. `uv` also allows you to configure and run tasks via [d
 
 ### Executing tests
 
-The complete `deltakit` test suite can be run by following these steps:
+Deltakit provides a [`justfile`](../justfile) with optional shortcuts for common development tasks. Each `just` recipe is shorthand for an equivalent `uv` command. Learn more about [`just`](https://github.com/casey/just).
 
-1. Sync the environment using a supported Python version and include the `test` dependency group:
+After running `uv sync`, run the test suite with either command:
 
 ```sh
-uv sync --all-packages --python 3.13 --resolution lowest-direct --group test
+just test
 ```
-
-The [`resolution`](https://docs.astral.sh/uv/concepts/resolution/) option specifies the [strategy](https://docs.astral.sh/uv/concepts/resolution/#resolution-strategy) used to install the lowest compatible versions of all dependencies in the group.
-
-2. Execute the tests using the [Pytest](https://docs.pytest.org/en/stable/) framework:
 
 ```sh
 uv run --group test pytest
 ```
 
-### Building documentation
+Tests are executed using the [Pytest](https://docs.pytest.org/en/stable/) framework.
 
-Similarly, the documentation can be built locally following the steps:
-
-1. First, sync the environment with the `docs` dependency group:
+To use the exact dependency versions used in CI (Python 3.13 with `lowest-direct` resolution), sync and run:
 
 ```sh
-uv sync --python 3.13 --resolution highest --group docs
+uv sync --python 3.13 --resolution lowest-direct --group test
+uv run --no-sync pytest
 ```
 
-2. Then build the HTML documentation:
+### Building documentation
+
+Build the HTML documentation with either command:
+
+```sh
+just docs
+```
 
 ```sh
 uv run --group docs sphinx-build -W -b html docs docs/_build/html
 ```
 
 The generated documentation can then be viewed in any web browser.
+
+### Other common tasks
+
+Run any of these shortcuts or their corresponding `uv` commands directly:
+
+```sh
+just lint
+just security
+just check
+just build
+```
+
+```sh
+uv run --group lint typos
+uv run --group lint ruff check
+uv run --group lint ruff format --check
+uv run --group lint pydoclint .
+uv run --group lint mypy
+uv run --group lint deptry src
+uv run --group security bandit .
+uv run --group security pip-audit --ignore-vuln CVE-2025-53000 --ignore-vuln PYSEC-2026-2132
+uv build --no-sources
+```
+
+`just check` runs the lint, security, and test recipes. Run `just --list` to see all available recipes.
 
 ### Pre-commit
 
