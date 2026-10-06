@@ -6,6 +6,7 @@ analysis pipeline end to end with real components rather than mocks.
 import warnings
 
 import deltakit_stim as stim
+import numpy as np
 import pytest
 from deltakit_circuit.gates import PauliBasis
 from deltakit_decode import PyMatchingDecoder
@@ -117,6 +118,7 @@ class TestDecodingPipeline:
             decoder_manager = StimDecoderManager(stim_circuit, decoder, seed=1234)
             _, fails = decoder_manager.run_batch_shots(shots)
             lep, lep_stddev = calculate_lep_and_lep_stddev(int(fails), shots)
+            lep, lep_stddev = np.atleast_1d(lep), np.atleast_1d(lep_stddev)
             # compute_logical_error_per_round warns that a single data point
             # was provided; that is the intended usage here (see above), and
             # the repository promotes warnings to errors, so suppress it for
