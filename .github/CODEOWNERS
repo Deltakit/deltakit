@@ -11,3 +11,5 @@
 /.github/REQUIRED_REVIEWERS @nelimee @rolandriver @theinsanetramp
 /.github/workflows/required_reviewers.yml @nelimee @rolandriver @theinsanetramp
 /tools/check_reviewers.py @nelimee @rolandriver @theinsanetramp
+
+* @rolandriver @nelimee
