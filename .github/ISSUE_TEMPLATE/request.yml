@@ -11,7 +11,7 @@ body:
 
         Thank you for contributing to the improvement of Deltakit. Please fill out the following sections to suggest any new feature, performance or code quality improvements.
 
-        If your issue is related to deltakit-compile, please open it in [the deltakit-compile repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [deltakit-visualise](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages.
+        If your issue is related to deltakit-compile, please open it in the [deltakit-compile repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [deltakit-visualise](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages.
         If the issue does not fall under a specific Deltakit package, you can report it here.
         This is the appropriate place to also report issues about documentation related to *any* Deltakit package.
 
