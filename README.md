@@ -175,7 +175,7 @@ print(circuit)
 
 There are various ways to contribute to `deltakit`:
 
-- **Submitting issues:** To submit bug reports or feature requests, please use our [issue tracker](https://github.com/Deltakit/deltakit/issues).
+- **Submitting issues:** To submit bug reports or feature requests, please open a GitHub Issue in the relevant Deltakit package repository. For example, if your query is related to `deltakit-compile`, please open an Issue in the [`deltakit-compile` repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [`deltakit-visualise`](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages. If the issue does not fall under a specific Deltakit package, you can report it in the [issue tracker](https://github.com/Deltakit/deltakit/issues) of this repository. This is the appropriate place to also report issues about documentation related to *any* Deltakit package.
 - **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](./docs/CONTRIBUTING.md).
 - **Security:** For any security concern, please see our [security policy](./docs/SECURITY.md).
 
