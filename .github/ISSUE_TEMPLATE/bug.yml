@@ -18,6 +18,10 @@ body:
         > Please use the [test failure form](https://github.com/Deltakit/deltakit/issues/new?template=test_failure.yml)
         > if you're a contributor seeing a test failure in main, either locally or on CI.
 
+        If your issue is related to deltakit-compile, please open it in [the deltakit-compile repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [deltakit-visualise](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages.
+        If the issue does not fall under a specific Deltakit package, you can report it here.
+        This is the appropriate place to also report issues about documentation related to *any* Deltakit package.
+
   - type: checkboxes
     id: cla-signature
     attributes:
