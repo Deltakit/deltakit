@@ -16,7 +16,7 @@ Prior to making a contribution, we kindly ask to review our [code of conduct](ht
 
 ## Reporting an issue
 
-Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the GitHub Issues trackers of relevant the Deltakit packages first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
+Issues contributions concern reporting a behavioural discrepancy in the code base (bug), an enhancement suggestion or a constructive participation to an existing issue. Please check the GitHub Issues trackers for the relevant Deltakit package first to see if a similar report has already been submitted. If so, add a comment with your current observation and details. Otherwise, create a new issue report:
 
 - **Bug reports**: A "bug" is defined as a discrepancy between documented and actual behaviour or an *inaccurate* error message. Bug reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=bug.yml).
 - **Enhancement and feature requests**: Requests for improvements, enhancements, or new features are highly appreciated. Request reports can be created [here](https://github.com/Deltakit/deltakit/issues/new?template=request.yml).
