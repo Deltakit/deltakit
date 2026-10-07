@@ -30,7 +30,6 @@ jobs:
         run: echo "exists=true" >> $GITHUB_OUTPUT
 
   check-documentation-links:
-    if: github.event_name == 'pull_request'
     name: Check documentation links
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -41,7 +40,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Check Links
+      - name: Run Lychee
         uses: lycheeverse/lychee-action@v2
         with:
           args: --config .lychee.toml
