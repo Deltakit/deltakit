@@ -79,7 +79,7 @@ jobs:
       - name: Install Deltakit
         run: |
           python3 -m pip install deltakit
-      - name: your step name
+      - name: Your step name
         run: |
           python3 some_script.py
         env:
