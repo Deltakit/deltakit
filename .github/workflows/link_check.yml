@@ -34,6 +34,6 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: --config .lychee.toml
-          lycheeVersion: v0.16.0
+          lycheeVersion: v0.16.1
           fail: true
           jobSummary: true
