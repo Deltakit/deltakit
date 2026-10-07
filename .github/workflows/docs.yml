@@ -16,25 +16,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  link-check:
-    name: Check Links
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    concurrency:
-      group: link-check-${{ github.ref }}
-      cancel-in-progress: true
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Check Links
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: --config .lychee.toml
-          lycheeVersion: v0.16.1
-          fail: true
-          jobSummary: true
-
   check-deltakit-token:
     if: github.event_name == 'pull_request'
     name: Check if Deltakit token exists
@@ -50,19 +31,23 @@ jobs:
 
   check-documentation-links:
     if: github.event_name == 'pull_request'
+    name: Check documentation links
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: link-check-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Package synchronisation
-        run: uv sync --python 3.13 --resolution highest --group docs
-
-      - name: Check documentation links
-        run: uv run --no-sync sphinx-build -W -D nb_execution_mode=off -b linkcheck docs docs/_build/linkcheck
+      - name: Check Links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config .lychee.toml
+          lycheeVersion: v0.16.1
+          fail: true
+          jobSummary: true
 
   build-docs:
     if: github.event_name == 'pull_request'
