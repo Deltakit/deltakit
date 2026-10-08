@@ -1,0 +1,20 @@
+# Lychee configuration for link checking
+# https://github.com/lycheeverse/lychee
+
+# HTTP status codes accepted as successful
+accept = ["200", "206", "301", "302", "307", "308"]
+
+# Exclude known problematic links
+exclude = [
+    "github.com/riverlane/deltakit/releases/latest",
+    "github.com/riverlane/deltakit/compare",
+    "^#",
+    "^/",
+    "^mailto:",
+    "github.com/.*/blob/",
+    "github.com/.*/raw/",
+    "docs/_templates/",
+    "deltakit.readthedocs.io",
+    "deltakit.riverlane.com",
+    "deltakit-docs.riverlane.com",
+]
