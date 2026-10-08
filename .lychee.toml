@@ -6,31 +6,11 @@ accept = ["200", "206", "301", "302", "307", "308"]
 
 # Exclude known problematic links
 exclude = [
-    # GitHub releases/latest returns 404
     "github.com/riverlane/deltakit/releases/latest",
-    # GitHub compare links may not be accessible
     "github.com/riverlane/deltakit/compare",
-    # Local/relative anchors
     "^#",
     "^/",
-    # Mailto links
     "^mailto:",
-    # GitHub blob/raw links that may not resolve in CI context
     "github.com/.*/blob/",
     "github.com/.*/raw/",
 ]
-
-# HTTP settings
-max_retries = 2
-timeout = 30
-max_concurrency = 10
-user_agent = "lychee-link-checker/deltakit"
-
-# Cache settings
-cache = true
-max_cache_age = "7d"
-
-# Output settings
-verbose = true
-no_progress = true
-format = "detailed"
