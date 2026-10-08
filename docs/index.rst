@@ -11,7 +11,7 @@ real-time hardware decoders, with more flexibility and functionality
 than currently implemented in hardware. By running small experiments
 on today’s quantum hardware and simulators, users gain an understanding of how error
 correction procedures will perform on future large scale quantum computers.
-This allows users to study QEC algorithms and protocol, to showcase QEC experiments on
+This allows users to study QEC algorithms and protocols, to showcase QEC experiments on
 current quantum computers, as well as diagnose noise sources to further
 improve the logical performance of their devices. Deltakit
 can be used to perform simulations of all parts of QEC experiments
