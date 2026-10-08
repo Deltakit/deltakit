@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
         os:
           - 'ubuntu-latest'
           - 'windows-latest'
@@ -115,7 +115,7 @@ jobs:
           merge-multiple: true
       - name: Test install and imports
         run: |
-          uv venv --python 3.10
+          uv venv --python 3.11
           uv pip install --pre dist/*.tar.gz --find-links ./dist/
           uv run python -c "import deltakit"
 
