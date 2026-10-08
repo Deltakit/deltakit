@@ -1,26 +1,16 @@
 # Lychee configuration for link checking
 # https://github.com/lycheeverse/lychee
 
-# Input files to check
-input = [
-    "README.md",
-    "CHANGELOG.md",
-    "CONTRIBUTING.md",
-    "SECURITY.md",
-    "CODE_OF_CONDUCT.md",
-    "docs/",
-    "docs/guide/",
-    "docs/examples/",
-    "docs/examples/notebooks/",
-]
+# HTTP status codes accepted as successful
+accept = ["200", "206", "301", "302", "307", "308"]
 
-# Exclude patterns (regex)
+# Exclude known problematic links
 exclude = [
     # GitHub releases/latest returns 404
     "github.com/riverlane/deltakit/releases/latest",
     # GitHub compare links may not be accessible
     "github.com/riverlane/deltakit/compare",
-    # Local/relative links that won't resolve in CI
+    # Local/relative anchors
     "^#",
     "^/",
     # Mailto links
@@ -31,35 +21,16 @@ exclude = [
 ]
 
 # HTTP settings
-[http]
-# Accept these status codes as success
-accept = [200, 206, 301, 302, 307, 308]
-# Retry failed requests
-retry = 2
-# Timeout in seconds
+max_retries = 2
 timeout = 30
-# Maximum concurrent connections
 max_concurrency = 10
-# User agent
 user_agent = "lychee-link-checker/deltakit"
 
 # Cache settings
-[cache]
-enabled = true
-# Cache directory
-path = ".lychee-cache"
-# Max age in seconds (7 days)
-max_age = 604800
+cache = true
+max_cache_age = "7d"
 
 # Output settings
-[output]
 verbose = true
 no_progress = true
 format = "detailed"
-
-# Failure settings
-[fail]
-# Exit with error code if any links fail
-fail_on_error = true
-# Also fail on warnings
-fail_on_warning = false
