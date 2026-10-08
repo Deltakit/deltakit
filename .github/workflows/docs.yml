@@ -44,7 +44,7 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           args: --config .lychee.toml --verbose --no-progress --timeout 30 --max-retries 2 --max-concurrency 10 README.md CHANGELOG.md docs/ docs/guide/ docs/examples/ docs/examples/notebooks/
-          lycheeVersion: v0.16.1
+          lycheeVersion: v0.18.1
           fail: true
           jobSummary: true
 
