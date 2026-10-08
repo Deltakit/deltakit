@@ -13,4 +13,8 @@ exclude = [
     "^mailto:",
     "github.com/.*/blob/",
     "github.com/.*/raw/",
+    "docs/_templates/",
+    "deltakit.readthedocs.io",
+    "deltakit.riverlane.com",
+    "deltakit-docs.riverlane.com",
 ]
