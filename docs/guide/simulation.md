@@ -107,7 +107,7 @@ it is good to be able to model this.
 Leakage is when a qubit leaves a computational space (e.g. becomes $\vert 2\rangle$).
 Relaxation is when a qubit returns into a $\vert 0\rangle$ or $\vert 1\rangle$ state.
 
-Good news is than superconducting devices at the stage of measurement and
+The good news is that superconducting devices at the stage of measurement and
 state classification may also report if the qubit is in a leaked state.
 This is called leakage heralding, and it produces an additional bit of information.
 
