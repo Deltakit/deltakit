@@ -43,7 +43,7 @@ jobs:
       - name: Run Lychee
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --config .lychee.toml /docs
+          args: --config .lychee.toml README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md docs/ docs/guide/ docs/examples/ docs/examples/notebooks/
           lycheeVersion: v0.16.1
           fail: true
           jobSummary: true
