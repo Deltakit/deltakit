@@ -179,7 +179,7 @@ results = run_decoding_on_circuit(decoder_circuit, 1000, decoder)
 print(f"There were {results['fails']} failures out of {results['shots']} shots.")
 ```
 
-To scale beyond simple experiments, it is useful to define the concept of a "Decoder Manager", which represents the combined experiment circuit and decoder system. The {class}`StimDecoderManager <deltakit.decode.analysis.StimDecoderManager>` accepts the circuit and decoder objects and returns a decoder manager. Similar to the `run_decoding_on_circuit` function, its {class}`run_batch_shots <deltakit.decode.analysis.StimDecoderManager.run_batch_shots>` method returning the total number of shots and the number of failures.
+To scale beyond simple experiments, it is useful to define the concept of a "Decoder Manager", which represents the combined experiment circuit and decoder system. The {class}`StimDecoderManager <deltakit.decode.analysis.StimDecoderManager>` accepts the circuit and decoder objects and returns a decoder manager. Similar to the `run_decoding_on_circuit` function, its {class}`run_batch_shots <deltakit.decode.analysis.StimDecoderManager.run_batch_shots>` method returns the total number of shots and the number of failures.
 
 ```{code-cell} ipython3
 from deltakit.decode.analysis import StimDecoderManager

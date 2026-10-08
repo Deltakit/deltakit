@@ -66,9 +66,6 @@
   </a>
 </p>
 
-</tr>
-</table>
-
 For more detailed information, check out the [Deltakit documentation](https://deltakit-docs.riverlane.com).
 
 For any usage questions or comments, visit our [Q&A forum](https://github.com/Deltakit/deltakit/discussions/categories/q-a).
@@ -183,7 +180,7 @@ There are various ways to contribute to `deltakit`:
 - **Security:** For any security concern, please see our [security policy](./docs/SECURITY.md).
 
 > [!NOTE]
-> Any contribution will require a Contribution Licence Agreement signature when a Pull Request is created. The recommended contributing workflow is detailed in our [contributing guidelines](./docs/CONTRIBUTING.md).
+> Any contribution will require a Contributor License Agreement signature when a Pull Request is created. The recommended contributing workflow is detailed in our [contributing guidelines](./docs/CONTRIBUTING.md).
 
 ## License
 

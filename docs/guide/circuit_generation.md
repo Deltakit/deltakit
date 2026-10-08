@@ -195,7 +195,7 @@ iswap_qmem_circuit.as_stim_circuit().diagram("timeline-svg-html")
 And now you may compile these circuits within `*SWAP` gates domain.
 
 ```{code-cell} ipython3
-czwap_qpu_instance = QPU(
+czswap_qpu_instance = QPU(
     qubits=iswap_qmem_circuit.qubits,  # only qubits we need are defined
     native_gates_and_times=NativeGateSetAndTimes(
         # times are given approximately for a superconducting device
@@ -208,8 +208,8 @@ czwap_qpu_instance = QPU(
     noise_model=NoiseParameters(),
 )
 
-deltakit_czswap_qmen = czwap_qpu_instance.compile_circuit(iswap_qmem_circuit)
-deltakit_czswap_qmen.as_stim_circuit().diagram("timeline-svg-html")
+deltakit_czswap_qmem = czswap_qpu_instance.compile_circuit(iswap_qmem_circuit)
+deltakit_czswap_qmem.as_stim_circuit().diagram("timeline-svg-html")
 ```
 
 ## 2. Stability experiment
@@ -243,7 +243,7 @@ In this experiment you remove Pauli gates (`X`, `Y`, `Z`, `I`).
 Pauli gate effect on the result of simulations can be tracked classically, so in the
 context of a Stim simulation (or a simple experiment on a real QPU) they may be removed,
 thus making execution faster (without loss of correctness).
-You prefer to keep Pauli gates, if you plan to run the experiment in other simulators or using real QPUs.
+You may prefer to keep Pauli gates if you plan to run the experiment in other simulators or using real QPUs.
 
 ```{code-cell} ipython3
 from deltakit_explorer.codes import BivariateBicycleCode

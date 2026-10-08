@@ -47,8 +47,8 @@ so you may have to sacrifice model accuracy for simulation speed.
 
 ## Practical solution
 
-The [Deltakit-Stim](https://github.com/Deltakit/deltakit-stim) an extension to the [Stim](https://github.com/quantumlib/Stim) library
-to non-computational errors offers tools for both quick simulation (thanks to its limitation to Clifford gates)
+The [Deltakit-Stim](https://github.com/Deltakit/deltakit-stim), an extension of the [Stim](https://github.com/quantumlib/Stim) library
+to non-computational errors, offers tools for both quick simulation (thanks to its limitation to Clifford gates)
 and a reasonably rich palette of error mechanisms,
 which may be used to approximate different types of noise.
 Deltakit benefits from both Deltakit-Stim's simulation and error implementation approaches.
@@ -132,8 +132,8 @@ All these parameters are characteristics of the QPU and can be derived during de
 You can often find these numbers in the datasheets of hardware companies.
 
 The {class}`PhysicalNoise <deltakit.explorer.qpu.PhysicalNoise>` class is parameterized with the following values:
-- `t_1`: $T_1$ time (relaxation from $\vert 1\rangle$ to $\vert 0\rangle$), in seconds.
-- `t_2`: $T_2$ time (dephasing), in seconds.
+- `t1`: $T_1$ time (relaxation from $\vert 1\rangle$ to $\vert 0\rangle$), in seconds.
+- `t2`: $T_2$ time (dephasing), in seconds.
 - `p_1_qubit_gate_error`: Probability of a flip during a 1-qubit gate.
 - `p_2_qubit_gate_error`: Probability of a flip during a 2-qubit gate.
 - `p_reset_error`: Probability of a flip during reset.
