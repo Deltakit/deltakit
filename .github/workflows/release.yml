@@ -79,20 +79,11 @@ jobs:
           pattern: ${{ env.pkg_name }}
           path: ./dist/
           merge-multiple: true
-      - name: Install and test on Unix
-        if: matrix.os != 'windows-latest'
+      - name: Install and test on all OSes
+        shell: bash
         run: |
           uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
           uv pip install ./dist/deltakit*.whl
-          uv run --python ${{ matrix.python-version }} --no-sync pytest .
-          uv run python -c "import deltakit"
-      - name: Install and test on Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          uv sync --python ${{ matrix.python-version }} --resolution ${{matrix.dependency-resolution}} --group test --find-links ./dist/
-          cd dist
-          uv pip install deltakit*.whl
-          cd ..
           uv run --python ${{ matrix.python-version }} --no-sync pytest .
           uv run python -c "import deltakit"
 
@@ -116,7 +107,7 @@ jobs:
       - name: Test install and imports
         run: |
           uv venv --python 3.10
-          uv pip install --pre dist/*.tar.gz --find-links ./dist/
+          uv pip install --pre dist/*.tar.gz
           uv run python -c "import deltakit"
 
   publish:
