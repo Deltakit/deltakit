@@ -67,7 +67,7 @@ def main():
         sys.exit(1)
 
     logger.info(
-        "Project version %s do not match latest tag version %s",
+        "Project version %s matches latest tag version %s",
         proj_version,
         tag_version,
     )
