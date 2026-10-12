@@ -33,7 +33,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "deltakit-circuit>=0.9.2, <0.10";
+  "deltakit-circuit>=0.9.2, <0.10",
   "deltakit-core>=0.9.2, <0.10",
   "deltakit-decode>=0.9.2, <0.10",
   "deltakit-explorer>=0.9.4, <0.10",
