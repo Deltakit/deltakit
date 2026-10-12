@@ -30,11 +30,11 @@ jobs:
     needs: [build-wheels]
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
         dependency-resolution: ['highest', 'lowest-direct']
     name: Test deltakit on ${{ matrix.python-version }} with ${{matrix.dependency-resolution}}
     env:
-      ENABLE_COVERAGE: ${{ (matrix.python-version == '3.10') && (matrix.dependency-resolution == 'highest') }}
+      ENABLE_COVERAGE: ${{ (matrix.python-version == '3.11') && (matrix.dependency-resolution == 'highest') }}
       # See https://github.com/orgs/community/discussions/25217
       PR_FROM_FORK: ${{ github.event.pull_request.head.repo.full_name != 'deltakit/deltakit' }}
       PR_FROM_DEPENDABOT: ${{ startsWith(github.head_ref, 'dependabot/' )}}
