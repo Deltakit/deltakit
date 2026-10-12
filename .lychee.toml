@@ -18,3 +18,6 @@ exclude = [
     "deltakit.riverlane.com",
     "deltakit-docs.riverlane.com",
 ]
+
+# Increase timeout for slow documentation links
+timeout = 30
