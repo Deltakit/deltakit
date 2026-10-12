@@ -65,6 +65,10 @@ jobs:
         dependency-resolution:
           - 'highest'
           - 'lowest-direct'
+        # Temporary exclusion until a dependency (PyMatching) supports Py3.15.
+        exclude:
+          - os: windows-latest
+            python-version: '3.15'
     steps:
       - name: Check out deltakit repository
         uses: actions/checkout@v7
