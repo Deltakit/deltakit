@@ -1,14 +1,23 @@
 ---
 name: Build docs
+
 permissions:
   contents: read
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+  schedule:
+    # Run weekly on Mondays at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 jobs:
   check-deltakit-token:
+    if: github.event_name == 'pull_request'
     name: Check if Deltakit token exists
     runs-on: ubuntu-slim
     outputs:
@@ -21,21 +30,26 @@ jobs:
         run: echo "exists=true" >> $GITHUB_OUTPUT
 
   check-documentation-links:
+    name: Check documentation links
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: link-check-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Package synchronisation
-        run: uv sync --python 3.13 --resolution highest --group docs
-
-      - name: Check documentation links
-        run: uv run --no-sync sphinx-build -W -D nb_execution_mode=off -b linkcheck docs docs/_build/linkcheck
+      - name: Run Lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config .lychee.toml --verbose --no-progress --timeout 30 --max-retries 2 --max-concurrency 10 README.md CHANGELOG.md docs/
+          lycheeVersion: v0.18.1
+          fail: true
+          jobSummary: true
 
   build-docs:
+    if: github.event_name == 'pull_request'
     needs: [check-deltakit-token]
     runs-on: ubuntu-latest
     env:
