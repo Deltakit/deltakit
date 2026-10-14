@@ -1,0 +1,54 @@
+- doc: notebooks/simulation/stim_simulation
+  title: Simulation and decoding of a QEC experiment
+  level: beginner
+  thumbnail: /_static/gallery/stim_simulation.svg
+  summary:
+  meta:
+- doc: notebooks/simulation/ac_decoding
+  title: Decoding with Ambiguity Clustering
+  level: advanced
+  tags: [Cloud decoder]
+  thumbnail: /_static/gallery/ac_decoding.svg
+  summary:
+  meta:
+- doc: notebooks/google_qmem_experiment/decode
+  title: Decoding a quantum memory experiment
+  level: intermediate
+  tags: [Downloads data]
+  thumbnail: /_static/gallery/google_decode.svg
+  summary:
+  meta:
+- doc: notebooks/google_qmem_experiment/noise_analysis
+  title: Noise analysis for a quantum memory experiment
+  level: intermediate
+  tags: [Downloads data]
+  thumbnail: /_static/gallery/noise_analysis.svg
+  summary:
+  meta:
+- doc: notebooks/simulation/shot_analysis
+  title: Analysis of per-shot decoding
+  level: intermediate
+  thumbnail: /_static/gallery/shot_analysis.svg
+  summary:
+  meta:
+- doc: notebooks/simulation/server_simulation
+  title: Simulation of Stim-like circuits
+  level: beginner
+  tags: [Needs credentials]
+  thumbnail: /_static/gallery/server_simulation.svg
+  summary:
+  meta:
+- doc: notebooks/simulation/leakage-aware_decoding
+  title: Leakage-aware decoding with the LCD
+  level: advanced
+  tags: [Cloud decoder]
+  thumbnail: /_static/gallery/leakage_aware_decoding.svg
+  summary:
+  meta:
+- doc: notebooks/simulation/leakage_demo
+  title: Leakage-aware decoding demo
+  level: intermediate
+  tags: [Cloud decoder]
+  thumbnail: /_static/gallery/leakage_demo.svg
+  summary:
+  meta:
