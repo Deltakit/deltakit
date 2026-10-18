@@ -21,7 +21,7 @@ body:
       label: Contributor License Agreement
       description: Please confirm the following before submitting
       options:
-        - label: A Contributor License Agreement signature is requested for any first PR contribution. Further information can be found in our [contributing guidelines](CONTRIBUTING.md).
+        - label: A Contributor License Agreement signature is requested for any first PR contribution. Further information can be found in our [contributing guidelines](https://github.com/Deltakit/deltakit/blob/main/docs/CONTRIBUTING.md).
           required: true
 
   - type: textarea
