@@ -273,7 +273,7 @@ syndromes, measurements, and logical flips across standard formats (such as b8 a
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``deltakit.core.decoding_graphs`` provides graph representations, DEM parsers,
-and topological utilities for constructing and analyzing decoding graphs.
+and topological utilities for constructing and analysing decoding graphs.
 
 .. currentmodule:: deltakit.core.decoding_graphs
 
@@ -407,7 +407,7 @@ tools used during decoding analysis.
 .. currentmodule:: deltakit.decode.utils
 
 ``deltakit.decode.utils`` provides utility functions for computing error probabilities,
-building correlation matrices, and visualizing 3D decoding graphs.
+building correlation matrices, and visualising 3D decoding graphs.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -463,7 +463,7 @@ probabilities (LEP), error suppression factors (Lambda), and fit parameters.
 ``deltakit.explorer.plotting``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``deltakit.explorer.plotting`` provides visualization functions for defect diagrams,
+``deltakit.explorer.plotting`` provides visualisation functions for defect diagrams,
 defect rates, and correlation matrices.
 
 .. autosummary::
