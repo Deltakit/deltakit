@@ -27,9 +27,9 @@ Issues contributions concern reporting a behavioural discrepancy in the code bas
 
 ## Picking up work
 
-Most contributions to Deltakit are voluntary. To avoid multiple contributors working on the same thing, please follow these guidelines:
+Most contributions to Deltakit are voluntary. To avoid duplicated contributions, please follow these guidelines:
 
-1. Issues labelled good first issue or help wanted are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the core team.
+1. Issues labelled `good first issue` or `help wanted` are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the core team.
 
 2. If you’d like to contribute to an issue already assigned to someone else, express your interest in a comment and discuss splitting the work with the assignee and/or the core Deltakit maintenance team before committing your time.
 
@@ -46,10 +46,10 @@ Core maintainer team members follow the same rules: a Deltakit issue being worke
 
 Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue.
 
-Duplicate pull requests: when more than one PR addresses the same issue:
+When more than one PR addresses the same issue in duplicated PRs:
 
 - If the issue has an active assignee, their PR is reviewed first. PRs from others on an assigned issue may not be reviewed while the assignment is active.
-- In cases where multiple PRs have overlapping scope, the maintenance team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
+- In cases where multiple PRs overlap in scope, the maintenance team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
 - If the issue is unassigned, maintainers may first review the PR that is ready for review first: not a draft, linked to the issue, passing CI, and with the CLA signed. Being opened first does not by itself give priority.
 - Where multiple PRs target the same feature and are complementary, maintainers may coordinate the separation of scope and advise on the order in which to review and merge the PRs. All such contributors are recognised as authors.
 - A 'duplicate' PR is closed with a comment explaining why, and its author is welcome to review the PR that goes ahead.
