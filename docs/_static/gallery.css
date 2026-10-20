@@ -1,0 +1,49 @@
+/* Card gallery from docs/_ext/gallery.py. Text pairs meet 4.5:1 contrast. */
+:root {
+  --dk-card-border: #d3d8e2;
+  --dk-meta: #64748b;
+  --dk-tag-fg: #3f4654; --dk-tag-bg: #f1f3f6;
+  /* Levels grow more prominent with difficulty, in the brand blue. */
+  --dk-beginner-fg: #3144d6; --dk-beginner-bg: #eef1ff;
+  --dk-intermediate-fg: #1b2685; --dk-intermediate-bg: #c5cdff;
+  --dk-advanced-fg: #ffffff; --dk-advanced-bg: #3144d6;
+}
+html.dark,
+html[data-theme="dark"] {
+  --dk-card-border: #3a4458;
+  --dk-meta: #94a3b8;
+  --dk-tag-fg: #d5d9e2; --dk-tag-bg: #2a3140;
+  --dk-beginner-fg: #c7ceff; --dk-beginner-bg: #1a2255;
+  --dk-intermediate-fg: #ffffff; --dk-intermediate-bg: #3443b8;
+  --dk-advanced-fg: #0b1033; --dk-advanced-bg: #9aa6ff;
+}
+/* Two classes, to win over the theme's .sd-card rules, which load after this file. */
+.sd-card.dk-gallery-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 0;
+  border: 1px solid var(--dk-card-border);
+  border-radius: 8px;
+  box-shadow: none !important; /* sphinx-design's .sd-shadow-sm is !important */
+}
+.dk-gallery-card.sd-card-hover:hover { border-color: var(--sd-color-card-border-hover); }
+.dk-gallery-card .sd-card-body { flex: 1 1 auto; }
+.dk-gallery-card .sd-card-title:last-child { margin-bottom: 0; }
+.dk-gallery-thumb {
+  aspect-ratio: 16 / 9; object-fit: cover; width: 100%;
+  margin-top: 0 !important; /* the theme's #content img rule outranks classes */
+}
+.dk-gallery-card .sd-card-body .sd-card-text {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+.dk-gallery-card .sd-card-footer { border-top-color: var(--dk-card-border); }
+.dk-gallery-card .sd-card-footer code {
+  padding: 0; background: none; color: var(--dk-meta); font-size: 0.75rem; white-space: normal;
+}
+/* Tags are plain badges. The level is a primary badge, whose colours sphinx-design
+   reads from these variables. */
+.dk-gallery-card .sd-card-footer .sd-badge { color: var(--dk-tag-fg); background: var(--dk-tag-bg); }
+.dk-level-beginner { --sd-color-primary: var(--dk-beginner-bg); --sd-color-primary-text: var(--dk-beginner-fg); }
+.dk-level-intermediate { --sd-color-primary: var(--dk-intermediate-bg); --sd-color-primary-text: var(--dk-intermediate-fg); }
+.dk-level-advanced { --sd-color-primary: var(--dk-advanced-bg); --sd-color-primary-text: var(--dk-advanced-fg); }

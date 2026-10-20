@@ -1,0 +1,32 @@
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:The spacetime view"
+  level: beginner
+  thumbnail: /_static/gallery/spacetime_view.svg
+  summary:
+  meta:
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:Stepping into the surface code from the spacetime view"
+  title: Stepping into the surface code
+  level: intermediate
+  thumbnail: /_static/gallery/surface_code_step.svg
+  summary:
+  meta:
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:Visualising a single logical patch"
+  level: beginner
+  thumbnail: /_static/gallery/logical_patch.svg
+  summary:
+  meta:
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:Visualising IR from a file"
+  level: beginner
+  thumbnail: /_static/gallery/ir_from_file.svg
+  summary:
+  meta:
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:Serving the view over HTTP"
+  level: intermediate
+  tags: [HPC]
+  thumbnail: /_static/gallery/serve_http.svg
+  summary:
+  meta:
+- ref: "deltakit_visualise/log_asm_visualiser/guide/logical_assembly_visualiser:A program to visualise"
+  level: intermediate
+  thumbnail: /_static/gallery/logasm_program.svg
+  summary:
+  meta:
