@@ -228,7 +228,7 @@ app for open PR.
 
 You are welcome to use artificial intelligence (AI) tools, such as large language models (LLMs), chat assistants, code completion and coding agents, when contributing to Deltakit, provided that this use complies with our policy outlined in this section.
 
-This policy applies to every repository in the [Deltakit GitHub organisation](https://github.com/Deltakit) and to every contributor, including code owners and maintaners.
+This policy applies to every repository in the [Deltakit GitHub organisation](https://github.com/Deltakit) and to every contributor, including code owners and maintainers.
 
 ### Why we have this policy
 
@@ -278,7 +278,7 @@ If we find substantial *undisclosed* use of AI tools, we treat it as a policy br
 Using AI tools doesn't change the obligations described under [License](#license) and [Contributor License Agreement](#contributor-license-agreement).
 
 - You are responsible for making sure your contribution doesn't include material you have no right to contribute. AI tools can reproduce code from their training data, including code under licenses that are incompatible with Deltakit's.
-- If generated code looks like it came from an existing project, you are responsible for checking that the contribution complies with the original project's License and Deltakit's Licence. If in doubt, please rewrite the artifact in your own way.
+- If generated code looks like it came from an existing project, you are responsible for checking that the contribution complies with the original project's License and Deltakit's Licence. If in doubt, please rewrite the artefact in your own way.
 
 ### Project tooling and agent configuration
 
