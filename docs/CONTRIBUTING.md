@@ -46,7 +46,7 @@ Core maintainer team members follow the same rules: a Deltakit issue being worke
 
 Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue.
 
-Duplicate pull requests: when more than one PR addresses the same issue:
+When more than one PR addresses the same issue in duplicated PRs:
 
 - If the issue has an active assignee, their PR is reviewed first. PRs from others on an assigned issue may not be reviewed while the assignment is active.
 - In cases where multiple PRs have overlapping scope, the maintenance team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
