@@ -25,6 +25,47 @@ Issues contributions concern reporting a behavioural discrepancy in the code bas
 > [!NOTE]
 > To submit bug reports or feature requests, please open a GitHub Issue in the relevant Deltakit package repository. For example, if your query is related to `deltakit-compile`, please open an Issue in the [`deltakit-compile` repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [`deltakit-visualise`](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages. If the issue does not fall under a specific Deltakit package, you can report it in the [issue tracker](https://github.com/Deltakit/deltakit/issues) of this repository. This is the appropriate place to also report issues about documentation related to *any* Deltakit package.
 
+## Picking up work
+
+Most contributions to Deltakit are voluntary. To avoid multiple contributors working on the same thing, please follow these guidelines:
+
+1. Issues labelled good first issue or help wanted are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the core team.
+
+2. If you’d like to contribute to an issue already assigned to someone else, express your interest in a comment and discuss splitting the work with the assignee and/or the core Deltakit maintenance team before committing your time.
+
+3. You’re welcome to express interest in unassigned issues by explaining your approach in a comment. Please wait for the core Deltakit maintenance team to agree to assign you before starting substantial work. In case of multiple expressions of interest, priority is decided based on the basis of:
+
+    - Quality of the approach
+    - First-come-first-serve
+
+4. If you can no longer work on an issue, please let us know in a comment.
+
+Core maintainer team members follow the same rules: a Deltakit issue being worked on internally is assigned to the person doing the work.
+
+### Duplicate contributions
+
+Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue.
+
+Duplicate pull requests: when more than one PR addresses the same issue:
+
+- If the issue has an active assignee, their PR is reviewed first. PRs from others on an assigned issue may not be reviewed while the assignment is active.
+- In cases where multiple PRs have overlapping scope, the maintenance team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
+- If the issue is unassigned, maintainers may first review the PR that is ready for review first: not a draft, linked to the issue, passing CI, and with the CLA signed. Being opened first does not by itself give priority.
+- Where multiple PRs target the same feature and are complementary, maintainers may coordinate the separation of scope and advise on the order in which to review and merge the PRs. All such contributors are recognised as authors.
+- A 'duplicate' PR is closed with a comment explaining why, and its author is welcome to review the PR that goes ahead.
+
+### Contributions from the Deltakit Community Fund
+
+Issues labelled as `community-fund-proposal` document either:
+
+- A proposed Deltakit Community Fund project if the issue is *unassigned*. If you’re interested in applying for a grant to work on it, you're welcome to check the [application schedule](https://github.com/Deltakit/deltakit/issues/343) and [submit an application](https://unitary.foundation/community/deltakit_community_fund/).
+
+- An ongoing project if the issue is *assigned*.
+
+PRs and other contributions labelled as `community-fund-proposal` are prioritised when duplicate contributions with overlapping scope are submitted. The scope of active (i.e. assigned) `community-fund-proposal` contributions is reserved for the duration of the Deltakit Community Fund project.
+
+Once the project ends, that scope, issue, or proposed contribution becomes available to be picked up. This can be a pathway to build on and extend the output of Deltakit Community Fund projects.
+
 ## Submitting a Pull Request
 
 Resolving an issue is possible by submitting a Pull Request (PR). The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle.
