@@ -4,7 +4,7 @@
 
 To install the latest version of Deltakit, run:
 
-```
+```bash
 pip install deltakit
 ```
 
@@ -33,7 +33,7 @@ pip install deltakit
 python -m venv venv
 venv\Scripts\activate
 
-# and then install deltakit:
+# and then install Deltakit:
 pip install deltakit
 ```
 
@@ -60,7 +60,7 @@ need to set up credentials before using Deltakit for the first time.
 After visiting the [Deltakit website](https://deltakit.riverlane.com/dashboard/token) to
 generate an access token, register it with Deltakit.
 
-``` python
+```python
 from deltakit.explorer import Client
 
 Client.set_token("<your token>")
@@ -76,5 +76,5 @@ You can check that your token is correctly configured by running the following c
 client = Client.get_instance()
 ```
 
-You can provide the resulting ``client`` object as an argument to features that
+You can provide the resulting `client` object as an argument to features that
 (currently) require communication with servers.
