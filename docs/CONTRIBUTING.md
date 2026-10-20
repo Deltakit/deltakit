@@ -27,7 +27,7 @@ Issues contributions concern reporting a behavioural discrepancy in the code bas
 
 ## Picking up work
 
-Most contributions to Deltakit are voluntary. To avoid multiple contributors working on the same thing, please follow these guidelines:
+Most contributions to Deltakit are voluntary. To avoid duplicated contributions, please follow these guidelines:
 
 1. Issues labelled `good first issue` or `help wanted` are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the core team.
 
