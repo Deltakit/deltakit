@@ -223,3 +223,75 @@ For more information about security, see the [Deltakit security policy](https://
 
 First-time contributors will be asked to agree to a CLA. This is automated using a GitHub
 app for open PR.
+
+## Use of AI tools
+
+You are welcome to use artificial intelligence (AI) tools, such as large language models (LLMs), chat assistants, code completion and coding agents, when contributing to Deltakit, provided that this use complies with our policy outlined in this section.
+
+This policy applies to every repository in the [Deltakit GitHub organisation](https://github.com/Deltakit) and to every contributor, including code owners and maintaners.
+
+### Why we have this policy
+
+The cost of producing a *plausible* PR reduces drastically with Ai use, but the cost of reviewing remains largely the same (or even increases for large or verbose contributions). A PR that took a minute to generate can take hours to review. When unreviewed tool output is sent to maintainers, the work of checking it is moved onto them. Following the [LLVM project](https://llvm.org/docs/AIToolPolicy.html), we call these *extractive* contributions.
+
+A popular golden rule is that **a contribution should be worth more to the project than the time it takes to review it.**
+
+Quantum error correction experiments may fail quietly. People publish results computed with Deltakit, so correctness matters more to us than speed of development. AI tools are good at producing code that looks right, which is exactly the failure mode we most need to guard against.
+
+### Responsibilities of the contributor
+
+#### The author is accountable
+
+You as the contributor are ultimately accountable for the changes, even when AI tools are used. We provide the following advice and guiding principles on using AI tools responsibly when contributing to Deltakit.
+
+- Read and understand every line before you ask for a review. You are expected to be able to explain what a change does without the AI tool's help. Otherwise, it isn't ready for review and you may mark the contribution, e.g. a PR, as *Draft*.
+- After the contribution is reviewed, answer review questions yourself.
+- Keep changes focused and concise. AI output tends to be verbose: trim unrelated edits, redundant comments, speculative abstractions and docstrings longer than necessary before submitting.
+- The advice for *new contributors* is to start small, with changes you fully understand. See more advice on [picking up work](#picking-up-work).
+- If an AI tool makes mistakes, these become your mistakes once you sign off the contributions.
+
+**Don't credit tools as authors.** Only humans can agree to the [Contributor License Agreement](#contributor-license-agreement) (CLA) and take responsibility for a contribution.
+
+#### Disclose substantial use
+
+Disclosure helps reviewers decide how much scrutiny to apply. It is not a penalty, and disclosed AI use is not a reason on its own to reject a contribution.
+
+You don't need to disclose purely grammatical or translation help, although mentioning it is welcome.
+
+> [!NOTE]
+> **How to disclose:**
+>
+> - In the PR description, name the tool and model in the *Additional Information* section of the template, explain what parts of the code the tool changed, and how you verified the output. *Example:* "Claude Code, Opus 5.5: drafted the tests in `tests/test_decoder.py`, which I reviewed and extended with edge cases". "Used LLMs" is not sufficient.
+>
+> - In individual commits, you may also add a footnote description like:
+>
+>  ```text
+>  feat(decode): add weighted matching for leakage-aware graphs
+>
+>  Assisted-by Claude Code (Claude Opus 5.5)
+>  ```
+
+If we find substantial *undisclosed* use of AI tools, we treat it as a policy breach.
+
+#### Obligations to the License and the CLA
+
+Using AI tools doesn't change the obligations described under [License](#license) and [Contributor License Agreement](#contributor-license-agreement).
+
+- You are responsible for making sure your contribution doesn't include material you have no right to contribute. AI tools can reproduce code from their training data, including code under licenses that are incompatible with Deltakit's.
+- If generated code looks like it came from an existing project, you are responsible for checking that the contribution complies with the original project's License and Deltakit's Licence. If in doubt, please rewrite the artifact in your own way.
+
+### Project tooling and agent configuration
+
+- Don't commit personal agent configuration, memory or session files (for example `CLAUDE.md`, `.claude/`, `.cursor/`, `.aider*` or chat transcripts).
+- Automation that code owners have approved for the project, such as Dependabot, release tooling and the CLA bot, is exempt from the human-in-the-loop rule. New AI-driven automation (for example automated review or triage bots) must be proposed in an issue, and approved by code owners.
+
+### Further reading
+
+You can find more about AI policies in open-source projects at the links below. These resources don't form part of Deltakit's policy. Links are as of 20 Oct 2026.
+
+- [LLVM AI Tool Use Policy](https://llvm.org/docs/AIToolPolicy.html)
+- [NumPy AI policy](https://numpy.org/devdocs/dev/ai_policy.html)
+- [SciPy AI policy](https://github.com/scipy/scipy/blob/main/doc/source/dev/conduct/ai_policy.rst)
+- [Qiskit: Use of generative AI](https://github.com/Qiskit/qiskit/blob/main/CONTRIBUTING.md#use-of-generative-ai)
+- [PennyLane AI Tool Use Policy](https://github.com/PennyLaneAI/pennylane/blob/master/AI_Policy.md)
+- [Scientific Python: Community considerations around AI](https://blog.scientific-python.org/scientific-python/community-considerations-around-ai/)
