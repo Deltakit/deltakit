@@ -219,7 +219,7 @@ Memory experiments check how well logical observables are preserved through time
 correction system can move logical observables through space.
 
 Below you will generate a small stability experiment.
-You will need an API client object to generate a stability experiments.
+You will need an API client object to generate a stability experiment.
 
 ```{code-cell} ipython3
 from deltakit_explorer.codes import css_code_stability_circuit
@@ -284,7 +284,7 @@ In this document you have generated Quantum Memory and Stability experiments wit
 If you want to go beyond, you may implement your own QEC codes and experiments by inheriting from the base classes defined in Deltakit.
 
 ({class}`CSSCode <deltakit.explorer.codes.CSSCode>`) and its parent ({class}`StabiliserCode <deltakit.explorer.codes.StabiliserCode>`)
-lay the ground to generation of stabiliser codes. All codes considered in this examples are build on top of these classes.
+lay the ground to generation of stabiliser codes. All codes considered in these examples are built on top of these classes.
 
 You may also want to build your own experiment.
 Please refer to the implementation of ({func}`css_code_memory_circuit <deltakit.explorer.codes.css_code_memory_circuit>`) function
