@@ -35,7 +35,7 @@ By running quality simulations with realistic noise models you may predict how t
 Deltakit provides you with a set of classes and functions, which enable various experiment generation.
 You may use our existing functionality or build your own on top of existing code.
 
-## 1. Generating a quantum memory experiments with planar codes
+## 1. Generating quantum memory experiments with planar codes
 
 Quantum Memory Experiment (QMEM) is a core benchmark for both QPU hardware and decoders.
 Logical Error Probability (LEP) value, derived from the experiment, is influenced by both
@@ -49,9 +49,9 @@ The code below generates the circuit for a 5-qubit repetition code, representing
 5-qubit code is defined as distance-3 code: this is the number of error-corrected data qubits in this code.
 We will generate 3 rounds of error correction, which means that detectors (auxiliary or ancillary qubits)
 will be reset, entangled with data qubits, and measured. This will repeat 3 times.
-In the end of the experiment, all data qubits will be measured as well. One of them will be used as
+At the end of the experiment, all data qubits will be measured as well. One of them will be used as
 a representative of the logical qubit state.
-In this experiment we assume, that data qubits are initialised as $\vert 000\rangle$ and should remain in the same state.
+In this experiment we assume that data qubits are initialised as $\vert 000\rangle$ and should remain in the same state.
 If one of them (chosen as an observable) due to noise in the system flips its value to $\vert 1\rangle$, then
 a good decoder should be able to predict this event.
 
@@ -219,7 +219,7 @@ Memory experiments check how well logical observables are preserved through time
 correction system can move logical observables through space.
 
 Below you will generate a small stability experiment.
-You will need an API client object to generate a stability experiments.
+You will need an API client object to generate a stability experiment.
 
 ```{code-cell} ipython3
 from deltakit_explorer.codes import css_code_stability_circuit
@@ -284,7 +284,7 @@ In this document you have generated Quantum Memory and Stability experiments wit
 If you want to go beyond, you may implement your own QEC codes and experiments by inheriting from the base classes defined in Deltakit.
 
 ({class}`CSSCode <deltakit.explorer.codes.CSSCode>`) and its parent ({class}`StabiliserCode <deltakit.explorer.codes.StabiliserCode>`)
-lay the ground to generation of stabiliser codes. All codes considered in this examples are build on top of these classes.
+lay the ground to generation of stabiliser codes. All codes considered in these examples are built on top of these classes.
 
 You may also want to build your own experiment.
 Please refer to the implementation of ({func}`css_code_memory_circuit <deltakit.explorer.codes.css_code_memory_circuit>`) function
