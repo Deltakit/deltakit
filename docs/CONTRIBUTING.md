@@ -27,32 +27,32 @@ Issues contributions concern reporting a behavioural discrepancy in the code bas
 
 ## Picking up work
 
-Most contributions to Deltakit are voluntary. To avoid duplicated contributions, please follow these guidelines:
+Most contributions to Deltakit are voluntary. To avoid duplicated contributions, please follow the guidelines below.
 
-1. Issues labelled `good first issue` or `help wanted` are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the core team.
+1. Issues labelled `good first issue` or `help wanted` are ready for external contributors and a good place to start contributing to Deltakit. For other issues, please ask before starting: some are already planned or in progress within the Deltakit core team ([`CODEOWNERS`](https://github.com/Deltakit/deltakit/blob/main/.github/CODEOWNERS) and maintainers).
 
-2. If you’d like to contribute to an issue already assigned to someone else, express your interest in a comment and discuss splitting the work with the assignee and/or the core Deltakit maintenance team before committing your time.
+2. If you’d like to contribute to an issue already assigned to someone else, express your interest in a comment and discuss splitting the work with the assignee and/or the core Deltakit core team before committing your time.
 
-3. You’re welcome to express interest in unassigned issues by explaining your approach in a comment. Please wait for the core Deltakit maintenance team to agree to assign you before starting substantial work. In case of multiple expressions of interest, priority is decided based on the basis of:
+3. You’re welcome to express interest in unassigned issues by explaining your approach in a comment. Please wait for the Deltakit core team to agree to assign you before starting substantial work. In case of multiple expressions of interest, priority is decided based on the basis of:
 
     - Quality of the approach
     - First-come-first-serve
 
 4. If you can no longer work on an issue, please let us know in a comment.
 
-Core maintainer team members follow the same rules: a Deltakit issue being worked on internally is assigned to the person doing the work.
+Deltakit core team members follow the same rules: a Deltakit issue being worked on internally is assigned to the person doing the work.
+
+If an assigned contributor fails to respond to an updates request within a week's time, they may be unassigned from the issue.
 
 ### Duplicate contributions
 
-Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue.
+In cases where multiple Pull Requests (PRs) overlap in scope, the Deltakit core team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
 
-When more than one PR addresses the same issue in duplicated PRs:
+Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue. The authors of the duplicate PR are welcome to review the PR that goes ahead.
 
-- If the issue has an active assignee, their PR is reviewed first. PRs from others on an assigned issue may not be reviewed while the assignment is active.
-- In cases where multiple PRs overlap in scope, the maintenance team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
-- If the issue is unassigned, maintainers may first review the PR that is ready for review first: not a draft, linked to the issue, passing CI, and with the CLA signed. Being opened first does not by itself give priority.
-- Where multiple PRs target the same feature and are complementary, maintainers may coordinate the separation of scope and advise on the order in which to review and merge the PRs. All such contributors are recognised as authors.
-- A 'duplicate' PR is closed with a comment explaining why, and its author is welcome to review the PR that goes ahead.
+If the issue has an active assignee, their PR is reviewed first. PRs from others on an assigned issue may not be reviewed while the assignment is active.  If the issue is unassigned, maintainers may first review the PR that is ready for review first: not a draft, linked to the issue, passing CI, and with the CLA signed. Being opened first does not by itself give priority. 
+
+Where multiple PRs target the same feature and are complementary, the Deltakit core team may coordinate the separation of scope and advise on the order in which to review and merge the PRs. All such contributors are recognised as authors.
 
 ### Contributions from the Deltakit Community Fund
 
@@ -68,7 +68,7 @@ Once the project ends, that scope, issue, or proposed contribution becomes avail
 
 ## Submitting a Pull Request
 
-Resolving an issue is possible by submitting a Pull Request (PR). The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle.
+Resolving an issue is possible by submitting a PR. The recommended process is to fork the `main` branch using GitHub interface button on the top-right corner. This will create a new GitHub repository prefixed with your GitHub handle.
 
 Clone your fork locally:
 
