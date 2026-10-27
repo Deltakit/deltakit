@@ -46,12 +46,14 @@
   </a>
 </p>
 
+### [Apply](https://unitary.foundation/community/deltakit_community_fund/) by 2 December 2026
+
 > [!IMPORTANT]
-> **The [Deltakit Community Fund](https://unitary.foundation/community/deltakit_community_fund/) is open for applications from 2 November to 2 December 2026, with winners announced by 11 December 2026.**
+> **The [Deltakit Community Fund](https://unitary.foundation/community/deltakit_community_fund/) is opening again for applications from 2 November to 2 December 2026.**
 >
-> This joint initiative by [Unitary Foundation](https://unitary.foundation/) and [Riverlane](https://www.riverlane.com/) supports researchers and quantum developers contributing to Deltakit with microgrants of up to $4k USD, plus mentorship from both teams.
+> This joint initiative by [Unitary Foundation](https://unitary.foundation/) and [Riverlane](https://www.riverlane.com/) supports researchers and quantum software developers contributing to Deltakit with grant awards of up to $4k USD, plus mentorship from the Deltakit core team. Winners will be notified by 11 December 2026.
 >
-> Search the **unassigned** [`community-fund-proposal` issues](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-proposal+no%3Aassignee) for projects up for grabs, or [open an issue](https://github.com/Deltakit/deltakit/issues/new/choose) to propose your own idea.
+> Search the [`community-fund-proposal` issues](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-proposal+no%3Aassignee) for projects up for grabs, or [open an issue](https://github.com/Deltakit/deltakit/issues/new/choose) to propose your own idea. 
 
 ---
 
