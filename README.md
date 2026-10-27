@@ -41,6 +41,21 @@
 ---
 
 <p align="center">
+  <a href="https://unitary.foundation/community/deltakit_community_fund/">
+    <img alt="Unitary Foundation x Riverlane - Deltakit Community Fund: building the next wave of open-source quantum error correction" src="https://unitary.foundation/images/deltakit_banner.png" width="100%">
+  </a>
+</p>
+
+> [!IMPORTANT]
+> **The [Deltakit Community Fund](https://unitary.foundation/community/deltakit_community_fund/) is open for applications from 2 November to 2 December 2026, with winners announced by 11 December 2026.**
+>
+> This joint initiative by [Unitary Foundation](https://unitary.foundation/) and [Riverlane](https://www.riverlane.com/) supports researchers and quantum developers contributing to Deltakit with microgrants of up to $4k USD, plus mentorship from both teams.
+>
+> Search the **unassigned** [`community-fund-proposal` issues](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-proposal+no%3Aassignee) for projects up for grabs, or [open an issue](https://github.com/Deltakit/deltakit/issues/new/choose) to propose your own idea.
+
+---
+
+<p align="center">
   <picture>
     <img alt="Deltakit logo" src="./docs/logo/Deltakit_Blue_SecondaryLogo_RGB.png" width="75%">
   </picture>
