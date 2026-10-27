@@ -232,7 +232,7 @@ This policy applies to every repository in the [Deltakit GitHub organisation](ht
 
 ### Why we have this policy
 
-The cost of producing a *plausible* PR reduces drastically with Ai use, but the cost of reviewing remains largely the same (or even increases for large or verbose contributions). A PR that took a minute to generate can take hours to review. When unreviewed tool output is sent to maintainers, the work of checking it is moved onto them. Following the [LLVM project](https://llvm.org/docs/AIToolPolicy.html), we call these *extractive* contributions.
+The cost of producing a *plausible* PR reduces drastically with LLM use, but the cost of reviewing remains largely the same (or even increases for large or verbose contributions). A PR that took a minute to generate can take hours to review. When unreviewed tool output is sent to maintainers, the work of checking it is moved onto them. Following the [LLVM project](https://llvm.org/docs/AIToolPolicy.html), we call these *extractive* contributions.
 
 A popular golden rule is that **a contribution should be worth more to the project than the time it takes to review it.**
 
