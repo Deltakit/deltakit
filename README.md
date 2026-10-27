@@ -55,7 +55,7 @@ This joint initiative by [Unitary Foundation](https://unitary.foundation/) and [
 > [!TIP]
 > You can search the [`community-fund-proposal` issues](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-proposal+no%3Aassignee) for projects up for grabs, or propose your own idea in the application form linked above. You can also share your idea in a new GitHub issue labelled as `community-fund-proposal`.
 >
-> Explore previous projects supported by the Deltakit Community Fund at [this page](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-project).
+> Explore previous projects supported by the Deltakit Community Fund at [this link](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-project).
 
 ---
 
