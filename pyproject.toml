@@ -84,7 +84,7 @@ docs_extras = [
 docs = [
   { include-group = "docs_extras" },
   "myst_nb>=1.0",
-  "sphinxawesome-theme>=5.3,<6.0.6",
+  "sphinxawesome-theme>=5.3,<6.0.7",
   "sphinx-autodoc-typehints>=3.0",
   "sphinx-copybutton>=0.5",
   "sphinx-design>=0.6",
@@ -104,7 +104,7 @@ dev = [
   "rust-just",
   # other
   "pre-commit~=4.2",
-  "validate-pyproject>=0.24.1,<0.27.0",
+  "validate-pyproject>=0.24.1,<0.28.0",
 ]
 release = [
   "tomlkit>=0.13,<0.16",
