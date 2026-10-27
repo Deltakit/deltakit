@@ -226,7 +226,7 @@ app for open PR.
 
 ## Use of AI tools
 
-You are welcome to use artificial intelligence (AI) tools, such as large language models (LLMs), chat assistants, code completion and coding agents, when contributing to Deltakit, provided that this use complies with our policy outlined in this section.
+When contributing to Deltakit, you are free to use artificial intelligence (AI) tools, such as large language models (LLMs), chat assistants, code completion and coding agents provided that this complies with our policy outlined in this section.
 
 This policy applies to every repository in the [Deltakit GitHub organisation](https://github.com/Deltakit) and to every contributor, including code owners and maintainers.
 
