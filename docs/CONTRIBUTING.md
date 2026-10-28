@@ -46,7 +46,7 @@ If an assigned contributor fails to respond to an updates request within a week'
 
 ### Duplicate contributions
 
-In cases where multiple Pull Requests (PRs) overlap in scope, the Deltakit core team reserves the right to prioritise one PR based on the above rules and close the other PRs, which are labelled as `duplicate`.
+In cases where multiple Pull Requests (PRs) overlap in scope, the Deltakit core team reserves the right to prioritise one PR based on the above rules and close the other PRs labelled as `duplicate` with a link to the original. Any further new comments should then be added to the original issue. The authors of the duplicate PR are welcome to review the PR that moves forward.
 
 Duplicate issues are closed with the `duplicate` label and a link to the original. Please add any new comments to the original issue. The authors of the duplicate PR are welcome to review the PR that goes ahead.
 
