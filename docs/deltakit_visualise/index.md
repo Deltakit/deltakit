@@ -5,6 +5,11 @@ correction circuits and assemblies.
 
 Please have a look at the following guides.
 
+```{gallery}
+:no-toctree:
+:columns: 1 2 2 3
+```
+
 ```{toctree}
 :maxdepth: 1
 :hidden:

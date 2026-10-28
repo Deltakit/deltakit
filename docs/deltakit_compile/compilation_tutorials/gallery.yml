@@ -1,0 +1,24 @@
+- ref: "deltakit_compile/compilation_tutorials/modifying_stim_circuits:Adding noise to a circuit"
+  title: Add a noise model
+  level: beginner
+  thumbnail: /_static/gallery/add_noise.svg
+  summary:
+  meta:
+- ref: "deltakit_compile/compilation_tutorials/modifying_stim_circuits:Qubit remapping"
+  title: Remap qubit indices
+  level: beginner
+  thumbnail: /_static/gallery/remap_qubits.svg
+  summary:
+  meta:
+- ref: "deltakit_compile/compilation_tutorials/modifying_stim_circuits:Combining passes"
+  title: Combine passes into a pipeline
+  level: beginner
+  thumbnail: /_static/gallery/combine_passes.svg
+  summary:
+  meta:
+- doc: making_a_compiler_pass
+  title: Write your own compiler pass
+  level: advanced
+  thumbnail: /_static/gallery/compiler_pass.svg
+  summary:
+  meta:
