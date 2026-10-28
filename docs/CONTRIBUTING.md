@@ -42,7 +42,7 @@ Most contributions to Deltakit are voluntary. To avoid duplicated contributions,
 
 Deltakit core team members follow the same rules: a Deltakit issue being worked on internally is assigned to the person doing the work.
 
-If an assigned contributor fails to respond to an updates request within a week's time, they may be unassigned from the issue.
+If an assigned contributor fails to respond to an updates request within a week's time, they may be unassigned from the issue and any linked PR may be closed.
 
 ### Duplicate contributions
 
