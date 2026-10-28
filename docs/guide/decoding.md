@@ -230,16 +230,16 @@ The performance of the decoders may depend on parameters. We allow decoders
 to accept arbitrary named values using the `parameters` argument.
 All decoders have access to the following parameters:
 
-* ``decompose_errors`` (bool) - if set to `True`, Deltakit-Stim tries to
+* `decompose_errors` (bool) - if set to `True`, Deltakit-Stim tries to
   decompose composite error mechanisms into simpler errors with at
   most two detectors affected. This option is important for decoders
   which do not support hypergraph detector error models (e.g. `MWPMDecoder`, `CCDecoder`).
-* `approximate_disjoint_errors` (bool) -- approximates the noise as independent errors.
+* `approximate_disjoint_errors` (bool) - approximates the noise as independent errors.
 
 These two parameters work together and allow decoders to deal with composite
-error mechanisms defined in the Deltakit-Stim circuit. By default, both are False.
+error mechanisms defined in the Deltakit-Stim circuit. By default, both are `False`.
 More about these two parameters can be found in the
-[the `stim.Circuit.detector_error_model` documentation](https://github.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev.md).
+[`stim.Circuit.detector_error_model`](https://github.com/quantumlib/Stim/blob/main/doc/python_api_reference_vDev.md) documentation.
 
 Particular decoders may also expose parameters for tuning. These are the cases for the supported decoders.
 
@@ -255,7 +255,7 @@ Particular decoders may also expose parameters for tuning. These are the cases f
 
   * `bp_rounds` is an integer, and specifies how many iterations of message passing
     should be performed during the execution of belief propagation. Note that `bp_rounds`
-    in AC is different from `max_bp_rounds` in `BP_OSD` as early termination is not
+    in AC is different from `max_bp_rounds` in `BPOSDecoder` as early termination is not
     allowed. Typically, setting this equal to the distance of the code is sufficient. By
     default, this is 20.
 
@@ -273,7 +273,7 @@ Particular decoders may also expose parameters for tuning. These are the cases f
     leakage-aware decoding achieves higher decoding accuracy by more accurately modelling the stochastic
     process of qubits becoming leaked. It accounts for the fact that the probability of a leakage event
     occurring in some time interval after reset is proportional to the length of time. The unweighted
-    implementation of LCD assumes constant probability for leakage in time. By default, `weighted` is False.
+    implementation of LCD assumes constant probability for leakage in time. By default, `weighted` is `False`.
 
 +++
 

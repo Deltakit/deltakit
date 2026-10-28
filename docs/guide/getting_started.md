@@ -151,7 +151,9 @@ sampler = stim_circuit.compile_sampler()  # 2
 sampler.sample(shots=3)  # 3
 ```
 
-The output is a boolean NumPy array representing the seven measurement outcomes for three separate shots.
+For this example, the output is a boolean NumPy array with shape `(3, 7)`. Each row represents one shot of the circuit, and each column represents one of the seven measurement results recorded during that shot. The boolean values represent the two possible measurement outcomes.
+
+These are raw measurement results, not logical failures. The decoding step below uses the circuit and a decoder to identify logical errors.
 
 Typically, the focus is not on the individual measurement outcomes but on logical errors. Assessing those is the job of the decoder.
 

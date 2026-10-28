@@ -47,7 +47,7 @@ so you may have to sacrifice model accuracy for simulation speed.
 
 ## Practical solution
 
-The [Deltakit-Stim](https://github.com/Deltakit/deltakit-stim), an extension of the [Stim](https://github.com/quantumlib/Stim) library
+[Deltakit-Stim](https://github.com/Deltakit/deltakit-stim), an extension of the [Stim](https://github.com/quantumlib/Stim) library
 to non-computational errors, offers tools for both quick simulation (thanks to its limitation to Clifford gates)
 and a reasonably rich palette of error mechanisms,
 which may be used to approximate different types of noise.

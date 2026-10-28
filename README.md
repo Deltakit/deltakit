@@ -41,6 +41,25 @@
 ---
 
 <p align="center">
+  <a href="https://unitary.foundation/community/deltakit_community_fund/">
+    <img alt="Unitary Foundation x Riverlane - Deltakit Community Fund: building the next wave of open-source quantum error correction" src="https://unitary.foundation/images/deltakit_banner.png" width="100%">
+  </a>
+</p>
+
+### [Apply](https://unitary.foundation/community/deltakit_community_fund/) by 2 December 2026
+
+**The [Deltakit Community Fund](https://unitary.foundation/community/deltakit_community_fund/) is opening again for applications from 2 November to 2 December 2026.**
+
+This joint initiative by [Unitary Foundation](https://unitary.foundation/) and [Riverlane](https://www.riverlane.com/) supports researchers and quantum software developers contributing to Deltakit with grant awards of up to $4k USD, plus mentorship from the Deltakit core team. Winners will be notified by 11 December 2026.
+
+> [!TIP]
+> You can search the [`community-fund-proposal` issues](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-proposal+no%3Aassignee) for projects up for grabs, or propose your own idea in the application form linked above. You can also share your idea in a new GitHub issue labelled as `community-fund-proposal`.
+>
+> Explore previous projects supported by the Deltakit Community Fund at [this link](https://github.com/Deltakit/deltakit/issues?q=is%3Aissue+state%3Aopen+label%3Acommunity-fund-project).
+
+---
+
+<p align="center">
   <picture>
     <img alt="Deltakit logo" src="./docs/logo/Deltakit_Blue_SecondaryLogo_RGB.png" width="75%">
   </picture>
@@ -176,7 +195,7 @@ print(circuit)
 There are various ways to contribute to `deltakit`:
 
 - **Submitting issues:** To submit bug reports or feature requests, please open a GitHub Issue in the relevant Deltakit package repository. For example, if your query is related to `deltakit-compile`, please open an Issue in the [`deltakit-compile` repository](https://github.com/Deltakit/deltakit-compile/issues), and similarly for issues related to [`deltakit-visualise`](https://github.com/Deltakit/deltakit-visualise/issues) and other Deltakit packages. If the issue does not fall under a specific Deltakit package, you can report it in the [issue tracker](https://github.com/Deltakit/deltakit/issues) of this repository. This is the appropriate place to also report issues about documentation related to *any* Deltakit package.
-- **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to [contributing guidelines](./docs/CONTRIBUTING.md).
+- **Developing in `deltakit`:** To learn more about how to develop within `deltakit`, please refer to our [contributing guidelines](./docs/CONTRIBUTING.md). Deltakit provides shortcuts for common development tasks via [`just`](https://github.com/casey/just) (e.g., `just check`, `just lint`, `just test`, `just build`). Run `just --list` to view all available commands.
 - **Security:** For any security concern, please see our [security policy](./docs/SECURITY.md).
 
 > [!NOTE]

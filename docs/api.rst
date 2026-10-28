@@ -207,7 +207,8 @@ Gates Sets
 
 .. currentmodule:: deltakit.circuit.noise_channels
 
-Description of ``deltakit.circuit.noise_channels`` namespace here.
+``deltakit.circuit.noise_channels`` provides classes representing noise channels
+and error models for quantum circuit composition.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -236,7 +237,8 @@ Description of ``deltakit.circuit.noise_channels`` namespace here.
 
 .. currentmodule:: deltakit.core
 
-Description of ``deltakit.core`` namespace here.
+``deltakit.core`` provides foundational data structures and primitives for
+quantum error correction workflows, including bitstrings, syndromes, and decoding graphs.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -246,7 +248,8 @@ Description of ``deltakit.core`` namespace here.
 ``deltakit.core.data_formats``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.core.data_formats`` namespace here.
+``deltakit.core.data_formats`` provides utilities for converting and parsing
+syndromes, measurements, and logical flips across standard formats (such as b8 and c64).
 
 .. currentmodule:: deltakit.core.data_formats
 
@@ -269,7 +272,8 @@ Description of ``deltakit.core.data_formats`` namespace here.
 ``deltakit.core.decoding_graphs``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.core.decoding_graphs`` namespace here.
+``deltakit.core.decoding_graphs`` provides graph representations, DEM parsers,
+and topological utilities for constructing and analysing decoding graphs.
 
 .. currentmodule:: deltakit.core.decoding_graphs
 
@@ -329,7 +333,8 @@ Description of ``deltakit.core.decoding_graphs`` namespace here.
 
 .. currentmodule:: deltakit.decode
 
-Description of ``deltakit.decode`` namespace here.
+``deltakit.decode`` provides decoding algorithms for quantum error correction,
+including minimum-weight perfect matching (MWPM), belief matching, and ambiguity clustering.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -347,7 +352,8 @@ Description of ``deltakit.decode`` namespace here.
 ``deltakit.decode.analysis``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.decode.analysis`` namespace here.
+``deltakit.decode.analysis`` provides manager classes and utilities for running,
+orchestrating, and benchmarking decoders on quantum circuits.
 
 .. currentmodule:: deltakit.decode.analysis
 
@@ -368,7 +374,8 @@ Description of ``deltakit.decode.analysis`` namespace here.
 ``deltakit.decode.noise_sources``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.decode.noise_sources`` namespace here.
+``deltakit.decode.noise_sources`` provides noise model definitions and sampling
+tools used during decoding analysis.
 
 .. currentmodule:: deltakit.decode.noise_sources
 
@@ -399,6 +406,9 @@ Description of ``deltakit.decode.noise_sources`` namespace here.
 
 .. currentmodule:: deltakit.decode.utils
 
+``deltakit.decode.utils`` provides utility functions for computing error probabilities,
+building correlation matrices, and visualising 3D decoding graphs.
+
 .. autosummary::
     :toctree: _build/generated/
 
@@ -423,7 +433,8 @@ Description of ``deltakit.decode.noise_sources`` namespace here.
 
 .. currentmodule:: deltakit.explorer
 
-Description of ``deltakit.explorer`` namespace here.
+``deltakit.explorer`` provides high-level client interfaces and orchestration
+tools for managing QEC experiments.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -436,7 +447,8 @@ Description of ``deltakit.explorer`` namespace here.
 ``deltakit.explorer.analysis``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.analysis`` namespace here.
+``deltakit.explorer.analysis`` provides functions for calculating logical error
+probabilities (LEP), error suppression factors (Lambda), and fit parameters.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -451,7 +463,8 @@ Description of ``deltakit.explorer.analysis`` namespace here.
 ``deltakit.explorer.plotting``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.plotting`` namespace here.
+``deltakit.explorer.plotting`` provides visualisation functions for defect diagrams,
+defect rates, and correlation matrices.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -465,7 +478,8 @@ Description of ``deltakit.explorer.plotting`` namespace here.
 ``deltakit.explorer.codes``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.codes`` namespace here.
+``deltakit.explorer.codes`` provides quantum error correction code families
+(such as planar, toric, repetition, and bivariate bicycle codes) and experiment circuit generators.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -490,7 +504,8 @@ Description of ``deltakit.explorer.codes`` namespace here.
 ``deltakit.explorer.data``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.data`` namespace here.
+``deltakit.explorer.data`` provides I/O helpers for reading and writing experiment
+data in binary and text formats (such as 01, b8, and CSV).
 
 .. autosummary::
     :toctree: _build/generated/
@@ -507,7 +522,8 @@ Description of ``deltakit.explorer.data`` namespace here.
 ``deltakit.explorer.enums``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.enums`` namespace here.
+``deltakit.explorer.enums`` defines enumerations for data formats, decoder types,
+error-correcting code families, and experiment types.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -522,7 +538,8 @@ Description of ``deltakit.explorer.enums`` namespace here.
 ``deltakit.explorer.qpu``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.qpu`` namespace here.
+``deltakit.explorer.qpu`` provides QPU hardware abstractions, native gate sets,
+and realistic noise models.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -543,7 +560,8 @@ Description of ``deltakit.explorer.qpu`` namespace here.
 ``deltakit.explorer.simulation``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.simulation`` namespace here.
+``deltakit.explorer.simulation`` provides simulation wrappers for executing circuits
+and generating measurement samples with Stim.
 
 .. autosummary::
     :toctree: _build/generated/
@@ -555,7 +573,8 @@ Description of ``deltakit.explorer.simulation`` namespace here.
 ``deltakit.explorer.types``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Description of ``deltakit.explorer.types`` namespace here.
+``deltakit.explorer.types`` defines structured container types for measurements,
+detection events, noise models, and experiment specifications.
 
 .. autosummary::
     :toctree: _build/generated/
