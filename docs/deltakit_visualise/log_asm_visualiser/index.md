@@ -7,6 +7,6 @@ onto physical layouts.
 ```{toctree}
 :maxdepth: 1
 
-guide/logical_assembly_visualiser
-guide/operation_samples
+logical_assembly_visualiser
+operation_samples
 ```
