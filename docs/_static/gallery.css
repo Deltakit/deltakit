@@ -1,8 +1,10 @@
-/* Card gallery from docs/_ext/gallery.py. Text pairs meet 4.5:1 contrast. */
+/* Card gallery from docs/_ext/gallery.py, styled as the square tiles on
+   deltakit.riverlane.com. Text pairs meet 4.5:1 contrast, on hover too. */
 :root {
-  --dk-card-border: #d3d8e2;
-  --dk-meta: #64748b;
-  --dk-tag-fg: #3f4654; --dk-tag-bg: #f1f3f6;
+  --dk-tile: rgba(243, 244, 246, 0.6); --dk-tile-hover: rgba(229, 230, 231, 0.6);
+  --dk-focus: #4b5bff;
+  --dk-meta: #5b6577;
+  --dk-tag-fg: #3f4654; --dk-tag-bg: #e6e8ee;
   /* Levels grow more prominent with difficulty, in the brand blue. */
   --dk-beginner-fg: #3144d6; --dk-beginner-bg: #eef1ff;
   --dk-intermediate-fg: #1b2685; --dk-intermediate-bg: #c5cdff;
@@ -10,7 +12,8 @@
 }
 html.dark,
 html[data-theme="dark"] {
-  --dk-card-border: #3a4458;
+  --dk-tile: rgba(255, 255, 255, 0.045); --dk-tile-hover: rgba(255, 255, 255, 0.09);
+  --dk-focus: #8d98ff;
   --dk-meta: #94a3b8;
   --dk-tag-fg: #d5d9e2; --dk-tag-bg: #2a3140;
   --dk-beginner-fg: #c7ceff; --dk-beginner-bg: #1a2255;
@@ -23,12 +26,16 @@ html[data-theme="dark"] {
   flex-direction: column;
   overflow: hidden;
   margin-top: 0;
-  border: 1px solid var(--dk-card-border);
-  border-radius: 8px;
+  border: 0;
+  border-radius: 0;
+  background: var(--dk-tile);
   box-shadow: none !important; /* sphinx-design's .sd-shadow-sm is !important */
+  transition: background-color 0.15s;
 }
-.dk-gallery-card.sd-card-hover:hover { border-color: var(--sd-color-card-border-hover); }
+.dk-gallery-card.sd-card-hover:hover { transform: none; background: var(--dk-tile-hover); }
+.dk-gallery-card:has(:focus-visible) { outline: 2px solid var(--dk-focus); outline-offset: 2px; }
 .dk-gallery-card .sd-card-body { flex: 1 1 auto; }
+.dk-gallery-card .sd-card-title { font-weight: 400 !important; letter-spacing: -0.01em; }
 .dk-gallery-card .sd-card-title:last-child { margin-bottom: 0; }
 .dk-gallery-thumb {
   aspect-ratio: 16 / 9; object-fit: cover; width: 100%;
@@ -37,13 +44,15 @@ html[data-theme="dark"] {
 .dk-gallery-card .sd-card-body .sd-card-text {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
 }
-.dk-gallery-card .sd-card-footer { border-top-color: var(--dk-card-border); }
+.dk-gallery-card .sd-card-footer { border-top: 0; padding-top: 0; }
 .dk-gallery-card .sd-card-footer code {
   padding: 0; background: none; color: var(--dk-meta); font-size: 0.75rem; white-space: normal;
 }
 /* Tags are plain badges. The level is a primary badge, whose colours sphinx-design
    reads from these variables. */
-.dk-gallery-card .sd-card-footer .sd-badge { color: var(--dk-tag-fg); background: var(--dk-tag-bg); }
+.dk-gallery-card .sd-card-footer .sd-badge {
+  border-radius: 0; font-weight: 500; color: var(--dk-tag-fg); background: var(--dk-tag-bg);
+}
 .dk-level-beginner { --sd-color-primary: var(--dk-beginner-bg); --sd-color-primary-text: var(--dk-beginner-fg); }
 .dk-level-intermediate { --sd-color-primary: var(--dk-intermediate-bg); --sd-color-primary-text: var(--dk-intermediate-fg); }
 .dk-level-advanced { --sd-color-primary: var(--dk-advanced-bg); --sd-color-primary-text: var(--dk-advanced-fg); }

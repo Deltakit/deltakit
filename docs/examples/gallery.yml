@@ -38,17 +38,17 @@
   thumbnail: /_static/gallery/server_simulation.svg
   summary:
   meta:
+- doc: notebooks/simulation/leakage_demo
+  title: Quick-tour of leakage-aware decoding
+  level: intermediate
+  tags: [Cloud decoder]
+  thumbnail: /_static/gallery/leakage_demo.svg
+  summary:
+  meta:
 - doc: notebooks/simulation/leakage-aware_decoding
   title: Leakage-aware decoding with the LCD
   level: advanced
   tags: [Cloud decoder]
   thumbnail: /_static/gallery/leakage_aware_decoding.svg
-  summary:
-  meta:
-- doc: notebooks/simulation/leakage_demo
-  title: Leakage-aware decoding demo
-  level: intermediate
-  tags: [Cloud decoder]
-  thumbnail: /_static/gallery/leakage_demo.svg
   summary:
   meta:
