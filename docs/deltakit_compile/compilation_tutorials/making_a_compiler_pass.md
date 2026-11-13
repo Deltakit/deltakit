@@ -18,7 +18,6 @@ This pass will operate on our `stim` dialect so first we'll familiarise ourselve
 
 ```{code-cell} ipython3
 
-# ("Riverlane") and is Riverlane Confidential Information.
 # (c) Copyright Riverlane 2025-2026. All rights reserved.
 from deltakit_stim import Circuit
 from xdsl.builder import Builder

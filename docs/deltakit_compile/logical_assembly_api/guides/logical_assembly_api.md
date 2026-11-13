@@ -19,7 +19,6 @@ LogASM is designed to make QEC accessible to the type of user who wants to exper
 
 ```{code-cell} ipython3
 
-# ("Riverlane") and is Riverlane Confidential Information.
 # (c) Copyright Riverlane 2025-2026. All rights reserved.
 
 from deltakit_compile.frontend.circuit import Qubit, QubitReg, Result

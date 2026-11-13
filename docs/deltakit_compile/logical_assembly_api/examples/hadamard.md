@@ -7,7 +7,6 @@ Hadamard.
 
 ```{code-cell} ipython3
 
-# ("Riverlane") and is Riverlane Confidential Information.
 # (c) Copyright Riverlane 2025-2026. All rights reserved.
 from deltakit_compile.frontend.logasm import LogAsmBuilder, LogAsmProgram, RotatedPlanarPatch
 ```

@@ -19,7 +19,6 @@ You can run these passes individually to see the effect of each. In this noteboo
 
 ```{code-cell} ipython3
 
-# ("Riverlane") and is Riverlane Confidential Information.
 # (c) Copyright Riverlane 2025-2026. All rights reserved.
 import deltakit_stim
 import stim
