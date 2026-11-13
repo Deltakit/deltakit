@@ -24,6 +24,7 @@ jobs:
             docs
             feat
             fix
+            perf
             refactor
             release
             test

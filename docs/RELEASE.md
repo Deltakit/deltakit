@@ -26,6 +26,6 @@ To perform a release, the release manager needs to go through the following step
 
 1. Create a release branch with naming format `release/v<version number>`. On that branch, bump the version in `pyproject.toml` and open a PR targeting `main`. The PR undertakes the review/approval process. Before merge, any final changes merged to `main` during the review process can be added.
 
-2. Create a new release by clicking the `Draft a new release` button on the GitHub [repository](https://github.com/Deltakit/deltakit/releases). Create a new tag and release notes and finally publish the release. This will trigger building and testing distributions and publishing on [PyPI](https://pypi.org/search/?q=deltakit) and deploying latest docs on the [Deltakit website](https://deltakit.riverlane.com/).
+2. Create a new release by clicking the `Draft a new release` button on the GitHub [repository](https://github.com/Deltakit/deltakit/releases). Create a new tag and release notes and finally publish the release. This will trigger building and testing distributions and publishing on [PyPI](https://pypi.org/search/?q=deltakit), and Read the Docs will automatically build and publish the documentation for the new release tag.
 
 The latest stable version of `deltakit` can be installed with `pip install deltakit`.
