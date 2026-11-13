@@ -5,6 +5,8 @@ permissions:
   contents: read
 
 on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight UTC every day
   pull_request:
     types: [opened, synchronize, reopened]
   push:
@@ -49,8 +51,7 @@ jobs:
           jobSummary: true
 
   build-docs:
-    if: github.event_name == 'pull_request'
-    needs: [check-deltakit-token]
+    needs: [check-deltakit-token, check-documentation-links, check-notebooks-execution]
     runs-on: ubuntu-latest
     env:
       NB_EXECUTION_MODE: ${{ needs.check-deltakit-token.outputs.exists == 'true' && 'force' || 'off' }}
