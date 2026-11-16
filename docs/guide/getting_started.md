@@ -245,11 +245,14 @@ df
 
 To estimate the error scaling parameter $\Lambda$, use the
 {meth}`calculate_lambda_and_lambda_stddev <deltakit.explorer.analysis.calculate_lambda_and_lambda_stddev>`
-function:
+function.
+It expects the logical error probability per round.
+Each distance above ran for `d` rounds, so divide each LEP by its number of rounds, which is a good approximation for small error rates:
 
 ```{code-cell} ipython3
 from deltakit.explorer.analysis import calculate_lambda_and_lambda_stddev
-res = calculate_lambda_and_lambda_stddev(distances, leps, leps_std)
+num_rounds = np.array(distances)
+res = calculate_lambda_and_lambda_stddev(distances, leps / num_rounds, leps_std / num_rounds)
 res.lambda_
 ```
 
