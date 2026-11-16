@@ -36,6 +36,9 @@ myst_enable_extensions = [
     "amsmath",
     "substitution",
 ]
+# Generate GitHub-style anchors for headings, so `[text](#some-heading)` links
+# resolve both on GitHub and in the built docs.
+myst_heading_anchors = 3
 
 nb_execution_mode = "force"
 nb_execution_excludepatterns = [
