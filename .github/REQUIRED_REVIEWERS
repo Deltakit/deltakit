@@ -11,7 +11,7 @@
 #   Please refer the link for the detail
 #   https://help.github.com/en/articles/about-code-owners
 
-* @nelimee @rolandriver
+* @theinsanetramp @nelimee @rolandriver
 
 # Dependency changes should also be reviewed by the deltakit core maintainers
-/pyproject.toml @rolandriver @nelimee @theinsanetramp
+/pyproject.toml @theinsanetramp @nelimee @rolandriver
