@@ -1,0 +1,16 @@
+/* Style overrides for the Deltakit documentation, loaded on top of the theme. */
+
+/*
+ * Stim circuit diagrams, such as `circuit.diagram("timeline-svg")`, are SVG
+ * images drawn with black lines and text on a transparent canvas, so they
+ * disappear against the dark theme's background. Give every SVG image in the
+ * page body an opaque white canvas. The light theme's background is already
+ * white, so the canvas blends into the page there.
+ *
+ * The `*-svg-html` and `timeline-html` diagram types need no rule: they are
+ * rendered in an `<iframe>`, which browsers already paint on a white canvas
+ * when the page around it uses a dark colour scheme.
+ */
+[role="main"] img[src$=".svg"] {
+  background-color: #ffffff;
+}
