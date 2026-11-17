@@ -18,12 +18,13 @@ All text is shown as written, never parsed as markup. A ``ref`` entry without
 a ``title`` shows the section title from its ``ref``, so give it a ``title``
 when the heading contains markup such as inline code or maths.
 
-Entries without a ``thumbnail`` show the default Deltakit thumbnail.
+Entries without a ``thumbnail`` show the Deltakit logo.
 """
 
 from __future__ import annotations
 
 import re
+from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -40,16 +41,54 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-KEYS = {"doc", "ref", "title", "summary", "level", "tags", "meta", "thumbnail"}
+
+class Key(StrEnum):
+    """The keys of a gallery entry.
+
+    Attributes:
+        DOC: A docname, relative to the page.
+        REF: An autosectionlabel label, ``<docname>:<Section Title>``.
+        TITLE: The card title.
+        SUMMARY: The card text.
+        LEVEL: The difficulty, one of the ``Level`` values.
+        TAGS: One tag, or a list of them.
+        META: A short line shown in the card footer.
+        THUMBNAIL: An image path, relative to the page or, when it starts with
+            ``/``, to the source directory.
+    """
+
+    DOC = "doc"
+    REF = "ref"
+    TITLE = "title"
+    SUMMARY = "summary"
+    LEVEL = "level"
+    TAGS = "tags"
+    META = "meta"
+    THUMBNAIL = "thumbnail"
+
+
+class Level(StrEnum):
+    """The difficulty levels of a gallery entry.
+
+    Attributes:
+        BEGINNER: Needs no prior knowledge of the topic.
+        INTERMEDIATE: Builds on the basics.
+        ADVANCED: Assumes a working knowledge of the topic.
+    """
+
+    BEGINNER = "beginner"
+    INTERMEDIATE = "intermediate"
+    ADVANCED = "advanced"
+
+
 # Keys that hold a name or a path, rather than text to show.
-NAME_KEYS = {"doc", "ref", "thumbnail", "level"}
+NAME_KEYS: frozenset[Key] = frozenset({Key.DOC, Key.REF, Key.THUMBNAIL, Key.LEVEL})
 # Keys shown on a single line, as is each tag.
-LINE_KEYS = {"title", "meta"}
-LEVELS = ("beginner", "intermediate", "advanced")
-DEFAULT_THUMBNAIL = "/_static/gallery/deltakit.svg"
+LINE_KEYS: frozenset[Key] = frozenset({Key.TITLE, Key.META})
+DEFAULT_THUMBNAIL = "/logo/Deltakit_Blue_SecondaryLogo_RGB.png"
 
 
-def _value(key: str, value: Any, *, line: bool) -> str:
+def _value(key: Key, value: Any, *, line: bool) -> str:
     """Return one value from the entries file as text.
 
     Args:
@@ -72,7 +111,7 @@ def _value(key: str, value: Any, *, line: bool) -> str:
     return " ".join(str(value).split()) if line else str(value).strip()
 
 
-def _normalise(entry: Any, base: str) -> dict[str, Any]:
+def _normalise(entry: dict[str, Any], base: str) -> dict[str, Any]:
     """Validate one gallery entry and add the fields derived from it.
 
     Args:
@@ -80,45 +119,52 @@ def _normalise(entry: Any, base: str) -> dict[str, Any]:
         base: Docname that relative ``doc`` entries are resolved against.
 
     Returns:
-        A copy of the entry with its values as stripped strings, ``tags`` as a
-        list of them, empty ones left out, and ``docname`` and ``section``
-        added.
+        A copy of the entry keyed by ``Key``, with its values as stripped
+        strings, ``tags`` as a list of them, ``level`` as a ``Level``, empty
+        ones left out, and ``docname`` and ``section`` added.
 
     Raises:
-        ValueError: If the entry is not a mapping with exactly one of ``doc``
-            and ``ref``, or has an unknown key, a value of the wrong type, or
-            an unknown ``level`` or ``ref`` form.
+        ValueError: If the entry does not have exactly one of ``doc`` and
+            ``ref``, or has an unknown key, a value of the wrong type, or an
+            unknown ``level`` or ``ref`` form.
     """
-    if not isinstance(entry, dict) or not all(isinstance(key, str) for key in entry):
-        msg = f"expected a mapping with text keys, got {entry!r}"
-        raise ValueError(msg)
-    if unknown := sorted(set(entry) - KEYS):
-        msg = f"unknown keys {unknown}, expected some of {sorted(KEYS)}"
-        raise ValueError(msg)
     values: dict[str, Any] = {}
-    for key, value in entry.items():
-        if key == "tags":
+    unknown = []
+    for name, value in entry.items():
+        try:
+            key = Key(name)
+        except ValueError:
+            unknown.append(name)
+            continue
+        if key is Key.TAGS:
             items = value if isinstance(value, list) else [value]
             tags = [_value(key, item, line=True) for item in items if item is not None]
             if tags := [tag for tag in tags if tag]:
                 values[key] = tags
         elif value is not None and (text := _value(key, value, line=key in LINE_KEYS)):
             values[key] = text
-    if ("doc" in values) == ("ref" in values):
+    if unknown:
+        msg = (
+            f"unknown keys {sorted(unknown)}, expected some of {[k.value for k in Key]}"
+        )
+        raise ValueError(msg)
+    if (Key.DOC in values) == (Key.REF in values):
         msg = f"needs exactly one of 'doc' or 'ref', got {entry!r}"
         raise ValueError(msg)
-    if "level" in values:
-        values["level"] = values["level"].lower()
-        if values["level"] not in LEVELS:
-            msg = f"level must be one of {LEVELS}, got {entry['level']!r}"
-            raise ValueError(msg)
-    if "doc" in values:
-        docname, section = docname_join(base, values["doc"]), ""
+    if Key.LEVEL in values:
+        try:
+            values[Key.LEVEL] = Level(values[Key.LEVEL].lower())
+        except ValueError as err:
+            levels = [level.value for level in Level]
+            msg = f"level must be one of {levels}, got {entry[Key.LEVEL]!r}"
+            raise ValueError(msg) from err
+    if Key.DOC in values:
+        docname, section = docname_join(base, values[Key.DOC]), ""
     else:
         # Docnames cannot contain ":", but section titles can.
-        docname, _, section = values["ref"].partition(":")
+        docname, _, section = values[Key.REF].partition(":")
         if not docname or not section:
-            msg = f"ref must be '<docname>:<Section Title>', got {values['ref']!r}"
+            msg = f"ref must be '<docname>:<Section Title>', got {values[Key.REF]!r}"
             raise ValueError(msg)
     return {**values, "docname": docname, "section": section}
 
@@ -143,6 +189,13 @@ def _load(path: Path, base: str) -> list[dict[str, Any]]:
         raise ValueError(msg)
     normalised = []
     for number, entry in enumerate(entries, start=1):
+        # YAML can give any value here, so check it is the mapping that
+        # _normalise takes.
+        if not isinstance(entry, dict) or not all(
+            isinstance(key, str) for key in entry
+        ):
+            msg = f"{path.name}, entry {number}: expected a mapping with text keys"
+            raise ValueError(msg)
         try:
             normalised.append(_normalise(entry, base))
         except ValueError as err:
@@ -260,24 +313,24 @@ def _card(entry: dict[str, Any], *, rst: bool) -> list[str]:
         options = [("link", value(_uri(link))), ("link-type", "ref")]
     else:
         options = [("link", value(_uri(f"/{entry['docname']}"))), ("link-type", "doc")]
-    image = entry.get("thumbnail", DEFAULT_THUMBNAIL)
+    image = entry.get(Key.THUMBNAIL, DEFAULT_THUMBNAIL)
     options += [
         ("img-top", value(_uri(image))),
         ("class-card", "dk-gallery-card"),
         ("class-img-top", "dk-gallery-thumb"),
     ]
     footer = []
-    if "level" in entry:
+    if Key.LEVEL in entry:
         # A primary badge, so that the stylesheet can colour it by level.
-        footer.append(_role("bdg-primary", entry["level"].capitalize(), rst=rst))
-        options.append(("class-footer", f"dk-level-{entry['level']}"))
-    footer += [_role("bdg", tag, rst=rst) for tag in entry.get("tags", [])]
-    if "meta" in entry:
-        footer.append(_role("literal", entry["meta"], rst=rst))
-    body = [_text(line, rst=rst) for line in entry.get("summary", "").splitlines()]
+        footer.append(_role("bdg-primary", entry[Key.LEVEL].capitalize(), rst=rst))
+        options.append(("class-footer", f"dk-level-{entry[Key.LEVEL]}"))
+    footer += [_role("bdg", tag, rst=rst) for tag in entry.get(Key.TAGS, [])]
+    if Key.META in entry:
+        footer.append(_role("literal", entry[Key.META], rst=rst))
+    body = [_text(line, rst=rst) for line in entry.get(Key.SUMMARY, "").splitlines()]
     if footer:
         body += ["", "+++", " ".join(footer)]
-    title = entry.get("title") or " ".join(entry["section"].split())
+    title = entry.get(Key.TITLE) or " ".join(entry["section"].split())
     if title:
         # The hidden link text is what screen readers announce, so match it.
         options.append(("link-alt", value(title)))
@@ -324,7 +377,8 @@ class GalleryDirective(SphinxDirective):
         # entries file appears, so read this page again on every build.
         self.env.note_reread()
         return [
-            _normalise({"doc": stem}, self.env.docname) for stem in dict.fromkeys(stems)
+            _normalise({Key.DOC: stem}, self.env.docname)
+            for stem in dict.fromkeys(stems)
         ]
 
     def run(self) -> list[nodes.Node]:
@@ -380,7 +434,8 @@ class GalleryDirective(SphinxDirective):
         # Report problems in the generated markup at the directive's own line:
         # while parsing through the StringList items, and afterwards through
         # the location of each node.
-        source, line = self.get_source_info()
+        source, source_line = self.get_source_info()
+        line = source_line or self.lineno
         content = StringList(lines, items=[(source, line - 1)] * len(lines))
         container = nodes.Element()
         if rst:

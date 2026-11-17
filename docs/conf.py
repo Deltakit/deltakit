@@ -91,15 +91,13 @@ html_favicon = "logo/deltakit_favicon.png"
 # a list of builtin themes.
 html_permalinks_icon = "<span>#</span>"
 html_theme = "sphinxawesome_theme"
-html_static_path = ["_static"]
-html_css_files = ["gallery.css"]
 
 # Paths that contain custom static files (such as style sheets), relative to this
 # directory. They are copied after the theme's static files.
 html_static_path = ["_static"]
 
 # Custom style sheets, relative to the paths in `html_static_path`.
-html_css_files = ["css/custom.css"]
+html_css_files = ["css/custom.css", "gallery.css"]
 
 # no link to an *.rst source
 html_show_sourcelink = False
