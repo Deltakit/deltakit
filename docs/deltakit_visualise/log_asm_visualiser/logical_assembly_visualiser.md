@@ -130,7 +130,7 @@ than building it in Python. The example below renders a logical CNOT: two lattic
 measurements, through an ancilla patch, between a control and a target patch.
 
 ```{code-cell} ipython3
-LogicalAssemblyVisualiser.from_log_asm_file("../examples/cnot.mlir").visualise_space_time()
+LogicalAssemblyVisualiser.from_log_asm_file("cnot.mlir").visualise_space_time()
 ```
 
 ```{image} images/spacetime_cnot.png

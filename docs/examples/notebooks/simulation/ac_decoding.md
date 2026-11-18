@@ -50,7 +50,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import Client
 from deltakit.explorer.enums import DecoderType
 from deltakit.explorer.types import Decoder, PhysicalNoiseModel, QECExperimentDefinition
@@ -188,7 +188,7 @@ code_name = "[[72,12,6]]"
 num_shots = 1000
 noise_model = PhysicalNoiseModel.get_superconducting_noise()
 # Read-in the pre-generated circuit
-noisy_circuit = str(stim.Circuit.from_file(example_circuits_folder / f"{code_name}p=0.005.stim"))
+noisy_circuit = str(deltakit_stim.Circuit.from_file(example_circuits_folder / f"{code_name}p=0.005.stim"))
 ```
 
 ### Simulate measurements, generate detectors and observables

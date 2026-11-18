@@ -39,7 +39,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import Logging, Client, plotting
 from deltakit.explorer.enums import DataFormat
 from deltakit.explorer.types import BinaryDataType, Measurements, QECExperiment
@@ -97,7 +97,7 @@ An observable is also a combination of measurements that has deterministic value
 ### Convert raw measurement into detector and observable values
 
 ```{code-cell} ipython3
-stim_circuit = stim.Circuit.from_file(stim_circuit_file)
+stim_circuit = deltakit_stim.Circuit.from_file(stim_circuit_file)
 # if we use bitpacked b8 format, we should hint the width of the data in 1 shot
 measurements = Measurements(measurements_file, data_format, stim_circuit.num_measurements)
 sweep_bits = BinaryDataType(sweep_file, data_format, stim_circuit.num_sweep_bits)  # use generic type for bit tables

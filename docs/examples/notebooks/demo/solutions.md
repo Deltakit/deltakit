@@ -20,6 +20,7 @@ plot how repetition code scales with size.
 ```{code-cell} ipython3
 from __future__ import annotations
 from deltakit.circuit.gates import PauliBasis
+import deltakit_stim
 import matplotlib.pyplot as plt
 
 distances = [3, 5, 7, 9, 11]
@@ -61,5 +62,5 @@ experiment = types.QECExperimentDefinition(
 )
 experiment = types.QECExperimentDefinition.get_rotated_planar_z_quantum_memory(3, 3)
 circuit = client.generate_circuit(experiment)
-display(stim.Circuit(circuit).diagram(type="timeline-3d"))
+display(deltakit_stim.Circuit(circuit).diagram(type="timeline-3d"))
 ```

@@ -56,7 +56,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import analysis, Client
 from deltakit.explorer.enums import DecoderType, DataFormat
 from deltakit.explorer.types import (
@@ -142,7 +142,7 @@ The code below performs decoding for the experiment that was specified earlier i
 To calculate the logical error probability, we take the ratio of fails to shots.
 
 ```{code-cell} ipython3
-circuit = stim.Circuit.from_file(ideal_stim_circuit_file)
+circuit = deltakit_stim.Circuit.from_file(ideal_stim_circuit_file)
 measurements = Measurements(
     data=measurements_file,
     data_format=DataFormat.B8,
@@ -183,7 +183,7 @@ for num_rounds in all_rounds:
 result = {}
 
 for num_rounds in tqdm(all_rounds): 
-    circuit = stim.Circuit.from_file(stim_circuit_files[num_rounds])
+    circuit = deltakit_stim.Circuit.from_file(stim_circuit_files[num_rounds])
     measurements = Measurements(
         data=measurement_files[num_rounds],
         data_format=DataFormat.B8,
@@ -260,7 +260,7 @@ exp_graph_result = {}
 decoder.use_experimental_graph = True
 
 for num_rounds in tqdm(all_rounds): 
-    circuit = stim.Circuit.from_file(stim_circuit_files[num_rounds])
+    circuit = deltakit_stim.Circuit.from_file(stim_circuit_files[num_rounds])
     measurements = Measurements(
         data=measurement_files[num_rounds],
         data_format=DataFormat.B8,
