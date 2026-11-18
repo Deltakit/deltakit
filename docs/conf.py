@@ -45,7 +45,8 @@ nb_execution_excludepatterns = [
     "**/*.ipynb",
 ]
 nb_execution_cache_path = ".jupyter_cache"
-nb_execution_timeout = 300
+nb_execution_timeout = 900
+nb_execution_show_tb = True
 
 autosectionlabel_prefix_document = True
 autosummary_generate = True
