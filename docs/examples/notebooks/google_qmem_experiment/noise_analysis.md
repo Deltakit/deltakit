@@ -9,13 +9,16 @@ kernelspec:
   display_name: deltakit-explorer-py3.10
   language: python
   name: python3
+language_info:
+  name: python
+  pygments_lexer: ipython3
 ---
 
 # Noise analysis for a quantum memory experiment
 
 *Want to follow along? {nb-download}`Download this notebook.<noise_analysis.ipynb>`*
 
-In this notebook we demonstrate all the steps required to perform noise source analysis for a quantum error correction experiment. Specifically, we will be using data from a quantum memory experiment published by Google ([Google Quantum AI, _Nature 614, 676-681_ (2023)](https://www.nature.com/articles/s41586-022-05434-1)) and calculate defect rates and correlation matrices. In the [Decoding a quantum memory experiment](decode.ipynb) example notebook, we decoded this data to obtain logical error probabilities for different experiment scenarios. In this notebook, we will explore the experiment data further, generating insights into the errors that are occurring on the quantum computer during the experiment.
+In this notebook we demonstrate all the steps required to perform noise source analysis for a quantum error correction experiment. Specifically, we will be using data from a quantum memory experiment published by Google ([Google Quantum AI, _Nature 614, 676-681_ (2023)](https://www.nature.com/articles/s41586-022-05434-1)) and calculate defect rates and correlation matrices. In the [Decoding a quantum memory experiment](decode.md) example notebook, we decoded this data to obtain logical error probabilities for different experiment scenarios. In this notebook, we will explore the experiment data further, generating insights into the errors that are occurring on the quantum computer during the experiment.
 
 This notebook covers the following steps: 
 

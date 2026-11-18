@@ -20,7 +20,7 @@ up a single logical patch.
 
 A program is handed to the visualiser either as Python objects built with the Logical Assembly
 API (to learn more about LogASM, see
-[`logical_assembly_api.ipynb`](../../../deltakit_compile/compilation_tutorials/making_a_compiler_pass.ipynb))
+[`logical_assembly_api.ipynb`](../../deltakit_compile/logical_assembly_api/guides/logical_assembly_api.md))
 for more or as Logical Assembly IR read from a `.mlir` file.
 
 ```{code-cell} ipython3
@@ -114,7 +114,7 @@ show(data)
 
 If you are a QEC expert you can go a step further: `deltakit-compile` lets you add a compiler pass of
 your own, which is covered in
-[`making_a_compiler_pass.ipynb`](../../../deltakit_compile/compilation_tutorials/making_a_compiler_pass.ipynb).
+[`making_a_compiler_pass.ipynb`](../../deltakit_compile/compilation_tutorials/making_a_compiler_pass.md).
 The same approach applies here, so a pass of yours can shape the visualisation in a different
 way. To keep using the default frontend library,
 [`deltakit-visualise`](https://www.npmjs.com/package/deltakit-visualise), follow the same data

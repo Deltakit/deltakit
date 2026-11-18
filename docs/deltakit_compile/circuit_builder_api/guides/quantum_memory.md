@@ -1,3 +1,20 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.19.6
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
+
+# Quantum Memory with Circuit Builder
+
++++
+
 ```{code-cell} ipython3
 
 # (c) Copyright Riverlane 2025-2026. All rights reserved.

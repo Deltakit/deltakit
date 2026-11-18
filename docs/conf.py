@@ -67,8 +67,8 @@ exclude_patterns = [
     "_build/jupyter_execute",
     "_build/html",
     "examples/notebooks/demo",
-    "examples/notebooks/template_notebook.ipynb",
-    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.ipynb",
+    "examples/notebooks/template_notebook.md",
+    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.md",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
