@@ -305,7 +305,7 @@ for attempt, data in [("without", predictions_without_leakage), ("with", predict
 ```
 
 An example of leakage-aware decoding is provided in the
-[Leakage-Aware Decoding](../examples/notebooks/simulation/leakage-aware_decoding.ipynb) notebook.
+[Leakage-Aware Decoding](../examples/notebooks/simulation/leakage-aware_decoding.md) notebook.
 
 ## Per-shot analysis
 
@@ -318,5 +318,5 @@ By analysing detector combinations (also known as syndromes) which led to failur
 you may derive important information about decoder behaviour and device properties.
 
 To see how predictions can be used for analysis, please refer to the
-[Analysis of Per-shot Decoding](../examples/notebooks/simulation/shot_analysis.ipynb)
+[Analysis of Per-shot Decoding](../examples/notebooks/simulation/shot_analysis.md)
 example notebook.

@@ -45,7 +45,7 @@ In order for us to know with certainty that a logical error occurred, we need to
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import Client
 from deltakit.explorer.enums import DecoderType
 from deltakit.explorer.types import (
@@ -75,7 +75,7 @@ textbook_circuit = client.generate_circuit(experiment_definition)
 We can display the circuit. Each horizontal line corresponds to a qubit. The first column of boxes give the coordinate labels of the qubits. These are not necessary to simulate a circuit, but are useful to understand which qubit is which. The second column of boxes correspond to reset gates. The circles connected by lines are two-qubit controlled-Z gates. The final operations on the qubits are measurements. These measurements are then used to calculate the detector values -- which measurements are combined to form which detectors are indicated by the "rec" labels. The measurements are also used to calculate the observed value of logical measurement, indicated by "OBS_INCLUDE". By decoding, we perform error correction on this logical measurement.
 
 ```{code-cell} ipython3
-circuit = stim.Circuit(textbook_circuit)
+circuit = deltakit_stim.Circuit(textbook_circuit)
 circuit.diagram(type="timeline-svg")
 ```
 
@@ -90,7 +90,7 @@ compiled_circuit = client.generate_circuit(experiment_definition)
 We now display the experiment circuit again, this time compiled to the specific native gate set. We see that the **X**-basis resets and measurements have been replaced with **Z**-basis resets and measurements along with Hadamard gates to change the basis. We note the Hadamard gates at the end of the circuit are used to restore the basis; however, as they occur after the final measurements in the circuit, they have no effect.
 
 ```{code-cell} ipython3
-stim.Circuit(compiled_circuit).diagram(type="timeline-svg")
+deltakit_stim.Circuit(compiled_circuit).diagram(type="timeline-svg")
 ```
 
 (client-add-noise-to-the-circuit)=
@@ -108,7 +108,7 @@ noisy_circuit = client.add_noise(
     noise_model=noise_model,
 )
 
-stim.Circuit(noisy_circuit).diagram(type="timeline-svg")
+deltakit_stim.Circuit(noisy_circuit).diagram(type="timeline-svg")
 ```
 
 ## Simulate and decode an error correction experiment
