@@ -226,3 +226,6 @@ docs/explorer/simulation/
 docs/**/measurements.01
 docs/**/dets_from_circuit_sampler.b8
 docs/**/dets_from_dem_sampler.01
+
+# Full Google dataset downloaded by docs/examples/scripts/get_google_data.sh
+docs/examples/data/examples/google_qmem_experiment/full_dataset/

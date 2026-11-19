@@ -194,6 +194,8 @@ extend-exclude = [
   "**/LICENSE",
   "**/*.html",
   "licenses.confluence",
+  # Third-party Google dataset (unmodified, US spelling)
+  "docs/examples/data/examples/google_qmem_experiment/input",
 ]
 
 [tool.semantic_release]

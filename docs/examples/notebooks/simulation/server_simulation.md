@@ -47,7 +47,8 @@ When a `Client` instance is provided using the `client` parameter, simulations a
 
 ```{code-cell} ipython3
 from deltakit.explorer import Client
-Client.set_token('<your token here>')  # see "Setup" documentation
+# see "Setup" documentation for initial local token setup.
+# Client.set_token('<your token here>')
 client = Client.get_instance()
 measurements, _ = simulate_with_stim(bell_circuit, shots=8, client=client)
 measurements

@@ -70,6 +70,7 @@ exclude_patterns = [
     "examples/notebooks/demo",
     "examples/notebooks/template_notebook.md",
     "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.md",
+    "examples/data",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.

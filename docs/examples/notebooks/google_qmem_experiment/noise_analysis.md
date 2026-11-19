@@ -9,9 +9,6 @@ kernelspec:
   display_name: deltakit-explorer-py3.10
   language: python
   name: python3
-language_info:
-  name: python
-  pygments_lexer: ipython3
 ---
 
 # Noise analysis for a quantum memory experiment
@@ -54,13 +51,9 @@ data_folder = Path("../..") / "data/examples"
 Logging.set_log_to_console(False)
 ```
 
-### Downloading data
+### Data
 
-For this notebook you will need to download experimental data. You may manually download it from [https://zenodo.org/records/6804040](https://zenodo.org/records/6804040), or run the following script:
-
-```{code-cell} ipython3
-! if [ ! -e "../../data/examples/google_qmem_experiment/input" ]; then ../../scripts/get_google_data.sh ../../data ; fi
-```
+This notebook uses a small subset of the [Google surface code dataset on Zenodo](https://doi.org/10.5281/zenodo.6804040) (CC BY 4.0), included in the repository under `docs/examples/data/examples/google_qmem_experiment/`. See the README there for the source, license and the files that were kept.
 
 ## The experiment
 
