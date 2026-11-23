@@ -17,4 +17,6 @@ exclude = [
     "deltakit.readthedocs.io",
     "deltakit.riverlane.com",
     "deltakit-docs.riverlane.com",
+    "^https?://localhost",
+    "npmjs.com",
 ]

@@ -13,7 +13,7 @@ kernelspec:
 
 # Error budgeting for quantum error correction
 
-*Want to follow along? {download}`Download this notebook.<error_budgeting.ipynb>`*
+*Want to follow along? {nb-download}`Download this notebook.<error_budgeting.ipynb>`*
 
 In this guide, you will learn what is error budgeting and how you can use `deltakit` to 
 get an error budget. 

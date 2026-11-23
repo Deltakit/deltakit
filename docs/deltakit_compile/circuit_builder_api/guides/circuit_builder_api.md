@@ -17,7 +17,7 @@ The Circuit Builder API is a Python-Based Domain Specific Language (DSL) for def
 
 The Circuit Builder is designed for QEC experts, offering features such as automatic detector generation, composable circuit chunks, precise control of parallelism, and control flow, all while being completely code-agnostic. 
 
-While it shares infrastructure with the higher-level Logical Assembly API (to learn more about LogASM, see [`logical_assembly_api.ipynb`](../../logical_assembly_api/guides/logical_assembly_api.ipynb)), Circuit Builder offers considerably more freedom in physical circuit design with the caveat that it provides fewer guarantees on the validity of the output.
+While it shares infrastructure with the higher-level Logical Assembly API (to learn more about LogASM, see [`logical_assembly_api.ipynb`](../../logical_assembly_api/guides/logical_assembly_api.md)), Circuit Builder offers considerably more freedom in physical circuit design with the caveat that it provides fewer guarantees on the validity of the output.
 
 ```{code-cell} ipython3
 

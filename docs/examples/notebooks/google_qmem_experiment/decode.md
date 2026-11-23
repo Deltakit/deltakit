@@ -53,7 +53,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import analysis, Client
 from deltakit.explorer.enums import DecoderType, DataFormat
 from deltakit.explorer.types import (
@@ -77,13 +77,9 @@ if log_to_screen:
     Logging.set_log_level(Logging.INFO)
 ```
 
-### Downloading data
+### Data
 
-For this notebook you will need to download experimental data. You may manually download it from [https://zenodo.org/records/6804040](https://zenodo.org/records/6804040), or run the following script:
-
-```{code-cell} ipython3
-! if [ ! -e "../../data/examples/google_qmem_experiment/input" ]; then ../../scripts/get_google_data.sh ../../data ; fi
-```
+This notebook uses a small subset of the [Google surface code dataset on Zenodo](https://doi.org/10.5281/zenodo.6804040) (CC BY 4.0), included in the repository under `docs/examples/data/examples/google_qmem_experiment/`. See the README there for the source, license and the files that were kept.
 
 ### Set up server and data folder
 
@@ -134,12 +130,12 @@ decoder = Decoder(decoder_type=DecoderType.MWPM, use_experimental_graph=False)
 
 +++
 
-The code below performs decoding for the experiment that was specified earlier in the notebook. The result of the decoding is two numbers: one is the total number of runs of the experiment decoded, and the other is the number of runs of the experiments decoded incorrectly (i.e. that caused a logical error). Additionally, a few intermediate files were generated during decoding – we will not consider them during this notebook; please see the [Noise analysis for a quantum memory experiment](noise_analysis.ipynb) example notebook to learn more about these files. 
+The code below performs decoding for the experiment that was specified earlier in the notebook. The result of the decoding is two numbers: one is the total number of runs of the experiment decoded, and the other is the number of runs of the experiments decoded incorrectly (i.e. that caused a logical error). Additionally, a few intermediate files were generated during decoding – we will not consider them during this notebook; please see the [Noise analysis for a quantum memory experiment](noise_analysis.md) example notebook to learn more about these files. 
 
 To calculate the logical error probability, we take the ratio of fails to shots.
 
 ```{code-cell} ipython3
-circuit = stim.Circuit.from_file(ideal_stim_circuit_file)
+circuit = deltakit_stim.Circuit.from_file(ideal_stim_circuit_file)
 measurements = Measurements(
     data=measurements_file,
     data_format=DataFormat.B8,
@@ -180,7 +176,7 @@ for num_rounds in all_rounds:
 result = {}
 
 for num_rounds in tqdm(all_rounds): 
-    circuit = stim.Circuit.from_file(stim_circuit_files[num_rounds])
+    circuit = deltakit_stim.Circuit.from_file(stim_circuit_files[num_rounds])
     measurements = Measurements(
         data=measurement_files[num_rounds],
         data_format=DataFormat.B8,
@@ -257,7 +253,7 @@ exp_graph_result = {}
 decoder.use_experimental_graph = True
 
 for num_rounds in tqdm(all_rounds): 
-    circuit = stim.Circuit.from_file(stim_circuit_files[num_rounds])
+    circuit = deltakit_stim.Circuit.from_file(stim_circuit_files[num_rounds])
     measurements = Measurements(
         data=measurement_files[num_rounds],
         data_format=DataFormat.B8,
@@ -328,4 +324,4 @@ plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15),
 
 In this notebook, we used experimental data from the Google quantum computer to calculate logical error probabilities.
 
-To learn more about the intermediate files generated in the course of these calculations and use them to gain more insights into the performance of the device, please see the [Noise analysis for a quantum memory experiment](noise_analysis.ipynb) example notebook.
+To learn more about the intermediate files generated in the course of these calculations and use them to gain more insights into the performance of the device, please see the [Noise analysis for a quantum memory experiment](noise_analysis.md) example notebook.

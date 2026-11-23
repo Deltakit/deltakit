@@ -21,7 +21,6 @@ You can run these passes individually to see the effect of each. In this noteboo
 
 # (c) Copyright Riverlane 2025-2026. All rights reserved.
 import deltakit_stim
-import stim
 
 from deltakit_compile.frontend.deltakit_stim import (
     deltakit_stim_circuit_to_dialect,
@@ -63,8 +62,7 @@ DETECTOR(3, 0, 0) rec[-1]
 While the circuit above is defined using Deltakit stim, we can obtain a Stim circuit object from it by parsing it back in as a Deltakit stim circuit.
 
 ```{code-cell} ipython3
-stim_circuit = stim.Circuit("R 0 1")
-deltakit_stim_circuit = deltakit_stim.Circuit(str(stim_circuit))
+deltakit_stim_circuit = deltakit_stim.Circuit("R 0 1")
 print(deltakit_stim_circuit)
 ```
 

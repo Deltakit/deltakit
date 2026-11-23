@@ -45,7 +45,8 @@ nb_execution_excludepatterns = [
     "**/*.ipynb",
 ]
 nb_execution_cache_path = ".jupyter_cache"
-nb_execution_timeout = 300
+nb_execution_timeout = 900
+nb_execution_show_tb = True
 
 autosectionlabel_prefix_document = True
 autosummary_generate = True
@@ -67,8 +68,9 @@ exclude_patterns = [
     "_build/jupyter_execute",
     "_build/html",
     "examples/notebooks/demo",
-    "examples/notebooks/template_notebook.ipynb",
-    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.ipynb",
+    "examples/notebooks/template_notebook.md",
+    "examples/notebooks/qmem/rotated_planar_quantum_memory_plots.md",
+    "examples/data",
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.

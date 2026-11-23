@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import numpy as np
-import stim
+import deltakit_stim
 from deltakit.explorer import Client, enums, types
 
 client = Client.get_instance()
@@ -49,7 +49,7 @@ noisy_circuit = client.add_noise(
     noise_model=noise_model,
 )
 
-stim.Circuit(noisy_circuit).diagram('timeline-svg')
+deltakit_stim.Circuit(noisy_circuit).diagram('timeline-svg')
 ```
 
 ## Simulate
@@ -115,7 +115,7 @@ Here, we plot the repetition code detectors (X axis) over time (Y axis) for the 
 Each node in the decoding graph corresponds to a detector and each edge corresponds to a potential error location. The detectors a particular error "light up" are those at either end of the corresponding edge. The graph can be constructed from the detector error model. Each detector has an associated coordinate. In this plot, the coordinates have the form `(X, Time)`, where `X` is the location of the auxiliary qubit associated with the stabiliser whose measurements form the detector. 
 
 ```{code-cell} ipython3
-circuit = stim.Circuit(noisy_circuit)
+circuit = deltakit_stim.Circuit(noisy_circuit)
 
 def plot_decoding_graph(result, title):
     syndrome = result['syndrome']

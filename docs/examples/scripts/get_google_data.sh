@@ -1,5 +1,5 @@
 where=${1:-data}
-where_google=$where/examples/google_qmem_experiment/input
+where_google=$where/examples/google_qmem_experiment/full_dataset
 
 echo "\n1. Creating the folder [$where_google]\n"
 mkdir -p $where_google

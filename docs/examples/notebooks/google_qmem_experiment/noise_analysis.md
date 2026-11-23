@@ -15,7 +15,7 @@ kernelspec:
 
 *Want to follow along? {nb-download}`Download this notebook.<noise_analysis.ipynb>`*
 
-In this notebook we demonstrate all the steps required to perform noise source analysis for a quantum error correction experiment. Specifically, we will be using data from a quantum memory experiment published by Google ([Google Quantum AI, _Nature 614, 676-681_ (2023)](https://www.nature.com/articles/s41586-022-05434-1)) and calculate defect rates and correlation matrices. In the [Decoding a quantum memory experiment](decode.ipynb) example notebook, we decoded this data to obtain logical error probabilities for different experiment scenarios. In this notebook, we will explore the experiment data further, generating insights into the errors that are occurring on the quantum computer during the experiment.
+In this notebook we demonstrate all the steps required to perform noise source analysis for a quantum error correction experiment. Specifically, we will be using data from a quantum memory experiment published by Google ([Google Quantum AI, _Nature 614, 676-681_ (2023)](https://www.nature.com/articles/s41586-022-05434-1)) and calculate defect rates and correlation matrices. In the [Decoding a quantum memory experiment](decode.md) example notebook, we decoded this data to obtain logical error probabilities for different experiment scenarios. In this notebook, we will explore the experiment data further, generating insights into the errors that are occurring on the quantum computer during the experiment.
 
 This notebook covers the following steps: 
 
@@ -36,7 +36,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import stim
+import deltakit_stim
 from deltakit.explorer import Logging, Client, plotting
 from deltakit.explorer.enums import DataFormat
 from deltakit.explorer.types import BinaryDataType, Measurements, QECExperiment
@@ -51,13 +51,9 @@ data_folder = Path("../..") / "data/examples"
 Logging.set_log_to_console(False)
 ```
 
-### Downloading data
+### Data
 
-For this notebook you will need to download experimental data. You may manually download it from [https://zenodo.org/records/6804040](https://zenodo.org/records/6804040), or run the following script:
-
-```{code-cell} ipython3
-! if [ ! -e "../../data/examples/google_qmem_experiment/input" ]; then ../../scripts/get_google_data.sh ../../data ; fi
-```
+This notebook uses a small subset of the [Google surface code dataset on Zenodo](https://doi.org/10.5281/zenodo.6804040) (CC BY 4.0), included in the repository under `docs/examples/data/examples/google_qmem_experiment/`. See the README there for the source, license and the files that were kept.
 
 ## The experiment
 
@@ -94,7 +90,7 @@ An observable is also a combination of measurements that has deterministic value
 ### Convert raw measurement into detector and observable values
 
 ```{code-cell} ipython3
-stim_circuit = stim.Circuit.from_file(stim_circuit_file)
+stim_circuit = deltakit_stim.Circuit.from_file(stim_circuit_file)
 # if we use bitpacked b8 format, we should hint the width of the data in 1 shot
 measurements = Measurements(measurements_file, data_format, stim_circuit.num_measurements)
 sweep_bits = BinaryDataType(sweep_file, data_format, stim_circuit.num_sweep_bits)  # use generic type for bit tables

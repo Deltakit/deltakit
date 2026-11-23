@@ -15,7 +15,7 @@ kernelspec:
 
 Logical assembly (LogASM) is a Python-based Domain Specific Language (DSL) for defining logical operations on logical patches in space and time. It can be used to define logical programs at the level of abstraction of lattice surgery space time diagrams (comparable to TQEC’s BlockGraphs) or transversal operations. The DSL also includes classical operations such as control flow.
 
-LogASM is designed to make QEC accessible to the type of user who wants to experiment with high level QEC concepts without needing deep QEC knowledge. For the more experienced, it streamlines the construction of larger and more complex experiments. For those looking for the Circuit Builder API, see [`circuit_builder_api.ipynb`](../../circuit_builder_api/guides/circuit_builder_api.ipynb).
+LogASM is designed to make QEC accessible to the type of user who wants to experiment with high level QEC concepts without needing deep QEC knowledge. For the more experienced, it streamlines the construction of larger and more complex experiments. For those looking for the Circuit Builder API, see [`circuit_builder_api.ipynb`](../../circuit_builder_api/guides/circuit_builder_api.md).
 
 ```{code-cell} ipython3
 
@@ -93,7 +93,7 @@ p0.measure_stabilisers(5)
 b0 = p0.measure("Z")
 ```
 
-A patch may be indexed/sliced to get the qubits it contains as `Qubit`/`QubitReg`, which don't have any patch methods but can be used with the Circuit Builder (see [`circuit_builder_api.ipynb`](../../circuit_builder_api/guides/circuit_builder_api.ipynb)). Visualise the patch to see how the qubit indices are arranged within the patch.
+A patch may be indexed/sliced to get the qubits it contains as `Qubit`/`QubitReg`, which don't have any patch methods but can be used with the Circuit Builder (see [`circuit_builder_api.ipynb`](../../circuit_builder_api/guides/circuit_builder_api.md)). Visualise the patch to see how the qubit indices are arranged within the patch.
 
 ```{code-cell} ipython3
 # TODO: Patch visualisation here
