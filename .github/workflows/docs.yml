@@ -50,7 +50,7 @@ jobs:
 
   build-docs:
     if: github.event_name == 'pull_request'
-    needs: [check-deltakit-token]
+    needs: [check-deltakit-token, check-documentation-links]
     runs-on: ubuntu-latest
     env:
       NB_EXECUTION_MODE: ${{ needs.check-deltakit-token.outputs.exists == 'true' && 'force' || 'off' }}
