@@ -1,4 +1,3 @@
-# (c) Copyright Riverlane 2020-2026.
 """Tests for the ``gallery`` Sphinx extension in ``docs/_ext``.
 
 They check how entries files and directive options are read, which is what
