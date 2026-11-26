@@ -129,13 +129,12 @@ def _normalise(entry: dict[str, Any], base: str) -> dict[str, Any]:
             unknown ``level`` or ``ref`` form.
     """
     values: dict[str, Any] = {}
-    unknown = []
     for name, value in entry.items():
         try:
             key = Key(name)
-        except ValueError:
-            unknown.append(name)
-            continue
+        except ValueError as err:
+            msg = f"unknown key {name!r}, expected one of {[k.value for k in Key]}"
+            raise ValueError(msg) from err
         if key is Key.TAGS:
             items = value if isinstance(value, list) else [value]
             tags = [_value(key, item, line=True) for item in items if item is not None]
@@ -143,11 +142,6 @@ def _normalise(entry: dict[str, Any], base: str) -> dict[str, Any]:
                 values[key] = tags
         elif value is not None and (text := _value(key, value, line=key in LINE_KEYS)):
             values[key] = text
-    if unknown:
-        msg = (
-            f"unknown keys {sorted(unknown)}, expected some of {[k.value for k in Key]}"
-        )
-        raise ValueError(msg)
     if (Key.DOC in values) == (Key.REF in values):
         msg = f"needs exactly one of 'doc' or 'ref', got {entry!r}"
         raise ValueError(msg)
@@ -180,8 +174,12 @@ def _load(path: Path, base: str) -> list[dict[str, Any]]:
         The normalised entries.
 
     Raises:
+        FileNotFoundError: If ``path`` is not an existing file.
         ValueError: If the file does not hold a list of valid entries.
     """
+    if not path.is_file():
+        msg = f"{path} does not exist or is not a file"
+        raise FileNotFoundError(msg)
     with path.open(encoding="utf-8") as stream:
         entries = yaml.safe_load(stream) or []
     if not isinstance(entries, list):
