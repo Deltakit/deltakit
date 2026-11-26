@@ -1,149 +1,136 @@
+# (c) Copyright Riverlane 2020-2026.
 """Tests for the ``gallery`` Sphinx extension in ``docs/_ext``.
 
-They build small projects to check what most often breaks when content is
-added to a ``gallery.yml``. The extension needs the documentation dependencies,
-which the ``test`` group does not install, so these tests are skipped without
-them. Run them with ``just test-docs``.
+They check how entries files and directive options are read, which is what
+most often breaks when content is added to a gallery, without building any
+documentation. The extension needs Sphinx and PyYAML, which the ``test`` group
+does not install, so these tests are skipped without them. Run them with
+``uv run --group docs --group test pytest tests/docs``.
 """
 
 from __future__ import annotations
 
-import shutil
-from collections.abc import Callable, Iterator
-from io import StringIO
+import importlib
+import re
+import sys
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 DOCS = Path(__file__).resolve().parents[2] / "docs"
-LOGO = DOCS / "logo" / "Deltakit_Blue_SecondaryLogo_RGB.png"
+SOURCE_SUFFIXES = (".rst", ".md", ".ipynb")
+GALLERIES = sorted(
+    path for path in DOCS.rglob("gallery.yml") if "_build" not in path.parts
+)
 
-pytest.importorskip("sphinx_design")
-pytest.importorskip("myst_parser")
-sphinx_testing = pytest.importorskip("sphinx.testing.util")
-
-CONF = f"""
-import sys
-sys.path.insert(0, {str(DOCS / "_ext")!r})
-extensions = [
-    "myst_parser",
-    "sphinx_design",
-    "sphinx.ext.autosectionlabel",
-    "gallery",
-]
-autosectionlabel_prefix_document = True
-exclude_patterns = ["_build"]
-"""
-ROOT = "Root\n====\n\n.. toctree::\n\n   gallery/index\n"
-PAGES = {
-    "gallery/alpha.md": "# Alpha\n\nText.\n",
-    "gallery/beta.md": "# Beta\n\n## Step 1: setup\n\nText.\n",
-}
-# The gallery directive is on line 4 of the reST page.
-RST_PAGE = "Gallery\n=======\n\n.. gallery::\n   :columns: 1 2 2 2\n"
-MYST_PAGE = "# Gallery\n\n```{gallery}\n:columns: 1 2 2 2\n```\n"
+pytest.importorskip("sphinx")
+pytest.importorskip("yaml")
+sys.path.insert(0, str(DOCS / "_ext"))
+gallery = importlib.import_module("gallery")
 
 
-@pytest.fixture
-def build(tmp_path: Path) -> Iterator[Callable[[dict[str, str]], Any]]:
-    """Build small Sphinx projects, and clean them up afterwards.
+def load(tmp_path: Path, text: str) -> list[dict[str, Any]]:
+    """Load the entries of a ``gallery.yml`` beside an ``examples/index`` page.
 
     Args:
-        tmp_path: A directory for the project sources and builds.
+        tmp_path: The directory to write the file in.
+        text: The file contents.
 
-    Yields:
-        A function that builds a project from a mapping of file names to
-        contents, and returns the Sphinx application.
+    Returns:
+        The normalised entries.
     """
-    apps = []
-
-    def run(files: dict[str, str]):
-        src = tmp_path / "src"
-        for name, text in {
-            "conf.py": CONF,
-            "index.rst": ROOT,
-            **PAGES,
-            **files,
-        }.items():
-            (src / name).parent.mkdir(parents=True, exist_ok=True)
-            (src / name).write_text(text, encoding="utf-8")
-        (src / "logo").mkdir(exist_ok=True)
-        shutil.copy(LOGO, src / "logo" / LOGO.name)
-        app = sphinx_testing.SphinxTestApp(
-            "html", srcdir=src, freshenv=True, status=StringIO(), warning=StringIO()
-        )
-        apps.append(app)
-        app.build()
-        return app
-
-    yield run
-    for app in apps:
-        app.cleanup()
+    path = tmp_path / "gallery.yml"
+    path.write_text(text, encoding="utf-8")
+    return gallery._load(path, "examples/index")
 
 
-@pytest.mark.parametrize("page", ["index.rst", "index.md"])
-def test_gallery_renders_its_entries(build, page: str) -> None:
-    entries = """\
-- doc: alpha
-  title: "Alpha: *not* emphasis"
-  level: advanced
-  tags: [Cloud decoder]
-- ref: "gallery/beta:Step 1: setup"
-  level: beginner
-"""
-    source = RST_PAGE if page.endswith(".rst") else MYST_PAGE
-    app = build({f"gallery/{page}": source, "gallery/gallery.yml": entries})
+@pytest.mark.parametrize(
+    "path", GALLERIES, ids=lambda path: path.relative_to(DOCS).as_posix()
+)
+def test_gallery_lists_documents_and_thumbnails_that_exist(path: Path) -> None:
+    page = path.relative_to(DOCS).with_name("index").as_posix()
+    for entry in gallery._load(path, page):
+        docname = entry["docname"]
+        assert any(
+            (DOCS / f"{docname}{suffix}").is_file() for suffix in SOURCE_SUFFIXES
+        ), f"no document {docname!r}"
+        thumbnail = entry.get(gallery.Key.THUMBNAIL, gallery.DEFAULT_THUMBNAIL)
+        root = DOCS if thumbnail.startswith("/") else path.parent
+        assert (root / thumbnail.lstrip("/")).is_file(), f"no image {thumbnail!r}"
 
-    assert app.warning.getvalue() == ""
-    html = (app.outdir / "gallery" / "index.html").read_text(encoding="utf-8")
-    assert html.count("dk-gallery-card") == len(PAGES)
-    # Titles are shown as written, not parsed as markup.
-    assert "Alpha: *not* emphasis" in html
-    # A card links to a whole page, or to a section of one.
-    assert 'href="alpha.html"' in html
-    assert 'href="beta.html#step-1-setup"' in html
-    assert "dk-level-advanced" in html
-    assert "Cloud decoder" in html
-    # Without a thumbnail, a card shows the Deltakit logo.
-    assert (app.outdir / "_images" / LOGO.name).is_file()
-    # The listed pages join the toctree, so they appear in the sidebar.
-    assert app.env.toctree_includes["gallery/index"] == [
-        "gallery/alpha",
-        "gallery/beta",
+
+@pytest.mark.parametrize("name", ["gallery.yml", ""], ids=["missing", "directory"])
+def test_load_needs_an_existing_file(tmp_path: Path, name: str) -> None:
+    with pytest.raises(FileNotFoundError, match="does not exist or is not a file"):
+        gallery._load(tmp_path / name, "examples/index")
+
+
+def test_load_reads_each_key(tmp_path: Path) -> None:
+    entries = load(
+        tmp_path,
+        """\
+- doc: notebooks/alpha
+  title: >-
+    Alpha,
+    folded
+  level: Advanced
+  tags: Cloud decoder
+  summary: 42
+  thumbnail:
+  meta: ""
+- ref: "examples/beta:Step 1: setup"
+  tags: [Downloads data, null, ""]
+""",
+    )
+    assert entries == [
+        {
+            "doc": "notebooks/alpha",
+            "title": "Alpha, folded",
+            "level": "advanced",
+            "tags": ["Cloud decoder"],
+            "summary": "42",
+            "docname": "examples/notebooks/alpha",
+            "section": "",
+        },
+        {
+            "ref": "examples/beta:Step 1: setup",
+            "tags": ["Downloads data"],
+            "docname": "examples/beta",
+            "section": "Step 1: setup",
+        },
     ]
 
 
 @pytest.mark.parametrize(
-    ("entry", "error"),
+    ("text", "error"),
     [
-        ("- doc: alpha\n  description: typo\n", "unknown key 'description'"),
-        ("- doc: alpha\n  level: expert\n", "level must be one of"),
-        ("- doc: a\n  ref: gallery/beta:Beta\n", "needs exactly one of 'doc' or 'ref'"),
-        ("- ref: gallery/beta\n", "ref must be '<docname>:<Section Title>'"),
-        ("- doc: alpha\n  title: No\n", "title must be text"),
-    ],
-)
-def test_gallery_warns_about_an_invalid_entry(build, entry: str, error: str) -> None:
-    app = build({"gallery/index.rst": RST_PAGE, "gallery/gallery.yml": entry})
-    assert (
-        f"gallery/index.rst:4: WARNING: gallery: gallery.yml, entry 1: {error}"
-        in app.warning.getvalue()
-    )
-
-
-@pytest.mark.parametrize(
-    ("entry", "warning"),
-    [
+        ("doc: alpha\n", "gallery.yml must contain a list of entries"),
+        ("- doc: alpha\n- beta\n", "entry 2: expected a mapping with text keys"),
+        ("- description: typo\n", "entry 1: unknown key 'description'"),
+        ("- doc: alpha\n  level: expert\n", "entry 1: level must be one of"),
+        ("- title: Alpha\n", "entry 1: needs exactly one of 'doc' or 'ref'"),
         (
-            "- ref: 'gallery/beta:No such section'\n",
-            "undefined label: 'gallery/beta:no such section'",
+            "- doc: alpha\n  ref: examples/beta:Beta\n",
+            "entry 1: needs exactly one of 'doc' or 'ref'",
         ),
-        ("- doc: gamma\n", "unknown document: '/gallery/gamma'"),
+        ("- ref: examples/beta\n", "entry 1: ref must be '<docname>:<Section Title>'"),
+        # YAML reads an unquoted No as false.
+        ("- doc: alpha\n  title: No\n", "entry 1: title must be text"),
+        ("- doc: 2024\n", "entry 1: doc must be text"),
     ],
 )
-def test_gallery_warns_about_a_link_that_does_not_resolve(
-    build, entry: str, warning: str
-) -> None:
-    app = build({"gallery/index.rst": RST_PAGE, "gallery/gallery.yml": entry})
-    assert f"gallery/index.rst:4: WARNING: {warning}" in app.warning.getvalue()
+def test_load_rejects_an_invalid_file(tmp_path: Path, text: str, error: str) -> None:
+    with pytest.raises(ValueError, match=re.escape(error)):
+        load(tmp_path, text)
+
+
+def test_directive_parses_its_options() -> None:
+    spec = gallery.GalleryDirective.option_spec
+    assert spec["entries"]("tutorials.yml") == "tutorials.yml"
+    assert spec["columns"]("1 2 2 3") == "1 2 2 3"
+    assert spec["no-toctree"](None) is None
+    with pytest.raises(ValueError, match="argument required"):
+        spec["entries"](None)
+    with pytest.raises(ValueError, match="no argument is allowed"):
+        spec["no-toctree"]("yes")
