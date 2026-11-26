@@ -7,7 +7,12 @@
 # -- Path setup --------------------------------------------------------------
 from __future__ import annotations
 
+import pathlib
+import sys
+
 import deltakit
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent / "_ext"))
 
 # -- Project information -----------------------------------------------------
 
@@ -29,6 +34,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
     "sphinx_design",
+    "gallery",
 ]
 myst_enable_extensions = [
     "colon_fence",
@@ -91,7 +97,7 @@ html_theme = "sphinxawesome_theme"
 html_static_path = ["_static"]
 
 # Custom style sheets, relative to the paths in `html_static_path`.
-html_css_files = ["css/custom.css"]
+html_css_files = ["css/custom.css", "gallery.css"]
 
 # no link to an *.rst source
 html_show_sourcelink = False
