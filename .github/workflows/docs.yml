@@ -68,3 +68,11 @@ jobs:
         run: uv run --no-sync sphinx-build -W -D nb_execution_mode=${NB_EXECUTION_MODE} -b html docs docs/_build/html
         env:
           DELTAKIT_TOKEN: ${{ secrets.DELTAKIT_TOKEN }}
+
+      - name: Upload notebook execution reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: notebook-execution-reports
+          path: docs/_build/html/reports/
+          if-no-files-found: ignore
