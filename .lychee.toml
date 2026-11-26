@@ -17,4 +17,6 @@ exclude = [
     "deltakit.readthedocs.io",
     "deltakit.riverlane.com",
     "deltakit-docs.riverlane.com",
+    # Zenodo (and its DOIs via doi.org/10.5281/zenodo.*) is often slow or returns 5xx
+    "zenodo",
 ]

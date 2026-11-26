@@ -63,8 +63,8 @@ test = [
   { include-group = "tests_extras" },
 ]
 lint = [
-  # Specify lower bound for click that fixes a vulnerability caught by
-  # pip-audit.
+  # Specify lower bound for click that fixes a vulnerability caught
+  # by pip-audit.
   "click>=8.3.3, <9.0",
   "mypy>=1.17,<3.0",
   "ruff~=0.14",
