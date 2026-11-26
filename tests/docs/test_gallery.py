@@ -1,4 +1,3 @@
-# (c) Copyright Riverlane 2020-2026.
 """Tests for the ``gallery`` Sphinx extension in ``docs/_ext``.
 
 They build small projects to check what most often breaks when content is
